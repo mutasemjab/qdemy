@@ -1,0 +1,143 @@
+@extends('layouts.admin')
+
+@section('title', __('messages.ministerial_questions'))
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">{{ __('messages.ministerial_questions') }}</h3>
+                    @can('ministerial-question-add')
+                    <a href="{{ route('ministerial-questions.create') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> {{ __('messages.add_new_ministerial_question') }}
+                    </a>
+                    @endcan
+                </div>
+
+                <div class="card-body">
+                   
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ __('messages.category') }}</th>
+                                    <th>{{ __('messages.pdf_file') }}</th>
+                                    <th>{{ __('messages.file_size') }}</th>
+                                    <th>{{ __('messages.created_at') }}</th>
+                                    <th width="200">{{ __('messages.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($ministerialQuestions as $ministerialQuestion)
+                                <tr>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            @if($ministerialQuestion->category && $ministerialQuestion->category->icon)
+                                                <i class="{{ $ministerialQuestion->category->icon }} mr-2" 
+                                                   style="color: {{ $ministerialQuestion->category->color ?? '#007bff' }}"></i>
+                                            @endif
+                                            <div>
+                                                <strong>{{ $ministerialQuestion->category_breadcrumb }}</strong>
+                                                @if($ministerialQuestion->category && $ministerialQuestion->category->parent)
+                                                    <br><small class="text-muted">
+                                                        {{ __('messages.parent') }}: {{ $ministerialQuestion->category->parent->localized_name }}
+                                                    </small>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($ministerialQuestion->pdf)
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-file-pdf text-danger mr-2"></i>
+                                                <div>
+                                                    <span class="text-truncate" style="max-width: 150px; display: inline-block;">
+                                                        {{ $ministerialQuestion->pdf }}
+                                                    </span>
+                                                    @if($ministerialQuestion->pdfExists())
+                                                        <span class="badge badge-success">{{ __('messages.available') }}</span>
+                                                    @else
+                                                        <span class="badge badge-danger">{{ __('messages.missing') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">{{ __('messages.no_file') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{ $ministerialQuestion->pdf_size ?? '--' }}
+                                    </td>
+                                    <td>{{ $ministerialQuestion->created_at->format('Y-m-d H:i') }}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            @can('ministerial-question-table')
+                                            <a href="{{ route('ministerial-questions.show', $ministerialQuestion) }}" 
+                                               class="btn btn-info btn-sm" title="{{ __('messages.view') }}">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @endcan
+
+                                            @if($ministerialQuestion->pdfExists())
+                                                <a href="{{ route('ministerial-questions.download', $ministerialQuestion) }}" 
+                                                   class="btn btn-success btn-sm" title="{{ __('messages.download') }}">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            @endif
+                                            
+                                            @can('ministerial-question-edit')
+                                            <a href="{{ route('ministerial-questions.edit', $ministerialQuestion) }}" 
+                                               class="btn btn-warning btn-sm" title="{{ __('messages.edit') }}">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @endcan
+                                            
+                                            @can('ministerial-question-delete')
+                                            <form action="{{ route('ministerial-questions.destroy', $ministerialQuestion) }}" method="POST" 
+                                                  class="d-inline delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" 
+                                                        title="{{ __('messages.delete') }}"
+                                                        onclick="return confirm('{{ __('messages.confirm_delete') }}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="py-4">
+                                            <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">{{ __('messages.no_ministerial_questions_found') }}</p>
+                                            @can('ministerial-question-add')
+                                            <a href="{{ route('ministerial-questions.create') }}" class="btn btn-primary">
+                                                {{ __('messages.create_first_ministerial_question') }}
+                                            </a>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center">
+                        {{ $ministerialQuestions->links() }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
