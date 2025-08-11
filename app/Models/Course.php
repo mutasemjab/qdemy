@@ -35,6 +35,12 @@ class Course extends Model
     {
         return $this->hasMany(CourseSection::class);
     }
+   
+   
+    public function exams()
+    {
+        return $this->hasMany(Exam::class);
+    }
 
     /**
      * Get the contents for the course.

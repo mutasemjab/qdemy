@@ -98,7 +98,7 @@
                                     <label for="course_id" class="form-label">
                                         {{ __('messages.course') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-select @error('course_id') is-invalid @enderror" 
+                                    <select class="form-control @error('course_id') is-invalid @enderror" 
                                             id="course_id" 
                                             name="course_id">
                                         <option value="">{{ __('messages.select_course') }}</option>
@@ -121,7 +121,7 @@
                                     <label for="type" class="form-label">
                                         {{ __('messages.question_type') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-select @error('type') is-invalid @enderror" 
+                                    <select class="form-control @error('type') is-invalid @enderror" 
                                             id="type" 
                                             name="type"
                                             onchange="toggleQuestionType()">

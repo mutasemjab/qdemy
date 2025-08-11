@@ -22,7 +22,7 @@
                     <form method="GET" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">
-                                <select name="course_id" class="form-select">
+                                <select name="course_id" class="form-control">
                                     <option value="">{{ __('messages.all_courses') }}</option>
                                     @foreach($courses as $course)
                                         <option value="{{ $course->id }}" 
@@ -33,7 +33,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select name="status" class="form-select">
+                                <select name="status" class="form-control">
                                     <option value="">{{ __('messages.all_statuses') }}</option>
                                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
                                         {{ __('messages.active') }}

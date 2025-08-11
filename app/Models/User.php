@@ -52,4 +52,37 @@ class User extends Authenticatable
       return $this->hasMany(ParentStudent::class);
    }
 
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
+    /**
+     * Get completed exam attempts for the user.
+     */
+    public function completedExamAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class)->where('status', 'completed');
+    }
+
+    /**
+     * Get the user's average exam score.
+     */
+    public function getAverageScoreAttribute()
+    {
+        return $this->examAttempts()
+            ->where('status', 'completed')
+            ->avg('percentage') ?? 0;
+    }
+
+    /**
+     * Get the user's total completed attempts count.
+     */
+    public function getTotalAttemptsAttribute()
+    {
+        return $this->examAttempts()
+            ->where('status', 'completed')
+            ->count();
+    }
+
 }

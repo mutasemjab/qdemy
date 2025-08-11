@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
+use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\OpinionStudentController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\UserController;
@@ -228,7 +229,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('packages/categories/by-type', [PackageController::class, 'getCategoriesByType'])->name('packages.get-categories-by-type');
 
 
-        
+          Route::resource('notifications', NotificationController::class);
+
+            Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
+             ->name('notifications.resend');
 
     });
 });

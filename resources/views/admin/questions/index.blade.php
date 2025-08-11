@@ -23,7 +23,7 @@
                     <form method="GET" class="mb-4">
                         <div class="row">
                             <div class="col-md-3">
-                                <select name="course_id" class="form-select">
+                                <select name="course_id" class="form-control">
                                     <option value="">{{ __('messages.all_courses') }}</option>
                                     @foreach($courses as $course)
                                         <option value="{{ $course->id }}" 
@@ -34,7 +34,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select name="type" class="form-select">
+                                <select name="type" class="form-control">
                                     <option value="">{{ __('messages.all_types') }}</option>
                                     <option value="multiple_choice" {{ request('type') == 'multiple_choice' ? 'selected' : '' }}>
                                         {{ __('messages.multiple_choice') }}
