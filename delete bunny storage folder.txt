@@ -1,0 +1,15 @@
+bank_question.pdf to nullable
+ministerial_years_questions.pdf to nullable
+add questions.created_by_admin
+add exams.created_by_admin
+
+ministerial_years_questions.pdf_size
+ministerial_years_questions.display_name
+bank_question.pdf_size
+bank_question.display_name
+
+// delayed
+delete bunny storage folder
+check file existance before delete
+
+// there will be needed to connect to youtube api && bunnyCdn to make right progress vide put now video_duration_must_be right

@@ -1,0 +1,46 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class CourseSection extends Model
+{
+    use HasFactory;
+
+    protected $guarded = [];
+
+     public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    /**
+     * Get the parent section.
+     */
+    public function parent()
+    {
+        return $this->belongsTo(CourseSection::class, 'parent_id');
+    }
+
+    /**
+     * Get the child sections.
+     */
+    public function children()
+    {
+        return $this->hasMany(CourseSection::class, 'parent_id');
+    }
+
+    /**
+     * Get the contents for the section.
+     */
+    public function contents()
+    {
+        return $this->hasMany(CourseContent::class, 'section_id');
+    }
+    public function getTitleAttribute()
+    {
+        return app()->getLocale() === 'ar' ? $this->attributes['title_ar'] : $this->attributes['title_en'];
+    }
+}
