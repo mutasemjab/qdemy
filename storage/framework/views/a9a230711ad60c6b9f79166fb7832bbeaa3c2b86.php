@@ -1,8 +1,6 @@
-@extends('layouts.admin')
+<?php $__env->startSection('title', __('messages.dashboard')); ?>
 
-@section('title', __('messages.dashboard'))
-
-@section('css')
+<?php $__env->startSection('css'); ?>
 <style>
 .dashboard-container {
     background: #ffffff;
@@ -209,17 +207,18 @@
     }
 }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('contentheaderlink')
-<a href="{{ route('admin.dashboard') }}">{{ __('messages.dashboard') }}</a>
-@endsection
+<?php $__env->startSection('contentheaderlink'); ?>
+<a href="<?php echo e(route('admin.dashboard')); ?>"><?php echo e(__('messages.dashboard')); ?></a>
+<?php $__env->stopSection(); ?>
 
-@section('contentheaderactive')
-{{ __('messages.overview') }}
-@endsection
+<?php $__env->startSection('contentheaderactive'); ?>
+<?php echo e(__('messages.overview')); ?>
 
-@section('content')
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="dashboard-container">
     <!-- Dashboard Header -->
 
@@ -231,16 +230,17 @@
                 <div class="icon students">
                     <i class="fas fa-user-graduate"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalStudents) }}</div>
-                <div class="stats-label">{{ __('messages.total_students') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalStudents)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.total_students')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-arrow-up mr-1"></i>
-                    +{{ $newStudentsThisMonth }} {{ __('messages.this_month') }}
+                    +<?php echo e($newStudentsThisMonth); ?> <?php echo e(__('messages.this_month')); ?>
+
                 </div>
                 <div class="progress-bar-custom">
-                    <div class="progress-fill students" style="width: {{ $totalStudents > 0 ? ($activeStudents / $totalStudents) * 100 : 0 }}%"></div>
+                    <div class="progress-fill students" style="width: <?php echo e($totalStudents > 0 ? ($activeStudents / $totalStudents) * 100 : 0); ?>%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">{{ $activeStudents }}/{{ $totalStudents }} {{ __('messages.active') }}</small>
+                <small class="text-muted mt-2 d-block"><?php echo e($activeStudents); ?>/<?php echo e($totalStudents); ?> <?php echo e(__('messages.active')); ?></small>
             </div>
         </div>
 
@@ -250,16 +250,17 @@
                 <div class="icon teachers">
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalTeachers) }}</div>
-                <div class="stats-label">{{ __('messages.total_teachers') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalTeachers)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.total_teachers')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-check-circle mr-1"></i>
-                    {{ number_format($activeUserRate, 1) }}% {{ __('messages.active_rate') }}
+                    <?php echo e(number_format($activeUserRate, 1)); ?>% <?php echo e(__('messages.active_rate')); ?>
+
                 </div>
                 <div class="progress-bar-custom">
-                    <div class="progress-fill teachers" style="width: {{ $totalTeachers > 0 ? ($activeTeachers / $totalTeachers) * 100 : 0 }}%"></div>
+                    <div class="progress-fill teachers" style="width: <?php echo e($totalTeachers > 0 ? ($activeTeachers / $totalTeachers) * 100 : 0); ?>%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">{{ $activeTeachers }}/{{ $totalTeachers }} {{ __('messages.active') }}</small>
+                <small class="text-muted mt-2 d-block"><?php echo e($activeTeachers); ?>/<?php echo e($totalTeachers); ?> <?php echo e(__('messages.active')); ?></small>
             </div>
         </div>
 
@@ -269,16 +270,16 @@
                 <div class="icon courses">
                     <i class="fas fa-book"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalCourses) }}</div>
-                <div class="stats-label">{{ __('messages.total_courses') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalCourses)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.total_courses')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-graduation-cap mr-1"></i>
-                    <!--  'coursesWithExams'  {{ __('messages.with_exams') }} -->
+                    <!--  'coursesWithExams'  <?php echo e(__('messages.with_exams')); ?> -->
                 </div>
                 <div class="progress-bar-custom">
-                    <div class="progress-fill exams" style="width: {{ $totalCourses > 0 ? ($activeCourses / $totalCourses) * 100 : 0 }}%"></div>
+                    <div class="progress-fill exams" style="width: <?php echo e($totalCourses > 0 ? ($activeCourses / $totalCourses) * 100 : 0); ?>%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">{{ $activeCourses }}/{{ $totalCourses }} {{ __('messages.active') }}</small>
+                <small class="text-muted mt-2 d-block"><?php echo e($activeCourses); ?>/<?php echo e($totalCourses); ?> <?php echo e(__('messages.active')); ?></small>
             </div>
         </div>
 
@@ -288,16 +289,17 @@
                 <div class="icon exams">
                     <i class="fas fa-clipboard-check"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalExams) }}</div>
-                <div class="stats-label">{{ __('messages.total_exams') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalExams)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.total_exams')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-chart-line mr-1"></i>
-                    {{ number_format($passRate, 1) }}% {{ __('messages.pass_rate') }}
+                    <?php echo e(number_format($passRate, 1)); ?>% <?php echo e(__('messages.pass_rate')); ?>
+
                 </div>
                 <div class="progress-bar-custom">
-                    <div class="progress-fill exams" style="width: {{ $totalExams > 0 ? ($activeExams / $totalExams) * 100 : 0 }}%"></div>
+                    <div class="progress-fill exams" style="width: <?php echo e($totalExams > 0 ? ($activeExams / $totalExams) * 100 : 0); ?>%"></div>
                 </div>
-                <small class="text-muted mt-2 d-block">{{ $activeExams }}/{{ $totalExams }} {{ __('messages.active') }}</small>
+                <small class="text-muted mt-2 d-block"><?php echo e($activeExams); ?>/<?php echo e($totalExams); ?> <?php echo e(__('messages.active')); ?></small>
             </div>
         </div>
     </div>
@@ -309,10 +311,11 @@
                 <div class="icon questions">
                     <i class="fas fa-question-circle"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalQuestions) }}</div>
-                <div class="stats-label">{{ __('messages.total_questions') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalQuestions)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.total_questions')); ?></div>
                 <small class="text-muted">
-                    MC: {{ $multipleChoiceQuestions }} | T/F: {{ $trueFalseQuestions }} | Essay: {{ $essayQuestions }}
+                    MC: <?php echo e($multipleChoiceQuestions); ?> | T/F: <?php echo e($trueFalseQuestions); ?> | Essay: <?php echo e($essayQuestions); ?>
+
                 </small>
             </div>
         </div>
@@ -322,11 +325,12 @@
                 <div class="icon attempts">
                     <i class="fas fa-tasks"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalAttempts) }}</div>
-                <div class="stats-label">{{ __('messages.exam_attempts') }}</div>
+                <div class="stats-number"><?php echo e(number_format($totalAttempts)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.exam_attempts')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-trophy mr-1"></i>
-                    {{ number_format($averageScore, 1) }}% {{ __('messages.avg_score') }}
+                    <?php echo e(number_format($averageScore, 1)); ?>% <?php echo e(__('messages.avg_score')); ?>
+
                 </div>
             </div>
         </div>
@@ -336,11 +340,12 @@
                 <div class="icon notifications">
                     <i class="fas fa-bell"></i>
                 </div>
-                <div class="stats-number">{{ number_format($totalNotifications) }}</div>
-                <div class="stats-label">{{ __('messages.notifications') }}</div>
-                <div class="stats-change {{ $unreadNotifications > 0 ? 'negative' : 'positive' }}">
+                <div class="stats-number"><?php echo e(number_format($totalNotifications)); ?></div>
+                <div class="stats-label"><?php echo e(__('messages.notifications')); ?></div>
+                <div class="stats-change <?php echo e($unreadNotifications > 0 ? 'negative' : 'positive'); ?>">
                     <i class="fas fa-envelope mr-1"></i>
-                    {{ $unreadNotifications }} {{ __('messages.unread') }}
+                    <?php echo e($unreadNotifications); ?> <?php echo e(__('messages.unread')); ?>
+
                 </div>
             </div>
         </div>
@@ -350,11 +355,12 @@
                 <div class="icon performance">
                     <i class="fas fa-chart-bar"></i>
                 </div>
-                <div class="stats-number">{{ number_format($examCompletionRate, 1) }}%</div>
-                <div class="stats-label">{{ __('messages.completion_rate') }}</div>
+                <div class="stats-number"><?php echo e(number_format($examCompletionRate, 1)); ?>%</div>
+                <div class="stats-label"><?php echo e(__('messages.completion_rate')); ?></div>
                 <div class="stats-change positive">
                     <i class="fas fa-play mr-1"></i>
-                    {{ $inProgressAttempts }} {{ __('messages.in_progress') }}
+                    <?php echo e($inProgressAttempts); ?> <?php echo e(__('messages.in_progress')); ?>
+
                 </div>
             </div>
         </div>
@@ -367,32 +373,33 @@
             <div class="activity-card">
                 <h5 class="mb-4">
                     <i class="fas fa-clock mr-2"></i>
-                    {{ __('messages.recent_exam_attempts') }}
+                    <?php echo e(__('messages.recent_exam_attempts')); ?>
+
                 </h5>
-                @if($recentExamAttempts->count() > 0)
-                    @foreach($recentExamAttempts as $attempt)
+                <?php if($recentExamAttempts->count() > 0): ?>
+                    <?php $__currentLoopData = $recentExamAttempts; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attempt): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="activity-item">
                         <div class="activity-icon exam">
                             <i class="fas fa-clipboard-check"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <strong>{{ $attempt->user->name }}</strong>
-                            <p class="mb-1 text-muted">{{ Str::limit($attempt->exam->title_en, 30) }}</p>
+                            <strong><?php echo e($attempt->user->name); ?></strong>
+                            <p class="mb-1 text-muted"><?php echo e(Str::limit($attempt->exam->title_en, 30)); ?></p>
                             <small class="text-muted">
-                                {{ $attempt->submitted_at->diffForHumans() }} -
-                                <span class="text-{{ $attempt->is_passed ? 'success' : 'danger' }}">
-                                    {{ number_format($attempt->percentage, 1) }}%
+                                <?php echo e($attempt->submitted_at->diffForHumans()); ?> -
+                                <span class="text-<?php echo e($attempt->is_passed ? 'success' : 'danger'); ?>">
+                                    <?php echo e(number_format($attempt->percentage, 1)); ?>%
                                 </span>
                             </small>
                         </div>
                     </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-clipboard-list fa-3x mb-3"></i>
-                        <p>{{ __('messages.no_recent_attempts') }}</p>
+                        <p><?php echo e(__('messages.no_recent_attempts')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -401,31 +408,33 @@
             <div class="activity-card">
                 <h5 class="mb-4">
                     <i class="fas fa-medal mr-2"></i>
-                    {{ __('messages.top_students') }}
+                    <?php echo e(__('messages.top_students')); ?>
+
                 </h5>
-                @if($topStudents->count() > 0)
-                    @foreach($topStudents as $index => $student)
+                <?php if($topStudents->count() > 0): ?>
+                    <?php $__currentLoopData = $topStudents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $student): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="top-student-item">
                         <div class="d-flex align-items-center">
-                            <div class="student-rank {{ $index == 0 ? 'first' : ($index == 1 ? 'second' : ($index == 2 ? 'third' : 'other')) }}">
-                                {{ $index + 1 }}
+                            <div class="student-rank <?php echo e($index == 0 ? 'first' : ($index == 1 ? 'second' : ($index == 2 ? 'third' : 'other'))); ?>">
+                                <?php echo e($index + 1); ?>
+
                             </div>
                             <div>
-                                <strong>{{ $student->name }}</strong>
-                                <small class="d-block text-muted">{{ $student->email }}</small>
+                                <strong><?php echo e($student->name); ?></strong>
+                                <small class="d-block text-muted"><?php echo e($student->email); ?></small>
                             </div>
                         </div>
                         <div class="text-right">
-                            <strong class="text-success">{{ number_format($student->avg_score, 1) }}%</strong>
+                            <strong class="text-success"><?php echo e(number_format($student->avg_score, 1)); ?>%</strong>
                         </div>
                     </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-graduation-cap fa-3x mb-3"></i>
-                        <p>{{ __('messages.no_exam_data_yet') }}</p>
+                        <p><?php echo e(__('messages.no_exam_data_yet')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -440,34 +449,37 @@
             <div class="activity-card">
                 <h5 class="mb-4">
                     <i class="fas fa-user-plus mr-2"></i>
-                    {{ __('messages.new_students') }}
+                    <?php echo e(__('messages.new_students')); ?>
+
                 </h5>
-                @if($recentStudents->count() > 0)
-                    @foreach($recentStudents as $student)
+                <?php if($recentStudents->count() > 0): ?>
+                    <?php $__currentLoopData = $recentStudents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $student): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="activity-item">
                         <div class="activity-icon student">
                             <i class="fas fa-user-graduate"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <strong>{{ $student->name }}</strong>
-                            <p class="mb-1 text-muted">{{ $student->email }}</p>
+                            <strong><?php echo e($student->name); ?></strong>
+                            <p class="mb-1 text-muted"><?php echo e($student->email); ?></p>
                             <small class="text-muted">
-                                {{ __('messages.joined') }} {{ $student->created_at->diffForHumans() }}
+                                <?php echo e(__('messages.joined')); ?> <?php echo e($student->created_at->diffForHumans()); ?>
+
                             </small>
                         </div>
                         <div class="text-right">
-                            <span class="badge badge-{{ $student->is_active ? 'success' : 'secondary' }}">
-                                {{ $student->is_active ? __('messages.active') : __('messages.inactive') }}
+                            <span class="badge badge-<?php echo e($student->is_active ? 'success' : 'secondary'); ?>">
+                                <?php echo e($student->is_active ? __('messages.active') : __('messages.inactive')); ?>
+
                             </span>
                         </div>
                     </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-user-plus fa-3x mb-3"></i>
-                        <p>{{ __('messages.no_new_students') }}</p>
+                        <p><?php echo e(__('messages.no_new_students')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -476,35 +488,38 @@
             <div class="activity-card">
                 <h5 class="mb-4">
                     <i class="fas fa-plus-circle mr-2"></i>
-                    {{ __('messages.recent_exams') }}
+                    <?php echo e(__('messages.recent_exams')); ?>
+
                 </h5>
-                @if($recentExams->count() > 0)
-                    @foreach($recentExams as $exam)
+                <?php if($recentExams->count() > 0): ?>
+                    <?php $__currentLoopData = $recentExams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="activity-item">
                         <div class="activity-icon exam">
                             <i class="fas fa-file-alt"></i>
                         </div>
                         <div class="flex-grow-1">
-                            <strong>{{ Str::limit($exam->title_en, 25) }}</strong>
-                            <p class="mb-1 text-muted">{{ $exam->course->title_en ?? 'No Course' }}</p>
+                            <strong><?php echo e(Str::limit($exam->title_en, 25)); ?></strong>
+                            <p class="mb-1 text-muted"><?php echo e($exam->course->title_en ?? 'No Course'); ?></p>
                             <small class="text-muted">
-                                {{ __('messages.created') }} {{ $exam->created_at->diffForHumans() }}
+                                <?php echo e(__('messages.created')); ?> <?php echo e($exam->created_at->diffForHumans()); ?>
+
                             </small>
                         </div>
                         <div class="text-right">
-                            <span class="badge badge-{{ $exam->is_active ? 'success' : 'secondary' }}">
-                                {{ $exam->is_active ? __('messages.active') : __('messages.inactive') }}
+                            <span class="badge badge-<?php echo e($exam->is_active ? 'success' : 'secondary'); ?>">
+                                <?php echo e($exam->is_active ? __('messages.active') : __('messages.inactive')); ?>
+
                             </span>
-                            <small class="d-block text-muted">{{ $exam->questions->count() }} {{ __('messages.questions') }}</small>
+                            <small class="d-block text-muted"><?php echo e($exam->questions->count()); ?> <?php echo e(__('messages.questions')); ?></small>
                         </div>
                     </div>
-                    @endforeach
-                @else
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php else: ?>
                     <div class="text-center text-muted py-4">
                         <i class="fas fa-plus-circle fa-3x mb-3"></i>
-                        <p>{{ __('messages.no_recent_exams') }}</p>
+                        <p><?php echo e(__('messages.no_recent_exams')); ?></p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -516,7 +531,8 @@
             <div class="chart-card">
                 <h5 class="mb-4">
                     <i class="fas fa-chart-bar mr-2"></i>
-                    {{ __('messages.pass_rate_by_exam') }}
+                    <?php echo e(__('messages.pass_rate_by_exam')); ?>
+
                 </h5>
                 <canvas id="passRateChart" height="200"></canvas>
             </div>
@@ -527,7 +543,8 @@
             <div class="chart-card">
                 <h5 class="mb-4">
                     <i class="fas fa-pie-chart mr-2"></i>
-                    {{ __('messages.question_type_distribution') }}
+                    <?php echo e(__('messages.question_type_distribution')); ?>
+
                 </h5>
                 <canvas id="questionTypeChart" height="200"></canvas>
             </div>
@@ -540,31 +557,36 @@
             <div class="chart-card">
                 <h5 class="mb-4">
                     <i class="fas fa-bolt mr-2"></i>
-                    {{ __('messages.quick_actions') }}
+                    <?php echo e(__('messages.quick_actions')); ?>
+
                 </h5>
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('users.create') }}" class="btn btn-primary btn-block btn-lg">
+                        <a href="<?php echo e(route('users.create')); ?>" class="btn btn-primary btn-block btn-lg">
                             <i class="fas fa-user-plus mr-2"></i>
-                            {{ __('messages.add_student') }}
+                            <?php echo e(__('messages.add_student')); ?>
+
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('courses.create') }}" class="btn btn-success btn-block btn-lg">
+                        <a href="<?php echo e(route('courses.create')); ?>" class="btn btn-success btn-block btn-lg">
                             <i class="fas fa-book-plus mr-2"></i>
-                            {{ __('messages.add_course') }}
+                            <?php echo e(__('messages.add_course')); ?>
+
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('exams.create') }}" class="btn btn-warning btn-block btn-lg">
+                        <a href="<?php echo e(route('exams.create')); ?>" class="btn btn-warning btn-block btn-lg">
                             <i class="fas fa-clipboard-check mr-2"></i>
-                            {{ __('messages.create_exam') }}
+                            <?php echo e(__('messages.create_exam')); ?>
+
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('notifications.create') }}" class="btn btn-info btn-block btn-lg">
+                        <a href="<?php echo e(route('notifications.create')); ?>" class="btn btn-info btn-block btn-lg">
                             <i class="fas fa-bell mr-2"></i>
-                            {{ __('messages.send_notification') }}
+                            <?php echo e(__('messages.send_notification')); ?>
+
                         </a>
                     </div>
                 </div>
@@ -572,22 +594,22 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
     // Monthly Students Chart
-    const monthlyStudentsData = @json($monthlyStudents);
+    const monthlyStudentsData = <?php echo json_encode($monthlyStudents, 15, 512) ?>;
     const ctx1 = document.getElementById('monthlyStudentsChart').getContext('2d');
     new Chart(ctx1, {
         type: 'line',
         data: {
             labels: monthlyStudentsData.map(item => item.month),
             datasets: [{
-                label: '{{ __("messages.new_students") }}',
+                label: '<?php echo e(__("messages.new_students")); ?>',
                 data: monthlyStudentsData.map(item => item.count),
                 borderColor: 'rgba(79, 172, 254, 1)',
                 backgroundColor: 'rgba(79, 172, 254, 0.1)',
@@ -628,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Pass Rate Chart
-    const passRateData = @json($passRateByExam);
+    const passRateData = <?php echo json_encode($passRateByExam, 15, 512) ?>;
     if (passRateData.length > 0) {
         const ctx2 = document.getElementById('passRateChart').getContext('2d');
         new Chart(ctx2, {
@@ -636,7 +658,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: passRateData.map(item => item.title_en.substring(0, 20) + '...'),
                 datasets: [{
-                    label: '{{ __("messages.pass_rate") }} (%)',
+                    label: '<?php echo e(__("messages.pass_rate")); ?> (%)',
                     data: passRateData.map(item => item.pass_rate),
                     backgroundColor: [
                         'rgba(79, 172, 254, 0.8)',
@@ -699,19 +721,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show message when no pass rate data
         document.getElementById('passRateChart').style.display = 'none';
         const passRateContainer = document.getElementById('passRateChart').parentElement;
-        passRateContainer.innerHTML += '<div class="text-center text-muted py-4"><i class="fas fa-chart-bar fa-3x mb-3"></i><p>{{ __("messages.no_pass_rate_data") }}</p></div>';
+        passRateContainer.innerHTML += '<div class="text-center text-muted py-4"><i class="fas fa-chart-bar fa-3x mb-3"></i><p><?php echo e(__("messages.no_pass_rate_data")); ?></p></div>';
     }
 
     // Question Type Distribution Chart
-    const questionTypeData = @json($questionTypeDistribution);
+    const questionTypeData = <?php echo json_encode($questionTypeDistribution, 15, 512) ?>;
     const ctx3 = document.getElementById('questionTypeChart').getContext('2d');
     new Chart(ctx3, {
         type: 'doughnut',
         data: {
             labels: [
-                '{{ __("messages.multiple_choice") }}',
-                '{{ __("messages.true_false") }}',
-                '{{ __("messages.essay") }}'
+                '<?php echo e(__("messages.multiple_choice")); ?>',
+                '<?php echo e(__("messages.true_false")); ?>',
+                '<?php echo e(__("messages.essay")); ?>'
             ],
             datasets: [{
                 data: [
@@ -805,7 +827,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = canvas.parentElement;
         const loadingDiv = document.createElement('div');
         loadingDiv.className = 'text-center py-4';
-        loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2 text-muted">{{ __("messages.loading_chart") }}</p>';
+        loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin fa-2x text-primary"></i><p class="mt-2 text-muted"><?php echo e(__("messages.loading_chart")); ?></p>';
         container.insertBefore(loadingDiv, canvas);
         canvas.style.display = 'none';
 
@@ -909,8 +931,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Notification for low activity
     function checkActivity() {
-        const totalStudents = {{ $totalStudents }};
-        const activeStudents = {{ $activeStudents }};
+        const totalStudents = <?php echo e($totalStudents); ?>;
+        const activeStudents = <?php echo e($activeStudents); ?>;
         const activeRate = totalStudents > 0 ? (activeStudents / totalStudents) * 100 : 0;
 
         if (activeRate < 50 && totalStudents > 0) {
@@ -937,13 +959,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('Dashboard loaded successfully!');
     console.log('Statistics:', {
-        students: {{ $totalStudents }},
-        teachers: {{ $totalTeachers }},
-        courses: {{ $totalCourses }},
-        exams: {{ $totalExams }},
-        questions: {{ $totalQuestions }},
-        attempts: {{ $totalAttempts }}
+        students: <?php echo e($totalStudents); ?>,
+        teachers: <?php echo e($totalTeachers); ?>,
+        courses: <?php echo e($totalCourses); ?>,
+        exams: <?php echo e($totalExams); ?>,
+        questions: <?php echo e($totalQuestions); ?>,
+        attempts: <?php echo e($totalAttempts); ?>
+
     });
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

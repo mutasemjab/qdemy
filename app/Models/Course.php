@@ -38,6 +38,10 @@ class Course extends Model
     {
         return $this->belongsTo(Category::class);
     }
+    public function exams()
+    {
+        return $this->belongsTo(Exam::class);
+    }
 
     /**
      * Get the sections for the course.

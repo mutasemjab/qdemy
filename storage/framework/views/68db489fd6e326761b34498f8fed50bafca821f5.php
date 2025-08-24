@@ -1,3 +1,5 @@
+
+
 <?php $title = $title ?? 'courses' ?>
 <?php $__env->startSection('title', __('messages.' . $title)); ?>
 

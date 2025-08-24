@@ -90,17 +90,16 @@ class QuestionController extends Controller
         DB::beginTransaction();
         try {
             $question = Question::create([
-                'title_en'    => $request->title_en,
-                'title_ar'    => $request->title_ar,
+                'title_en' => $request->title_en,
+                'title_ar' => $request->title_ar,
                 'question_en' => $request->question_en,
                 'question_ar' => $request->question_ar,
-                'type'        => $request->type,
-                'grade'       => $request->grade,
-                'course_id'   => $request->course_id,
-                'explanation_en'   => $request->explanation_en,
-                'explanation_ar'   => $request->explanation_ar,
-                'created_by'       => auth('user')->user()?->id,
-                'created_by_admin' => auth('admin')->user()?->id,
+                'type' => $request->type,
+                'grade' => $request->grade,
+                'course_id' => $request->course_id,
+                'explanation_en' => $request->explanation_en,
+                'explanation_ar' => $request->explanation_ar,
+                'created_by' => auth()->id(),
             ]);
 
             // Handle options based on question type

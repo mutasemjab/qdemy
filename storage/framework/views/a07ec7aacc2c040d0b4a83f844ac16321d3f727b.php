@@ -1,3 +1,5 @@
+
+
 <?php $__env->startSection('title', 'الرئيسية'); ?>
 
 <?php $__env->startSection('content'); ?>

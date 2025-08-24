@@ -42,7 +42,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
+           Route::resource('notifications', NotificationController::class);
 
+            Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
+             ->name('notifications.resend');
 
     Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -82,7 +85,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         //Reports
 
 
-        //  End Report 
+        //  End Report
 
 
 
@@ -229,7 +232,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('packages/categories/by-type', [PackageController::class, 'getCategoriesByType'])->name('packages.get-categories-by-type');
 
 
-        
+
 
     });
 });
