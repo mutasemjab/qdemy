@@ -18,7 +18,54 @@ return [
     'All Users' => 'All Users',
     'Back to Users' => 'Back to Users',
 
-    // Form Fields
+    "dashboard"=> "Dashboard",
+    "academic_management"=> "Academic Management",
+    "question_banks"=> "Question Banks",
+    "user_management"=> "User Management",
+    "financial_management"=> "Financial Management",
+    "content_management"=> "Content Management",
+    "communication"=> "Communication",
+    "system_administration"=> "System Administration",
+
+    // Academic Management
+    "Categories"=> "Categories",
+    "courses"=> "Courses",
+    "questions"=> "Questions",
+    "exams"=> "Exams",
+
+    // Question Banks
+    "bank_questions"=> "Bank Questions",
+    "ministerial_questions"=> "Ministerial Questions",
+    "questionWebsites"=> "Website Questions",
+
+    // User Management
+    "students"=> "Students",
+    "users"=> "Students", // Alternative for students
+    "teachers"=> "Teachers",
+    "parents"=> "Parents",
+
+    // Financial Management
+    "packages"=> "Packages",
+    "wallet_transactions"=> "Wallet Transactions",
+    "pos_list"=> "POS Management",
+    "cards_list"=> "Card Management",
+
+    // Content Management
+    "banners"=> "Banners",
+    "blogs"=> "Blogs",
+    "posts"=> "Community Posts",
+
+    // Communication
+    "notifications"=> "Notifications",
+    "opinion students"=> "Student Opinions",
+
+    // System Administration
+    "Settings Management"=> "Settings",
+    "Roles"=> "Roles and Permissions",
+    "Employee"=> "Employees",
+    "Admin_account"=> "My Account",
+
+  // Form Fields
     'Name' => 'Name',
     'Role' => 'Role',
     'Email' => 'Email',

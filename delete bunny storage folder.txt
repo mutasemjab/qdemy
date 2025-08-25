@@ -7,9 +7,12 @@ ministerial_years_questions.pdf_size
 ministerial_years_questions.display_name
 bank_question.pdf_size
 bank_question.display_name
+exam.add question function doesnt work
 
 // delayed
 delete bunny storage folder
 check file existance before delete
+
+
 
 // there will be needed to connect to youtube api && bunnyCdn to make right progress vide put now video_duration_must_be right

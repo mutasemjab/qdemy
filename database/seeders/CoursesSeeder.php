@@ -16,11 +16,15 @@ class CoursesSeeder extends Seeder
     public function run()
     {
         $teachers   = Teacher::pluck('id')->toArray();
-        $categories = Category::where('type','lesson')->pluck('id')->toArray();
+        $categories = Category::where('type','lesson')->orWhereIn('ctg_key',
+                      ['universities-and-colleges-program','international-program']
+        )->pluck('id')->toArray();
+
         $faker      = Factory::create();
 
         foreach ($categories as $ctg) {
-            for ($i=0; $i < 4; $i++) {
+            $loopLenth =  (in_array($category->ctg_key,['universities-and-colleges-program','international-program'])) ? 20 : 4;
+            for ($i=0; $i < $loopLenth; $i++) {
                 $course = Course::create([
                      'title_en' => $faker->sentence,
                      'title_ar' => $faker->sentence,
@@ -49,7 +53,7 @@ class CoursesSeeder extends Seeder
                     // إضافة حقول إضافية حسب نوع المحتوى
                     if ($contentType === 'video') {
                         $contentData['video_type'] = $faker->randomElement(['youtube', 'bunny']);
-                        $contentData['video_url'] = 'https://youtu.be/FB3JCwk0my4?list=RDMMFB3JCwk0my4&t=19';
+                        $contentData['video_url'] = $contentData['video_type'] == 'youtube' ? 'https://youtu.be/FB3JCwk0my4?list=RDMMFB3JCwk0my4&t=19' : 'https://course-video123.b-cdn.net/courses_contents/1/1755241495_g0zWdbLysC.mp4';
                         $contentData['video_duration'] = '230';
                     } elseif ($contentType === 'pdf') {
                         $contentData['pdf_type'] = $faker->randomElement(['homework', 'worksheet', 'notes', 'other']);
@@ -60,7 +64,6 @@ class CoursesSeeder extends Seeder
                     }
                     CourseContent::create($contentData);
                 }
-
                 // إنشاء أقسام للكورس
                 $sectionsCount = rand(3, 7);
                 $sections = [];

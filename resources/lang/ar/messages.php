@@ -18,6 +18,53 @@ return [
    'All Users' => 'جميع المستخدمين',
    'Back to Users' => 'العودة للمستخدمين',
 
+   'dashboard' => 'لوحة التحكم',
+    'academic_management' => 'الإدارة الأكاديمية',
+    'question_banks' => 'بنوك الأسئلة',
+    'user_management' => 'إدارة المستخدمين',
+    'financial_management' => 'الإدارة المالية',
+    'content_management' => 'إدارة المحتوى',
+    'communication' => 'التواصل',
+    'system_administration' => 'إدارة النظام',
+
+    // Academic Management
+    'Categories' => 'التصنيفات',
+    'courses' => 'المقررات',
+    'questions' => 'الأسئلة',
+    'exams' => 'الامتحانات',
+
+    // Question Banks
+    'bank_questions' => 'أسئلة البنك',
+    'ministerial_questions' => 'الأسئلة الوزارية',
+    'questionWebsites' => 'أسئلة المواقع',
+
+    // User Management
+    'students' => 'الطلاب',
+    'users' => 'الطلاب', // Alternative for students
+    'teachers' => 'المعلمين',
+    'parents' => 'أولياء الأمور',
+
+    // Financial Management
+    'packages' => 'الباقات',
+    'wallet_transactions' => 'معاملات المحفظة',
+    'pos_list' => 'إدارة نقاط البيع',
+    'cards_list' => 'إدارة البطاقات',
+
+    // Content Management
+    'banners' => 'البانرات',
+    'blogs' => 'المدونات',
+    'posts' => 'منشورات المجتمع',
+
+    // Communication
+    'notifications' => 'الإشعارات',
+    'opinion students' => 'آراء الطلاب',
+
+    // System Administration
+    'Settings Management' => 'الإعدادات',
+    'Roles' => 'الأدوار والصلاحيات',
+    'Employee' => 'الموظفين',
+    'Admin_account' => 'حسابي',
+
    // Form Fields
    'Name' => 'الاسم',
    'Role' => 'الدور',
