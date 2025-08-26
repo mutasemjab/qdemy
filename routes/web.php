@@ -16,7 +16,7 @@ use App\Http\Controllers\User\PackageController;
 use App\Http\Controllers\User\ProductController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\User\TawjihiController;
-use App\Http\Controllers\User\ProgrammsController;
+use App\Http\Controllers\User\ElementaryProgrammController;
 use App\Http\Controllers\User\StudentAccountController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
@@ -53,7 +53,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/course/{course}/{slug?}' , [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
     Route::get('/universities-programm', [CourseController::class, 'universities_programm_courses'])->name('universities-programm');
-    Route::get('/international-programm/{programm}/{slug}',[CourseController::class, 'international_programm_courses'])->name('international-programm');
+    Route::get('/international-programm/{programm?}/{slug?}',[CourseController::class, 'international_programm_courses'])->name('international-programms');
 
     Route::get('/teachers', [PagesController::class, 'teachers'])->name('teachers');
     Route::get('/teacher/{teacher}', [PagesController::class, 'teacher'])->name('teacher');
@@ -68,9 +68,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::get('/e-exam', [ExamController::class, 'e_exam'])->name('e-exam');
 
-    Route::get('/grades-basic-programm', [ProgrammsController::class, 'grades_basic_programm'])->name('grades_basic-programm');
-    Route::get('/grade/{grade}/{slug?}', [ProgrammsController::class, 'grade_programm'])->name('grade');
-    Route::get('/international-programms',[ProgrammsController::class, 'international_programms'])->name('international-programms');
+    Route::get('/grades-basic-programm', [ElementaryProgrammController::class, 'grades_basic_programm'])->name('grades_basic-programm');
+    Route::get('/grade/{grade}/{slug?}', [ElementaryProgrammController::class, 'grade_programm'])->name('grade');
 
     Route::get('/tawjihi-programm',      [TawjihiController::class, 'tawjihi_programm'])->name('tawjihi-programm');
     Route::get('/tawjihi-first-year/{slug?}', [TawjihiController::class, 'tawjihi_first_year'])->name('tawjihi-first-year');

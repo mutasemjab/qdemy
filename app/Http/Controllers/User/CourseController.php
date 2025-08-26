@@ -114,12 +114,11 @@ class CourseController extends Controller
     }
 
 
-    public function international_programm_courses($programm)
+    public function international_programm_courses($programm = null)
     {
-        $courses  = CourseRepository()->internationalProgramCourses($programm)->paginate(PGN);
+        $courses              = CourseRepository()->internationalProgramCourses($programm)->paginate(PGN);
         return view('user.courses',[
-            'programm' => $programm,
-            'title'    => Category::findOrFail($programm)->name_en,
+            'title'    => 'International Program',
             'courses'  => $courses,
         ]);
     }
@@ -132,4 +131,5 @@ class CourseController extends Controller
             'courses' => $courses,
         ]);
     }
+
 }

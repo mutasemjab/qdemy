@@ -67,14 +67,15 @@ class CategoriesSeeder extends Seeder
             case 'برنامج التوجيهي والثانوي':
                 $this->createTawjihiProgram($mainProgram->id);
                 break;
+                // international program has no subcategories
                 // case 'البرنامج الدولي':
-                //     $this->createInternationalProgram($mainProgram->id);
-                //     break;
-                // // Universities program has no subcategories
+                    // $this->createInternationalProgram($mainProgram->id);
+                    // break;
+                // Universities program has no subcategories
                 // case 'برنامج الجامعات والكليات':
-                //     // Add university subjects directly
-                //     $this->createUniversitySubjects($mainProgram->id);
-                break;
+                    // Add university subjects directly
+                    // $this->createUniversitySubjects($mainProgram->id);
+                // break;
         }
     }
 
@@ -805,10 +806,10 @@ class CategoriesSeeder extends Seeder
             ]
         ];
 
-        foreach ($programs as $program) {
-            $createdProgram = Category::create($program);
-            $this->createInternationalSubjects($createdProgram->id, $program['name_ar']);
-        }
+        // foreach ($programs as $program) {
+        //     $createdProgram = Category::create($program);
+        //     $this->createInternationalSubjects($createdProgram->id, $program['name_ar']);
+        // }
     }
 
     /**

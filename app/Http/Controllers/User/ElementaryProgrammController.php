@@ -7,7 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class ProgrammsController extends Controller
+class ElementaryProgrammController extends Controller
 {
     public function grades_basic_programm()
     {
@@ -23,13 +23,6 @@ class ProgrammsController extends Controller
         return view('user.grade',[
             'grade' => $grade,
             'semesters' => $semesters,
-        ]);
-    }
-    public function international_programms()
-    {
-        $programms = CategoryRepository()->getInternationalProgramTypes();
-        return view('user.gprograms',[
-            'programms' => $programms,
         ]);
     }
 

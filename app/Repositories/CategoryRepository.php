@@ -97,15 +97,16 @@ class CategoryRepository
         })->get();
     }
 
-    public function universitiesPrograms()
+    public function getInternationalProgram()
     {
-        return $this->model->where('is_active', true)->where('name_en', 'Universities and Colleges Program')
-            ->orWhere('ctg_key', 'universities-and-colleges-program');
+        return $this->model->where('is_active', true)->where('name_en', 'International Program')
+            ->orWhere('ctg_key', 'international-program')->first();
     }
 
-    public function getUniversitiesPrograms()
+    public function getUniversitiesProgram()
     {
-        return $this->universitiesPrograms()->get();
+        return $this->model->where('is_active', true)->where('name_en', 'Universities and Colleges Program')
+            ->orWhere('ctg_key', 'universities-and-colleges-program')->first();
     }
 
     public function getDirectChilds($category)

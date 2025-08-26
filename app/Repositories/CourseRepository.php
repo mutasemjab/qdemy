@@ -16,11 +16,9 @@ class CourseRepository
 
     public function universitiesProgramCourses()
     {
-        $universitiesProgramsId = CategoryRepository()->universitiesPrograms()->first()?->id;
-        $universitiesCoursesParents = [];
-        if($universitiesProgramsId){
-            $universitiesCoursesParents = CategoryRepository()->getAllSubChilds($universitiesProgramsId)->pluck('id')->toArray();
-            return $this->model->whereIn('category_id',$universitiesCoursesParents);
+        $universityProgramId = CategoryRepository()->getUniversitiesProgram()?->id;
+        if($universityProgramId){
+            return $this->model->where('category_id',$universityProgramId);
         }
         return [];
     }
@@ -30,13 +28,18 @@ class CourseRepository
         return $this->universitiesProgramCourses()->get();
     }
 
-    public function internationalProgramCourses($programm)
+    public function internationalProgramCourses($programm = null)
     {
-        $internationalCoursesParents = [];
-        if($programm){
-            $internationalCoursesParents = CategoryRepository()->getAllSubChilds($programm)->pluck('id')->toArray();
-            return $this->model->whereIn('category_id',$internationalCoursesParents);
+        $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
+        if($internationalProgramId){
+            return $this->model->where('category_id',$internationalProgramId);
         }
+        return [];
+        // $internationalCoursesParents = [];
+        // if($programm){
+        //     $internationalCoursesParents = CategoryRepository()->getAllSubChilds($programm)->pluck('id')->toArray();
+        //     return $this->model->whereIn('category_id',$internationalCoursesParents);
+        // }
         return [];
     }
 
