@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title','E-Exam'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -69,7 +67,10 @@
     </div>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
   </div>
-    <?php echo e($exams?->links() ?? ''); ?>
+    <!-- <div class="pagination-wrapper"> -->
+       <?php echo e($exams?->links('pagination::custom-bootstrap-5') ?? ''); ?>
+
+   <!-- </div> -->
 
 </section>
 <?php $__env->stopSection(); ?>

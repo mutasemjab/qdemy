@@ -1,5 +1,3 @@
-
-
 <?php $title = $title ?? 'courses' ?>
 <?php $__env->startSection('title', __('messages.' . $title)); ?>
 
@@ -49,7 +47,10 @@
         </div>
         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-    <?php echo e($courses?->links() ?? ''); ?>
+   <!-- <div class="pagination-wrapper"> -->
+       <?php echo e($courses?->links('pagination::custom-bootstrap-5') ?? ''); ?>
+
+   <!-- </div> -->
 
 
     <!-- نافذة منبثقة -->
@@ -71,6 +72,8 @@
 
 <?php $__env->startPush('scripts'); ?>
 <script>
+    let user = "<?php echo e(auth('user')->user()?->id); ?>";
+
     document.addEventListener('DOMContentLoaded', function() {
         // الحصول على العناصر
         const modal = document.getElementById('enrollment-modal');
@@ -86,6 +89,12 @@
         enrollButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+
+                if(!user){
+                    alert("<?php echo e(__('messages.please login first .')); ?>");
+                    return 0;
+                }
+
                 const courseId = this.getAttribute('data-course-id');
                 // إظهار مؤشر تحميل (اختياري)
                 this.innerHTML = '<?php echo e(__("messages.loading")); ?>...';

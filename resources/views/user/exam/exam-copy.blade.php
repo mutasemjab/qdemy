@@ -130,7 +130,10 @@
         @endif
 
         @if($current_attempt)
-            {{ $questions?->links() ?? '' }}
+               <!-- <div class="pagination-wrapper"> -->
+                    {{ $questions?->links('pagination::custom-bootstrap-5') ?? '' }}
+                <!-- </div> -->
+
         @endif
 
 

@@ -49,7 +49,10 @@
         </div>
         @endforeach
     </div>
-    {{ $courses?->links() ?? '' }}
+   <!-- <div class="pagination-wrapper"> -->
+       {{ $courses?->links('pagination::custom-bootstrap-5') ?? '' }}
+   <!-- </div> -->
+
 
     <!-- نافذة منبثقة -->
     <div id="enrollment-modal" class="messages modal">
@@ -70,6 +73,8 @@
 
 @push('scripts')
 <script>
+    let user = "{{auth('user')->user()?->id}}";
+
     document.addEventListener('DOMContentLoaded', function() {
         // الحصول على العناصر
         const modal = document.getElementById('enrollment-modal');
@@ -85,6 +90,12 @@
         enrollButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+
+                if(!user){
+                    alert("{{__('messages.please login first .')}}");
+                    return 0;
+                }
+
                 const courseId = this.getAttribute('data-course-id');
                 // إظهار مؤشر تحميل (اختياري)
                 this.innerHTML = '{{__("messages.loading")}}...';

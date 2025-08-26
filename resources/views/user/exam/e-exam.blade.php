@@ -69,6 +69,9 @@
     </div>
     @endforeach
   </div>
-    {{ $exams?->links() ?? '' }}
+    <!-- <div class="pagination-wrapper"> -->
+       {{ $exams?->links('pagination::custom-bootstrap-5') ?? '' }}
+   <!-- </div> -->
+
 </section>
 @endsection

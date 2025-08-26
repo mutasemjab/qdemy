@@ -34,7 +34,7 @@
                         <div class="progress-info">
                             <div class="progress-bar-container">
                                 <div class="progress-bar" style="width: {{$course_progress}}%"></div>
-                                <span class="progress-text">{{round($course_progress)}}% مكتمل</span>
+                                <span class="progress-text">{{round($course_progress)}}% {{ __('messages.completed') }}</span>
                             </div>
                             <div class="progress-stats">
                                 <span>{{ __('messages.completed') }}: {{$completed_videos}}</span>
@@ -120,7 +120,8 @@
                                             <div class="lessonvideo">
                                                 <a class='text-decoration-none' target='_blank' href="{{$content->file_path}}">
                                                     <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
-                                                </i></a>
+                                                </i>
+                                               </a>
                                             </div>
                                             @else
                                                 <a class='text-decoration-none' href="javascrip:void(0)">
@@ -132,7 +133,7 @@
 
                                         <div class="lesson-info">
                                             <h4>{{$content->title}}</h4>
-                                            @if($content->content_type === 'video' && ($content->is_free === 1 || $is_enrolled))
+                                            @if($content->content_type === 'video' && $is_enrolled)
                                                 <div class="video-progress-bar">
                                                     <div class="progress-fill" style="width: {{$progressPercent}}%"></div>
                                                 </div>
@@ -331,14 +332,18 @@
                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$exam->title}} </h4>
                                     <div class="">
                                         <br>
-                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$exam->user_attempts()->count()}}
-                                        @if($exam->result_attempt()?->is_passed)
+                                        <i class="fa fa-check"></i> {{__('messages.trying times')}} {{$exam->user_attempts()->count()}}
+                                        @if($exam->result_attempt() && $exam->result_attempt()->is_passed)
                                             <i class="fa fa-check"></i>
-                                        @else
-                                            <i class="fa fa-times"></i>
+                                        @elseif($exam->result_attempt() && !$exam->result_attempt()->is_passed)
+                                        <i class="fa fa-times"></i>
                                         @endif
-                                        {{$exam->result_attempt()?->percentage}}
-                                        {{__('messages.أفضل نتيجة')}} {{$exam->result_attempt()?->score}}
+
+                                        @if($exam->result_attempt())
+                                            {{__('messages.best_results')}}
+                                            {{$exam->result_attempt()?->percentage}}%
+                                            {{$exam->result_attempt()?->score}}
+                                        @endif
                                     </div>
                                 </div>
                                </a>
@@ -384,6 +389,10 @@
 
 @push('scripts')
 <script>
+    let user = "{{$user?->id}}";
+    let isEnrolled = {{$is_enrolled}};
+</script>
+<script>
     // Card activation
     document.addEventListener('DOMContentLoaded', function() {
         // الحصول على العناصر
@@ -399,7 +408,10 @@
             const cardNumber = cardInput.value.trim();
             const courseId   = this.getAttribute('data-course-id');
 
-            if (!cardNumber) {
+            if(!user){
+                alert("{{__('messages.please login first .')}}");
+                return 0;
+            }else if (!cardNumber) {
                 alert('من فضلك أدخل رقم البطاقة');
                 return;
             }
@@ -500,6 +512,11 @@
         enrollButtons.forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
+
+                if(!user){
+                    return 0;
+                }
+
                 const courseId = this.getAttribute('data-course-id');
                 const buttonId = this.getAttribute('id');
                 const buttonInnerHTML = this.innerHTML;
@@ -570,6 +587,12 @@
         // Handle enrollment buttons
         document.addEventListener('click', function(e) {
             if (e.target.classList.contains('enroll-btn')) {
+
+                if(!user){
+                    alert("{{__('messages.please login first .')}}");
+                    return 0;
+                }
+
                 let courseId = e.target.getAttribute('data-course-id');
                 let action = e.target.id === 'buy_now' ? 'buy' : 'add';
 
@@ -624,8 +647,7 @@
     let progressUpdateInterval = null;
     let currentVideoDuration = 0;
     let lastWatchedTime = 0; // وقت المشاهدة الأخير
-    let user = "{{$user?->id}}";
-    let stop = 0; // لايقاف التحديث التلقائي عندما لا تساوي 0
+    let stopProgress = 0; // لايقاف التحديث التلقائي عندما لا تساوي 0
     const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -635,20 +657,25 @@
             if (e.target.closest('.lesson-video, .playable')) {
                 const element   = e.target.closest('.lesson-video, .playable');
                 let videoUrl    = element.getAttribute('data-video');
+                let videoProgress = element.getAttribute('data-progress');
                 let contentId   = element.getAttribute('data-content-id');
                 let isCompleted = element.getAttribute('data-is-completed');
                 let duration    = element.getAttribute('data-duration') || 0;
 
-                // التحكم في زر زر تسجيل الفيديو كمكتمل اذا كان مكتمل - اذا تواجد يوزر مسجل دخول
-                if(user){
+                // التحكم في زر زر تسجيل الفيديو كمكتمل اذا كان مكتمل - اذا تواجد يوزر مسجل دخول - اذا كان الفيديو ف الاشتراك
+                if(user && isEnrolled){
                     document.getElementById('mark-complete-btn').style.display='block';
                     if(isCompleted){
                         document.getElementById('mark-complete-btn').style.display='none';
                     }
                 }
+
                 // mark-complete-btn
                 // الغاء ايقاف التحديث التلقائي ان كان موقوف
-                stop = 0;
+                stopProgress = 0;
+                if(!isEnrolled){
+                    stopProgress = 1;
+                }
 
                 // استرداد وقت المشاهدة الأخير
                 lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
@@ -684,7 +711,7 @@
             if (event.target === closeButton || event.target === popup) {
                 document.querySelector('.video-popup').classList.remove('active');
                 document.querySelector('.video-popup iframe').src = '';
-                stopProgressTracking();
+                stopProgressProgressTracking();
             }
         });
 
@@ -723,20 +750,20 @@
         }, 3000);
     }
 
-    function stopProgressTracking() {
+    function stopProgressProgressTracking() {
         if (progressUpdateInterval) {
             clearInterval(progressUpdateInterval);
             progressUpdateInterval = null;
 
             // Final progress update when closing
-            if (currentVideoId && !stop) {
+            if (currentVideoId && !stopProgress) {
                 updateVideoProgress(true); // تحديث التقدم عند الإغلاق
             }
         }
     }
 
     function updateVideoProgress(isFinalUpdate = false) {
-        if (!currentVideoId || stop) return;
+        if (!currentVideoId || stopProgress) return;
 
         let currentTime = Date.now();
         let watchedSeconds = Math.floor((currentTime - videoStartTime) / 1000) + lastWatchedTime;
@@ -790,7 +817,7 @@
             if (data.success) {
                 updateVideoCompletionStatus(contentId, true);
                 updateProgressDisplay(data.progress);
-                stop = true;
+                stopProgress = true;
                 document.getElementById('mark-complete-btn').style.display='none';
                 console.log('تم تسجيل الفيديو كمكتمل المشاهدة');
             }
@@ -847,7 +874,7 @@
 </script>
 
 @push('styles')
-<!-- <style>
+<style>
     .progress-info {
         margin-top: 15px;
         padding: 15px;
@@ -954,619 +981,216 @@
     .lesson-video {
         position: relative;
     }
-</style> -->
+</style>
 <style>
-    /* Reset & Base */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    /* Exam Item Styling */
+    .lesson-item.exam {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border: 1px solid #e0e6ed;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
     }
 
-    .course-view {
-        background: #f8f9fa;
-        min-height: 100vh;
+    .lesson-item.exam::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(180deg, #4a90e2 0%, #0055d2 100%);
     }
 
-    /* Course Header */
-    .course-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 40px 0;
-        margin-bottom: 30px;
+    .lesson-item.exam:hover {
+        box-shadow: 0 3px 12px rgba(0, 85, 210, 0.1);
+        transform: translateY(-2px);
+        border-color: #d0dae5;
     }
 
-    .course-header-content {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
-    .course-breadcrumb {
-        font-size: 14px;
-        margin-bottom: 20px;
-        opacity: 0.9;
-    }
-
-    .course-breadcrumb a {
-        color: white;
-        text-decoration: none;
-    }
-
-    .course-breadcrumb span {
-        margin: 0 8px;
-    }
-
-    .course-main-title {
-        font-size: 36px;
-        font-weight: 700;
-        margin-bottom: 15px;
-    }
-
-    .course-description {
-        font-size: 18px;
-        line-height: 1.6;
-        opacity: 0.95;
-        margin-bottom: 25px;
-    }
-
-    .course-meta {
-        display: flex;
-        gap: 30px;
+    .lesson-item.exam a {
+        display: flex !important;
         align-items: center;
+        width: 100%;
+        color: inherit;
     }
 
-    .meta-item {
+    .lesson-item.exam .lesson-info {
+        flex: 1;
+        padding-left: 8px;
+    }
+
+    .lesson-item.exam h4 {
+        margin: 0 0 8px 0;
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 10px;
     }
 
-    .teacher-avatar {
-        width: 32px;
-        height: 32px;
+    .lesson-item.exam h4 i {
+        font-size: 18ンpx;
+        background: rgba(0, 85, 210, 0.1);
+        padding: 6px;
         border-radius: 50%;
-        border: 2px solid white;
-    }
-
-    /* Course Body Layout */
-    .course-body {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-        display: grid;
-        grid-template-columns: 1fr 380px;
-        gap: 30px;
-    }
-
-    /* Curriculum Section */
-    .curriculum-section {
-        background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .section-title {
-        font-size: 24px;
-        margin-bottom: 25px;
-        color: #333;
-    }
-
-    /* Curriculum Modules */
-    .curriculum-module {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        overflow: hidden;
-    }
-
-    .module-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        background: #f9fafb;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .module-header:hover {
-        background: #f3f4f6;
-    }
-
-    .module-title {
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
+        justify-content: center;
+    }
+
+    /* Exam Stats Styling */
+    .lesson-item.exam .lesson-info > div {
+        display: flex;
+        flex-wrap: wrap;
         gap: 15px;
-    }
-
-    .module-number {
-        width: 35px;
-        height: 35px;
-        background: #667eea;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-
-    .module-title h3 {
-        font-size: 18px;
-        color: #333;
-    }
-
-    .module-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        color: #666;
-    }
-
-    .module-arrow {
-        transition: transform 0.3s;
-    }
-
-    .module-header.active .module-arrow {
-        transform: rotate(180deg);
-    }
-
-    .module-content {
-        display: none;
-        padding: 20px;
-        background: white;
-    }
-
-    .module-content.active {
-        display: block;
-    }
-
-    /* Content Items */
-    .content-item {
-        display: flex;
-        align-items: center;
-        padding: 15px;
-        border-bottom: 1px solid #f0f0f0;
-        transition: background 0.3s;
-    }
-
-    .content-item:hover {
-        background: #f9fafb;
-    }
-
-    .content-icon {
-        width: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        color: #666;
-    }
-
-    .content-icon .completed {
-        color: #10b981;
-    }
-
-    .progress-circle {
-        width: 24px;
-        height: 24px;
-    }
-
-    .progress-circle svg {
-        transform: rotate(-90deg);
-    }
-
-    .progress-circle path {
-        fill: none;
-        stroke: #667eea;
-        stroke-width: 4;
-    }
-
-    .content-details {
-        flex: 1;
-        margin-left: 15px;
-    }
-
-    .content-details h4 {
-        font-size: 16px;
-        color: #333;
-        margin-bottom: 5px;
-    }
-
-    .content-type {
-        font-size: 13px;
-        color: #666;
-    }
-
-    .content-action {
-        margin-left: auto;
-    }
-
-    .btn-play, .btn-download, .btn-quiz {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 6px;
         font-size: 14px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: all 0.3s;
+        color: #6c757d;
+        margin-top: 8px;
     }
 
-    .btn-play {
-        background: #667eea;
-        color: white;
-    }
-
-    .btn-download {
-        background: #10b981;
-        color: white;
-    }
-
-    .btn-quiz {
-        background: #f59e0b;
-        color: white;
-    }
-
-    .locked-content {
-        color: #9ca3af;
-    }
-
-    /* Quiz Items */
-    .quiz-divider {
-        padding: 10px 15px;
-        background: #f3f4f6;
-        color: #666;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .quiz-item {
-        background: #fef3c7;
-    }
-
-    .quiz-stats {
-        font-size: 13px;
-        color: #92400e;
-    }
-
-    /* Sidebar */
-    .course-sidebar {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .sidebar-card {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .preview-video {
-        position: relative;
-        cursor: pointer;
-    }
-
-    .preview-video img {
-        width: 100%;
-        display: block;
-    }
-
-    .play-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 60px;
-        height: 60px;
-        background: rgba(0,0,0,0.7);
-        border-radius: 50%;
-        display: flex;
+    .lesson-item.exam .lesson-info > div > * {
+        display: inline-flex;
         align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 24px;
+        gap: 5px;
     }
 
-    .preview-label {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background: rgba(0,0,0,0.7);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 4px;
+    .lesson-item.exam .fa-check {
+        color: #28a745;
         font-size: 12px;
     }
 
-    .card-body {
-        padding: 20px;
+    .lesson-item.exam .fa-times {
+        color: #dc3545;
+        font-size: 12px;
     }
 
-    .price-section {
-        margin-bottom: 20px;
-        text-align: center;
+    /* File/Resource Item Styling */
+    .lesson-item .lessonvideo a,
+    .lesson-item a[href*="file_path"] {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: linear-gradient(135deg, #f0f4f8 0%, #ffffff 100%);
+        border: 1px solid #d0dae5;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+        color: #2c3e50;
     }
 
-    .price {
-        font-size: 32px;
-        font-weight: bold;
-        color: #333;
+    .lesson-item .lessonvideo a:hover,
+    .lesson-item a[href*="file_path"]:hover {
+        background: linear-gradient(135deg, #e8f0f7 0%, #f5f8fb 100%);
+        border-color: rgba(0, 85, 210, 0.3);
+        transform: translateX(3px);
     }
 
-    .btn {
-        width: 100%;
-        padding: 12px;
-        border: none;
-        border-radius: 8px;
+    .lesson-item .lessonvideo a i,
+    .lesson-item a[href*="file_path"] i {
         font-size: 16px;
-        cursor: pointer;
-        margin-bottom: 10px;
-        transition: all 0.3s;
+        color: rgba(0, 85, 210, 0.7);
     }
 
-    .btn-primary {
-        background: #667eea;
-        color: white;
+    /* Add "Download Resource" text after file icon */
+    .lesson-item .lessonvideo a::after {
+        content: 'Download Resource';
+        font-size: 14px;
+        color: #4a5568;
+        font-weight: 500;
     }
 
-    .btn-secondary {
-        background: #e5e7eb;
-        color: #333;
+    /* Disabled file style */
+    .lesson-item a[href="javascrip:void(0)"] i,
+    .lesson-item a[href="javascript:void(0)"] i {
+        color: #b0b9c3 !important;
     }
 
-    .btn-enrolled {
-        background: #10b981;
-        color: white;
+    .lesson-item a[href="javascrip:void(0)"]::after,
+    .lesson-item a[href="javascript:void(0)"]::after {
+        content: 'Locked Resource';
+        font-size: 14px;
+        color: #a0a9b3;
+        margin-left: 8px;
     }
 
-    /* Progress Section */
-    .progress-section {
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #e5e7eb;
-    }
-
-    .progress-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .progress-percentage {
-        font-weight: bold;
-        color: #667eea;
-    }
-
-    .progress-bar-wrapper {
-        height: 8px;
-        background: #e5e7eb;
+    /* Section Quiz Label Styling */
+    .accordion-body > span:contains('Quiz') {
+        display: inline-block;
+        margin: 15px 0 10px 0;
+        padding: 4px 12px;
+        background: rgba(0, 85, 210, 0.08);
+        color: #0055d2;
         border-radius: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Video progress enhancements */
+    .video-progress-bar {
+        height: 4px;
+        background: #e9ecef;
+        border-radius: 2px;
         overflow: hidden;
-        margin-bottom: 15px;
+        margin-top: 8px;
     }
 
-    .progress-bar-fill {
+    .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #667eea, #764ba2);
-        transition: width 0.3s;
+        background: linear-gradient(90deg, #4a90e2 0%, #0055d2 100%);
+        transition: width 0.3s ease;
+        border-radius: 2px;
     }
 
-    .progress-details {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .progress-stat {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 14px;
-        color: #666;
-    }
-
-    /* Instructor Card */
-    .instructor-card h3 {
-        padding: 15px 20px;
-        border-bottom: 1px solid #e5e7eb;
-        margin: 0;
-    }
-
-    .instructor-info {
-        padding: 20px;
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .instructor-info img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-    }
-
-    .instructor-info h4 {
-        margin-bottom: 5px;
-        color: #333;
-    }
-
-    .instructor-info p {
-        font-size: 14px;
-        color: #666;
-    }
-
-    /* Activation Card */
-    .activation-card {
-        padding: 20px;
-    }
-
-    .activation-card h3 {
-        margin-bottom: 10px;
-        color: #333;
-    }
-
-    .activation-card p {
-        font-size: 14px;
-        color: #666;
-        margin-bottom: 15px;
-    }
-
-    .activation-form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .activation-input {
-        padding: 10px;
-        border: 1px solid #e5e7eb;
-        border-radius: 6px;
-        font-size: 14px;
-    }
-
-    .btn-activate {
-        background: #10b981;
+    /* Completion and Progress Badges Enhancement */
+    .completion-badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: #28a745;
         color: white;
-    }
-
-    /* Video Modal */
-    .video-modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.9);
-        z-index: 1000;
-    }
-
-    .video-modal.active {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
     }
 
-    .video-modal-content {
-        width: 90%;
-        max-width: 1000px;
-        position: relative;
-    }
-
-    .video-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-
-    .btn-mark-complete {
-        background: #10b981;
+    .progress-badge {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: rgba(0, 85, 210, 0.9);
         color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-    .close-video {
-        background: white;
-        color: #333;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 20px;
-    }
-
-    .video-modal iframe {
-        width: 100%;
-        height: 70vh;
-        border-radius: 8px;
-    }
-
-    /* Success Modal */
-    .modal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal.show {
-        display: flex;
-    }
-
-    .modal-content {
-        background: white;
+        padding: 2px 6px;
         border-radius: 12px;
-        width: 400px;
-        overflow: hidden;
+        font-size: 11px;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 85, 210, 0.3);
     }
 
-    .modal-header {
-        padding: 20px;
-        text-align: center;
-        background: #f9fafb;
-    }
-
-    .modal-header i {
-        font-size: 48px;
-        color: #10b981;
-        margin-bottom: 10px;
-    }
-
-    .modal-body {
-        padding: 20px;
-        text-align: center;
-    }
-
-    .modal-footer {
-        padding: 20px;
-        display: flex;
-        gap: 10px;
-    }
-
-    .modal-footer button {
-        flex: 1;
-    }
-
-    /* Responsive */
-    @media (max-width: 1024px) {
-        .course-body {
-            grid-template-columns: 1fr;
-        }
-
-        .course-sidebar {
-            order: -1;
-        }
-    }
-
+    /* Responsive adjustments */
     @media (max-width: 768px) {
-        .course-main-title {
-            font-size: 24px;
+        .lesson-item.exam .lesson-info > div {
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .course-meta {
-            flex-wrap: wrap;
-        }
-
-        .module-header {
-            padding: 15px;
-        }
-
-        .content-item {
-            padding: 10px;
+        .lesson-item .lessonvideo a::after {
+            content: 'Download';
         }
     }
 </style>

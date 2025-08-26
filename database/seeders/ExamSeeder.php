@@ -12,7 +12,6 @@ class ExamSeeder extends Seeder
     {
         // التأكد من وجود بيانات أساسية
         if (Course::count() < 1 || User::count() < 1 || Admin::count() < 1 || Question::count() < 1) {
-        // if (Course::count() < 1 || User::count() < 1 || Admin::count() < 1 || Question::count() < 1) {
             $this->command->error('يجب وجود بيانات أساسية أولاً!');
             $this->command->info('الحد الأدنى المطلوب:');
             $this->command->info('- 1 مقررات دراسية');
@@ -22,20 +21,23 @@ class ExamSeeder extends Seeder
             return;
         }
 
-        // إنشاء 50 امتحان
-        $exams = Exam::factory()->count(50)->create();
+        $this->main_exams();
+
+        // إنشاء 60 امتحان
+        $exams = Exam::factory()->count(60)->create();
 
         foreach ($exams as $exam) {
-            // اختيار 20 سؤال عشوائي من الأسئلة الموجودة
+            // اختيار 12 سؤال عشوائي من الأسئلة الموجودة
             $oldExamQuestions =  ExamQuestion::where('exam_id',$exam->id)->pluck('question_id');
-            $questions = Question::whereNotIn('id',$oldExamQuestions)->inRandomOrder()->limit(20)->get();
+            $questions = Question::whereNotIn('id',$oldExamQuestions)->inRandomOrder()->limit(12)->get();
 
             foreach ($questions as $index => $question) {
+                if(ExamQuestion::where('exam_id',$exam->id)->where('question_id', $question->id)->exists()) return 0;
                 ExamQuestion::create([
-                    'exam_id' => $exam->id,
+                    'exam_id'     => $exam->id,
                     'question_id' => $question->id,
-                    'order' => $index + 1,
-                    'grade' => rand(1, 10),
+                    'order'       => $index + 1,
+                    'grade'       => rand(1, 10),
                 ]);
             }
 
@@ -92,4 +94,71 @@ class ExamSeeder extends Seeder
             // }
         }
     }
+
+    public function main_exams()
+    {
+        $courses = Course::with('sections')->inRandomOrder()->take(15)->get();
+        $questions = Question::all();
+        $user = User::inRandomOrder()->first();
+        $admin = Admin::inRandomOrder()->first();
+
+        $examTitles = [
+            ['en' => 'Final Exam', 'ar' => 'الامتحان النهائي'],
+            ['en' => '1 Quiz', 'ar' => 'الاختبار 1'],
+            ['en' => 'English Midterm', 'ar' => 'إمتحان الإنجليزيى النصفي'],
+            ['en' => 'Practice Test', 'ar' => 'الاختبار العملي'],
+            ['en' => 'Monthly Exam', 'ar' => 'الامتحان الشهري'],
+            ['en' => 'Computer Basics Test', 'ar' => 'اختبار أساسيات الكمبيوتر'],
+            ['en' => 'Ready Test Quiz', 'ar' => 'الاختبار التجهيزي'],
+            ['en' => 'Final exam', 'ar' => 'الامتحان النهائي'],
+            ['en' => 'Practice Exam', 'ar' => 'الامتحان التدريبي'],
+            ['en' => 'Midterm exam', 'ar' => '2 الامتحان النصفي'],
+        ];
+
+        for ($i = 0; $i < 60; $i++) {
+
+            if($i < 6){ $_index = 1; }else{ $_index = $i % $courses->count();}
+
+            $course = $courses[$_index];
+            $section = $course->sections()->inRandomOrder()->first();
+
+            $examTitle = $examTitles[$i % count($examTitles)];
+
+            $exam = Exam::create([
+                'title_en' => $examTitle['en'] . " - " . $course->title_en,
+                'title_ar' => $examTitle['ar'] . " - " . $course->title_ar,
+                'description_en' => "This is a real exam for " . $course->title_en . ".",
+                'description_ar' => "هذا امتحان حقيقي لمادة " . $course->title_ar . ".",
+                'total_grade' => 10.00,
+                'duration_minutes' => rand(30, 90),
+                'attempts_allowed' => rand(1, 3),
+                'passing_grade' => 5.00,
+                'shuffle_questions' => true,
+                'shuffle_options' => false,
+                'show_results_immediately' => true,
+                'is_active' => true,
+                'start_date' => now()->subDays(rand(0, 30)),
+                'end_date' => now()->addDays(rand(1, 30)),
+                'course_id'  => $course->id,
+                'section_id' => $section ? $section->id : null,
+                'created_by' => $user ? $user->id : null,
+                'created_by_admin' => $admin ? $admin->id : null,
+            ]);
+
+            // اختر مجموعة أسئلة متنوعة للامتحان (ما بين 6 و 12)
+            $examQuestions = $questions->where('course_id', $course->id)->shuffle()->take(rand(6, 12));
+            $perQGrade = round(10.0 / max(1, $examQuestions->count()), 2);
+            $qOrder = 1;
+            foreach ($examQuestions as $q) {
+                if(ExamQuestion::where('exam_id',$exam->id)->where('question_id', $q->id)->exists()) return 0;
+                ExamQuestion::create([
+                    'exam_id' => $exam->id,
+                    'question_id' => $q->id,
+                    'order' => $qOrder++,
+                    'grade' => $perQGrade,
+                ]);
+            }
+        }
+    }
+
 }

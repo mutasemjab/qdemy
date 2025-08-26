@@ -81,6 +81,10 @@ class CourseSeeder extends Seeder
                         'title_ar' => 'مقدمة',
                     ],
                     [
+                        'title_en' => 'Real examples',
+                        'title_ar' => 'أمثلة عملية',
+                    ],
+                    [
                         'title_en' => 'Main Concepts',
                         'title_ar' => 'المفاهيم الأساسية',
                     ],
@@ -110,7 +114,7 @@ class CourseSeeder extends Seeder
                     'order' => 1,
                     'video_type' => 'youtube',
                     'video_url' => 'https://youtu.be/FB3JCwk0my4?list=RDMMFB3JCwk0my4&t=19',
-                    'video_duration' => 600,
+                    'video_duration' => 230,
                     'file_path' => null,
                     'pdf_type' => null,
                     'course_id' => $course->id,
@@ -142,7 +146,7 @@ class CourseSeeder extends Seeder
                     'order' => 3,
                     'video_type' => 'bunny',
                     'video_url' => 'https://course-video123.b-cdn.net/courses_contents/1/1755241495_g0zWdbLysC.mp4',
-                    'video_duration' => 750,
+                    'video_duration' => 156,
                     'file_path' => null,
                     'pdf_type' => null,
                     'course_id' => $course->id,

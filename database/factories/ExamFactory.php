@@ -9,13 +9,14 @@ class ExamFactory extends Factory
     public function definition()
     {
         $startDate = $this->faker->dateTimeBetween('-1 month', '+1 month');
-        $endDate = $this->faker->dateTimeBetween($startDate, '+2 months');
+        $endDate   = $this->faker->dateTimeBetween($startDate, '+2 months');
 
         // الحصول على بيانات موجودة
-        $course  = \App\Models\Course::inRandomOrder()->first();
-        $section = \App\Models\CourseSection::inRandomOrder()->where('course_id',$course->id)->first();
-        $user    = \App\Models\User::where('role_name','student')->inRandomOrder()->first();
-        $admin   = \App\Models\Admin::inRandomOrder()->first();
+        $course   = \App\Models\Course::inRandomOrder()->first();
+        $courseId = $this->faker->randomElement([0 , 0 , $course->id]);
+        $section  = $courseId ? \App\Models\CourseSection::inRandomOrder()->where('course_id',$course->id)->first() : null;
+        $user     = \App\Models\User::where('role_name','student')->inRandomOrder()->first();
+        $admin    = \App\Models\Admin::inRandomOrder()->first();
 
         return [
             'title_en' => 'Exam ' . $this->faker->words(3, true),
@@ -32,7 +33,7 @@ class ExamFactory extends Factory
             'is_active' => $this->faker->boolean(80),
             'start_date' => $startDate,
             'end_date' => $endDate,
-            'course_id' => $course->id,
+            'course_id' =>$courseId ? $courseId : null,
             'section_id' => $section?->id,
             'created_by' => $user->id,
             'created_by_admin' => $admin->id,
