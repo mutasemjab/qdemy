@@ -32,7 +32,8 @@ class ExamController extends Controller
                     $q->whereNull('end_date')
                     ->orWhere('end_date', '>=', $now);
                 });
-            });
+            })
+            ->where('course_id',null);
 
         $exams = $query->paginate(PGN);
 
@@ -337,7 +338,7 @@ class ExamController extends Controller
             ->get();
 
         return view('user.exam.results', [
-            'exam' => $exam,
+            'exam'     => $exam,
             'attempts' => $attempts
         ]);
     }

@@ -1,54 +1,52 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', __('messages.cart')); ?>
 
-@section('title', __('messages.cart'))
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <section class="checkout-wrapper">
 
     <!-- Cart Section -->
     <div class="checkout-box">
-        <h2 class="checkout-heading">{{ __('messages.cart') }}</h2>
+        <h2 class="checkout-heading"><?php echo e(__('messages.cart')); ?></h2>
         <div class="checkout-row header">
-            <span class="checkout-col">{{ __('messages.course') }}</span>
-            <span class="checkout-col">{{ __('messages.price') }}</span>
+            <span class="checkout-col"><?php echo e(__('messages.course')); ?></span>
+            <span class="checkout-col"><?php echo e(__('messages.price')); ?></span>
         </div>
 
-        @php $total = 0; @endphp
-        @foreach ($courses as $course)
-            <div class="checkout-row" id='cart_row_{{$course->id}}'>
+        <?php $total = 0; ?>
+        <?php $__currentLoopData = $courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="checkout-row" id='cart_row_<?php echo e($course->id); ?>'>
                 <div class="checkout-course">
-                    <img data-src="{{ asset('assets_front/images/course-img2.png') }}" alt="{{ $course->title }}">
+                    <img data-src="<?php echo e(asset('assets_front/images/course-img2.png')); ?>" alt="<?php echo e($course->title); ?>">
                     <div class="checkout-course-info">
-                        <a class='text-decoration-none' href="{{route('course',['course'=>$course->id,'slug'=>$course->slug])}}"><h3>{{ $course->category?->localized_name }}</h3></a>
-                        <p>{{ $course->title }}</p>
+                        <a class='text-decoration-none' href="<?php echo e(route('course',['course'=>$course->id,'slug'=>$course->slug])); ?>"><h3><?php echo e($course->category?->localized_name); ?></h3></a>
+                        <p><?php echo e($course->title); ?></p>
                     </div>
                 </div>
-                <span class="checkout-price" data-course-price='{{ $course->selling_price }}'>{{ $course->selling_price }} {{ CURRENCY }}</span>
-                <button class="delete-course" data-course-id="{{ $course->id }}">{{ __('messages.delete') }}</button>
+                <span class="checkout-price" data-course-price='<?php echo e($course->selling_price); ?>'><?php echo e($course->selling_price); ?> <?php echo e(CURRENCY); ?></span>
+                <button class="delete-course" data-course-id="<?php echo e($course->id); ?>"><?php echo e(__('messages.delete')); ?></button>
             </div>
-            @php $total += $course->selling_price; @endphp
-        @endforeach
+            <?php $total += $course->selling_price; ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
 
     <!-- Total Section -->
     <div class="checkout-total-box">
-        <h2 class="checkout-heading">{{ __('messages.final_cost') }}</h2>
+        <h2 class="checkout-heading"><?php echo e(__('messages.final_cost')); ?></h2>
         <div class="total-line">
-            <span>{{ __('messages.sub_total') }}</span>
-            <span id='courses_sub_total'>{{ $total }} {{ CURRENCY }}</span>
+            <span><?php echo e(__('messages.sub_total')); ?></span>
+            <span id='courses_sub_total'><?php echo e($total); ?> <?php echo e(CURRENCY); ?></span>
         </div>
         <div class="total-line">
-            <span>{{ __('messages.total') }}</span>
-            <span id='courses_total'>{{ $total }} {{ CURRENCY }}</span>
+            <span><?php echo e(__('messages.total')); ?></span>
+            <span id='courses_total'><?php echo e($total); ?> <?php echo e(CURRENCY); ?></span>
         </div>
     </div>
 
     <div class="checkout-total-box">
         <div class="lesson-card-activation">
-            <h3>{{ __('messages.card_qdemy') }}</h3>
-            <p>{{ __('messages.enter_card_qdemy') }}</p>
-            <input class="lesson-card-activation input" type="text" placeholder="{{ __('messages.enter_card_here') }}">
-            <button class="lesson-card-activation button">{{ __('messages.activate_card') }}</button>
+            <h3><?php echo e(__('messages.card_qdemy')); ?></h3>
+            <p><?php echo e(__('messages.enter_card_qdemy')); ?></p>
+            <input class="lesson-card-activation input" type="text" placeholder="<?php echo e(__('messages.enter_card_here')); ?>">
+            <button class="lesson-card-activation button"><?php echo e(__('messages.activate_card')); ?></button>
         </div>
     </div>
 
@@ -88,22 +86,22 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ __('messages.تم تفعيل البطاقة بنجاح وإضافتك للكورسات!') }}</h3>
+            <h3><?php echo e(__('messages.تم تفعيل البطاقة بنجاح وإضافتك للكورسات!')); ?></h3>
         </div>
     </div>
     <div id="delete-course-modal" class="messages modal">
         <div class="modal-content">
             <span class="delete-course-modal-close">&times;</span>
             <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ __('messages.تم حذف الكورس من عربة التسوق!') }}</h3>
+            <h3><?php echo e(__('messages.تم حذف الكورس من عربة التسوق!')); ?></h3>
         </div>
     </div>
 
 </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const paymentForm = document.querySelector('.payment-form');
@@ -128,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         // إرسال الطلب عبر Ajax
-        fetch('{{ route("process.payment") }}', {
+        fetch('<?php echo e(route("process.payment")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -146,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
             if (data.success) {
                 alert('تمت عملية الدفع بنجاح!');
-                window.location.href = '{{ route("payment.success") }}';
+                window.location.href = '<?php echo e(route("payment.success")); ?>';
             } else {
                 alert('حدث خطأ أثناء عملية الدفع: ' + (data.message || 'Unknown error'));
             }
@@ -187,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         activateButton.disabled = true;
         activateButton.textContent = 'جارِ التفعيل...';
 
-        fetch('{{ route("payment.card") }}', {
+        fetch('<?php echo e(route("payment.card")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -231,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.disabled = true;
             this.textContent = 'جاري الحذف...';
 
-            fetch('{{ route("remove.course") }}', {
+            fetch('<?php echo e(route("remove.course")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -258,8 +256,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     checkoutPrices.forEach(button => {
                         totalPrice += parseInt(button.getAttribute('data-course-price'));
                     });
-                    document.getElementById('courses_sub_total').innerHTML = totalPrice + ' ' +  "{{CURRENCY}}";
-                    document.getElementById('courses_total').innerHTML = totalPrice + ' ' + "{{CURRENCY}}";
+                    document.getElementById('courses_sub_total').innerHTML = totalPrice + ' ' +  "<?php echo e(CURRENCY); ?>";
+                    document.getElementById('courses_total').innerHTML = totalPrice + ' ' + "<?php echo e(CURRENCY); ?>";
                 } else {
                     alert('خطأ: ' + (data.message || 'Unknown error'));
                 }
@@ -271,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 // إعادة تفعيل الزر فقط إذا لم يتم الحذف
                 this.disabled = false;
-                this.textContent = '{{ __('messages.delete') }}';
+                this.textContent = '<?php echo e(__('messages.delete')); ?>';
             });
         });
     });
@@ -295,4 +293,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/user/checkout.blade.php ENDPATH**/ ?>

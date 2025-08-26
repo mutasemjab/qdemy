@@ -857,6 +857,7 @@ return [
    'direct_content' => 'محتوى مباشر',
    'content_summary' => 'ملخص المحتوى',
    'total' => 'المجموع',
+   'total_videos' => 'عدد الفيديوهات',
    'videos' => 'الفيديوهات',
    'pdfs' => 'ملفات PDF',
    'quizzes' => 'الاختبارات',

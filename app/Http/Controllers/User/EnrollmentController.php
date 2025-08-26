@@ -22,7 +22,7 @@ class EnrollmentController extends Controller
     {
         $user = auth('user')->user();
         // الكورسات الموجودة في الـ Session
-        $courses = Session::get('courses', []);
+        $courses = CartRepository()->cart_session;
 
         // تصفية الكورسات بحيث يظهر فقط غير المشترك فيها
         $coursesIds = array_filter($courses, function ($course) use ($user) {
@@ -51,34 +51,7 @@ class EnrollmentController extends Controller
         $requestData = json_decode($request->getContent(), true);
         $courseId = $request->course_id;
 
-        // تصفية الكورسات بحيث يظهر فقط غير المشترك فيها
-        $courses = Session::get('courses', []);
-        $courses = array_filter($courses, function ($course) use ($user) {
-            return !CourseUser::where('user_id', $user->id)
-                              ->where('course_id', $course)
-                              ->exists();
-        });
-
-        // تجنب تكرار الكورس
-        if (!in_array($courseId, $courses)) {
-            $courses[] = $courseId;
-            Session::put('courses', $courses);
-            // تعيين صلاحية شهر للجلسة
-            $expiryDays = env('COMPLETED_WATCHING_COURSES', 30);
-            Session::put('courses_expiry', now()->addDays($expiryDays));
-        }else{
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.course_already_in_cart'),
-                'courses_count' => count($courses)
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => __('messages.course_added_successfully'),
-            'courses_count' => count($courses)
-        ]);
+        return CartRepository()->put($courseId);
     }
 
     // enroll course by card number
@@ -167,11 +140,8 @@ class EnrollmentController extends Controller
             ]);
 
             // حذف الكورس المضاف من سيشن الكارت
-            $courses = Session::get('courses', []);
-            $filteredCourses = array_filter($courses, function ($course) use ($request) {
-                return $course != $request->course_id;
-            });
-            Session::put('courses', $filteredCourses);
+            $course = Course::findOrFail($request->course_id);
+            CartRepository()->removeItem($course->id);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -214,7 +184,7 @@ class EnrollmentController extends Controller
         }
 
         // تصفية الكورسات بحيث يظهر فقط غير المشترك فيها
-        $courses = Session::get('courses', []);
+        $courses = CartRepository()->cart_session;
         $coursesIds = array_filter($courses, function ($course) use ($user) {
             return !CourseUser::where('user_id', $user->id)
             ->where('course_id', $course)
@@ -269,7 +239,7 @@ class EnrollmentController extends Controller
                     'notes' => __('messages.payment_notes'),
                 ]);
             }
-            Session::forget('courses');
+            CartRepository()->forgetAll();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -295,18 +265,9 @@ class EnrollmentController extends Controller
                 'message'   => $validator->errors()->first(),
             ]);
         }
+        $course = Course::findOrFail($request->course_id);
+        return CartRepository()->removeItem($course->id);
 
-        $courses = Session::get('courses', []);
-        $filteredCourses = array_filter($courses, function ($course) use ($request) {
-            return $course != $request->course_id;
-        });
-
-        Session::put('courses', $filteredCourses);
-
-        return response()->json([
-            'success' => true,
-            'message' => __('messages.course_removed'),
-        ]);
     }
 
     public function processPayment(Request $request)

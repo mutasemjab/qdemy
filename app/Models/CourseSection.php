@@ -15,7 +15,10 @@ class CourseSection extends Model
     {
         return $this->belongsTo(Course::class);
     }
-
+    public function exams()
+    {
+        return $this->HasMany(Exam::class);
+    }
     /**
      * Get the parent section.
      */

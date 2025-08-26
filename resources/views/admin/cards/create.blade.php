@@ -64,9 +64,9 @@
                                     id="teacher"
                                     name="teacher_id">
                                 <option value="">{{ __('messages.select_teacher') }}</option>
-                                @foreach($categories as $teacher)
+                                @foreach($teachers as $teacher)
                                     <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
-                                        {{ $teacher->name_ar }}
+                                        {{ $teacher->name }}
                                     </option>
                                 @endforeach
                             </select>

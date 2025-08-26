@@ -28,6 +28,10 @@ class Exam extends Model
     {
         return $this->belongsTo(Course::class);
     }
+    public function section()
+    {
+        return $this->belongsTo(CourseSection::class, 'sections','id','section_id');
+    }
 
     /**
      * Get the user who created the exam.
@@ -108,7 +112,7 @@ class Exam extends Model
 
     public function user_attempts($user_id = null)
     {
-        $user_id = $user_id ?? auth('user')->id();
+        $user_id = $user_id ?? auth('user')?->id();
         return $this->attempts()
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'desc')

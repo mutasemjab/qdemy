@@ -33,6 +33,13 @@ if (!function_exists('CourseRepository')) {
   }
 }
 
+if (!function_exists('CartRepository')) {
+  function CartRepository()
+  {
+    return new \App\Repositories\CartRepository;
+  }
+}
+
 function uploadImage($folder, $image)
 {
     $extension = strtolower($image->extension());

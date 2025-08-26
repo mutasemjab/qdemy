@@ -31,28 +31,29 @@ class CourseController extends Controller
         $is_enrolled = in_array($course->id,$user_enrollment_courses) ? 1 : 0;
 
         if($is_enrolled && $user){
-            $completedVideos  = ContentUserProgress::where('user_id', $user->id)->where('completed', true)->count();
-            $inProgressVideos = ContentUserProgress::where('user_id', $user->id)->where('completed', false)->count();
-            $totalVideos      = CourseContent::where('content_type', 'video')->count();
+            $completedVideos    = ContentUserProgress::where('user_id', $user->id)->where('completed', true)->count();
+            $inProgressVideos   = ContentUserProgress::where('user_id', $user->id)->where('completed', false)->count();
+            $totalVideos        = CourseContent::where('content_type', 'video')->count();
+            $exams              = $course->exams;
             $progressPercentage = $totalVideos > 0 ? ($completedVideos / $totalVideos) * 100 : 0;
             $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
         }
-
         return view('user.course',[
-            'user'    => $user,
-            'course'    => $course,
+            'user'         => $user,
+            'course'       => $course,
+            'exams'        => $exams ?? null,
             'mainSections' => $mainSections,
-            'contents' => $contents,
+            'contents'     => $contents,
             'freeContents' => $freeContents,
             'user_courses' => $user_courses,
             'user_enrollment_courses' => $user_enrollment_courses,
-            'is_enrolled' => $is_enrolled,
+            'is_enrolled'  => $is_enrolled,
 
-            'completedVideos'    => $completedVideos ?? 0,
-            'inProgressVideos'   => $inProgressVideos ?? 0,
-            'progressPercentage' => round($progressPercentage ?? 0, 2) ?? 0,
+            'completedVideos'     => $completedVideos ?? 0,
+            'inProgressVideos'    => $inProgressVideos ?? 0,
+            'progressPercentage'  => round($progressPercentage ?? 0, 2) ?? 0,
 
-            'course_progress'    => $calculateCourseProgress['course_progress'] ?? 0,
+            'course_progress'     => $calculateCourseProgress['course_progress'] ?? 0,
             'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,
             'watching_videos'     => $calculateCourseProgress['watching_videos'] ?? 0,
             'total_videos'        => $calculateCourseProgress['total_videos'] ?? 0,

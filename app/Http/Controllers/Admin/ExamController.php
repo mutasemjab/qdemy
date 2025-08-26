@@ -302,6 +302,49 @@ class ExamController extends Controller
     }
 
     /**
+     * Get sections for a specific course (AJAX)
+    */
+    public function getCourseSections(Course $course)
+    {
+        $sections = $course->sections()->get(['id', 'title_en', 'title_ar', 'parent_id']);
+
+        // Build hierarchical structure
+        $parentSections = $sections->whereNull('parent_id');
+        $formattedSections = [];
+
+        foreach ($parentSections as $section) {
+            $formattedSections[] = [
+                'id' => $section->id,
+                'title' => $section->title,
+                'level' => 0
+            ];
+
+            // Add child sections
+            $this->addChildSections($sections, $section->id, $formattedSections, 1);
+        }
+
+        return response()->json($formattedSections);
+    }
+
+        /**
+     * Helper function to add child sections recursively
+     */
+    private function addChildSections($allSections, $parentId, &$formattedSections, $level)
+    {
+        $children = $allSections->where('parent_id', $parentId);
+
+        foreach ($children as $child) {
+            $formattedSections[] = [
+                'id' => $child->id,
+                'title' => str_repeat('— ', $level) . (app()->getLocale() === 'ar' ? $child->title_ar : $child->title_en),
+                'level' => $level
+            ];
+
+            // Recursively add children
+            $this->addChildSections($allSections, $child->id, $formattedSections, $level + 1);
+        }
+    }
+    /**
      * View exam results
      */
     public function results(Exam $exam)

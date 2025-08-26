@@ -39,7 +39,7 @@
                             <div class="progress-stats">
                                 <span>{{ __('messages.completed') }}: {{$completed_videos}}</span>
                                 <span>{{ __('messages.watching') }}: {{$watching_videos}}</span>
-                                <span>{{ __('messages.total') }}: {{$total_videos}}</span>
+                                <span>{{ __('messages.total_videos') }}: {{$total_videos}}</span>
                             </div>
                         </div>
                     @elseif(is_array($user_courses) && in_array($course->id,$user_courses))
@@ -88,59 +88,91 @@
                                 $sectionContents = $section->contents;
                                 $subSections    = $section->children; // Assuming you have a `children` relationship for submainSections
                             @endphp
+
                             @if($sectionContents && $sectionContents->count())
                                 @foreach($sectionContents as $content)
-                                @php
-                                    $userProgress = $user_progress[$content->id] ?? null;
-                                    $progressPercent = $content->video_duration > 0 ? min(100, ($content->watched_time / $content->video_duration) * 100) : 0;
-                                @endphp
-                                <div class="lesson-item" data-content-id="{{$content->id}}">
-                                    @if($content->video_url)
+                                    @php
+                                        $userProgress = $user_progress[$content->id] ?? null;
+                                        $progressPercent = $content->video_duration > 0 ? min(100, ($content->watched_time / $content->video_duration) * 100) : 0;
+                                    @endphp
+                                    <!-- main sections  -->
+                                    <div class="lesson-item" data-content-id="{{$content->id}}">
+                                        @if($content->video_url)
 
-                                        @if($content->is_free === 1 || $is_enrolled)
-                                        <div class="lesson-video" data-video="{{$content->video_url}}"
-                                            data-is-completed="{{$content->is_completed}}" data-content-id="{{$content->id}}" data-watched-time="{{$content->watched_time}}" data-duration="{{$content->video_duration}}">
-                                            <img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video">
-                                            <span class="play-icon">▶</span>
-                                            @if($content->is_completed)
-                                                <span class="completion-badge">✓</span>
-                                            @elseif($content->watched_time > 0)
-                                                <span class="progress-badge">{{round($progressPercent)}}%</span>
+                                            @if($content->is_free === 1 || $is_enrolled)
+                                            <div class="lesson-video" data-video="{{$content->video_url}}"
+                                                data-is-completed="{{$content->is_completed}}" data-content-id="{{$content->id}}" data-watched-time="{{$content->watched_time}}" data-duration="{{$content->video_duration}}">
+                                                <img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video">
+                                                <span class="play-icon">▶</span>
+                                                @if($content->is_completed)
+                                                    <span class="completion-badge">✓</span>
+                                                @elseif($content->watched_time > 0)
+                                                    <span class="progress-badge">{{round($progressPercent)}}%</span>
+                                                @endif
+                                            </div>
+                                            @else
+                                            <div class="disabled-lesson-video"><img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video"></div>
+                                            @endif
+
+                                        @elseif($content->file_path)
+
+                                            @if($content->is_free === 1 || $is_enrolled)
+                                            <div class="lessonvideo">
+                                                <a class='text-decoration-none' target='_blank' href="{{$content->file_path}}">
+                                                    <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
+                                                </i></a>
+                                            </div>
+                                            @else
+                                                <a class='text-decoration-none' href="javascrip:void(0)">
+                                                    <i class="fa fa-file" style='color:lightgray;'></i>
+                                                </a>
+                                            @endif
+
+                                        @endif
+
+                                        <div class="lesson-info">
+                                            <h4>{{$content->title}}</h4>
+                                            @if($content->content_type === 'video' && ($content->is_free === 1 || $is_enrolled))
+                                                <div class="video-progress-bar">
+                                                    <div class="progress-fill" style="width: {{$progressPercent}}%"></div>
+                                                </div>
                                             @endif
                                         </div>
-                                        @else
-                                        <div class="disabled-lesson-video"><img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video"></div>
-                                        @endif
-
-                                    @elseif($content->file_path)
-
-                                        @if($content->is_free === 1 || $is_enrolled)
-                                        <div class="lessonvideo">
-                                            <a class='text-decoration-none' target='_blank' href="{{$content->file_path}}">
-                                                <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
-                                            </i></a>
-                                        </div>
-                                        @else
-                                            <a class='text-decoration-none' href="javascrip:void(0)">
-                                                <i class="fa fa-file" style='color:lightgray;'></i>
-                                            </a>
-                                        @endif
-
-                                    @endif
-                                    <div class="lesson-info">
-                                        <h4>{{$content->title}}</h4>
-                                        @if($content->content_type === 'video' && ($content->is_free === 1 || $is_enrolled))
-                                            <div class="video-progress-bar">
-                                                <div class="progress-fill" style="width: {{$progressPercent}}%"></div>
-                                            </div>
-                                        @endif
                                     </div>
-                                </div>
-                                @endforeach
+
+                                    <!-- main sections Quizes -->
+                                    @php $sectionsExams = $section->exams @endphp
+                                    @if($is_enrolled && $sectionsExams && $sectionsExams->count())
+                                        <span>{{__('messages.section Quiz')}}</span>
+                                        @foreach($sectionsExams as $sectionsExam)
+                                            <div class="lesson-item exam">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$sectionsExam->slug])}}">
+                                                <div class="lesson-info">
+                                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$sectionsExam->title}} </h4>
+                                                    <div class="">
+                                                        <br>
+                                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$sectionsExam->user_attempts()->count()}}
+                                                        @if($sectionsExam->result_attempt()?->is_passed)
+                                                            <i class="fa fa-check"></i>
+                                                        @else
+                                                            <i class="fa fa-times"></i>
+                                                        @endif
+                                                        {{$sectionsExam->result_attempt()?->percentage}}
+                                                        {{__('messages.أفضل نتيجة')}} {{$sectionsExam->result_attempt()?->score}}
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                    @endforeach
+
+
                             @endif
 
                             {{-- Display SubmainSections --}}
                             @if($subSections && $subSections->count())
+
                                 <div class="accordion">
                                     @foreach($subSections as $subSection)
                                     <div class="accordion-item">
@@ -195,7 +227,35 @@
                                             @endif
                                         </div>
                                     </div>
+                                    <!-- sub sections Quizes -->
+                                    @php $subSectionsExams = $subSection->exams @endphp
+                                    @if($is_enrolled && $subSectionsExams && $subSectionsExams->count())
+                                        <span>{{__('messages.section Quiz')}}</span>
+                                        @foreach($subSectionsExamss as $subSectionsExams)
+                                            <div class="lesson-item exam">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$subSectionsExams->slug])}}">
+                                                <div class="lesson-info">
+                                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$subSectionsExams->title}} </h4>
+                                                    <div class="">
+                                                        <br>
+                                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$subSectionsExams->user_attempts()->count()}}
+                                                        @if($subSectionsExams->result_attempt()?->is_passed)
+                                                            <i class="fa fa-check"></i>
+                                                        @else
+                                                            <i class="fa fa-times"></i>
+                                                        @endif
+                                                        {{$subSectionsExams->result_attempt()?->percentage}}
+                                                        {{__('messages.أفضل نتيجة')}} {{$subSectionsExams->result_attempt()?->score}}
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </div>
+                                        @endforeach
+                                    @endif
                                     @endforeach
+
+
+
                                 </div>
                             @endif
 
@@ -253,6 +313,35 @@
                                         </div>
                                     @endif
                                 </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                <!-- all course quiez -->
+                @if($is_enrolled && $exams && $exams->count())
+                <div class="accordion-item">
+                    <button class="accordion-header"> {{__('messages.All course Quiez')}}</button>
+                    <div class="accordion-body">
+                        @foreach($exams as $exam)
+                            <div class="lesson-item exam">
+                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$exam->slug])}}">
+                                    <div class="lesson-info">
+                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$exam->title}} </h4>
+                                    <div class="">
+                                        <br>
+                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$exam->user_attempts()->count()}}
+                                        @if($exam->result_attempt()?->is_passed)
+                                            <i class="fa fa-check"></i>
+                                        @else
+                                            <i class="fa fa-times"></i>
+                                        @endif
+                                        {{$exam->result_attempt()?->percentage}}
+                                        {{__('messages.أفضل نتيجة')}} {{$exam->result_attempt()?->score}}
+                                    </div>
+                                </div>
+                               </a>
                             </div>
                         @endforeach
                     </div>
@@ -557,6 +646,7 @@
                         document.getElementById('mark-complete-btn').style.display='none';
                     }
                 }
+                // mark-complete-btn
                 // الغاء ايقاف التحديث التلقائي ان كان موقوف
                 stop = 0;
 
@@ -700,10 +790,6 @@
             if (data.success) {
                 updateVideoCompletionStatus(contentId, true);
                 updateProgressDisplay(data.progress);
-                // stop auto update
-                // if (progressUpdateInterval) {
-                //     clearInterval(progressUpdateInterval);
-                // }
                 stop = true;
                 document.getElementById('mark-complete-btn').style.display='none';
                 console.log('تم تسجيل الفيديو كمكتمل المشاهدة');
@@ -753,7 +839,7 @@
                 progressStats.innerHTML = `
                     <span>{{__('messages.completed')}}: ${progressData.completed_videos}</span>
                     <span>{{__('messages.watching')}}: ${progressData.watching_videos}</span>
-                    <span>{{__('messages.total')}}: ${progressData.total_videos}</span>
+                    <span>{{__('messages.total_videos')}}: ${progressData.total_videos}</span>
                 `;
             }
         }

@@ -1,4 +1,3 @@
-
 <?php $__env->startSection('title',$course->title); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -39,7 +38,7 @@
                             <div class="progress-stats">
                                 <span><?php echo e(__('messages.completed')); ?>: <?php echo e($completed_videos); ?></span>
                                 <span><?php echo e(__('messages.watching')); ?>: <?php echo e($watching_videos); ?></span>
-                                <span><?php echo e(__('messages.total')); ?>: <?php echo e($total_videos); ?></span>
+                                <span><?php echo e(__('messages.total_videos')); ?>: <?php echo e($total_videos); ?></span>
                             </div>
                         </div>
                     <?php elseif(is_array($user_courses) && in_array($course->id,$user_courses)): ?>
@@ -89,55 +88,88 @@
                                 $sectionContents = $section->contents;
                                 $subSections    = $section->children; // Assuming you have a `children` relationship for submainSections
                             ?>
+
                             <?php if($sectionContents && $sectionContents->count()): ?>
                                 <?php $__currentLoopData = $sectionContents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $content): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <?php
-                                    $userProgress = $user_progress[$content->id] ?? null;
-                                    $progressPercent = $content->video_duration > 0 ? min(100, ($content->watched_time / $content->video_duration) * 100) : 0;
-                                ?>
-                                <div class="lesson-item" data-content-id="<?php echo e($content->id); ?>">
-                                    <?php if($content->video_url): ?>
+                                    <?php
+                                        $userProgress = $user_progress[$content->id] ?? null;
+                                        $progressPercent = $content->video_duration > 0 ? min(100, ($content->watched_time / $content->video_duration) * 100) : 0;
+                                    ?>
+                                    <!-- main sections  -->
+                                    <div class="lesson-item" data-content-id="<?php echo e($content->id); ?>">
+                                        <?php if($content->video_url): ?>
 
-                                        <?php if($content->is_free === 1 || $is_enrolled): ?>
-                                        <div class="lesson-video" data-video="<?php echo e($content->video_url); ?>"
-                                            data-is-completed="<?php echo e($content->is_completed); ?>" data-content-id="<?php echo e($content->id); ?>" data-watched-time="<?php echo e($content->watched_time); ?>" data-duration="<?php echo e($content->video_duration); ?>">
-                                            <img data-src="<?php echo e(asset('assets_front/images/video-thumb.png')); ?>" alt="Video">
-                                            <span class="play-icon">▶</span>
-                                            <?php if($content->is_completed): ?>
-                                                <span class="completion-badge">✓</span>
-                                            <?php elseif($content->watched_time > 0): ?>
-                                                <span class="progress-badge"><?php echo e(round($progressPercent)); ?>%</span>
+                                            <?php if($content->is_free === 1 || $is_enrolled): ?>
+                                            <div class="lesson-video" data-video="<?php echo e($content->video_url); ?>"
+                                                data-is-completed="<?php echo e($content->is_completed); ?>" data-content-id="<?php echo e($content->id); ?>" data-watched-time="<?php echo e($content->watched_time); ?>" data-duration="<?php echo e($content->video_duration); ?>">
+                                                <img data-src="<?php echo e(asset('assets_front/images/video-thumb.png')); ?>" alt="Video">
+                                                <span class="play-icon">▶</span>
+                                                <?php if($content->is_completed): ?>
+                                                    <span class="completion-badge">✓</span>
+                                                <?php elseif($content->watched_time > 0): ?>
+                                                    <span class="progress-badge"><?php echo e(round($progressPercent)); ?>%</span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <?php else: ?>
+                                            <div class="disabled-lesson-video"><img data-src="<?php echo e(asset('assets_front/images/video-thumb.png')); ?>" alt="Video"></div>
+                                            <?php endif; ?>
+
+                                        <?php elseif($content->file_path): ?>
+
+                                            <?php if($content->is_free === 1 || $is_enrolled): ?>
+                                            <div class="lessonvideo">
+                                                <a class='text-decoration-none' target='_blank' href="<?php echo e($content->file_path); ?>">
+                                                    <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
+                                                </i></a>
+                                            </div>
+                                            <?php else: ?>
+                                                <a class='text-decoration-none' href="javascrip:void(0)">
+                                                    <i class="fa fa-file" style='color:lightgray;'></i>
+                                                </a>
+                                            <?php endif; ?>
+
+                                        <?php endif; ?>
+
+                                        <div class="lesson-info">
+                                            <h4><?php echo e($content->title); ?></h4>
+                                            <?php if($content->content_type === 'video' && ($content->is_free === 1 || $is_enrolled)): ?>
+                                                <div class="video-progress-bar">
+                                                    <div class="progress-fill" style="width: <?php echo e($progressPercent); ?>%"></div>
+                                                </div>
                                             <?php endif; ?>
                                         </div>
-                                        <?php else: ?>
-                                        <div class="disabled-lesson-video"><img data-src="<?php echo e(asset('assets_front/images/video-thumb.png')); ?>" alt="Video"></div>
-                                        <?php endif; ?>
-
-                                    <?php elseif($content->file_path): ?>
-
-                                        <?php if($content->is_free === 1 || $is_enrolled): ?>
-                                        <div class="lessonvideo">
-                                            <a class='text-decoration-none' target='_blank' href="<?php echo e($content->file_path); ?>">
-                                                <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
-                                            </i></a>
-                                        </div>
-                                        <?php else: ?>
-                                            <a class='text-decoration-none' href="javascrip:void(0)">
-                                                <i class="fa fa-file" style='color:lightgray;'></i>
-                                            </a>
-                                        <?php endif; ?>
-
-                                    <?php endif; ?>
-                                    <div class="lesson-info">
-                                        <h4><?php echo e($content->title); ?></h4>
-                                        <?php if($content->content_type === 'video' && ($content->is_free === 1 || $is_enrolled)): ?>
-                                            <div class="video-progress-bar">
-                                                <div class="progress-fill" style="width: <?php echo e($progressPercent); ?>%"></div>
-                                            </div>
-                                        <?php endif; ?>
                                     </div>
-                                </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+                                    <!-- main sections Quizs -->
+                                    <?php if($is_enrolled && $exams && $exams->count()): ?>
+                                        <span><?php echo e(__('messages.section Quiz')); ?></span>
+                                        <?php $__currentLoopData = $exams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <div class="lesson-item exam">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="<?php echo e(route('exam',['exam'=>$course->id,'slug'=>$exam->slug])); ?>">
+                                                <div class="lesson-info">
+                                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> <?php echo e($exam->title); ?> </h4>
+                                                    <div class="">
+                                                        <br>
+                                                        <i class="fa fa-check"></i> <?php echo e(__('messages.عدد المحاولات')); ?> <?php echo e($exam->user_attempts()->count()); ?>
+
+                                                        <?php if($exam->result_attempt()?->is_passed): ?>
+                                                            <i class="fa fa-check"></i>
+                                                        <?php else: ?>
+                                                            <i class="fa fa-times"></i>
+                                                        <?php endif; ?>
+                                                        <?php echo e($exam->result_attempt()?->percentage); ?>
+
+                                                        <?php echo e(__('messages.أفضل نتيجة')); ?> <?php echo e($exam->result_attempt()?->score); ?>
+
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php endif; ?>
+
                             <?php endif; ?>
 
                             
@@ -197,6 +229,36 @@
                                         </div>
                                     </div>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
+
+                                    <!-- main sections Quizs -->
+                                    <?php if($is_enrolled && $exams && $exams->count()): ?>
+                                        <span><?php echo e(__('messages.section Quiz')); ?></span>
+                                        <?php $__currentLoopData = $exams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <div class="lesson-item exam">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="<?php echo e(route('exam',['exam'=>$course->id,'slug'=>$exam->slug])); ?>">
+                                                <div class="lesson-info">
+                                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> <?php echo e($exam->title); ?> </h4>
+                                                    <div class="">
+                                                        <br>
+                                                        <i class="fa fa-check"></i> <?php echo e(__('messages.عدد المحاولات')); ?> <?php echo e($exam->user_attempts()->count()); ?>
+
+                                                        <?php if($exam->result_attempt()?->is_passed): ?>
+                                                            <i class="fa fa-check"></i>
+                                                        <?php else: ?>
+                                                            <i class="fa fa-times"></i>
+                                                        <?php endif; ?>
+                                                        <?php echo e($exam->result_attempt()?->percentage); ?>
+
+                                                        <?php echo e(__('messages.أفضل نتيجة')); ?> <?php echo e($exam->result_attempt()?->score); ?>
+
+                                                    </div>
+                                                </div>
+                                                </a>
+                                            </div>
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                    <?php endif; ?>
+
                                 </div>
                             <?php endif; ?>
 
@@ -254,6 +316,38 @@
                                         </div>
                                     <?php endif; ?>
                                 </div>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- all course quiez -->
+                <?php if($is_enrolled && $exams && $exams->count()): ?>
+                <div class="accordion-item">
+                    <button class="accordion-header"> <?php echo e(__('messages.All course Quiez')); ?></button>
+                    <div class="accordion-body">
+                        <?php $__currentLoopData = $exams; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $exam): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="lesson-item exam">
+                                <a class='text-decoration-none d-flex' target='_blank' href="<?php echo e(route('exam',['exam'=>$course->id,'slug'=>$exam->slug])); ?>">
+                                    <div class="lesson-info">
+                                    <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> <?php echo e($exam->title); ?> </h4>
+                                    <div class="">
+                                        <br>
+                                        <i class="fa fa-check"></i> <?php echo e(__('messages.عدد المحاولات')); ?> <?php echo e($exam->user_attempts()->count()); ?>
+
+                                        <?php if($exam->result_attempt()?->is_passed): ?>
+                                            <i class="fa fa-check"></i>
+                                        <?php else: ?>
+                                            <i class="fa fa-times"></i>
+                                        <?php endif; ?>
+                                        <?php echo e($exam->result_attempt()?->percentage); ?>
+
+                                        <?php echo e(__('messages.أفضل نتيجة')); ?> <?php echo e($exam->result_attempt()?->score); ?>
+
+                                    </div>
+                                </div>
+                               </a>
                             </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
@@ -558,6 +652,7 @@
                         document.getElementById('mark-complete-btn').style.display='none';
                     }
                 }
+                // mark-complete-btn
                 // الغاء ايقاف التحديث التلقائي ان كان موقوف
                 stop = 0;
 
@@ -701,10 +796,6 @@
             if (data.success) {
                 updateVideoCompletionStatus(contentId, true);
                 updateProgressDisplay(data.progress);
-                // stop auto update
-                // if (progressUpdateInterval) {
-                //     clearInterval(progressUpdateInterval);
-                // }
                 stop = true;
                 document.getElementById('mark-complete-btn').style.display='none';
                 console.log('تم تسجيل الفيديو كمكتمل المشاهدة');
@@ -754,7 +845,7 @@
                 progressStats.innerHTML = `
                     <span><?php echo e(__('messages.completed')); ?>: ${progressData.completed_videos}</span>
                     <span><?php echo e(__('messages.watching')); ?>: ${progressData.watching_videos}</span>
-                    <span><?php echo e(__('messages.total')); ?>: ${progressData.total_videos}</span>
+                    <span><?php echo e(__('messages.total_videos')); ?>: ${progressData.total_videos}</span>
                 `;
             }
         }

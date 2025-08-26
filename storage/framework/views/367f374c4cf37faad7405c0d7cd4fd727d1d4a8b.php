@@ -25,7 +25,7 @@
                                     <label for="title_en" class="form-label">
                                         <?php echo e(__('messages.title_en')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
+                                    <input type="text"
                                            class="form-control <?php $__errorArgs = ['title_en'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -33,10 +33,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="title_en" 
-                                           name="title_en" 
-                                           value="<?php echo e(old('title_en')); ?>" 
+unset($__errorArgs, $__bag); ?>"
+                                           id="title_en"
+                                           name="title_en"
+                                           value="<?php echo e(old('title_en')); ?>"
                                            placeholder="<?php echo e(__('messages.enter_exam_title_en')); ?>">
                                     <?php $__errorArgs = ['title_en'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -57,7 +57,7 @@ unset($__errorArgs, $__bag); ?>
                                     <label for="title_ar" class="form-label">
                                         <?php echo e(__('messages.title_ar')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
+                                    <input type="text"
                                            class="form-control <?php $__errorArgs = ['title_ar'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -65,10 +65,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="title_ar" 
-                                           name="title_ar" 
-                                           value="<?php echo e(old('title_ar')); ?>" 
+unset($__errorArgs, $__bag); ?>"
+                                           id="title_ar"
+                                           name="title_ar"
+                                           value="<?php echo e(old('title_ar')); ?>"
                                            placeholder="<?php echo e(__('messages.enter_exam_title_ar')); ?>"
                                            dir="rtl">
                                     <?php $__errorArgs = ['title_ar'];
@@ -98,10 +98,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                              id="description_en" 
-                                              name="description_en" 
-                                              rows="4" 
+unset($__errorArgs, $__bag); ?>"
+                                              id="description_en"
+                                              name="description_en"
+                                              rows="4"
                                               placeholder="<?php echo e(__('messages.enter_description_en')); ?>"><?php echo e(old('description_en')); ?></textarea>
                                     <?php $__errorArgs = ['description_en'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -130,10 +130,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                              id="description_ar" 
-                                              name="description_ar" 
-                                              rows="4" 
+unset($__errorArgs, $__bag); ?>"
+                                              id="description_ar"
+                                              name="description_ar"
+                                              rows="4"
                                               placeholder="<?php echo e(__('messages.enter_description_ar')); ?>"
                                               dir="rtl"><?php echo e(old('description_ar')); ?></textarea>
                                     <?php $__errorArgs = ['description_ar'];
@@ -155,19 +155,20 @@ unset($__errorArgs, $__bag); ?>
                                     <label for="course_id" class="form-label">
                                         <?php echo e(__('messages.course')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-select <?php $__errorArgs = ['course_id'];
+                                    <select class="form-select  form-control <?php $__errorArgs = ['course_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                            id="course_id" 
-                                            name="course_id">
+unset($__errorArgs, $__bag); ?>"
+                                            id="course_id"
+                                            name="course_id"
+                                            onchange="loadCourseSections(this.value)">
                                         <option value=""><?php echo e(__('messages.select_course')); ?></option>
                                         <?php $__currentLoopData = $courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                            <option value="<?php echo e($course->id); ?>" 
+                                            <option value="<?php echo e($course->id); ?>"
                                                     <?php echo e(old('course_id') == $course->id ? 'selected' : ''); ?>>
                                                 <?php echo e($course->title_en); ?>
 
@@ -175,6 +176,40 @@ unset($__errorArgs, $__bag); ?>"
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                     <?php $__errorArgs = ['course_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                </div>
+                            </div>
+
+                            <!-- Section (New Field) -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="section_id" class="form-label">
+                                        <?php echo e(__('messages.section')); ?>
+
+                                    </label>
+                                    <select class="form-select  form-control <?php $__errorArgs = ['section_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                            id="section_id"
+                                            name="section_id"
+                                            disabled>
+                                        <option value=""><?php echo e(__('messages.select_section_optional')); ?></option>
+                                    </select>
+                                    <small class="form-text text-muted"><?php echo e(__('messages.select_course_first')); ?></small>
+                                    <?php $__errorArgs = ['section_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -195,7 +230,7 @@ unset($__errorArgs, $__bag); ?>
 
                                     </label>
                                     <div class="input-group">
-                                        <input type="number" 
+                                        <input type="number"
                                                class="form-control <?php $__errorArgs = ['duration_minutes'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -203,10 +238,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                               id="duration_minutes" 
-                                               name="duration_minutes" 
-                                               value="<?php echo e(old('duration_minutes')); ?>" 
+unset($__errorArgs, $__bag); ?>"
+                                               id="duration_minutes"
+                                               name="duration_minutes"
+                                               value="<?php echo e(old('duration_minutes')); ?>"
                                                min="1"
                                                placeholder="<?php echo e(__('messages.leave_blank_for_unlimited')); ?>">
                                         <span class="input-group-text"><?php echo e(__('messages.minutes')); ?></span>
@@ -226,12 +261,12 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <!-- Attempts Allowed -->
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="attempts_allowed" class="form-label">
                                         <?php echo e(__('messages.attempts_allowed')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="number" 
+                                    <input type="number"
                                            class="form-control <?php $__errorArgs = ['attempts_allowed'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -239,11 +274,11 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="attempts_allowed" 
-                                           name="attempts_allowed" 
-                                           value="<?php echo e(old('attempts_allowed', 1)); ?>" 
-                                           min="1" 
+unset($__errorArgs, $__bag); ?>"
+                                           id="attempts_allowed"
+                                           name="attempts_allowed"
+                                           value="<?php echo e(old('attempts_allowed', 1)); ?>"
+                                           min="1"
                                            max="10">
                                     <?php $__errorArgs = ['attempts_allowed'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -259,13 +294,13 @@ unset($__errorArgs, $__bag); ?>
                             </div>
 
                             <!-- Passing Grade -->
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="passing_grade" class="form-label">
-                                        <?php echo e(__('messages.passing_grade')); ?> <span class="text-danger">*</span>
+                                        <?php echo e(__('messages.passing_grade')); ?> (%) <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
-                                        <input type="number" 
+                                        <input type="number"
                                                class="form-control <?php $__errorArgs = ['passing_grade'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -273,12 +308,12 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                               id="passing_grade" 
-                                               name="passing_grade" 
-                                               value="<?php echo e(old('passing_grade', 50)); ?>" 
-                                               min="0" 
-                                               max="100" 
+unset($__errorArgs, $__bag); ?>"
+                                               id="passing_grade"
+                                               name="passing_grade"
+                                               value="<?php echo e(old('passing_grade', 50)); ?>"
+                                               min="0"
+                                               max="100"
                                                step="0.01">
                                         <span class="input-group-text">%</span>
                                     </div>
@@ -295,25 +330,6 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Status -->
-                            <div class="col-md-4">
-                                <div class="form-group mb-3">
-                                    <label class="form-label"><?php echo e(__('messages.status')); ?></label>
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" 
-                                               type="checkbox" 
-                                               id="is_active" 
-                                               name="is_active" 
-                                               value="1"
-                                               <?php echo e(old('is_active', true) ? 'checked' : ''); ?>>
-                                        <label class="form-check-label" for="is_active">
-                                            <?php echo e(__('messages.active')); ?>
-
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
                             <!-- Start Date -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -321,7 +337,7 @@ unset($__errorArgs, $__bag); ?>
                                         <?php echo e(__('messages.start_date')); ?>
 
                                     </label>
-                                    <input type="datetime-local" 
+                                    <input type="datetime-local"
                                            class="form-control <?php $__errorArgs = ['start_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -329,9 +345,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="start_date" 
-                                           name="start_date" 
+unset($__errorArgs, $__bag); ?>"
+                                           id="start_date"
+                                           name="start_date"
                                            value="<?php echo e(old('start_date')); ?>">
                                     <small class="form-text text-muted"><?php echo e(__('messages.leave_blank_for_no_restriction')); ?></small>
                                     <?php $__errorArgs = ['start_date'];
@@ -354,7 +370,7 @@ unset($__errorArgs, $__bag); ?>
                                         <?php echo e(__('messages.end_date')); ?>
 
                                     </label>
-                                    <input type="datetime-local" 
+                                    <input type="datetime-local"
                                            class="form-control <?php $__errorArgs = ['end_date'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -362,9 +378,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="end_date" 
-                                           name="end_date" 
+unset($__errorArgs, $__bag); ?>"
+                                           id="end_date"
+                                           name="end_date"
                                            value="<?php echo e(old('end_date')); ?>">
                                     <small class="form-text text-muted"><?php echo e(__('messages.leave_blank_for_no_restriction')); ?></small>
                                     <?php $__errorArgs = ['end_date'];
@@ -388,10 +404,10 @@ unset($__errorArgs, $__bag); ?>
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" 
-                                                   type="checkbox" 
-                                                   id="shuffle_questions" 
-                                                   name="shuffle_questions" 
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   id="shuffle_questions"
+                                                   name="shuffle_questions"
                                                    value="1"
                                                    <?php echo e(old('shuffle_questions') ? 'checked' : ''); ?>>
                                             <label class="form-check-label" for="shuffle_questions">
@@ -400,13 +416,12 @@ unset($__errorArgs, $__bag); ?>
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-md-4">
                                         <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" 
-                                                   type="checkbox" 
-                                                   id="shuffle_options" 
-                                                   name="shuffle_options" 
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   id="shuffle_options"
+                                                   name="shuffle_options"
                                                    value="1"
                                                    <?php echo e(old('shuffle_options') ? 'checked' : ''); ?>>
                                             <label class="form-check-label" for="shuffle_options">
@@ -415,18 +430,31 @@ unset($__errorArgs, $__bag); ?>
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-md-4">
                                         <div class="form-check form-switch mb-3">
-                                            <input class="form-check-input" 
-                                                   type="checkbox" 
-                                                   id="show_results_immediately" 
-                                                   name="show_results_immediately" 
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   id="show_results_immediately"
+                                                   name="show_results_immediately"
                                                    value="1"
-                                                   <?php echo e(old('show_results_immediately', true) ? 'checked' : ''); ?>>
+                                                   <?php echo e(old('show_results_immediately') ? 'checked' : ''); ?>>
                                             <label class="form-check-label" for="show_results_immediately">
                                                 <strong><?php echo e(__('messages.show_results_immediately')); ?></strong><br>
                                                 <small class="text-muted"><?php echo e(__('messages.show_results_after_submission')); ?></small>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input"
+                                                   type="checkbox"
+                                                   id="is_active"
+                                                   name="is_active"
+                                                   value="1"
+                                                   <?php echo e(old('is_active', true) ? 'checked' : ''); ?>>
+                                            <label class="form-check-label" for="is_active">
+                                                <strong><?php echo e(__('messages.is_active')); ?></strong><br>
+                                                <small class="text-muted"><?php echo e(__('messages.exam_available_for_students')); ?></small>
                                             </label>
                                         </div>
                                     </div>
@@ -465,64 +493,77 @@ unset($__errorArgs, $__bag); ?>
 </div>
 
 <script>
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+// Function to load sections when course is selected
+function loadCourseSections(courseId) {
+    const sectionSelect = document.getElementById('section_id');
+
+    // Clear current options
+    sectionSelect.innerHTML = '<option value=""><?php echo e(__('messages.select_section_optional')); ?></option>';
+
+    if (!courseId) {
+        sectionSelect.disabled = true;
+        return;
+    }
+
+    // Enable the section select
+    sectionSelect.disabled = false;
+
+    // Fetch sections via AJAX
+    fetch(`<?php echo e(route('sections.ajax')); ?>/${courseId}`, {
+            method: 'POST', // استخدم POST أو أي Method محتاج حماية
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+        })
+        .then(response => response.json())
+        .then(sections => {
+            sections.forEach(section => {
+                const option = new Option(section.title, section.id);
+                sectionSelect.add(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading sections:', error);
+            sectionSelect.disabled = true;
+        });
+}
+
+// Load sections on page load if old course is selected
+document.addEventListener('DOMContentLoaded', function() {
+    const oldCourseId = document.getElementById('course_id').value;
+    if (oldCourseId) {
+        loadCourseSections(oldCourseId);
+    }
+});
+
 // Form validation
 document.getElementById('examForm').addEventListener('submit', function(e) {
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
-    
+
     // Validate date range
     if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
-        
+
         if (start >= end) {
             e.preventDefault();
             alert('<?php echo e(__("messages.end_date_must_be_after_start_date")); ?>');
             return;
         }
     }
-    
+
     // Validate passing grade
     const passingGrade = parseFloat(document.getElementById('passing_grade').value);
     if (passingGrade < 0 || passingGrade > 100) {
         e.preventDefault();
-        alert('<?php echo e(__("messages.passing_grade_must_be_between_0_and_100")); ?>');
+        alert('<?php echo e(__("messages.passing_grade_must_be_between_0_100")); ?>');
         return;
-    }
-    
-    // Validate attempts
-    const attempts = parseInt(document.getElementById('attempts_allowed').value);
-    if (attempts < 1 || attempts > 10) {
-        e.preventDefault();
-        alert('<?php echo e(__("messages.attempts_must_be_between_1_and_10")); ?>');
-        return;
-    }
-});
-
-// Set minimum date for start_date to today
-document.addEventListener('DOMContentLoaded', function() {
-    const now = new Date();
-    const isoString = now.toISOString().slice(0, 16);
-    document.getElementById('start_date').setAttribute('min', isoString);
-    
-    // Update end_date minimum when start_date changes
-    document.getElementById('start_date').addEventListener('change', function() {
-        const startDate = this.value;
-        if (startDate) {
-            document.getElementById('end_date').setAttribute('min', startDate);
-        }
-    });
-});
-
-// Auto-fill Arabic title when English title is entered (optional helper)
-document.getElementById('title_en').addEventListener('blur', function() {
-    const titleAr = document.getElementById('title_ar');
-    if (!titleAr.value && this.value) {
-        // You can add auto-translation logic here if needed
-        // For now, just focus on the Arabic field
-        titleAr.focus();
     }
 });
 </script>
 <?php $__env->stopSection(); ?>
+
 <?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/admin/exams/create.blade.php ENDPATH**/ ?>

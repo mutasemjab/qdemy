@@ -186,8 +186,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::get('results', [ExamController::class, 'results'])->name('results');
             Route::get('attempts/{attempt}', [ExamController::class, 'viewAttempt'])->name('attempts.view');
         });
-
-
+        Route::post('courses/sections-ajax/{course?}', [ExamController::class, 'getCourseSections'])
+            ->name('sections.ajax');
 
 
         Route::prefix('community')->name('admin.community.')->group(function () {

@@ -40,7 +40,7 @@ class Course extends Model
     }
     public function exams()
     {
-        return $this->belongsTo(Exam::class);
+        return $this->HasMany(Exam::class);
     }
 
     /**

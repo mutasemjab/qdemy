@@ -13,6 +13,9 @@ exam.add question function doesnt work
 delete bunny storage folder
 check file existance before delete
 
+fix categories
+fix alert messages
+fix go to checkout link after enroll
 
 
 // there will be needed to connect to youtube api && bunnyCdn to make right progress vide put now video_duration_must_be right
