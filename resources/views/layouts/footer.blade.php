@@ -30,6 +30,7 @@
                     <li><a href="{{ route('grades_basic-programm') }}">Basic Grades Program</a></li>
                     <li><a href="{{ route('universities-programm') }}">Universities and Colleges Program</a></li>
                     <li><a href="{{ route('tawjihi-programm') }}">Tawjihi & Secondary Program</a></li>
+                    <li><a href="{{ route('packages-offers') }}">Packages && Offers</a></li>
                 </ul>
             </div>
         </div>

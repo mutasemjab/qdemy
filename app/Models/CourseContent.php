@@ -64,7 +64,7 @@ class CourseContent extends Model
 
     public function content_user_progress()
     {
-        return $this->hasOne(ContentUserProgress::class)->where('user_id',auth('user')->user()?->id);
+        return $this->hasOne(ContentUserProgress::class)->where('user_id',auth_student()?->id);
     }
     public function getIsCompletedAttribute()
     {

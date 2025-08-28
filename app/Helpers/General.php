@@ -40,6 +40,15 @@ if (!function_exists('CartRepository')) {
   }
 }
 
+// return auth user
+// type sudent but now return any user
+if (!function_exists('auth_student')) {
+  function auth_student()
+  {
+    return auth('user')->user();
+  }
+}
+
 function uploadImage($folder, $image)
 {
     $extension = strtolower($image->extension());

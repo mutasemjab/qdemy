@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="examx-filters">
-    <?php echo $__env->make('user.alert-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+    <?php echo $__env->make('web.alert-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
     <form action='<?php echo e(route("e-exam")); ?>' methog='get'>
         <?php echo csrf_field(); ?>
         <div class="examx-row">

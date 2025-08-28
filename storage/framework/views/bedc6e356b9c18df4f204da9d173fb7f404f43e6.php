@@ -1,0 +1,485 @@
+<?php $__env->startSection('title', __('messages.Edit Package') . ' - ' . $package->name); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0"><?php echo e(__('messages.Edit Package')); ?></h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="<?php echo e(route('packages.index')); ?>"><?php echo e(__('messages.Packages')); ?></a></li>
+                            <li class="breadcrumb-item"><a href="<?php echo e(route('packages.show', $package)); ?>"><?php echo e($package->name); ?></a></li>
+                            <li class="breadcrumb-item active"><?php echo e(__('messages.Edit')); ?></li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="<?php echo e(route('packages.show', $package)); ?>" class="btn btn-outline-info">
+                        <i class="fas fa-eye me-2"></i><?php echo e(__('messages.View')); ?>
+
+                    </a>
+                    <a href="<?php echo e(route('packages.index')); ?>" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i><?php echo e(__('messages.Back')); ?>
+
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><?php echo e(__('messages.Package Information')); ?></h5>
+                </div>
+                
+                <form method="POST" action="<?php echo e(route('packages.update', $package)); ?>" enctype="multipart/form-data">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
+                    
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <!-- Package Name -->
+                            <div class="col-md-6">
+                                <label for="name" class="form-label required"><?php echo e(__('messages.Package Name')); ?></label>
+                                <input type="text" class="form-control <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                       id="name" name="name" value="<?php echo e(old('name', $package->name)); ?>" required maxlength="128">
+                                <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="col-md-6">
+                                <label for="price" class="form-label required"><?php echo e(__('messages.Price')); ?></label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control <?php $__errorArgs = ['price'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                           id="price" name="price" value="<?php echo e(old('price', $package->price)); ?>" required min="0" step="0.001">
+                                    <span class="input-group-text"><?php echo e(__('messages.Currency')); ?></span>
+                                </div>
+                                <?php $__errorArgs = ['price'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Type -->
+                            <div class="col-md-6">
+                                <label for="type" class="form-label required"><?php echo e(__('messages.Package Type')); ?></label>
+                                <select class="form-control <?php $__errorArgs = ['type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                        id="type" name="type" required onchange="loadCategories()">
+                                    <option value=""><?php echo e(__('messages.Select Type')); ?></option>
+                                    <option value="class" <?php echo e(old('type', $package->type) == 'class' ? 'selected' : ''); ?>>
+                                        <?php echo e(__('messages.Class')); ?> - <?php echo e(__('messages.Organizational categories')); ?>
+
+                                    </option>
+                                    <option value="lesson" <?php echo e(old('type', $package->type) == 'lesson' ? 'selected' : ''); ?>>
+                                        <?php echo e(__('messages.Lesson')); ?> - <?php echo e(__('messages.Teachable subjects')); ?>
+
+                                    </option>
+                                </select>
+                                <div class="form-text">
+                                    <?php echo e(__('messages.Type determines which categories will be available for selection')); ?>
+
+                                </div>
+                                <?php $__errorArgs = ['type'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Course Selection Limit -->
+                            <div class="col-md-6">
+                                <label for="how_much_course_can_select" class="form-label required"><?php echo e(__('messages.Course Selection Limit')); ?></label>
+                                <input type="number" class="form-control <?php $__errorArgs = ['how_much_course_can_select'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                       id="how_much_course_can_select" name="how_much_course_can_select" 
+                                       value="<?php echo e(old('how_much_course_can_select', $package->how_much_course_can_select)); ?>" required min="1">
+                                <div class="form-text">
+                                    <?php echo e(__('messages.How many courses can be selected from this package')); ?>
+
+                                </div>
+                                <?php $__errorArgs = ['how_much_course_can_select'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label for="status" class="form-label required"><?php echo e(__('messages.Status')); ?></label>
+                                <select class="form-control <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                        id="status" name="status" required>
+                                    <option value="active" <?php echo e(old('status', $package->status) == 'active' ? 'selected' : ''); ?>>
+                                        <?php echo e(__('messages.Active')); ?>
+
+                                    </option>
+                                    <option value="inactive" <?php echo e(old('status', $package->status) == 'inactive' ? 'selected' : ''); ?>>
+                                        <?php echo e(__('messages.Inactive')); ?>
+
+                                    </option>
+                                </select>
+                                <?php $__errorArgs = ['status'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Image -->
+                            <div class="col-md-6">
+                                <label for="image" class="form-label"><?php echo e(__('messages.Package Image')); ?></label>
+                                
+                                <!-- Current Image -->
+                                <?php if($package->image): ?>
+                                    <div class="mb-3">
+                                        <img src="<?php echo e($package->image_url); ?>" alt="<?php echo e($package->name); ?>" 
+                                             class="img-thumbnail" style="max-width: 200px;">
+                                        <div class="form-text"><?php echo e(__('messages.Current image')); ?></div>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <input type="file" class="form-control <?php $__errorArgs = ['image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                       id="image" name="image" accept="image/*" onchange="previewImage(this)">
+                                <div class="form-text">
+                                    <?php echo e(__('messages.Supported formats: JPG, PNG, GIF (Max: 2MB)')); ?>
+
+                                    <?php if($package->image): ?>
+                                        <br><?php echo e(__('messages.Leave empty to keep current image')); ?>
+
+                                    <?php endif; ?>
+                                </div>
+                                <?php $__errorArgs = ['image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                                
+                                <!-- New Image Preview -->
+                                <div id="image-preview" class="mt-3" style="display: none;">
+                                    <img id="preview-img" src="" alt="Preview" class="img-thumbnail" style="max-width: 200px;">
+                                    <div class="form-text"><?php echo e(__('messages.New image preview')); ?></div>
+                                </div>
+                            </div>
+
+                            <!-- Categories Selection -->
+                            <div class="col-12">
+                                <label class="form-label"><?php echo e(__('messages.Available Categories')); ?></label>
+                                <div id="categories-container">
+                                    <div class="text-center py-4">
+                                        <div class="spinner-border spinner-border-sm me-2"></div>
+                                        <?php echo e(__('messages.Loading categories...')); ?>
+
+                                    </div>
+                                </div>
+                                <?php $__errorArgs = ['categories'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback d-block"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-12">
+                                <label for="description" class="form-label"><?php echo e(__('messages.Description')); ?></label>
+                                <textarea class="form-control <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                          id="description" name="description" rows="4" 
+                                          placeholder="<?php echo e(__('messages.Enter package description...')); ?>"><?php echo e(old('description', $package->description)); ?></textarea>
+                                <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <div class="invalid-feedback"><?php echo e($message); ?></div>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Package Info -->
+                            <div class="col-12">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title"><?php echo e(__('messages.Package Information')); ?></h6>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <strong><?php echo e(__('messages.ID')); ?>:</strong> <?php echo e($package->id); ?>
+
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong><?php echo e(__('messages.Current Type')); ?>:</strong> 
+                                                <span class="badge <?php echo e($package->type_badge_class); ?>">
+                                                    <?php echo e(ucfirst($package->type)); ?>
+
+                                                </span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong><?php echo e(__('messages.Current Status')); ?>:</strong> 
+                                                <span class="badge <?php echo e($package->status_badge_class); ?>">
+                                                    <?php echo e(ucfirst($package->status)); ?>
+
+                                                </span>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <strong><?php echo e(__('messages.Categories')); ?>:</strong> <?php echo e($package->categories->count()); ?>
+
+                                            </div>
+                                        </div>
+                                        <div class="row mt-2">
+                                            <div class="col-md-6">
+                                                <strong><?php echo e(__('messages.Created')); ?>:</strong> <?php echo e($package->created_at->format('Y-m-d H:i')); ?>
+
+                                            </div>
+                                            <div class="col-md-6">
+                                                <strong><?php echo e(__('messages.Updated')); ?>:</strong> <?php echo e($package->updated_at->format('Y-m-d H:i')); ?>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="<?php echo e(route('packages.show', $package)); ?>" class="btn btn-secondary">
+                                <?php echo e(__('messages.Cancel')); ?>
+
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i><?php echo e(__('messages.Update Package')); ?>
+
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+// Preview uploaded image
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('preview-img').src = e.target.result;
+            document.getElementById('image-preview').style.display = 'block';
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Load categories based on selected type
+function loadCategories() {
+    const type = document.getElementById('type').value;
+    const container = document.getElementById('categories-container');
+    
+    if (!type) {
+        container.innerHTML = `
+            <div class="text-muted text-center py-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <?php echo e(__('messages.Please select a package type first to load available categories')); ?>
+
+            </div>
+        `;
+        return;
+    }
+
+    // Show loading
+    container.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm me-2"></div>
+            <?php echo e(__('messages.Loading categories...')); ?>
+
+        </div>
+    `;
+
+    // Fetch categories
+    fetch(`<?php echo e(route('packages.get-categories-by-type')); ?>?type=${type}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="text-muted text-center py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <?php echo e(__('messages.No categories available for this type')); ?>
+
+                    </div>
+                `;
+                return;
+            }
+
+            const selectedCategories = <?php echo json_encode(old('categories', $package->categories->pluck('id')->toArray()), 512) ?>;
+            
+            let html = `
+                <div class="form-text mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    <?php echo e(__('messages.Select the categories that will be included in this package')); ?>
+
+                </div>
+                <div class="row g-2">
+            `;
+
+            data.forEach(category => {
+                const isChecked = selectedCategories.includes(category.id);
+                html += `
+                    <div class="col-md-6">
+                        <div class="form-check p-3 border rounded category-item" 
+                             style="cursor: pointer; transition: all 0.3s ease;">
+                            <input class="form-check-input" type="checkbox" 
+                                   value="${category.id}" id="category_${category.id}" 
+                                   name="categories[]" ${isChecked ? 'checked' : ''}>
+                            <label class="form-check-label d-flex align-items-center" 
+                                   for="category_${category.id}" style="cursor: pointer;">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        ${category.icon ? `<i class="${category.icon} me-2" style="color: ${category.color}"></i>` : ''}
+                                        <strong>${category.name_ar}</strong>
+                                    </div>
+                                    <div class="text-muted small mt-1">
+                                        ${category.display_name}
+                                    </div>
+                                    ${category.parent_name ? `<div class="text-info small"><i class="fas fa-arrow-up me-1"></i>${category.parent_name}</div>` : ''}
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+
+            // Add hover effects
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                    this.style.borderColor = '#0d6efd';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                    this.style.borderColor = '';
+                });
+
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
+                    }
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+            container.innerHTML = `
+                <div class="text-danger text-center py-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <?php echo e(__('messages.Error loading categories. Please try again.')); ?>
+
+                </div>
+            `;
+        });
+}
+
+// Load categories on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+});
+</script>
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/admin/packages/edit.blade.php ENDPATH**/ ?>

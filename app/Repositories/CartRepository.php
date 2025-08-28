@@ -15,9 +15,11 @@ class CartRepository
     {
         $this->cart_session = Session::get('courses', []);
         $this->expiry_days  = env('COMPLETED_WATCHING_COURSES', 30);
-        $this->user         = auth('user')->user();
+        $this->user         = auth_student();
     }
 
+    // put course id courses session
+    // @param $courseId = course->id
     public function put($courseId)
     {
         $courses = $this->cart_session;
@@ -50,7 +52,7 @@ class CartRepository
 
     }
 
-    // remove course from courses session
+    // remove courses from courses session
     public function forgetAll()
     {
        Session::forget('courses');
@@ -61,7 +63,8 @@ class CartRepository
     }
 
     // remove course from courses session
-    // $courseToRemove == $course->id
+    // @param $courseToRemove = course->id
+    // $courses from cart_session = cart courses ids
     public function removeItem($courseToRemove)
     {
         $courses = $this->cart_session;

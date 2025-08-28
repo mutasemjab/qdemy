@@ -106,7 +106,7 @@ class ExamController extends Controller
             'shuffle_options' => $request->has('shuffle_options'),
             'show_results_immediately' => $request->has('show_results_immediately'),
             'is_active' => $request->has('is_active'),
-            'created_by'         => auth('user')->user()?->id,
+            'created_by'         => auth_student()?->id,
             'created_by_admin'   => auth('admin')->user()?->id,
         ]);
 

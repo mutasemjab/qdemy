@@ -2,26 +2,26 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
-use App\Http\Controllers\User\AuthController;
-use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\User\CheckoutController;
-use App\Http\Controllers\User\HomeController;
-use App\Http\Controllers\User\EnrollmentController;
-use App\Http\Controllers\User\PagesController;
-use App\Http\Controllers\User\CourseController;
-use App\Http\Controllers\User\ContactController;
-use App\Http\Controllers\User\ExamController;
+use App\Http\Controllers\Web\AuthController;
+use App\Http\Controllers\Web\CartController;
+use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\EnrollmentController;
+use App\Http\Controllers\Web\PagesController;
+use App\Http\Controllers\Web\CourseController;
+use App\Http\Controllers\Web\ContactController;
+use App\Http\Controllers\Web\ExamController;
 
-use App\Http\Controllers\User\PackageController;
-use App\Http\Controllers\User\ProductController;
-use App\Http\Controllers\User\ProfileController;
-use App\Http\Controllers\User\TawjihiController;
-use App\Http\Controllers\User\ElementaryProgrammController;
-use App\Http\Controllers\User\StudentAccountController;
+use App\Http\Controllers\Web\PackageController;
+use App\Http\Controllers\Web\ProductController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\TawjihiController;
+use App\Http\Controllers\Web\ElementaryProgrammController;
+use App\Http\Controllers\Web\StudentAccountController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
-use App\Http\Controllers\User\VideoProgressController;
-use App\Http\Controllers\User\LessonController;
+use App\Http\Controllers\Web\VideoProgressController;
+use App\Http\Controllers\Web\LessonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +65,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/cards-order', [PagesController::class, 'cards_order'])->name('card-order');
     Route::get('/bank-questions', [PagesController::class, 'bank_questions'])->name('bank-questions');
     Route::get('/ex-questions', [PagesController::class, 'ex_questions'])->name('ex-questions');
+    Route::get('/packages-and-offers', [PagesController::class, 'packages_offers'])->name('packages-offers');
 
     Route::get('/e-exam', [ExamController::class, 'e_exam'])->name('e-exam');
 
