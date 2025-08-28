@@ -100,7 +100,7 @@ class PackageController extends Controller
     public function show(Package $package)
     {
         $package->load('categories.parent');
-        
+
         return view('admin.packages.show', compact('package'));
     }
 
@@ -110,7 +110,7 @@ class PackageController extends Controller
     public function edit(Package $package)
     {
         $package->load('categories');
-        
+
         return view('admin.packages.edit', compact('package'));
     }
 
@@ -181,7 +181,7 @@ class PackageController extends Controller
     public function toggleStatus(Package $package)
     {
         $package->update(['status' => $package->status === 'active' ? 'inactive' : 'active']);
-        
+
         $status = $package->status === 'active' ? 'activated' : 'deactivated';
         return back()->with('success', __("messages.Package {$status} successfully"));
     }
@@ -192,7 +192,7 @@ class PackageController extends Controller
     public function getCategoriesByType(Request $request)
     {
         $type = $request->get('type');
-        
+
         if (!in_array($type, ['class', 'lesson'])) {
             return response()->json(['error' => 'Invalid type'], 400);
         }
@@ -208,7 +208,7 @@ class PackageController extends Controller
                     'id' => $category->id,
                     'name_ar' => $category->name_ar,
                     'name_en' => $category->name_en,
-                    'display_name' => $category->parent 
+                    'display_name' => $category->parent
                         ? $category->parent->name_ar . ' >> ' . $category->name_ar
                         : $category->name_ar,
                     'icon' => $category->icon,
@@ -238,12 +238,12 @@ class PackageController extends Controller
                 $packages->update(['status' => 'active']);
                 $message = __('messages.Packages activated successfully');
                 break;
-                
+
             case 'deactivate':
                 $packages->update(['status' => 'inactive']);
                 $message = __('messages.Packages deactivated successfully');
                 break;
-                
+
             case 'delete':
                 // Delete images for all packages
                 $packageList = $packages->get();

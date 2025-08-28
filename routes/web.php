@@ -4,24 +4,25 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\CartController;
-use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\ExamController;
 use App\Http\Controllers\Web\HomeController;
-use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\PagesController;
 use App\Http\Controllers\Web\CourseController;
+use App\Http\Controllers\Web\LessonController;
 use App\Http\Controllers\Web\ContactController;
-use App\Http\Controllers\Web\ExamController;
-
 use App\Http\Controllers\Web\PackageController;
+
 use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
-use App\Http\Controllers\Web\ElementaryProgrammController;
-use App\Http\Controllers\Web\StudentAccountController;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
+use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\VideoProgressController;
-use App\Http\Controllers\Web\LessonController;
+use App\Http\Controllers\Web\StudentAccountController;
+
+use App\Http\Controllers\Web\PackageAndOfferController;
+use App\Http\Controllers\Web\ElementaryProgrammController;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,9 +66,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/cards-order', [PagesController::class, 'cards_order'])->name('card-order');
     Route::get('/bank-questions', [PagesController::class, 'bank_questions'])->name('bank-questions');
     Route::get('/ex-questions', [PagesController::class, 'ex_questions'])->name('ex-questions');
-    Route::get('/packages-and-offers', [PagesController::class, 'packages_offers'])->name('packages-offers');
-
-    Route::get('/e-exam', [ExamController::class, 'e_exam'])->name('e-exam');
 
     Route::get('/grades-basic-programm', [ElementaryProgrammController::class, 'grades_basic_programm'])->name('grades_basic-programm');
     Route::get('/grade/{grade}/{slug?}', [ElementaryProgrammController::class, 'grade_programm'])->name('grade');
@@ -79,15 +77,15 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/tawjihi-grade-year/{slug?}', [TawjihiController::class, 'tawjihi_grade_year_fields'])->name('tawjihi-grade-year');
 
 
-    Route::middleware(['auth:user'])->group(function () {
-        Route::post('/update-video-progress', [VideoProgressController::class, 'updateVideoProgress'])
-        ->name('video.progress.update');
+    Route::post('/update-video-progress', [VideoProgressController::class, 'updateVideoProgress'])
+    ->name('video.progress.update');
 
-        Route::post('/mark-video-complete', [VideoProgressController::class, 'markVideoComplete'])
-        ->name('video.progress.complete');
+    Route::post('/mark-video-complete', [VideoProgressController::class, 'markVideoComplete'])
+    ->name('video.progress.complete');
 
-        Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
+    Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
 
+    Route::group(['prefix'=>'cart'], function () {
         Route::get('/checkout', [EnrollmentController::class, 'index'])->name('checkout');
         Route::post('/add-to-session', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/add-to-session/{courseId?}', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
@@ -97,35 +95,36 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/remove-course', [EnrollmentController::class, 'removeCourse'])->name('remove.course');
         Route::post('/process-payment', [EnrollmentController::class, 'processPayment'])->name('process.payment');
         Route::get('/payment-success', [EnrollmentController::class, 'paymentSuccess'])->name('payment.success');
+    });
 
-        Route::middleware(['auth:user'])->prefix('exam')->group(function () {
+    // packages routes
+    Route::group(['prefix'=>'packages'], function () {
+        Route::get('/packages-and-offers/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
+    });
 
-            // عرض قائمة الامتحانات
-            Route::get('/', [ExamController::class, 'e_exam'])->name('e.exam');
+    // enrollment routes
+    // عرض قائمة الامتحانات
+    Route::get('exam/', [ExamController::class, 'e_exam'])->name('e-exam');
+    // عرض الامتحان
+    Route::get('exam/{exam}/{slug?}', [ExamController::class, 'exam'])->name('exam');
 
-            // عرض الامتحان
-            Route::get('/{exam}/{slug?}', [ExamController::class, 'exam'])->name('exam');
+    Route::middleware(['auth:user'])->prefix('exam')->group(function () {
 
-            // بدء الامتحان
-            Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
 
-            // الإجابة على سؤال
-            Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
+        // بدء الامتحان
+        Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
 
-            // تسليم الامتحان
-            Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
+        // الإجابة على سؤال
+        Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
 
-            // عرض النتائج
-            Route::get('/{exam}/results', [ExamController::class, 'exam_results'])->name('exam.results');
+        // تسليم الامتحان
+        Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
 
-            // مراجعة محاولة معينة
-            Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
-        });
+        // عرض النتائج
+        Route::get('/{exam}/results', [ExamController::class, 'exam_results'])->name('exam.results');
 
-        // Route::get('/exam/{exam}/{slug?}/{attempt?}', [ExamController::class, 'exam'])->name('exam');
-        // Route::post('/start-exam/{exam}/{slug?}', [ExamController::class, 'start_exam'])->name('start.exam');
-        // Route::post('/answer-question/{exam}/{question}', [ExamController::class, 'answer_question'])->name('answer.question');
-
+        // مراجعة محاولة معينة
+        Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
     Route::group(['middleware' => 'auth:user'], function () {

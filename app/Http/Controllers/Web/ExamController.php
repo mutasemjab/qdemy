@@ -56,14 +56,14 @@ class ExamController extends Controller
 
         $_questions = $exam->questions();
 
-        $attempts         = $exam->attempts()->where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
+        $attempts         = $exam->user_attempts();
         $result           = $exam->result_attempt($user->id);
-        $current_attempts = $attempts->where('submitted_at', null);
+        $current_attempts = $exam->current_user_attempts();
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
         $can_add_attempt  = $exam->can_add_attempt($user->id);
 
         // Get current attempt or create one if needed
-        $current_attempt = $attempt ?? $exam->attempts()->where('submitted_at',null)->orderBy('id','desc')->first();
+        $current_attempt = $attempt ?? $exam->current_user_attempt();
 
         // Check time limit
         if ($current_attempt && $exam->duration_minutes) {
@@ -148,15 +148,20 @@ class ExamController extends Controller
         return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
     }
 
+    // تصحيح سؤال
+    // وذلك حسب نوع السؤال if multiple_choice || true_false auto correct answer
+    // if essay make it null now && score = 0
+    // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
         $user = auth_student();
 
         // Get current attempt
-        $current_attempt = ExamAttempt::where('user_id', $user->id)
-            ->where('exam_id', $exam->id)
-            ->where('status', 'in_progress')
-            ->first();
+        $current_attempt = $exam->current_user_attempt();
+        //  ExamAttempt::where('user_id', $user->id)
+        //     ->where('exam_id', $exam->id)
+        //     ->where('status', 'in_progress')
+        //     ->first();
 
         if (!$current_attempt) {
             return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
@@ -262,6 +267,8 @@ class ExamController extends Controller
               ->with($error ?? '',$message_status ?? '');
     }
 
+    // تسليم الامتحان
+    // وجعل submitted_at = now(), status =  completed
     public function submit_exam(ExamAttempt $attempt)
     {
         if ($attempt->status !== 'in_progress') {
@@ -287,6 +294,9 @@ class ExamController extends Controller
         ]);
     }
 
+    // تسليم الامتحان اجباريا حال انتهاء الوقت
+    // وذلك بنداء فنكشن submit_exam()
+    // بعد التصحيح الالكتروني للاسئله غير المجابة وجعل نتيجتها is_correct = false
     public function auto_submit_exam(ExamAttempt $attempt)
     {
         // Mark unanswered questions as incorrect
@@ -309,6 +319,7 @@ class ExamController extends Controller
         $this->submit_exam($attempt);
     }
 
+    // تسليم الامتحان
     public function finish_exam(Request $request, Exam $exam)
     {
         $user = auth_student();
@@ -329,13 +340,11 @@ class ExamController extends Controller
             ->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
+    // get exam completed attempts
     public function exam_results(Exam $exam)
     {
         $user = auth_student();
-        $attempts = $exam->attempts()->where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $attempts = $exam->result_attempts();
 
         return view('web.exam.results', [
             'exam'     => $exam,
@@ -343,6 +352,7 @@ class ExamController extends Controller
         ]);
     }
 
+    // review attempts answers
     public function review_attempt(Exam $exam, ExamAttempt $attempt)
     {
         $user = auth_student();

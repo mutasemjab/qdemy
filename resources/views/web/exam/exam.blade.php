@@ -212,9 +212,9 @@
 
         <!-- Navigation -->
         @if($current_attempt && $questions)
-            <div style="margin: 20px 0;">
-                {{ $questions->appends(request()->query())->links() }}
-            </div>
+        <div class="pagination-wrapper">
+        {{ $questions?->links('pagination::custom-bootstrap-5') ?? '' }}
+        </div>
         @endif
 
         <!-- Exam History -->

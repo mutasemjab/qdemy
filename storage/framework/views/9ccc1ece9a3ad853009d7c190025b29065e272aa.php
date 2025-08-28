@@ -1,105 +1,64 @@
-<?php $__env->startSection('title','عروض البكجات'); ?>
+<?php $__env->startSection('title',__('messages.packages_offers')); ?>
 
 <?php $__env->startSection('content'); ?>
 <section class="pkgo-wrap">
 
 
-      <div class="universities-header-wrapper">
+    <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>البكجات والعروض</h2>
+            <h2><?php echo e(__('messages.packages_offers')); ?></h2>
         </div>
     </div>
 
   <div class="co-chooser">
     <button class="co-chooser-btn" id="coChooserBtn">
-      <span>اختر البطاقة الخاصة بك</span>
+      <span> <?php echo e($programm?->localized_name ?? __('messages.choose the programm')); ?> </span>
       <i class="fa-solid fa-caret-down"></i>
     </button>
+    <?php if($programms && $programms->count()): ?>
     <ul class="co-chooser-list" id="coChooserList">
-      <li data-label="الصفوف الأساسية">الصفوف الأساسية</li>
-      <li data-label="التوجيهي">التوجيهي</li>
-      <li data-label="الجامعات والكليات">الجامعات والكليات</li>
-      <li data-label="البرنامج الدولي">البرنامج الدولي</li>
+      <li><a href="<?php echo e(route('packages-offers')); ?>" class='text-decoration-none'>
+        <?php echo e(__('messages.all programms')); ?></a>
+      </li>
+      <?php $__currentLoopData = $programms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $prog): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+      <li><a href="<?php echo e(route('packages-offers',$prog)); ?>" class='text-decoration-none'>
+        <?php echo e($prog->localized_name); ?></a>
+      </li>
+      <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </ul>
+    <?php endif; ?>
   </div>
 
-  <div class="pkgo-head">بطاقات الصفوف الأساسية</div>
+  <div class="pkgo-head">
+    <?php echo e(__('messages.cards')); ?> <?php echo e($programm?->localized_name); ?>
 
-  <div class="pkgo-row">
-    <div class="pkgo-side pkgo-side-1">
-      <span>البكج الأول</span>
+   </div>
+
+    <?php $__currentLoopData = $packages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $package): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    <div class="pkgo-row">
+        <div class="pkgo-side pkgo-side-1">
+        <span><?php echo e($package->name); ?></span>
+        </div>
+        <div class="pkgo-mid">
+        <div class="pkgo-title">
+            <h3><?php echo e($package->name); ?></h3>
+            <!-- <span class="pkgo-year"><?php echo e($package->description); ?></span> -->
+        </div>
+        <p class="pkgo-desc"><?php echo e($package->description); ?></p>
+        <?php if($package->categories && $package->categories->count()): ?>
+        <ul class="pkgo-tags">
+            <?php $__currentLoopData = $package->categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <li><?php echo e($category->localized_name); ?></li>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </ul>
+        <?php endif; ?>
+        </div>
+        <div class="pkgo-cta-col">
+        <a href="#" class="pkgo-cta"><?php echo e(__('messages.buy_or_activate')); ?></a>
+        </div>
+        <div class="pkgo-price"><?php echo e(sprintf('%g', $package->price)); ?> <span><?php echo e(CURRENCY); ?></span></div>
     </div>
-    <div class="pkgo-mid">
-      <div class="pkgo-title">
-        <h3>بكج المادة الواحدة</h3>
-        <span class="pkgo-year">2009</span>
-      </div>
-      <p class="pkgo-desc">في هذا البكج يستطيع الطالب شراء مادة واحدة من هذه المواد</p>
-      <ul class="pkgo-tags">
-        <li>اللغة العربية</li>
-        <li>اللغة الإنجليزية</li>
-        <li>التربية الإسلامية</li>
-        <li>تاريخ الأردن</li>
-      </ul>
-    </div>
-
-    <div class="pkgo-cta-col">
-      <a href="#" class="pkgo-cta">شراء/ تفعيل البطاقة</a>
-    </div>
-    <div class="pkgo-price">30 <span>JOD</span></div>
-
-  </div>
-
-  <div class="pkgo-row">
-
-    <div class="pkgo-side pkgo-side-2">
-      <span>البكج الثاني</span>
-    </div>
-
-    <div class="pkgo-mid">
-      <div class="pkgo-title">
-        <h3>بكج المادة الواحدة</h3>
-        <span class="pkgo-year">2009</span>
-      </div>
-      <p class="pkgo-desc">في هذا البكج يستطيع الطالب شراء مادة واحدة من هذه المواد</p>
-      <ul class="pkgo-tags">
-        <li>اللغة العربية</li>
-        <li>اللغة الإنجليزية</li>
-        <li>التربية الإسلامية</li>
-        <li>تاريخ الأردن</li>
-      </ul>
-    </div>
-
-    <div class="pkgo-cta-col">
-      <a href="#" class="pkgo-cta">شراء/ تفعيل البطاقة</a>
-    </div>
-    <div class="pkgo-price">30 <span>JOD</span></div>
-  </div>
-
-  <div class="pkgo-row">
-    <div class="pkgo-side pkgo-side-3">
-      <span>البكج الثالث</span>
-    </div>
-
-    <div class="pkgo-mid">
-      <div class="pkgo-title">
-        <h3>بكج المادة الواحدة</h3>
-        <span class="pkgo-year">2009</span>
-      </div>
-      <p class="pkgo-desc">في هذا البكج يستطيع الطالب شراء مادة واحدة من هذه المواد</p>
-      <ul class="pkgo-tags">
-        <li>اللغة العربية</li>
-        <li>اللغة الإنجليزية</li>
-        <li>التربية الإسلامية</li>
-        <li>تاريخ الأردن</li>
-      </ul>
-    </div>
-
-    <div class="pkgo-cta-col">
-      <a href="#" class="pkgo-cta">شراء/ تفعيل البطاقة</a>
-    </div>
-    <div class="pkgo-price">30 <span>JOD</span></div>
-  </div>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
 </section>
 <?php $__env->stopSection(); ?>

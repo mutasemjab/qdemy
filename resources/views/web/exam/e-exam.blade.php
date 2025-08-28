@@ -64,7 +64,19 @@
           <div><span>{{ __('messages.exam_duration')}}</span><strong>{{$exam->duration_minutes}} {{ __('messages.minute')}}</strong></div>
           <div><span>{{ __('messages.question_count')}}:</span><strong>{{$exam->questions?->count()}} {{ __('messages.question')}}</strong></div>
         </div>
-        <a href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" class="examx-btn">{{ __('messages.start_exam')}}</a>
+        @if($exam->can_add_attempt())
+        <a href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" class="examx-btn">
+            {{ __('messages.start_exam')}}
+        </a>
+        @elseif($exam->current_user_attempt())
+        <a href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" class="examx-btn">
+            {{ __('messages.continue')}}
+        </a>
+        @elseif($exam->result_attempt())
+        <a href="{{route('exam.results',$exam->id)}}" class="examx-btn">
+            {{ __('messages.result')}}
+        </a>
+        @endif
       </div>
     </div>
     @endforeach

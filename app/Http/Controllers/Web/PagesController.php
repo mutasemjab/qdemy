@@ -60,8 +60,4 @@ class PagesController extends Controller
         return view('web.ex');
     }
 
-    public function packages_offers()
-    {
-        return view('web.packages-offers');
-    }
 }

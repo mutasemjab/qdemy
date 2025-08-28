@@ -62,7 +62,22 @@
           <div><span><?php echo e(__('messages.exam_duration')); ?></span><strong><?php echo e($exam->duration_minutes); ?> <?php echo e(__('messages.minute')); ?></strong></div>
           <div><span><?php echo e(__('messages.question_count')); ?>:</span><strong><?php echo e($exam->questions?->count()); ?> <?php echo e(__('messages.question')); ?></strong></div>
         </div>
-        <a href="<?php echo e(route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])); ?>" class="examx-btn"><?php echo e(__('messages.start_exam')); ?></a>
+        <?php if($exam->can_add_attempt()): ?>
+        <a href="<?php echo e(route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])); ?>" class="examx-btn">
+            <?php echo e(__('messages.start_exam')); ?>
+
+        </a>
+        <?php elseif($exam->current_user_attempt()): ?>
+        <a href="<?php echo e(route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])); ?>" class="examx-btn">
+            <?php echo e(__('messages.continue')); ?>
+
+        </a>
+        <?php elseif($exam->result_attempt()): ?>
+        <a href="<?php echo e(route('exam.results',$exam->id)); ?>" class="examx-btn">
+            <?php echo e(__('messages.result')); ?>
+
+        </a>
+        <?php endif; ?>
       </div>
     </div>
     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -75,4 +90,4 @@
 </section>
 <?php $__env->stopSection(); ?>
 
-<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/user/exam/e-exam.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/web/exam/e-exam.blade.php ENDPATH**/ ?>

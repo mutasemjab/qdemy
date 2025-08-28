@@ -859,9 +859,12 @@ return [
    'total' => 'المجموع',
    'total_videos' => 'عدد الفيديوهات',
    'videos' => 'الفيديوهات',
+   'packages_offers' => 'البكجات والعروض',
+   'buy_or_activate' => 'شراء/ تفعيل البطاقة',
    'pdfs' => 'ملفات PDF',
    'quizzes' => 'الاختبارات',
    'assignments' => 'الواجبات',
+   'cards' => 'بطاقات',
    'no_contents_match_filter' => 'لا توجد محتويات تطابق المرشح الحالي',
 
    // Section Edit

@@ -13,6 +13,13 @@ class CategoryRepository
         app()->setLocale('ar');
     }
 
+    //  categories where type = major (main programms)
+    public function getMajors()
+    {
+        return $this->model->where('is_active', true)
+        ->where('type', 'major')
+        ->get();
+    }
     //  elementry && tawjihi programm grades
     public function getProgrammsGrades()
     {

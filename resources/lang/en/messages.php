@@ -881,8 +881,10 @@ return [
     'pdfs' => 'PDFs',
     'quizzes' => 'Quizzes',
     'assignments' => 'Assignments',
+    'cards' => 'cards',
     'no_contents_match_filter' => 'No contents match the current filter',
-
+    'packages_offers' => 'Packages and offers',
+    'buy_or_activate' => 'Buy/activate card',
     // Section Edit
     'section_statistics' => 'Section Statistics',
     'total_contents' => 'Total Contents',
