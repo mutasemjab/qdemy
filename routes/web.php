@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\TeacherController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
 use App\Http\Controllers\Web\CheckoutController;
+use App\Http\Controllers\Web\ContactUsController;
 use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\VideoProgressController;
 use App\Http\Controllers\Web\StudentAccountController;
@@ -49,6 +51,8 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/contacts', [ContactUsController::class, 'index'])->name('contacts');
+    Route::post('/contacts/store', [ContactUsController::class, 'store'])->name('contacts.store');
 
     Route::get('/courses', [CourseController::class, 'index'])->name('courses');
     Route::get('/course/{course}/{slug?}' , [CourseController::class, 'course'])->name('course');
@@ -56,11 +60,11 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/universities-programm', [CourseController::class, 'universities_programm_courses'])->name('universities-programm');
     Route::get('/international-programm/{programm?}/{slug?}',[CourseController::class, 'international_programm_courses'])->name('international-programms');
 
-    Route::get('/teachers', [PagesController::class, 'teachers'])->name('teachers');
-    Route::get('/teacher/{teacher}', [PagesController::class, 'teacher'])->name('teacher');
+    Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
+    Route::get('/teacher/{id}', [TeacherController::class, 'show'])->name('teacher');
+
 
     Route::get('/download', [PagesController::class, 'download'])->name('download');
-    Route::get('/contacts', [PagesController::class, 'contacts'])->name('contacts');
     Route::get('/community', [PagesController::class, 'community'])->name('community');
     Route::get('/sale-point', [PagesController::class, 'sale_point'])->name('sale-point');
     Route::get('/cards-order', [PagesController::class, 'cards_order'])->name('card-order');

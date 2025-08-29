@@ -1,10 +1,11 @@
 <!-- Header Section -->
 <header class="header">
     <div class="container">
+        <a href="{{ route('home') }}">
         <div class="logo">
             <img src="{{ asset('assets_front/images/logo.png') }}" alt="Logo">
         </div>
-
+        </a>
         <nav class="nav" id="navMenu">
             <ul>
                 <li><a href="{{ route('home') }}" class="active">الرئيسية</a></li>

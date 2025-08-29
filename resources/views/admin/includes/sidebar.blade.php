@@ -253,6 +253,15 @@
                             </a>
                         </li>
                         @endif
+                      
+                        @if ($user->can('special-qdemie-table') || $user->can('special-qdemie-add') || $user->can('special-qdemie-edit') || $user->can('special-qdemie-delete'))
+                        <li class="nav-item">
+                            <a href="{{ route('special-qdemies.index') }}" class="nav-link {{ request()->routeIs('special-qdemies.*') ? 'active' : '' }}">
+                                <i class="far fa-image nav-icon"></i>
+                                <p>{{ __('messages.special_qdemies') }}</p>
+                            </a>
+                        </li>
+                        @endif
 
                         @if ($user->can('blog-table') || $user->can('blog-add') || $user->can('blog-edit') || $user->can('blog-delete'))
                         <li class="nav-item">
@@ -304,6 +313,15 @@
                             <a href="{{ route('opinions.index') }}" class="nav-link {{ request()->routeIs('opinions.*') ? 'active' : '' }}">
                                 <i class="far fa-star nav-icon"></i>
                                 <p>{{ __('messages.opinion students') }}</p>
+                            </a>
+                        </li>
+                        @endif
+                     
+                        @if ($user->can('contactUs-table') || $user->can('contactUs-add') || $user->can('contactUs-edit') || $user->can('contactUs-delete'))
+                        <li class="nav-item">
+                            <a href="{{ route('contactUs.index') }}" class="nav-link {{ request()->routeIs('contactUs.*') ? 'active' : '' }}">
+                                <i class="far fa-star nav-icon"></i>
+                                <p>{{ __('messages.contactUs') }}</p>
                             </a>
                         </li>
                         @endif

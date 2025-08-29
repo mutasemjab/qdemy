@@ -1614,7 +1614,12 @@ return [
     'created_successfully' => 'تم إنشاء العنصر بنجاح',
     'updated_successfully' => 'تم تحديث العنصر بنجاح',
     'deleted_successfully' => 'تم حذف العنصر بنجاح',
-
+    'special_qdemies' => 'ما يميز Qdemy',
+    'special_qdemy' => 'الأكاديمية المميزة',
+    'add_special_qdemy' => 'إضافة أكاديمية مميزة',
+    'edit_special_qdemy' => 'تعديل الأكاديمية المميزة',
+    'view_special_qdemy' => 'عرض الأكاديمية المميزة',
+    "contactUs" => "الذين تواصلو معنا",
    "" => "",
    "" => "",
    "" => "",

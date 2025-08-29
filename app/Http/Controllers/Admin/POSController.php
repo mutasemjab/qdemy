@@ -40,6 +40,8 @@ class POSController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:255',
             'address' => 'required|string|max:255',
+            'country_name' => 'required|string|max:255',
+            'google_map_link' => 'nullable|string|max:255',
         ]);
 
         POS::create($request->all());
@@ -73,6 +75,8 @@ class POSController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:255',
             'address' => 'required|string|max:255',
+            'country_name' => 'required|string|max:255',
+            'google_map_link' => 'nullable|string|max:255',
         ]);
 
         $po->update($request->all());

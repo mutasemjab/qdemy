@@ -29,4 +29,9 @@ class POS extends Model
     {
         return $this->cards()->withCount('cardNumbers')->get()->sum('card_numbers_count');
     }
+
+       public static function getGroupedByCountry()
+    {
+        return self::all()->groupBy('country_name');
+    }
 }

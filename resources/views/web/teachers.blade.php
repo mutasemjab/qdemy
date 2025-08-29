@@ -1,64 +1,58 @@
 @extends('layouts.app')
-@section('title','المعلمون')
+@section('title', __('front.Teachers'))
 
 @section('content')
 <section class="tch-wrap">
-
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>المعلمون</h2>
+            <h2>{{ __('front.Teachers') }}</h2>
         </div>
     </div>
 
-<div class="examx-filters">
-<div class="examx-row">
-  <div class="examx-dropdown">
-    <button class="examx-pill">
-      <i class="fa-solid fa-caret-down"></i>
-      <span>اختر المادة</span>
-    </button>
-    <ul class="examx-menu">
-      <li>اللغة العربية</li>
-      <li>الرياضيات</li>
-      <li>العلوم</li>
-    </ul>
-  </div>
-
-  <div class="examx-dropdown">
-    <button class="examx-pill">
-      <i class="fa-solid fa-caret-down"></i>
-      <span>اختر الصف</span>
-    </button>
-    <ul class="examx-menu">
-      <li>الصف الأول</li>
-      <li>الصف الثاني</li>
-      <li>الصف الثالث</li>
-    </ul>
-  </div>
-
-  <div class="examx-dropdown">
-    <button class="examx-pill">
-      <i class="fa-solid fa-caret-down"></i>
-      <span>اختر الفصل</span>
-    </button>
-    <ul class="examx-menu">
-      <li>الفصل الأول</li>
-      <li>الفصل الثاني</li>
-    </ul>
-  </div>
-</div>
-
-
-<div class="tch-grid">
-  @foreach ($teachers as $teacher)
-  <!-- photo -->
-    <div class="tch-item">
-      <a href="{{ route('teacher',$teacher->id) }}">
-        <img data-src="{{ $teacher->photo_url }}">
-      </a>
+    <div class="examx-filters">
+        <div class="examx-row">
+            <!-- Category Filter -->
+            <div class="examx-dropdown">
+                <button class="examx-pill">
+                    <i class="fa-solid fa-caret-down"></i>
+                    <span>
+                        @if(request('category') && $categories->find(request('category')))
+                            {{ app()->getLocale() == 'ar' ? $categories->find(request('category'))->name_ar : $categories->find(request('category'))->name_en }}
+                        @else
+                            {{ __('front.Choose Subject') }}
+                        @endif
+                    </span>
+                </button>
+                <ul class="examx-menu">
+                    <li><a href="{{ route('teachers') }}">{{ __('front.All Subjects') }}</a></li>
+                    @foreach($categories as $category)
+                        <li>
+                            <a href="{{ route('teachers', ['category' => $category->id]) }}">
+                                {{ app()->getLocale() == 'ar' ? $category->name_ar : $category->name_en }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
     </div>
-  @endforeach
-</div>
 
+    <div class="tch-grid">
+        @if($teachers->count() > 0)
+            @foreach ($teachers as $teacher)
+                <div class="tch-item">
+                    <a href="{{ route('teacher', $teacher->id) }}">
+                        <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
+                    </a>
+                </div>
+            @endforeach
+        @else
+            <div class="no-results">
+                <h3>{{ __('front.No Teachers Found') }}</h3>
+                <p>{{ __('front.No teachers found matching your filter criteria') }}</p>
+                <a href="{{ route('teachers') }}">{{ __('front.Show All Teachers') }}</a>
+            </div>
+        @endif
+    </div>
 </section>
 @endsection

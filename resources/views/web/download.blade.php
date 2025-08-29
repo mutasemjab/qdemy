@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
-@section('title','حمل التطبيق')
+@section('title', __('front.Download App'))
 
 @section('content')
 <section class="dl-app">
   <div class="dl-wrap">
 
     <div class="dl-info">
-      <h2 class="dl-title">حمل التطبيق الآن</h2>
-      <p class="dl-sub">حمل التطبيق لتجربة استخدام أسهل وأكثر مرونة على هاتفك. تعلّم، تابع، تواصل بكل مرونة.</p>
+      <h2 class="dl-title">{{ __('front.Download the App Now') }}</h2>
+      <p class="dl-sub">{{ __('front.Download the app for easier and more flexible usage on your phone. Learn, follow, communicate with complete flexibility.') }}</p>
 
       <div class="dl-stores">
         <a href="#" class="dl-store"><img data-src="{{ asset('assets_front/images/store-huawei.png') }}" alt="AppGallery"></a>

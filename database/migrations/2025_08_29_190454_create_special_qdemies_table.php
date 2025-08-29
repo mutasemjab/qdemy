@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('p_o_s', function (Blueprint $table) {
+        Schema::create('special_qdemies', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('phone');
-            $table->string('address');
-            $table->string('country_name');
-            $table->text('google_map_link')->nullable();
+            $table->string('title_ar');
+            $table->string('title_en');
             $table->timestamps();
         });
     }
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('p_o_s');
+        Schema::dropIfExists('special_qdemies');
     }
 };

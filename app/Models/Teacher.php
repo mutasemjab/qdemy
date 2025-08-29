@@ -16,6 +16,11 @@ class Teacher extends Model
         return $this->belongsTo(User::class);
     }
 
+       public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
+    
     public function getPhotoUrlAttribute()
     {
        return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/teacher1.png');

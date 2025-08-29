@@ -7,37 +7,35 @@ use App\Models\Teacher;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\POS;
 
 class PagesController extends Controller
 {
-    public function teachers()
-    {
-        $teachers  = Teacher::get();
-        return view('web.teachers',[
-            'teachers' => $teachers,
-        ]);
-    }
-
-    public function teacher(Teacher $teacher)
-    {
-        return view('web.teacher-profile',[
-            'teacher' => $teacher,
-        ]);
-    }
 
     public function download()
     {
         return view('web.download');
     }
 
-    public function contacts()
-    {
-        return view('web.contact');
-    }
 
-    public function sale_point()
+   public function sale_point(Request $request)
     {
-        return view('web.sale-point');
+        $query = POS::query();
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('address', 'LIKE', "%{$search}%")
+                  ->orWhere('country_name', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Group by country/city
+        $posGrouped = $query->get()->groupBy('country_name');
+
+        return view('web.sale-point', compact('posGrouped'));
     }
 
     public function cards_order()

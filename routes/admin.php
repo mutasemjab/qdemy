@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CardController;
 use App\Http\Controllers\Admin\CardNumberController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\CourseSectionController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,7 @@ use App\Http\Controllers\Admin\POSController;
 use App\Http\Controllers\Admin\QuestionController;
 use App\Http\Controllers\Admin\QuestionWebsiteController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\SpecialQdemyController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\WalletTransactionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -92,7 +94,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         // Resource Route
+        Route::resource('contactUs', ContactUsController::class);
         Route::resource('onboardings', OnBoardingController::class);
+        Route::resource('special-qdemies', SpecialQdemyController::class);
         Route::resource('users', UserController::class);
         Route::resource('banners', BannerController::class);
         Route::resource('settings', SettingController::class);

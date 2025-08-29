@@ -64,55 +64,62 @@
 </section>
 
 <section class="features">
-    <h2>ما يميز QDEMY</h2>
+    <h2>{{ __('front.What Makes QDEMY Special') }}</h2>
+    
     <div class="features-wrapper">
         <div class="features-box">
-            <div class="feature-item">برنامج التوجيهي والثانوي</div>
-            <div class="feature-item">برنامج التوجيهي والثانوي</div>
-            <div class="feature-item">برنامج التوجيهي والثانوي</div>
+            @foreach($specialQdemies as $special)
+                <div class="feature-item">
+                    {{ app()->getLocale() == 'ar' ? $special->title_ar : $special->title_en }}
+                </div>
+            @endforeach
         </div>
-
     </div>
 </section>
 
 <section class="services">
-    <h2>خدمات QDEMY</h2>
+    <h2>{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
-        <a href="{{ route('community') }}" class="service-btn dark">مجتمع QDEMY</a>
-        <a href="{{ route('e-exam') }}" class="service-btn light">امتحانات الكترونية</a>
-        <a href="{{ route('courses') }}" class="service-btn dark">الدورات</a>
-        <a href="{{ route('sale-point') }}" class="service-btn light">نقاط البيع</a>
-        <a href="{{ route('ex-questions') }}" class="service-btn dark">أسئلة سنوات وزارية</a>
-        <a href="{{ route('bank-questions') }}" class="service-btn light">بنك أسئلة <small>(أوراق وملخصات)</small></a>
+        <a href="{{ route('community') }}" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
+        <a href="{{ route('e-exam') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('courses') }}" class="service-btn dark">{{ __('front.Courses') }}</a>
+        <a href="{{ route('sale-point') }}" class="service-btn light">{{ __('front.Sale Points') }}</a>
+        <a href="{{ route('ex-questions') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
+        <a href="{{ route('bank-questions') }}" class="service-btn light">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
 <section class="social-media">
-    <h2>سوشال ميديا</h2>
+    <h2>{{ __('front.Social Media') }}</h2>
 
-    <div class="media-row">
-        <div class="media-video" data-video="https://www.youtube.com/embed/VIDEO_ID">
-            <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
-            <div class="overlay">
-                <i class="fas fa-play"></i>
+    @php $videoIndex = 0; @endphp
+    @for($i = 0; $i < min(2, ceil($socialMediaVideos->count() / 2)); $i++)
+        <div class="media-row">
+            @if($videoIndex < $socialMediaVideos->count())
+                <div class="media-video" data-video="{{ $socialMediaVideos[$videoIndex]->video }}">
+                    <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
+                    <div class="overlay">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                @php $videoIndex++; @endphp
+            @endif
+            
+            <div class="media-image">
+                <img data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
             </div>
+            
+            @if($videoIndex < $socialMediaVideos->count())
+                <div class="media-video" data-video="{{ $socialMediaVideos[$videoIndex]->video }}">
+                    <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
+                    <div class="overlay">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                @php $videoIndex++; @endphp
+            @endif
         </div>
-        <div class="media-image">
-            <img data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-        </div>
-    </div>
-
-    <div class="media-row">
-        <div class="media-image">
-            <img data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-        </div>
-        <div class="media-video" data-video="https://www.youtube.com/embed/VIDEO_ID2">
-            <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
-            <div class="overlay">
-                <i class="fas fa-play"></i>
-            </div>
-        </div>
-    </div>
+    @endfor
 
     <div class="video-popup">
         <div class="popup-content">
@@ -122,36 +129,27 @@
     </div>
 
     <div class="image-popup">
-    <div class="popup-content">
-        <span class="close-btn">&times;</span>
-        <img data-src="" alt="">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <img data-src="" alt="">
+        </div>
     </div>
-    </div>
-
-
 </section>
 
-
 <section class="teachers-carousel">
-    <h2>المعلمون</h2>
+    <h2>{{ __('front.Teachers') }}</h2>
     <div class="carousel-container">
         <button class="carousel-btn prev">&#10094;</button>
         <div class="carousel-track">
-            <div class="carousel-slide">
-                <img data-src="{{ asset('assets_front/images/teacher1.png') }}" alt="">
-            </div>
-            <div class="carousel-slide">
-                <img data-src="{{ asset('assets_front/images/teacher1.png') }}" alt="">
-            </div>
-            <div class="carousel-slide">
-                <img data-src="{{ asset('assets_front/images/teacher1.png') }}" alt="">
-            </div>
-            <div class="carousel-slide">
-                <img data-src="{{ asset('assets_front/images/teacher1.png') }}" alt="">
-            </div>
-            <div class="carousel-slide">
-                <img data-src="{{ asset('assets_front/images/teacher1.png') }}" alt="">
-            </div>
+            @foreach($teachers as $teacher)
+                <div class="carousel-slide">
+                    <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
+                    <div class="teacher-info">
+                        <h4>{{ $teacher->name }}</h4>
+                        <p>{{ $teacher->name_of_lesson }}</p>
+                    </div>
+                </div>
+            @endforeach
         </div>
         <button class="carousel-btn next">&#10095;</button>
     </div>
@@ -160,171 +158,121 @@
 <section class="stats-section">
     <div class="stats-overlay">
         <div class="stat-item">
-            <span class="stat-number">+20 Thousand</span>
-            <p>Course</p>
+            <span class="stat-number">{{ $settings->number_of_course ?? '+20 Thousand' }}</span>
+            <p>{{ __('front.Course') }}</p>
         </div>
         <div class="divider"></div>
         <div class="stat-item">
-            <span class="stat-number">+1 Thousand</span>
-            <p>Teacher</p>
+            <span class="stat-number">{{ $settings->number_of_teacher ?? '+1 Thousand' }}</span>
+            <p>{{ __('front.Teacher') }}</p>
         </div>
         <div class="divider"></div>
         <div class="stat-item">
-            <span class="stat-number">+2 Million</span>
-            <p>Viewing hour</p>
+            <span class="stat-number">{{ $settings->number_of_viewing_hour ?? '+2 Million' }}</span>
+            <p>{{ __('front.Viewing hour') }}</p>
         </div>
         <div class="divider"></div>
         <div class="stat-item">
-            <span class="stat-number">+3 Million</span>
-            <p>Student</p>
+            <span class="stat-number">{{ $settings->number_of_students ?? '+3 Million' }}</span>
+            <p>{{ __('front.Student') }}</p>
         </div>
     </div>
 </section>
 
 <section class="faq-section">
-        <h2>الأسئلة الأكثر شيوعاً</h2>
-        <div class="faq-section-link" >
-        <a href="#">شاهد المزيد ←</a>
-        </div>
+    <h2>{{ __('front.Most Frequently Asked Questions') }}</h2>
+    <div class="faq-section-link">
+        <a href="#">{{ __('front.See More') }} ←</a>
+    </div>
     <div class="faq-container">
-        <div class="faq-card">
-            <div class="icon">
-                <img data-src="../assets_front/images/ban-icon.png" alt="">
+        @foreach($faqs as $index => $faq)
+            <div class="faq-card {{ $index == 1 ? 'top-arrow faq-card-custom' : '' }}">
+                <div class="icon">
+                    <img data-src="../assets_front/images/ban-icon.png" alt="">
+                </div>
+                <h3>{{ $faq->question }}</h3>
+                <p>{{ $faq->answer }}</p>
             </div>
-            <h3>What is your cancellation policy?</h3>
-            <p>You can now cancel an order when it is in packed/shipped status. Any amount paid will be credited into the same payment mode using which the payment was made</p>
-        </div>
-        <div class="faq-card top-arrow faq-card-custom">
-            <div class="icon">
-                <img data-src="../assets_front/images/ban-icon.png" alt="">
-            </div>
-            <h3>What is your cancellation policy?</h3>
-            <p>You can now cancel an order when it is in packed/shipped status. Any amount paid will be credited into the same payment mode using which the payment was made</p>
-        </div>
-        <div class="faq-card">
-            <div class="icon">
-                <img data-src="../assets_front/images/ban-icon.png" alt="">
-            </div>
-            <h3>What is your cancellation policy?</h3>
-            <p>You can now cancel an order when it is in packed/shipped status. Any amount paid will be credited into the same payment mode using which the payment was made</p>
-        </div>
+        @endforeach
     </div>
 </section>
+
 <section class="rvx" dir="rtl">
-  <h2 class="rvx-title">آراء بعض الطلاب</h2>
+    <h2 class="rvx-title">{{ __('front.Some Students Reviews') }}</h2>
 
-  <div class="rvx-wrap">
-    <!-- Blue side panel -->
-    <div class="rvx-stage">
-      <div class="rvx-panel">
-        <h3 class="rvx-panel-title">آراء طلابنا في منصتهم</h3>
-        <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}" alt="Qdemy">
-        <p class="rvx-panel-sub"></p>
-        <a href="#" class="rvx-panel-link">اقرأ المزيد ←</a>
-      </div>
-
-      <!-- Carousel -->
-      <div class="rvx-window">
-        <div class="rvx-track">
-          <!-- Slide 1 -->
-          <article class="rvx-card rvx-card--dark">
-            <img class="rvx-card-img" data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-            <div class="rvx-card-body">
-              <h4 class="rvx-card-title">Lorem ipsum dolor sit amet</h4>
-              <p class="rvx-card-text">
-                Lorem ipsum dolor sit amet consectetur. Aliquet scelerisque urna cum adipiscing sollicitudin nulla.
-                Nibh mi viverra fermentum ultrices dolor vitae nascetur vulputate.
-              </p>
-              <div class="rvx-card-meta">
-                <span class="rvx-card-name">Muhamma ahmad</span>
-                <span class="rvx-card-stars" aria-label="4 من 5">★★★★☆</span>
-              </div>
+    <div class="rvx-wrap">
+        <!-- Blue side panel -->
+        <div class="rvx-stage">
+            <div class="rvx-panel">
+                <h3 class="rvx-panel-title">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
+                <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}" alt="Qdemy">
+                <p class="rvx-panel-sub"></p>
+                <a href="#" class="rvx-panel-link">{{ __('front.Read More') }} ←</a>
             </div>
-          </article>
 
-          <!-- Slide 2 -->
-          <article class="rvx-card rvx-card--blue">
-            <img class="rvx-card-img" data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-            <div class="rvx-card-body">
-              <h4 class="rvx-card-title">Lorem ipsum dolor sit amet</h4>
-              <p class="rvx-card-text">
-                Lorem ipsum dolor sit amet consectetur. Aliquet scelerisque urna cum adipiscing sollicitudin nulla.
-                Nibh mi viverra fermentum ultrices dolor vitae nascetur vulputate.
-              </p>
-              <div class="rvx-card-meta">
-                <span class="rvx-card-name">Muhamma ahmad</span>
-                <span class="rvx-card-stars" aria-label="3 من 5">★★★☆☆</span>
-              </div>
+            <!-- Carousel -->
+            <div class="rvx-window">
+                <div class="rvx-track">
+                    @foreach($opinionStudents as $index => $opinion)
+                        <article class="rvx-card {{ $index % 2 == 0 ? 'rvx-card--dark' : 'rvx-card--blue' }}">
+                            <img class="rvx-card-img" data-src="{{ $opinion->photo ? asset('assets/admin/uploads/' . $opinion->photo) : asset('assets_front/images/social1.jpg') }}" alt="">
+                            <div class="rvx-card-body">
+                                <h4 class="rvx-card-title">{{ $opinion->title }}</h4>
+                                <p class="rvx-card-text">{{ $opinion->description }}</p>
+                                <div class="rvx-card-meta">
+                                    <span class="rvx-card-name">{{ $opinion->name }}</span>
+                                    <span class="rvx-card-stars" aria-label="{{ $opinion->number_of_star }} من 5">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            {{ $i <= $opinion->number_of_star ? '★' : '☆' }}
+                                        @endfor
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
             </div>
-          </article>
 
-          <!-- Slide 3 (مثال إضافي) -->
-          <article class="rvx-card rvx-card--dark">
-            <img class="rvx-card-img" data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-            <div class="rvx-card-body">
-              <h4 class="rvx-card-title">Lorem ipsum dolor sit amet</h4>
-              <p class="rvx-card-text">
-                Lorem ipsum dolor sit amet consectetur. Aliquet scelerisque urna cum adipiscing sollicitudin nulla.
-                Nibh mi viverra fermentum ultrices dolor vitae nascetur vulputate.
-              </p>
-              <div class="rvx-card-meta">
-                <span class="rvx-card-name">Muhamma ahmad</span>
-                <span class="rvx-card-stars" aria-label="5 من 5">★★★★★</span>
-              </div>
+            <!-- Controls -->
+            <div class="rvx-controls">
+                <button class="rvx-arrow rvx-prev" aria-label="{{ __('front.Previous') }}">◀</button>
+                <div class="rvx-dots"></div>
+                <button class="rvx-arrow rvx-next" aria-label="{{ __('front.Next') }}">▶</button>
             </div>
-          </article>
         </div>
-      </div>
-
-      <!-- Controls -->
-      <div class="rvx-controls">
-        <button class="rvx-arrow rvx-prev" aria-label="السابق">◀</button>
-        <div class="rvx-dots"></div>
-        <button class="rvx-arrow rvx-next" aria-label="التالي">▶</button>
-      </div>
     </div>
-  </div>
 </section>
-
 
 <section class="blog-slider" dir="rtl">
-  <h2 class="blog-slider__title">مدونات</h2>
+    <h2 class="blog-slider__title">{{ __('front.Blogs') }}</h2>
 
-  <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="السابق" disabled>
-    <span>&rsaquo;</span>
-  </button>
-  <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="التالي">
-    <span>&lsaquo;</span>
-  </button>
+    <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}" disabled>
+        <span>&rsaquo;</span>
+    </button>
+    <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="{{ __('front.Next') }}">
+        <span>&lsaquo;</span>
+    </button>
 
-  <div class="blog-slider__viewport">
-    <div class="blog-slider__track">
-
-      @php
-        $items = $posts ?? collect([
-          ['img'=>asset('assets_front/images/blog1.png'),'title'=>'Fantom XRP celo gala flow siacoin Livepeer amp looping klaytn ox.','excerpt'=>'TerraUSD stacks chainlink solana decentraland klaytn. Helium ren kava zcash decentraland'],
-          ['img'=>asset('assets_front/images/blog2.png'),'title'=>'Fantom XRP celo gala flow siacoin Livepeer amp looping klaytn ox.','excerpt'=>'TerraUSD stacks chainlink solana decentraland klaytn. Helium ren kava zcash decentraland'],
-          ['img'=>asset('assets_front/images/blog3.png'),'title'=>'Fantom XRP celo gala flow siacoin Livepeer amp looping klaytn ox.','excerpt'=>'TerraUSD stacks chainlink solana decentraland klaytn. Helium ren kava zcash decentraland'],
-          ['img'=>asset('assets_front/images/blog1.png'),'title'=>'Fantom XRP celo gala flow siacoin Livepeer amp looping klaytn ox.','excerpt'=>'TerraUSD stacks chainlink solana decentraland klaytn. Helium ren kava zcash decentraland'],
-        ]);
-      @endphp
-
-      @foreach($items as $p)
-        <article class="blog-card">
-          <a href="#">
-            <div class="blog-card__image">
-              <img data-src="{{ $p['img'] }}" alt="">
-            </div>
-            <h3 class="blog-card__title">{{ $p['title'] }}</h3>
-            <p class="blog-card__excerpt">{{ $p['excerpt'] }}</p>
-          </a>
-        </article>
-      @endforeach
-
+    <div class="blog-slider__viewport">
+        <div class="blog-slider__track">
+            @foreach($blogs as $blog)
+                <article class="blog-card">
+                    <a href="#">
+                        <div class="blog-card__image">
+                            <img data-src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}" alt="">
+                        </div>
+                        <h3 class="blog-card__title">
+                            {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
+                        </h3>
+                        <p class="blog-card__excerpt">
+                            {{ app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) }}
+                        </p>
+                    </a>
+                </article>
+            @endforeach
+        </div>
     </div>
-  </div>
 
-  <div class="blog-slider__dots" role="tablist" aria-label="مؤشر السلايدر"></div>
+    <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
 </section>
-
 @endsection

@@ -4,6 +4,13 @@ namespace  App\Http\Controllers\Web;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
+use App\Models\OpinionStudent;
+use App\Models\QuestionWebsite;
+use App\Models\Setting;
+use App\Models\SocialMedia;
+use App\Models\SpecialQdemy;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
@@ -12,7 +19,23 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return view('web.home');
+        $specialQdemies = SpecialQdemy::all();
+        $socialMediaVideos = SocialMedia::all();
+        $teachers = Teacher::all();
+        $settings = Setting::first(); // Assuming single settings record
+        $faqs = QuestionWebsite::take(3)->get(); // Get first 3 FAQs
+        $opinionStudents = OpinionStudent::all();
+        $blogs = Blog::take(4)->get(); // Get first 4 blogs
+
+        return view('web.home', compact(
+            'specialQdemies', 
+            'socialMediaVideos', 
+            'teachers', 
+            'settings', 
+            'faqs', 
+            'opinionStudents', 
+            'blogs'
+        ));
     }
 
     /**
