@@ -65,8 +65,7 @@ class PackageAndOfferController extends Controller
         }
         $lessonsIds      = $request->lessonsIds ?? [];
         $choosen_lessons = Category::whereIn('id',$lessonsIds)->get();
-        $courses         = Course::whereIn('category_id',$lessonsIds)->get();
 
-        return view('web.package', compact('categoriesTree','package','classes','lessons','choosen_lessons','courses','clas','is_type_class'));
+        return view('web.package', compact('categoriesTree','package','classes','lessons','choosen_lessons','clas','is_type_class'));
     }
 }
