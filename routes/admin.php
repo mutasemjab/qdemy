@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamController;
 use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
+use App\Http\Controllers\Admin\OnBoardingController;
 use App\Http\Controllers\Admin\OpinionStudentController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\UserController;
@@ -42,10 +43,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
-           Route::resource('notifications', NotificationController::class);
+    Route::resource('notifications', NotificationController::class);
 
-            Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
-             ->name('notifications.resend');
+    Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
+        ->name('notifications.resend');
 
     Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -91,7 +92,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         // Resource Route
-
+        Route::resource('onboardings', OnBoardingController::class);
         Route::resource('users', UserController::class);
         Route::resource('banners', BannerController::class);
         Route::resource('settings', SettingController::class);
@@ -130,7 +131,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         Route::resource('blogs', BlogController::class);
         Route::resource('bank-questions', BankQuestionController::class);
-        Route::get('bank-question/{bankQuestion}/download', [BankQuestionController::class,'downloadPdf'])->name('bank-questions.download');
+        Route::get('bank-question/{bankQuestion}/download', [BankQuestionController::class, 'downloadPdf'])->name('bank-questions.download');
         Route::get('/bank-questions/{parentId}/children', [BankQuestionController::class, 'getChildCategories'])->name('bank-questions.get-children');
         Route::resource('ministerial-questions', MinisterialYearsQuestionController::class);
         Route::get('/ministerial-categories/{parentId}/children', [MinisterialYearsQuestionController::class, 'getChildCategories'])->name('ministerial-questions.get-children');
@@ -215,8 +216,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
                 Route::get('/{comment}/reject', [App\Http\Controllers\Admin\CommunityController::class, 'rejectComment'])->name('reject');
                 Route::delete('/{comment}', [App\Http\Controllers\Admin\CommunityController::class, 'destroyComment'])->name('destroy');
                 Route::get('/{comment}/toggle-status', [App\Http\Controllers\Admin\CommunityController::class, 'toggleCommentStatus'])->name('toggle-status');
-
-               });
+            });
         });
 
 
@@ -230,10 +230,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::patch('packages/{package}/toggle-status', [PackageController::class, 'toggleStatus'])->name('packages.toggle-status');
         Route::post('packages/bulk-action', [PackageController::class, 'bulkAction'])->name('packages.bulk-action');
         Route::get('packages/categories/by-type', [PackageController::class, 'getCategoriesByType'])->name('packages.get-categories-by-type');
-
-
-
-
     });
 });
 

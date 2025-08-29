@@ -244,6 +244,15 @@
                             </a>
                         </li>
                         @endif
+                    
+                        @if ($user->can('onboarding-table') || $user->can('onboarding-add') || $user->can('onboarding-edit') || $user->can('onboarding-delete'))
+                        <li class="nav-item">
+                            <a href="{{ route('onboardings.index') }}" class="nav-link {{ request()->routeIs('onboardings.*') ? 'active' : '' }}">
+                                <i class="far fa-image nav-icon"></i>
+                                <p>{{ __('messages.onboardings') }}</p>
+                            </a>
+                        </li>
+                        @endif
 
                         @if ($user->can('blog-table') || $user->can('blog-add') || $user->can('blog-edit') || $user->can('blog-delete'))
                         <li class="nav-item">

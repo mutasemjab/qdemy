@@ -116,7 +116,7 @@ class CourseController extends Controller
 
     public function international_programm_courses($programm = null)
     {
-        $courses              = CourseRepository()->internationalProgramCourses($programm)->paginate(PGN);
+        $courses = CourseRepository()->internationalProgramCourses($programm)->paginate(PGN);
         return view('web.courses',[
             'title'    => 'International Program',
             'courses'  => $courses,

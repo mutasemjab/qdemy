@@ -2,25 +2,14 @@
 
 namespace App\Http\Controllers\Api\v1\User;
 
-use App\Http\Controllers\Api\v1\User\ReceivableController;
-use App\Http\Controllers\Api\v1\User\SectionUserController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\User\AuthController;
-use App\Http\Controllers\Api\v1\User\OrderController;
-use App\Http\Controllers\Api\v1\User\TransferBalanceController;
-use App\Http\Controllers\Api\v1\User\FavouriteController;
-use App\Http\Controllers\Api\v1\User\CategoryController;
-use App\Http\Controllers\Api\v1\User\RequestBalanceController;
-use App\Http\Controllers\Api\v1\User\PayInvoiceController;
-use App\Http\Controllers\Api\v1\User\TransferBankController;
-use App\Http\Controllers\Api\v1\User\WalletController;
 use App\Http\Controllers\Api\v1\User\BannerController;
-use App\Http\Controllers\Api\v1\User\CustomerController;
-use App\Http\Controllers\Api\v1\User\TransferController;
 use App\Http\Controllers\Api\v1\User\SettingController;
-use App\Http\Controllers\Api\v1\User\ScanCardController;
-use App\Http\Controllers\Api\v1\User\QuestionController;
+use App\Http\Controllers\Api\v1\User\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,5 +27,39 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 //Route unAuth
 
+//Route unAuth
+Route::group(['prefix' => 'v1/user'], function () {
 
+    //---------------- Auth --------------------//
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::get('/banners', [BannerController::class, 'index']);
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::get('/onboardings', [OnBoardingController::class, 'index']);
+    Route::get('/teachers', [TeacherController::class, 'index']);
+    Route::post('/check-phone-reset', [ForgotPasswordController::class, 'checkPhoneForReset']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
+
+    Route::prefix('courses')->group(function () {
+        Route::get('/', [CourseController::class, 'index']);
+        Route::get('/subject/{subjectId}', [CourseController::class, 'coursesBySubject']);
+        Route::get('/international/{program?}', [CourseController::class, 'internationalProgramCourses']);
+        Route::get('/universities', [CourseController::class, 'universitiesProgramCourses']);
+    });
+
+    Route::get('/exams', [ExamController::class, 'getElectronicExams']);
+
+    // Auth Route
+    Route::group(['middleware' => ['auth:user-api']], function () {
+
+        
+        Route::get('/home', HomeController::class);
+        Route::get('/profile', [AuthController::class, 'profile']);
+        Route::post('/update-profile', [AuthController::class, 'updateProfile']);
+        Route::delete('/delete-account', [AuthController::class, 'deleteAccount']);
+
+
+        Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
+    });
+});
    

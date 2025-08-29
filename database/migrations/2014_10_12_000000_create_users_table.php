@@ -30,11 +30,6 @@ return new class extends Migration
 
             $table->unsignedBigInteger('clas_id')->nullable(); // الصف التابع له
             $table->foreign('clas_id')->references('id')->on('clas')->onDelete('cascade');
-
-            // for social login
-            $table->text('google_id')->nullable();
-            $table->text('apple_id')->nullable();
-            $table->text('access_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

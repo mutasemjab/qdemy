@@ -95,7 +95,6 @@ class UserSeeder extends Seeder
                 'activate' => rand(1, 2), // Random activation status
                 'photo' => rand(0, 1) ? 'profile' . rand(1, 10) . '.jpg' : null,
                 'clas_id' => $role === 'student' ? Clas::inRandomOrder()->first()->id : null,
-                'access_token' => rand(0, 1) ? bin2hex(random_bytes(32)) : null,
             ]);
         }
 

@@ -1579,5 +1579,42 @@ return [
     'warning' => 'Warning',
     'info' => 'Information',
     "some_thing_wont_wrong" => "some_thing_wont_wrong",
+     'actions' => 'Actions',
+    'save' => 'Save',
+    'update' => 'Update',
+    'cancel' => 'Cancel',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'view' => 'View',
+    'add_new' => 'Add New',
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
+    'no_data_found' => 'No data found',
+    'add_first_item' => 'Add First Item',
+    'confirm_delete' => 'Are you sure you want to delete this item?',
+    'no_image' => 'No Image',
+    
+    // Onboarding specific
+    'onboardings' => 'Onboardings',
+    'onboarding' => 'Onboarding',
+    'add_onboarding' => 'Add Onboarding',
+    'edit_onboarding' => 'Edit Onboarding',
+    'view_onboarding' => 'View Onboarding',
+    
+    // Fields
+    'title' => 'Title',
+    'title_en' => 'Title (English)',
+    'title_ar' => 'Title (Arabic)',
+    'description' => 'Description',
+    'description_en' => 'Description (English)',
+    'description_ar' => 'Description (Arabic)',
+    'photo' => 'Photo',
+    'current_photo' => 'Current Photo',
+    'photo_requirements' => 'Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB',
+    
+    // Messages
+    'created_successfully' => 'Item created successfully',
+    'updated_successfully' => 'Item updated successfully',
+    'deleted_successfully' => 'Item deleted successfully',
     "" => "",
 ];

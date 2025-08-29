@@ -36,6 +36,11 @@ class PermissionSeeder extends Seeder
             'banner-add',
             'banner-edit',
             'banner-delete',
+       
+            'onboarding-table',
+            'onboarding-add',
+            'onboarding-edit',
+            'onboarding-delete',
 
             'setting-table',
             'setting-add',
