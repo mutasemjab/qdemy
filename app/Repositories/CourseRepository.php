@@ -14,6 +14,8 @@ class CourseRepository
         app()->setLocale('ar');
     }
 
+    // query for all courses under univertisy programm
+    // courses is directly under univertisy programm
     public function universitiesProgramCourses()
     {
         $universityProgramId = CategoryRepository()->getUniversitiesProgram()?->id;
@@ -23,11 +25,14 @@ class CourseRepository
         return [];
     }
 
+    // query->get() for all courses under univertisy programm
     public function getUniversitiesProgramCourses()
     {
         return $this->universitiesProgramCourses()->get();
     }
 
+    // query for all courses under international programm
+    // courses is directly under international programm
     public function internationalProgramCourses($programm = null)
     {
         $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
@@ -35,19 +40,25 @@ class CourseRepository
             return $this->model->where('category_id',$internationalProgramId);
         }
         return [];
-        // $internationalCoursesParents = [];
-        // if($programm){
-        //     $internationalCoursesParents = CategoryRepository()->getAllSubChilds($programm)->pluck('id')->toArray();
-        //     return $this->model->whereIn('category_id',$internationalCoursesParents);
-        // }
-        return [];
     }
 
+    // query->get() for all courses under international programm
     public function getInternationalProgramCourses($programm)
     {
         return $this->internationalProgramCourses($programm)->get();
     }
 
+    // query direct courses under courses
+    // @param categoryId = Category.id
+    // return collection
+    public function getDirectCategoryCourses($categoryId)
+    {
+        $courses = [];
+        $courses = Course::where('category_id',$categoryId)->get();
+        return $courses;
+    }
+
+    // query enrollend courses for currnt login user
     public function userCourses($userId)
     {
         if(!$userId) return null;
@@ -56,12 +67,14 @@ class CourseRepository
         return null;
     }
 
+    // query->get() enrollend courses for currnt login user
     public function getUserCourses($userId)
     {
         if(!$userId) return null;
         return $this->userCourses($userId)->get();
     }
 
+    // query->get() enrollend courses ids for currnt login user
     public function getUserCoursesIds($userId)
     {
         if(!$userId) return [];

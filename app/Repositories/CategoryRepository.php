@@ -20,19 +20,14 @@ class CategoryRepository
         ->where('type', 'major')
         ->get();
     }
-    //  elementry && tawjihi programm grades
+
+    //  elementry
+    //where 'level' = 'tawjihi_grade' (tawjihi_grade = elementary)
     public function getProgrammsGrades()
     {
         return $this->model->where('is_active', true)
         ->where('level', 'tawjihi_grade')
         ->get();
-    }
-
-    //  subjects under elementry && tawjihi programm grades
-    public function getSubjectUnderProgrammsGrades()
-    {
-        $lessons = $this->model->where('type','lesson')->get()->unique('ctg_key');
-        return $lessons;
     }
 
     //  subjects under elementry && tawjihi programm grades
@@ -43,6 +38,7 @@ class CategoryRepository
     }
 
     // elementry programm grades
+    // where 'ctg_key' = 'tawjihi_and_secondary_program'
     public function tawjihiProgrammGrades()
     {
         return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
@@ -58,11 +54,15 @@ class CategoryRepository
     }
 
     // get tawjihi 2009 grades
+    // sql from this.tawjihiProgrammGrades  where 'ctg_key','!=','final_year' && 'ctg_key','!=','vocational-system'
     public function getTawjihiFirstGrades()
     {
         return $this->tawjihiProgrammGrades()->where('ctg_key','!=','final_year')->where('ctg_key','!=','vocational-system')->first();
     }
 
+    // get all ministry subjects for first tawjihi grade
+    // if is active
+    // if has parent with ctg = ministry-subjects
     public function getTawjihiFirstGradesMinistrySubjects()
     {
         return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
@@ -70,6 +70,9 @@ class CategoryRepository
         })->get();
     }
 
+    // get all school subjects for first tawjihi grade
+    // if is active
+    // if has parent with ctg = school-subjects
     public function getTawjihiFirstGradesSchoolSubjects()
     {
         return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
@@ -77,17 +80,15 @@ class CategoryRepository
         })->get();
     }
 
-    // get tawjihi 2008 grades
+    // get tawjihi last year (2008) grades
     public function getTawjihiLastGrades()
     {
         return $this->tawjihiProgrammGrades()->where('ctg_key','final_year')->first();
     }
 
-    public function getTawjihiVocationalSystemGrades()
-    {
-        return $this->tawjihiProgrammGrades()->where('ctg_key','vocational-system')->first();
-    }
-
+    // get all grade years under elementary programm
+    // where parent.ctg_key = elementary-grades-program
+    // return collection
     public function getElementryProgramGrades()
     {
         return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
@@ -96,20 +97,16 @@ class CategoryRepository
         })->get();
     }
 
-    public function getInternationalProgramTypes()
-    {
-        return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
-            $q->where('name_en', 'International Program')
-            ->orWhere('ctg_key', 'international-program');
-        })->get();
-    }
-
+    // get major international program
+    // return instance of Category
     public function getInternationalProgram()
     {
         return $this->model->where('is_active', true)->where('name_en', 'International Program')
             ->orWhere('ctg_key', 'international-program')->first();
     }
 
+    // get major univirisity program
+    // return instance of Category
     public function getUniversitiesProgram()
     {
         return $this->model->where('is_active', true)->where('name_en', 'Universities and Colleges Program')

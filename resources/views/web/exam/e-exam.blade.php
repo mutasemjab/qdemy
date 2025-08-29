@@ -20,9 +20,6 @@
                 <select class="examx-pill" name="subject" id="subject_id">
                     <i class="fa-solid fa-caret-down"></i>
                     <option>اختر المادة</option>
-                    @foreach($subjectUnderProgrammsGrades as $subject)
-                    <option id='subject_{{$subject->id}}' data-grade-id="subject_{{$subject->id}}" value="{{$subject->id}}" @if(old("subject") == $subject->id) selected @endif>{{$subject->localized_name}}</option>
-                    @endforeach
                 </select>
             </div>
 
