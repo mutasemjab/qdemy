@@ -86,7 +86,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
 
     Route::group(['prefix'=>'cart'], function () {
-        Route::get('/checkout', [EnrollmentController::class, 'index'])->name('checkout');
+        Route::get('/', [EnrollmentController::class, 'index'])->name('checkout');
         Route::post('/add-to-session', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/add-to-session/{courseId?}', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/courses-count', [EnrollmentController::class, 'getCoursesCount'])->name('courses.count');
@@ -99,7 +99,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     // packages routes
     Route::group(['prefix'=>'packages'], function () {
-        Route::get('/packages-and-offers/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
+        Route::get('/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
+        Route::get('/package/{package?}/{clas?}', [PackageAndOfferController::class, 'package'])->name('package');
     });
 
     // enrollment routes
@@ -109,7 +110,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('exam/{exam}/{slug?}', [ExamController::class, 'exam'])->name('exam');
 
     Route::middleware(['auth:user'])->prefix('exam')->group(function () {
-
 
         // بدء الامتحان
         Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');

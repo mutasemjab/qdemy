@@ -49,7 +49,7 @@ class TawjihiController extends Controller
         $tawjihiLastYearFields = CategoryRepository()->getDirectChilds($field);
         $ministrySubjects      = CategoryRepository()->getDirectChilds($field)->where('is_ministry',1);
         $schoolSubjects        = CategoryRepository()->getDirectChilds($field)->where('is_ministry',0);
-        return view('web.tawjihi-field',[
+        return view('web.tawjihi-last-year-field',[
             'field'                 => $field,
             'ministrySubjects'      => $ministrySubjects,
             'schoolSubjects'        => $schoolSubjects,

@@ -48,13 +48,17 @@
         <?php if($package->categories && $package->categories->count()): ?>
         <ul class="pkgo-tags">
             <?php $__currentLoopData = $package->categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-            <li><?php echo e($category->localized_name); ?></li>
+            <li>
+                <?php if($category->parent): ?> <?php echo e($category->parent->localized_name); ?> -> <?php endif; ?> <?php echo e($category->localized_name); ?>
+
+                <!-- <?php echo e($category->localized_name); ?> -->
+            </li>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
         <?php endif; ?>
         </div>
         <div class="pkgo-cta-col">
-        <a href="#" class="pkgo-cta"><?php echo e(__('messages.buy_or_activate')); ?></a>
+        <a href="<?php echo e(route('package',$package)); ?>" class="pkgo-cta"><?php echo e(__('messages.buy_or_activate')); ?></a>
         </div>
         <div class="pkgo-price"><?php echo e(sprintf('%g', $package->price)); ?> <span><?php echo e(CURRENCY); ?></span></div>
     </div>

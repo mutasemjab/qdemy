@@ -48,13 +48,16 @@
         @if($package->categories && $package->categories->count())
         <ul class="pkgo-tags">
             @foreach($package->categories as $category)
-            <li>{{$category->localized_name}}</li>
+            <li>
+                @if($category->parent) {{$category->parent->localized_name}} -> @endif {{$category->localized_name}}
+                <!-- {{$category->localized_name}} -->
+            </li>
             @endforeach
         </ul>
         @endif
         </div>
         <div class="pkgo-cta-col">
-        <a href="#" class="pkgo-cta">{{__('messages.buy_or_activate')}}</a>
+        <a href="{{route('package',$package)}}" class="pkgo-cta">{{__('messages.buy_or_activate')}}</a>
         </div>
         <div class="pkgo-price">{{ sprintf('%g', $package->price) }} <span>{{CURRENCY}}</span></div>
     </div>

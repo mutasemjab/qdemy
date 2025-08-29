@@ -10,7 +10,7 @@ class Package extends Model
     use HasFactory;
 
      protected $guarded = [];
-     
+
      protected $casts = [
         'price' => 'decimal:3',
         'how_much_course_can_select' => 'integer'

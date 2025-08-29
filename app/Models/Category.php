@@ -187,8 +187,9 @@ class Category extends Model
 
     /**
      * Get flattened list of all categories with indentation
+     * if withParent = true - ضع ال parent category علس راس القائمة
      */
-    public static function getFlatList($parentId = null, $prefix = '')
+    public static function getFlatList($parentId = null, $prefix = '',$withParent = false)
     {
         $categories = collect();
 
@@ -197,6 +198,17 @@ class Category extends Model
             ->orderBy('sort_order')
             ->orderBy('name_ar')
             ->get();
+
+        if($withParent)    {
+            $parentCategory = Category::find($parentId);
+            $categories->push([
+                'id' => $parentCategory->id,
+                'type' => $parentCategory->type,
+                'name' => $parentCategory->name_ar,
+                'depth' => 0,
+                'category' => $parentCategory
+            ]);
+        }
 
         foreach ($items as $item) {
             $categories->push([

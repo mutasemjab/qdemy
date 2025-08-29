@@ -46,27 +46,23 @@ class PackageAndOfferController extends Controller
     // get packege and its categories(classes || lessons) && courses
     // if $package->type == 'class' get package.categories by relation then query for related subject with categories
     // if $package->type == 'lesson' get package.lessons by relation and no need to categories
-    public function package(Request $request ,Package $package,Category $clas = null)
+    public function package(Request $request ,Package $package)
     {
         $is_type_class = ($package->type == 'class');
         // get subjects from requset or relation direct if $package->type == 'lesson'
         $classes         = $package->categories?->where('type','class');
-        $lessons         = [];
-        $categoriesTree  = collect();
+        $lessons         = $package->categories?->where('type','lessons');
+
+        $categoriesTree = collect();
 
         foreach ($classes as $ctg) {
-            $categoriesTree = $categoriesTree->push(Category::getFlatList($ctg->id,'-- ','with_parent')->where('type','class'));
+            $categoriesTree = $categoriesTree->push(Category::getFlatList($ctg->id,'-- ','with_parent'));
         }
 
-        if($is_type_class && $clas->id){
-            $lessons     = Category::where('type','lesson')->where('parent_id',$clas->id)->get();
-        }elseif(!$is_type_class){
-            $lessons     = $package->categories?->where('type','lessons');
-        }
         $lessonsIds      = $request->lessonsIds ?? [];
         $choosen_lessons = Category::whereIn('id',$lessonsIds)->get();
         $courses         = Course::whereIn('category_id',$lessonsIds)->get();
 
-        return view('web.package', compact('categoriesTree','package','classes','lessons','choosen_lessons','courses','clas','is_type_class'));
+        return view('web.package-w', compact('categoriesTree','package','classes','lessons','choosen_lessons','courses','is_type_class'));
     }
 }

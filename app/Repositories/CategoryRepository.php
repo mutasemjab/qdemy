@@ -10,7 +10,7 @@ class CategoryRepository
     public function __construct()
     {
         $this->model = new Category;
-        app()->setLocale('ar');
+        // app()->setLocale('ar');
     }
 
     //  categories where type = major (main programms)
@@ -131,9 +131,10 @@ class CategoryRepository
 
         $subjects = Category::where('type','lesson')
             ->where('level','tawjihi_program_subject')
-            ->whereNotNull('field_type')
+            ->whereNotNull('field_type') // thats mean its belong to tawjihi last year becuase this year seperate to fields
             ->where('is_optional',0)
             ->where(function ($q) use($optional_form_field_type,$this_field_subjects) {
+                // اذا كانت المادة اختيارية من حقل معين يجب ان تنتمي المواد له
                 if($optional_form_field_type != 'general') {
                     $q->where('field_type',$optional_form_field_type);
                 }
@@ -150,7 +151,8 @@ class CategoryRepository
     }
 
     // احصل علي كل ابناء category معين شجريا
-    public function getAllSubChilds($parentId)
+    // if withParent = true  && !is_array($parentId) - ضع ال parent category علس راس القائمة
+    public function getAllSubChilds($parentId, $withParent = false)
     {
         $categories = collect();
         $query = Category::Query();
@@ -163,6 +165,9 @@ class CategoryRepository
             ->orderBy('sort_order')
             ->orderBy('name_ar')
             ->get();
+        if($withParent && !is_array($parentId)){
+            $categories->push(Category::find($parentId));
+        }
         foreach ($items as $item) {
             $categories->push($item);
             if ($item->hasChildren()) {
