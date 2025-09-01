@@ -31,13 +31,11 @@ class Course extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-    /**
-     * Get the category that owns the course.
-     */
-    public function category()
+    public function subject()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Subject::class);
     }
+
     public function exams()
     {
         return $this->HasMany(Exam::class);

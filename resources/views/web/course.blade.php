@@ -29,43 +29,43 @@
                     <p class="lesson-card-p">{{$freeContents?->title}}</p>
                     <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                     @if($is_enrolled)
-                        <a href="javascript:void(0)" class="btn-buy">{{ __('messages.enrolled') }}</a>
+                        <a href="javascript:void(0)" class="btn-buy">{{ translate_lang('enrolled') }}</a>
                         <!-- Progress Display -->
                         <div class="progress-info">
                             <div class="progress-bar-container">
                                 <div class="progress-bar" style="width: {{$course_progress}}%"></div>
-                                <span class="progress-text">{{round($course_progress)}}% {{ __('messages.completed') }}</span>
+                                <span class="progress-text">{{round($course_progress)}}% {{ translate_lang('completed') }}</span>
                             </div>
                             <div class="progress-stats">
-                                <span>{{ __('messages.completed') }}: {{$completed_videos}}</span>
-                                <span>{{ __('messages.watching') }}: {{$watching_videos}}</span>
-                                <span>{{ __('messages.total_videos') }}: {{$total_videos}}</span>
+                                <span>{{ translate_lang('completed') }}: {{$completed_videos}}</span>
+                                <span>{{ translate_lang('watching') }}: {{$watching_videos}}</span>
+                                <span>{{ translate_lang('total_videos') }}: {{$total_videos}}</span>
                             </div>
                         </div>
                     @elseif(is_array($user_courses) && in_array($course->id,$user_courses))
-                      <a href="{{route('checkout')}}"class="btn-buy">{{ __('messages.buy_now') }}</a>
-                      <a href="{{route('checkout')}}"class="btn-add">{{ __('messages.go_to_checkout') }}</a>
+                      <a href="{{route('checkout')}}"class="btn-buy">{{ translate_lang('buy_now') }}</a>
+                      <a href="{{route('checkout')}}"class="btn-add">{{ translate_lang('go_to_checkout') }}</a>
                     @else
-                        <a id='buy_now' href="javascript:void(0)" data-course-id="{{ $course->id }}" class="enroll-btn btn-buy">{{ __('messages.buy_now') }}</a>
-                        <a href="javascript:void(0)" data-course-id="{{ $course->id }}" class="enroll-btn btn-add">{{ __('messages.add_to_cart') }}</a>
+                        <a id='buy_now' href="javascript:void(0)" data-course-id="{{ $course->id }}" class="enroll-btn btn-buy">{{ translate_lang('buy_now') }}</a>
+                        <a href="javascript:void(0)" data-course-id="{{ $course->id }}" class="enroll-btn btn-add">{{ translate_lang('add_to_cart') }}</a>
                     @endif
-                    <a href="{{ route('contacts') }}" class="text-decoration-none"><p class="report">{{ __('messages.report_this_course') }}</p></a>
+                    <a href="{{ route('contacts') }}" class="text-decoration-none"><p class="report">{{ translate_lang('report_this_course') }}</p></a>
                 </div>
             </div>
 
             <div class="lesson-teacher">
                 <img data-src="{{ $course->teacher?->photo_url }}" alt="Instructor">
                 <h4>{{$course->teacher?->name}}</h4>
-                <p>{{ __('messages.session_all_count') }} - {{$mainSections?->count()}}
-                    <br> {{ __('messages.video_all_count') }} - {{$contents?->where('content_type','video')?->count()}}</p>
+                <p>{{ translate_lang('session_all_count') }} - {{$mainSections?->count()}}
+                    <br> {{ translate_lang('video_all_count') }} - {{$contents?->where('content_type','video')?->count()}}</p>
             </div>
 
             @if(!$is_enrolled && $user)
             <div class="lesson-card-activation">
-                <h3>{{ __('messages.card_qdemy') }}</h3>
-                <p>{{ __('messages.enter_card_qdemy') }}</p>
-                <input class="lesson-card-activation input" type="text" placeholder="{{ __('messages.enter_card_here') }}">
-                <button data-course-id="{{$course->id}}" class="lesson-card-activation button">{{ __('messages.activate_card') }}</button>
+                <h3>{{ translate_lang('card_qdemy') }}</h3>
+                <p>{{ translate_lang('enter_card_qdemy') }}</p>
+                <input class="lesson-card-activation input" type="text" placeholder="{{ translate_lang('enter_card_here') }}">
+                <button data-course-id="{{$course->id}}" class="lesson-card-activation button">{{ translate_lang('activate_card') }}</button>
             </div>
             @endif
 
@@ -76,7 +76,7 @@
             <h2 class="lesson-title">{{$course->title}}</h2>
             <p class="lesson-desc">{{$course->description}}</p>
 
-            <h3 class="lesson-subtitle">{{ __('messages.course_content') }}</h3>
+            <h3 class="lesson-subtitle">{{ translate_lang('course_content') }}</h3>
 
             @if($mainSections && $mainSections->count())
             <div class="accordion">
@@ -144,7 +144,7 @@
                                     <!-- main sections Quizes -->
                                     @php $sectionsExams = $section->exams @endphp
                                     @if($is_enrolled && $sectionsExams && $sectionsExams->count())
-                                        <span>{{__('messages.section Quiz')}}</span>
+                                        <span>{{translate_lang('section Quiz')}}</span>
                                         @foreach($sectionsExams as $sectionsExam)
                                             <div class="lesson-item exam">
                                                 <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$sectionsExam->slug])}}">
@@ -152,14 +152,14 @@
                                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$sectionsExam->title}} </h4>
                                                     <div class="">
                                                         <br>
-                                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$sectionsExam->user_attempts()->count()}}
+                                                        <i class="fa fa-check"></i> {{translate_lang('عدد المحاولات')}} {{$sectionsExam->user_attempts()->count()}}
                                                         @if($sectionsExam->result_attempt()?->is_passed)
                                                             <i class="fa fa-check"></i>
                                                         @else
                                                             <i class="fa fa-times"></i>
                                                         @endif
                                                         {{$sectionsExam->result_attempt()?->percentage}}
-                                                        {{__('messages.أفضل نتيجة')}} {{$sectionsExam->result_attempt()?->score}}
+                                                        {{translate_lang('أفضل نتيجة')}} {{$sectionsExam->result_attempt()?->score}}
                                                     </div>
                                                 </div>
                                                 </a>
@@ -231,7 +231,7 @@
                                     <!-- sub sections Quizes -->
                                     @php $subSectionsExams = $subSection->exams @endphp
                                     @if($is_enrolled && $subSectionsExams && $subSectionsExams->count())
-                                        <span>{{__('messages.section Quiz')}}</span>
+                                        <span>{{translate_lang('section Quiz')}}</span>
                                         @foreach($subSectionsExamss as $subSectionsExams)
                                             <div class="lesson-item exam">
                                                 <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$subSectionsExams->slug])}}">
@@ -239,14 +239,14 @@
                                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$subSectionsExams->title}} </h4>
                                                     <div class="">
                                                         <br>
-                                                        <i class="fa fa-check"></i> {{__('messages.عدد المحاولات')}} {{$subSectionsExams->user_attempts()->count()}}
+                                                        <i class="fa fa-check"></i> {{translate_lang('عدد المحاولات')}} {{$subSectionsExams->user_attempts()->count()}}
                                                         @if($subSectionsExams->result_attempt()?->is_passed)
                                                             <i class="fa fa-check"></i>
                                                         @else
                                                             <i class="fa fa-times"></i>
                                                         @endif
                                                         {{$subSectionsExams->result_attempt()?->percentage}}
-                                                        {{__('messages.أفضل نتيجة')}} {{$subSectionsExams->result_attempt()?->score}}
+                                                        {{translate_lang('أفضل نتيجة')}} {{$subSectionsExams->result_attempt()?->score}}
                                                     </div>
                                                 </div>
                                                 </a>
@@ -323,7 +323,7 @@
                 <!-- all course quiez -->
                 @if($is_enrolled && $exams && $exams->count())
                 <div class="accordion-item">
-                    <button class="accordion-header"> {{__('messages.All course Quiez')}}</button>
+                    <button class="accordion-header"> {{translate_lang('All course Quiez')}}</button>
                     <div class="accordion-body">
                         @foreach($exams as $exam)
                             <div class="lesson-item exam">
@@ -332,7 +332,7 @@
                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$exam->title}} </h4>
                                     <div class="">
                                         <br>
-                                        <i class="fa fa-check"></i> {{__('messages.trying times')}} {{$exam->user_attempts()->count()}}
+                                        <i class="fa fa-check"></i> {{translate_lang('trying times')}} {{$exam->user_attempts()->count()}}
                                         @if($exam->result_attempt() && $exam->result_attempt()->is_passed)
                                             <i class="fa fa-check"></i>
                                         @elseif($exam->result_attempt() && !$exam->result_attempt()->is_passed)
@@ -340,7 +340,7 @@
                                         @endif
 
                                         @if($exam->result_attempt())
-                                            {{__('messages.best_results')}}
+                                            {{translate_lang('best_results')}}
                                             {{$exam->result_attempt()?->percentage}}%
                                             {{$exam->result_attempt()?->score}}
                                         @endif
@@ -377,11 +377,11 @@
     <div class="modal-content">
         <span class="close">&times;</span>
         <h3> <i class="fa fa-check"></i> </h3>
-        <h3>{{ __('messages.course_added') }}</h3>
-        <p>{{ __('messages.course_added_successfully') }}</p>
+        <h3>{{ translate_lang('course_added') }}</h3>
+        <p>{{ translate_lang('course_added_successfully') }}</p>
         <div class="modal-buttons">
-            <button id="continue-shopping">{{ __('messages.continue_shopping') }}</button>
-            <button id="go-to-checkout">{{ __('messages.go_to_checkout') }}</button>
+            <button id="continue-shopping">{{ translate_lang('continue_shopping') }}</button>
+            <button id="go-to-checkout">{{ translate_lang('go_to_checkout') }}</button>
         </div>
     </div>
 </div>
@@ -409,7 +409,7 @@
             const courseId   = this.getAttribute('data-course-id');
 
             if(!user){
-                alert("{{__('messages.please login first .')}}");
+                alert("{{translate_lang('please login first .')}}");
                 return 0;
             }else if (!cardNumber) {
                 alert('من فضلك أدخل رقم البطاقة');
@@ -455,44 +455,6 @@
             });
         });
 
-
-        // Card activation
-        document.querySelector('.lesson-card-activation.button').addEventListener('click', function() {
-            let courseId = this.getAttribute('data-course-id');
-            let cardNumber = document.querySelector('.lesson-card-activation.input').value;
-
-            if (!cardNumber) {
-                alert('يرجى إدخال رقم البطاقة');
-                return;
-            }
-
-            fetch('/activate-card', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    course_id: courseId,
-                    card_number: cardNumber
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('تم تفعيل البطاقة بنجاح');
-                    location.reload();
-                } else {
-                    alert(data.message || 'خطأ في تفعيل البطاقة');
-                }
-            })
-            .catch(error => {
-                alert('حدث خطأ، يرجى المحاولة مرة أخرى');
-                console.error('Error:', error);
-            });
-        });
-
-
     });
 </script>
 <script>
@@ -522,7 +484,7 @@
                 const buttonInnerHTML = this.innerHTML;
 
                 // إظهار مؤشر تحميل (اختياري)
-                this.innerHTML = '{{__("messages.loading")}}';
+                this.innerHTML = '{{translate_lang("loading")}}';
                 this.disabled = true;
 
                 // إرسال طلب Ajax
@@ -536,22 +498,19 @@
                     body: JSON.stringify({ course_id: courseId })
                 })
                 .then(response => {
-                    // إعادة زر التسجيل إلى حالته الأصلية
-                    this.innerHTML = "{{__('messages.go_to_checkout')}}";
-                    this.disabled = false;
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
                     return response.json();
                 })
                 .then(data => {
                     if (buttonId && buttonId == 'buy_now') {
                         window.location.href = '{{ route("checkout") }}';
-                    }else if (data.success) {
+                    }
+                    if (data.success) {
                         // عرض النافذة المنبثقة
                         modal.style.display = 'flex';
+                        this.innerHTML = "{{translate_lang('go_to_checkout')}}";
+                        this.disabled = false;
+                    }else {
+                         alert('حدث خطأ أثناء إضافة الكورس: ' + (data.message || 'Unknown error'));
                     }
                     // console.log(data);
                 })
@@ -584,38 +543,6 @@
             }
         });
 
-        // Handle enrollment buttons
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('enroll-btn')) {
-
-                if(!user){
-                    alert("{{__('messages.please login first .')}}");
-                    return 0;
-                }
-
-                let courseId = e.target.getAttribute('data-course-id');
-                let action = e.target.id === 'buy_now' ? 'buy' : 'add';
-
-                fetch('/enroll-course', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        course_id: courseId,
-                        action: action
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('enrollment-modal').classList.add('show');
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
-        });
 
         // Modal functionality
         document.querySelector('.close').addEventListener('click', function() {
@@ -859,14 +786,14 @@
             }
 
             if (progressText) {
-                progressText.textContent = Math.round(progressData.course_progress) + '% ' + "{{__('messages.completed')}}";
+                progressText.textContent = Math.round(progressData.course_progress) + '% ' + "{{translate_lang('completed')}}";
             }
 
             if (progressStats) {
                 progressStats.innerHTML = `
-                    <span>{{__('messages.completed')}}: ${progressData.completed_videos}</span>
-                    <span>{{__('messages.watching')}}: ${progressData.watching_videos}</span>
-                    <span>{{__('messages.total_videos')}}: ${progressData.total_videos}</span>
+                    <span>{{translate_lang('completed')}}: ${progressData.completed_videos}</span>
+                    <span>{{translate_lang('watching')}}: ${progressData.watching_videos}</span>
+                    <span>{{translate_lang('total_videos')}}: ${progressData.total_videos}</span>
                 `;
             }
         }

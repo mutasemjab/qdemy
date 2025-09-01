@@ -12,7 +12,9 @@ class ExamFactory extends Factory
         $endDate   = $this->faker->dateTimeBetween($startDate, '+2 months');
 
         // الحصول على بيانات موجودة
+        $subject     = \App\Models\Subject::inRandomOrder()->first();
         $course   = \App\Models\Course::inRandomOrder()->first();
+        $subject  = $course?->subject;
         $courseId = $this->faker->randomElement([0 , 0 , $course->id]);
         $section  = $courseId ? \App\Models\CourseSection::inRandomOrder()->where('course_id',$course->id)->first() : null;
         $user     = \App\Models\User::where('role_name','student')->inRandomOrder()->first();
@@ -34,6 +36,7 @@ class ExamFactory extends Factory
             'start_date' => $startDate,
             'end_date' => $endDate,
             'course_id' =>$courseId ? $courseId : null,
+            'subject_id' =>$subject?->id,
             'section_id' => $section?->id,
             'created_by' => $user->id,
             'created_by_admin' => $admin->id,

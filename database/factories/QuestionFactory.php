@@ -24,7 +24,6 @@ class QuestionFactory extends Factory
             $questionEn = "Discuss: " . $this->faker->paragraph();
             $questionAr = "ناقش: " . $this->faker->paragraph();
         }
-
         return [
             'title_en' => $this->faker->sentence(3),
             'title_ar' => 'سؤال: ' . $this->faker->word(),

@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Course;
 use App\Models\Category;
 use App\Models\CourseUser;
+use App\Models\Package;
 
 class CourseRepository
 {

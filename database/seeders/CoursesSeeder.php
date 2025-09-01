@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Faker\Factory;
 use App\Models\Course;
+use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\Category;
 use App\Models\CourseContent;
@@ -19,14 +20,12 @@ class CoursesSeeder extends Seeder
         $this->main_course();
 
         $teachers   = Teacher::pluck('id')->toArray();
-        $categories = Category::where('type','lesson')->orWhereIn('ctg_key',
-                      ['universities-and-colleges-program','international-program']
-        )->get();
+        $subjects = Subject::get();
 
         $faker      = Factory::create();
 
-        foreach ($categories as $category) {
-            $loopLenth =  (in_array($category->ctg_key,['universities-and-colleges-program','international-program'])) ? 20 : 4;
+        foreach ($subjects as $subject) {
+            $loopLenth =  4;
             for ($i=0; $i < $loopLenth; $i++) {
                 $course = Course::create([
                      'title_en' => $faker->sentence,
@@ -36,7 +35,7 @@ class CoursesSeeder extends Seeder
                      'selling_price'  => $faker->randomFloat(2, 20, 200),
                      'photo'          => 'course-image.jpg',
                      'teacher_id'     => count($teachers)   > 0  ? fake()->randomElement($teachers) : null,
-                     'category_id'    => $category->id,
+                     'subject_id'    => $subject->id,
                  ]);
 
                  // direct content
@@ -131,7 +130,7 @@ class CoursesSeeder extends Seeder
     public function main_course()
     {
         // جلب كاتيجوري مناسبة للكورس (أول واحدة أو اختار بالاسم)
-        $category = Category::where('type', 'lesson')->first();
+        $Subject = Subject::first();
 
         // جلب مدرس عشوائي
         $teacher = Teacher::inRandomOrder()->first();
@@ -145,7 +144,7 @@ class CoursesSeeder extends Seeder
             'selling_price' => 499,
             'photo' => 'course-image.jpg',
             'teacher_id' => $teacher->id,
-            'category_id' => $category->id,
+            'subject_id' => $Subject->id,
         ]);
 
         // سكاشن الكورس

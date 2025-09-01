@@ -1,12 +1,12 @@
 <div class="category-item border-bottom" data-category-id="{{ $category->id }}">
-    <div class="d-flex align-items-center p-3 category-header" 
+    <div class="d-flex align-items-center p-3 category-header"
          style="padding-left: {{ ($level * 20) + 15 }}px !important;">
-        
+
         <!-- Toggle Button -->
         @if($category->children()->where('is_active', true)->count() > 0)
-            <button type="button" class="btn btn-sm btn-link p-0 mr-2 toggle-btn" 
-                    data-toggle="collapse" 
-                    data-target="#children-{{ $category->id }}" 
+            <button type="button" class="btn btn-sm btn-link p-0 mr-2 toggle-btn"
+                    data-toggle="collapse"
+                    data-target="#children-{{ $category->id }}"
                     aria-expanded="false">
                 <i class="fas fa-chevron-right transition-icon"></i>
             </button>
@@ -29,7 +29,7 @@
                     @if($category->name_en)
                         <small class="text-muted ml-2">({{ $category->name_en }})</small>
                     @endif
-                    
+
                      @if($category->type == 'lesson')
                             <span class="badge badge-success mr-1" title="{{ __('messages.Lesson - Teachable subject') }}">
                                 <i class="fas fa-book-open"></i> {{ __('messages.Lesson') }}
@@ -43,7 +43,7 @@
                                 <i class="fas fa-folder"></i> {{ __('messages.Class') }}
                             </span>
                         @endif
-                        
+
                     <!-- Badges -->
                     <div class="mt-1">
                         @if($category->is_active)
@@ -51,13 +51,13 @@
                         @else
                             <span class="badge badge-danger mr-1">{{ __('messages.Inactive') }}</span>
                         @endif
-                        
+
                         @if($category->children()->count() > 0)
                             <span class="badge badge-info mr-1">
                                 {{ $category->children()->count() }} {{ __('messages.Children') }}
                             </span>
                         @endif
-                        
+
                         <span class="badge badge-secondary">{{ __('messages.Level') }} {{ $level + 1 }}</span>
                     </div>
                 </div>
@@ -65,50 +65,43 @@
                 <!-- Actions -->
                 <div class="btn-group" role="group">
                     @can('category-table')
-                        <a href="{{ route('categories.show', $category) }}" 
-                           class="btn btn-sm btn-outline-info" 
+                        <a href="{{ route('categories.show', $category) }}"
+                           class="btn btn-sm btn-outline-info"
                            title="{{ __('messages.View') }}">
                             <i class="fas fa-eye"></i>
                         </a>
                     @endcan
-                    
+
                     @can('category-edit')
-                        <a href="{{ route('categories.edit', $category) }}" 
-                           class="btn btn-sm btn-outline-primary" 
+                        <a href="{{ route('categories.edit', $category) }}"
+                           class="btn btn-sm btn-outline-primary"
                            title="{{ __('messages.Edit') }}">
                             <i class="fas fa-edit"></i>
                         </a>
                     @endcan
-                    
-                    @can('category-add')
-                        <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" 
-                           class="btn btn-sm btn-outline-success" 
-                           title="{{ __('messages.Add Child') }}">
-                            <i class="fas fa-plus"></i>
-                        </a>
-                    @endcan
-                    
+
+
                     @can('category-edit')
-                        <form method="POST" action="{{ route('categories.toggle-status', $category) }}" 
+                        <form method="POST" action="{{ route('categories.toggle-status', $category) }}"
                               class="d-inline">
                             @csrf
                             @method('PATCH')
-                            <button type="submit" 
-                                    class="btn btn-sm btn-outline-{{ $category->is_active ? 'warning' : 'success' }}" 
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-{{ $category->is_active ? 'warning' : 'success' }}"
                                     title="{{ $category->is_active ? __('messages.Deactivate') : __('messages.Activate') }}">
                                 <i class="fas fa-{{ $category->is_active ? 'pause' : 'play' }}"></i>
                             </button>
                         </form>
                     @endcan
-                    
+
                     @can('category-delete')
                         @if($category->children()->count() === 0)
-                            <form method="POST" action="{{ route('categories.destroy', $category) }}" 
-                                  class="d-inline" 
+                            <form method="POST" action="{{ route('categories.destroy', $category) }}"
+                                  class="d-inline"
                                   onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this category?') }}')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
                                         title="{{ __('messages.Delete') }}">
                                     <i class="fas fa-trash"></i>
                                 </button>

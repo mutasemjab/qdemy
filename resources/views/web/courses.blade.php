@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @php $title = $title ?? 'courses' @endphp
-@section('title', __('messages.' . $title))
+@section('title', translate_lang($title))
 
 @section('content')
 <section class="universities-page">
 
     <div class="courses-header-wrapper">
         <div class="courses-header">
-            <h2>{{ __('messages.' . $title) }}</h2>
+            <h2>{{ translate_lang($title) }}</h2>
             <span class="grade-number">{{mb_substr( $title,0,1)}}</span>
         </div>
     </div>
@@ -35,13 +35,13 @@
                 </div>
                 <div class="card-footer">
                     @if(is_array($user_enrollment_courses) && in_array($course->id,$user_enrollment_courses))
-                      <a href="javascript:void(0)" class="join-btn joined-btn">{{__('messages.enrolled')}}</a>
+                      <a href="javascript:void(0)" class="join-btn joined-btn">{{translate_lang('enrolled')}}</a>
                     @elseif(is_array($user_courses) && in_array($course->id,$user_courses))
-                      <a href="{{ route('checkout') }}" class="join-btn">{{__('messages.go_to_checkout')}} <i class="fas fa-shopping-cart"></i></a>
+                      <a href="{{ route('checkout') }}" class="join-btn">{{translate_lang('go_to_checkout')}} <i class="fas fa-shopping-cart"></i></a>
                       <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                     @else
                         <a href="javascript:void(0)" class="join-btn enroll-btn"
-                          data-course-id="{{ $course->id }}">{{__('messages.enroll')}}</a>
+                          data-course-id="{{ $course->id }}">{{translate_lang('enroll')}}</a>
                         <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                     @endif
                 </div>
@@ -59,11 +59,11 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ __('messages.course_added') }}</h3>
-            <p>{{ __('messages.course_added_successfully') }}</p>
+            <h3>{{ translate_lang('course_added') }}</h3>
+            <p>{{ translate_lang('course_added_successfully') }}</p>
             <div class="modal-buttons">
-                <button id="continue-shopping">{{ __('messages.continue_shopping') }}</button>
-                <button id="go-to-checkout">{{ __('messages.go_to_checkout') }}</button>
+                <button id="continue-shopping">{{ translate_lang('continue_shopping') }}</button>
+                <button id="go-to-checkout">{{ translate_lang('go_to_checkout') }}</button>
             </div>
         </div>
     </div>
@@ -92,13 +92,13 @@
                 e.preventDefault();
 
                 if(!user){
-                    alert("{{__('messages.please login first .')}}");
+                    alert("{{translate_lang('please login first .')}}");
                     return 0;
                 }
 
                 const courseId = this.getAttribute('data-course-id');
                 // إظهار مؤشر تحميل (اختياري)
-                this.innerHTML = '{{__("messages.loading")}}...';
+                this.innerHTML = '{{translate_lang("loading")}}...';
                 this.disabled = true;
 
                 // إرسال طلب Ajax
@@ -112,17 +112,19 @@
                     body: JSON.stringify({ course_id: courseId })
                 })
                 .then(response => {
-                    // إعادة زر التسجيل إلى حالته الأصلية
-                    this.innerHTML = "{{__('messages.go_to_checkout')}} <i class='fas fa-shopping-cart'>";
-                    this.setAttribute('href',"{{route('checkout')}}");
+                    this.innerHTML = '{{translate_lang("enroll")}}';
                     this.disabled = false;
-                    this.classList.remove('enroll-btn');
                     return response.json();
                 })
                 .then(data => {
                     if (data.success) {
                         // عرض النافذة المنبثقة
                         modal.style.display = 'flex';
+                        // تحويل زر التسجيل إلى لينك لصفحة الدفع
+                        this.innerHTML = "{{translate_lang('go_to_checkout')}} <i class='fas fa-shopping-cart'>";
+                        this.setAttribute('href',"{{route('checkout')}}");
+                        this.disabled = false;
+                        this.classList.remove('enroll-btn');
                     } else {
                         alert('حدث خطأ أثناء إضافة الكورس: ' + (data.message || 'Unknown error'));
                     }

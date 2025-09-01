@@ -15,15 +15,20 @@ return new class extends Migration
     {
         Schema::create('package_categories', function (Blueprint $table) {
             $table->id();
-            
+
             $table->foreignId('package_id')
                 ->constrained('packages')
                 ->onDelete('cascade');
-            
+
             $table->foreignId('category_id')
                 ->constrained('categories')
                 ->onDelete('cascade');
-            
+
+
+            $table->foreignId('subject_id')
+                ->constrained('subjects')
+                ->onDelete('cascade');
+
             $table->unique(['package_id', 'category_id']);
             $table->timestamps();
         });

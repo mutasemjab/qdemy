@@ -48,6 +48,14 @@ class EnrollmentController extends Controller
             ]);
         }
 
+        $validOnePackgeOnlyOnCart = CartRepository()->validCartContent(null,$request->course_id);
+        if (!$validOnePackgeOnlyOnCart) {
+            return response()->json([
+                'success' => false,
+                'message' => 'لا يمكن الجمع بين الكورسات المنفردة والباكدجات ف الكارت و لا بين 2 باكدج .'
+            ], 400);
+        }
+
         $requestData = json_decode($request->getContent(), true);
         $courseId = $request->course_id;
 
@@ -179,7 +187,7 @@ class EnrollmentController extends Controller
         if (!$cardNumber) {
             return response()->json([
                 'success' => false,
-                'message' => __('messages.invalid_card'),
+                'message' => translate_lang('invalid_card'),
             ]);
         }
 
@@ -197,7 +205,7 @@ class EnrollmentController extends Controller
         if (!$courses || !$courses->count()) {
             return response()->json([
                 'success' => false,
-                'message' => __('messages.cart_is_empty'),
+                'message' => translate_lang('cart_is_empty'),
             ]);
         }
 
@@ -236,10 +244,10 @@ class EnrollmentController extends Controller
                     'course_id' => $course->id,
                     'teacher_id' => $course->teacher_id ?? null,
                     'amount' => $course->selling_price,
-                    'notes' => __('messages.payment_notes'),
+                    'notes' => translate_lang('payment_notes'),
                 ]);
             }
-            CartRepository()->forgetAll();
+            CartRepository()->clearCart();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -248,7 +256,7 @@ class EnrollmentController extends Controller
         }
         return response()->json([
             'success' => $success ?? true,
-            'message' => $message ?? __('messages.card_activated'),
+            'message' => $message ?? translate_lang('card_activated'),
         ]);
     }
 
@@ -268,35 +276,6 @@ class EnrollmentController extends Controller
         $course = Course::findOrFail($request->course_id);
         return CartRepository()->removeItem($course->id);
 
-    }
-
-    public function processPayment(Request $request)
-    {
-        $request->validate([
-            'cardholder_name' => 'required|string',
-            'card_number' => 'required|string|min:16|max:16',
-            'expiry' => 'required|string',
-            'cvc' => 'required|string|min:3|max:3',
-        ]);
-
-        $paymentProcessed = true;
-
-        if ($paymentProcessed) {
-            return response()->json([
-                'success' => true,
-                'message' => 'تمت عملية الدفع بنجاح',
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'فشل الدفع. الرجاء المحاولة مرة أخرى.',
-            ]);
-        }
-    }
-
-    public function paymentSuccess()
-    {
-        return view('payment-success');
     }
 
 }

@@ -7,7 +7,7 @@
 
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{ __('messages.e-exams')}}</h2>
+            <h2>{{ translate_lang('e-exams')}}</h2>
         </div>
     </div>
     <div class="examx-filters">
@@ -55,23 +55,23 @@
     @foreach($exams as $exam)
     <div class="examx-card">
       <div class="examx-content">
-        <div class="examx-line"><b>{{ __('messages.subject')}}</b> {{$exam->course?->category->localized_name}}</div>
+        <div class="examx-line"><b>{{ translate_lang('subject')}}</b> {{$exam->course?->category->localized_name}}</div>
         <a href="#" class="examx-link">{{$exam->course?->title}}</a>
         <div class="examx-meta">
-          <div><span>{{ __('messages.exam_duration')}}</span><strong>{{$exam->duration_minutes}} {{ __('messages.minute')}}</strong></div>
-          <div><span>{{ __('messages.question_count')}}:</span><strong>{{$exam->questions?->count()}} {{ __('messages.question')}}</strong></div>
+          <div><span>{{ translate_lang('exam_duration')}}</span><strong>{{$exam->duration_minutes}} {{ translate_lang('minute')}}</strong></div>
+          <div><span>{{ translate_lang('question_count')}}:</span><strong>{{$exam->questions?->count()}} {{ translate_lang('question')}}</strong></div>
         </div>
         @if($exam->can_add_attempt())
         <a href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" class="examx-btn">
-            {{ __('messages.start_exam')}}
+            {{ translate_lang('start_exam')}}
         </a>
         @elseif($exam->current_user_attempt())
         <a href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" class="examx-btn">
-            {{ __('messages.continue')}}
+            {{ translate_lang('continue')}}
         </a>
         @elseif($exam->result_attempt())
         <a href="{{route('exam.results',$exam->id)}}" class="examx-btn">
-            {{ __('messages.result')}}
+            {{ translate_lang('result')}}
         </a>
         @endif
       </div>

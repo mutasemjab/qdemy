@@ -140,6 +140,7 @@ class ExamSeeder extends Seeder
                 'start_date' => now()->subDays(rand(0, 30)),
                 'end_date' => now()->addDays(rand(1, 30)),
                 'course_id'  => $course->id,
+                'subject_id'  => $course->subject?->id,
                 'section_id' => $section ? $section->id : null,
                 'created_by' => $user ? $user->id : null,
                 'created_by_admin' => $admin ? $admin->id : null,

@@ -5,13 +5,13 @@
 <section class="tawjihi-page">
     <a href="{{route('tawjihi-first-year',['slug'=>$tawjihiFirstYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2009.png') }}');">
         <div class="tawjihi-text">
-            <h3>{{__('messages.tawjihi')}}</h3>
+            <h3>{{translate_lang('tawjihi')}}</h3>
             <p>{{$tawjihiFirstYear?->localized_name}}</p>
         </div>
     </a>
     <a href="{{route('tawjihi-grade-year-fields',['slug'=>$tawjihiLastYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2008.png') }}');">
         <div class="tawjihi-text">
-            <h3>{{__('messages.tawjihi')}}</h3>
+            <h3>{{translate_lang('tawjihi')}}</h3>
             <p>{{$tawjihiLastYear?->localized_name}}</p>
         </div>
     </a>

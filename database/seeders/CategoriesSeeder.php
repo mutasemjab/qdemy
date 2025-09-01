@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Subject;
 use App\Models\Category;
+use App\Models\CategorySubject;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
@@ -67,15 +69,15 @@ class CategoriesSeeder extends Seeder
             case 'برنامج التوجيهي والثانوي':
                 $this->createTawjihiProgram($mainProgram->id);
                 break;
-                // international program has no subcategories
-                // case 'البرنامج الدولي':
-                    // $this->createInternationalProgram($mainProgram->id);
-                    // break;
-                // Universities program has no subcategories
-                // case 'برنامج الجامعات والكليات':
-                    // Add university subjects directly
-                    // $this->createUniversitySubjects($mainProgram->id);
-                // break;
+            // international program has no subcategories
+            case 'البرنامج الدولي':
+                $this->createInternationalSubjects($mainProgram->id);
+                break;
+            // Universities program has no subcategories
+            case 'برنامج الجامعات والكليات':
+                // Add university subjects directly
+                $this->createFacultySubjects($mainProgram->id);
+            break;
         }
     }
 
@@ -136,74 +138,42 @@ class CategoriesSeeder extends Seeder
     */
     private function createTawjihi2009Content($parentId)
     {
+        $programm_id = Category::where('name_en','Tawjihi and Secondary Program')->first()?->id;
+
         $subjects = [
-            [
-                'name_ar'    => 'مواد وزارية',
-                'name_en'    => 'Ministry Subjects',
-                'level'      => 'ministry_subjects',
-                'icon'       => 'fas fa-landmark',
-                'color'      => '#27ae60',
-                'sort_order' => 1,
-                'parent_id'  => $parentId,
-                'type'       => 'class'
-            ],
-            [
-                'name_ar' => 'مواد مدرسية',
-                'name_en' => 'School Subjects',
-                'level'   => 'school_sbjects',
-                'icon'    => 'fas fa-chalkboard-teacher',
-                'color'   => '#16a085',
-                'sort_order'=> 2,
-                'parent_id' => $parentId,
-                'type'      => 'class'
-            ]
+            [ 'name_ar' => 'اللغة العربية', 'name_en' => 'Arabic Language', 'icon' => 'fas fa-font', 'color' => '#e74c3c'],
+            [ 'name_ar' => 'اللغة الإنجليزية', 'name_en' => 'English Language', 'icon' => 'fas fa-language', 'color' => '#3498db'],
+            [ 'name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
+            [ 'name_ar' => 'العلوم', 'name_en' => 'Sciences', 'icon' => 'fas fa-microscope', 'color' => '#27ae60'],
+            [ 'name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
+            [ 'name_ar' => 'الجغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-globe', 'color' => '#16a085'],
+
+            [ 'is_ministry' => false ,'name_ar' => 'التربية الإسلامية', 'name_en' => 'Islamic Education', 'icon' => 'fas fa-mosque', 'color' => '#16a085'],
+            [ 'is_ministry' => false ,'name_ar' => 'التربية الوطنية', 'name_en' => 'National Education', 'icon' => 'fas fa-flag', 'color' => '#e67e22'],
+            [ 'is_ministry' => false ,'name_ar' => 'الحاسوب', 'name_en' => 'Computer', 'icon' => 'fas fa-laptop', 'color' => '#2ecc71'],
+            [ 'is_ministry' => false ,'name_ar' => 'التربية الفنية', 'name_en' => 'Art Education', 'icon' => 'fas fa-palette', 'color' => '#e91e63'],
         ];
-
-        foreach ($subjects as $subject) {
-            $createdSubject = Category::create($subject);
-            // Add actual subjects for each category
-            $this->createTawjihi2009Subjects($createdSubject->id, $subject['name_ar']);
-        }
-    }
-
-    /**
-     * Create Tawjihi 2009 actual subjects
-     */
-    private function createTawjihi2009Subjects($parentId, $type)
-    {
-        if ($type === 'مواد وزارية') {
-            $subjects = [
-                [ 'name_ar' => 'اللغة العربية', 'name_en' => 'Arabic Language', 'icon' => 'fas fa-font', 'color' => '#e74c3c'],
-                [ 'name_ar' => 'اللغة الإنجليزية', 'name_en' => 'English Language', 'icon' => 'fas fa-language', 'color' => '#3498db'],
-                [ 'name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
-                [ 'name_ar' => 'العلوم', 'name_en' => 'Sciences', 'icon' => 'fas fa-microscope', 'color' => '#27ae60'],
-                [ 'name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
-                [ 'name_ar' => 'الجغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-globe', 'color' => '#16a085'],
-            ];
-        } else {
-            $subjects = [
-                [ 'name_ar' => 'التربية الإسلامية', 'name_en' => 'Islamic Education', 'icon' => 'fas fa-mosque', 'color' => '#16a085'],
-                [ 'name_ar' => 'التربية الوطنية', 'name_en' => 'National Education', 'icon' => 'fas fa-flag', 'color' => '#e67e22'],
-                [ 'name_ar' => 'الحاسوب', 'name_en' => 'Computer', 'icon' => 'fas fa-laptop', 'color' => '#2ecc71'],
-                [ 'name_ar' => 'التربية الفنية', 'name_en' => 'Art Education', 'icon' => 'fas fa-palette', 'color' => '#e91e63'],
-            ];
-        }
 
         $sortOrder = 1;
         foreach ($subjects as $subject) {
-            Category::create([
-                'name_ar'    => $subject['name_ar'],
-                'name_en'    => $subject['name_en'],
-                'icon'       => $subject['icon'],
-                'color'      => $subject['color'],
-                'sort_order' => $sortOrder,
-                'parent_id'  => $parentId,
-                'level'      => 'tawjihi_program_subject',
-                'type'       => 'lesson',  // These are the actual lessons
+           $createdSubject = Subject::create([
+                'name_ar'     => $subject['name_ar'],
+                'name_en'     => $subject['name_en'],
+                'icon'        => $subject['icon'],
+                'color'       => $subject['color'],
+                'sort_order'  => $sortOrder,
+                'grade_id'    => $parentId,
+                'programm_id' => $programm_id,
+            ]);
+            CategorySubject::create([
+                'is_ministry'  => $subject['is_ministry'] ?? true,
+                'category_id'  => $parentId,
+                'subject_id'  => $createdSubject->id,
             ]);
             $sortOrder++;
         }
     }
+
 
     /**
      * Create Tawjihi 2008 content
@@ -215,7 +185,6 @@ class CategoriesSeeder extends Seeder
             'name_ar'     => 'حقول علمية',
             'name_en'     => 'Scientific Fields',
             'level'       => 'tawjihi_program_fields',
-            // 'is_ediatble' => false,
             'icon'        => 'fas fa-flask',
             'color'       => '#3498db',
             'sort_order'  => 1,
@@ -228,7 +197,6 @@ class CategoriesSeeder extends Seeder
             'name_ar'     => 'حقول أدبية',
             'name_en'     => 'Literary Fields',
             'level'       => 'tawjihi_program_fields',
-            // 'is_ediatble' => false,
             'icon'       => 'fas fa-feather-alt',
             'color'      => '#e67e22',
             'sort_order' => 2,
@@ -241,6 +209,8 @@ class CategoriesSeeder extends Seeder
 
         // Literary Field subdivisions
         $this->createLiteraryFields($literaryFields->id);
+
+        $this->createTawjihiFinalGradeSpecificDirectSubjects();
     }
 
     /**
@@ -253,7 +223,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'الحقل الطبي',
                 'name_en' => 'Medical Field',
                 'level'   => 'tawjihi_scientific_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-stethoscope',
                 'color' => '#e74c3c',
                 'sort_order' => 1,
@@ -264,7 +233,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'الحقل الهندسي',
                 'name_en' => 'Engineering Field',
                 'level'   => 'tawjihi_scientific_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-cogs',
                 'color' => '#34495e',
                 'sort_order' => 2,
@@ -275,7 +243,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'حقل تكنولوجيا المعلومات',
                 'name_en' => 'Information Technology Field',
                 'level'   => 'tawjihi_scientific_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-laptop-code',
                 'color' => '#2ecc71',
                 'sort_order' => 3,
@@ -286,8 +253,6 @@ class CategoriesSeeder extends Seeder
 
         foreach ($fields as $field) {
             $createdField = Category::create($field);
-            $this->createSpecificDirectSubjects($createdField->id, $field['name_ar']);
-            // $this->createFieldSubjects($createdField->id, $field['name_ar']);
         }
     }
 
@@ -301,7 +266,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'حقل الأعمال',
                 'name_en' => 'Business Field',
                 'level'   => 'tawjihi_literary_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-briefcase',
                 'color' => '#f39c12',
                 'sort_order' => 1,
@@ -312,7 +276,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'حقل اللغات والعلوم الإجتماعية',
                 'name_en' => 'Languages Field',
                 'level'   => 'tawjihi_literary_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-language',
                 'color' => '#9b59b6',
                 'sort_order' => 2,
@@ -323,7 +286,6 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'حقل القانون والشريعة',
                 'name_en' => 'Law and Sharia Field',
                 'level'   => 'tawjihi_literary_fields',
-                // 'is_ediatble'   => false,
                 'icon' => 'fas fa-balance-scale',
                 'color' => '#8e44ad',
                 'sort_order' => 3,
@@ -334,321 +296,137 @@ class CategoriesSeeder extends Seeder
 
         foreach ($fields as $field) {
             $createdField = Category::create($field);
-            $this->createSpecificDirectSubjects($createdField->id, $field['name_ar']);
-            // $this->createFieldSubjects($createdField->id, $field['name_ar']);
         }
     }
 
     /**
-     * Create subjects for each field (Medical, Engineering, etc.)
+     * Create specific subjects based on field and type
     */
-    private function createFieldSubjects($parentId, $fieldName)
+    private function createTawjihiFinalGradeSpecificDirectSubjects()
     {
-        $subjectTypes = [
-            [
-                'name_ar'    => 'مواد إجبارية',
-                'name_en'    => 'Mandatory Subjects',
-                'level'      => 'tawjihi_mandatory_fields',
-                'icon'       => 'fas fa-exclamation-circle',
-                'color'      => '#e74c3c',
-                'sort_order' => 1,
-                'parent_id'  => $parentId,
-                'type'       => 'class'
-            ],
-            [
-                'name_ar'    => 'مواد اختيارية',
-                'name_en'    => 'Optional Subjects',
-                'level'      => 'tawjihi_optional_fields',
-                'icon'       => 'fas fa-check-circle',
-                'color'      => '#27ae60',
-                'sort_order' => 2,
-                'parent_id'  => $parentId,
-                'type'       => 'class'
-            ]
+        $programm_id = Category::where('name_en','Tawjihi and Secondary Program')->first()?->id;
+        $grade_id    = Category::where('ctg_key','final_year')->first()?->id;
+
+        $uniqueSubjects = [
+            ['name_ar' => 'المهارات الرقمية','name_en' => 'Digital skills','icon' => 'fas fa-keyboard','color' => '#3498db','field_type' => 'general'],
+            ['name_ar' => 'الرياضيات','name_en' => 'Mathematics','icon' => 'fas fa-subscript','color' => '#3498db','field_type' => 'scientific-fields'],
+            ['name_ar' => 'مبحث إختياري','name_en' => 'Optional field','icon' => 'fas fa-dna','color' => '#3498db','field_type' => 'general'],
+            ['name_ar' => 'الكيمياء','name_en' => 'Chemistry','icon' => 'fas fa-flask','color' => '#e67e22','field_type' => 'scientific-fields'],
+            ['name_ar' => 'العلوم الحياتية','name_en' => 'Biology','icon' => 'fas fa-dna','color' => '#27ae60','field_type' => 'scientific-fields'],
+            ['name_ar' => 'اللغة الإنجليزية (متقدم)','name_en' => 'English Language (advanced)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'scientific-fields'],
+            ['name_ar' => 'الفيزياء','name_en' => 'Physics','icon' => 'fas fa-atom','color' => '#3498db','field_type' => 'scientific-fields'],
+            ['name_ar' => 'مبحث علمي','name_en' => 'optional Scientific field','icon' => 'fas fa-dna','color' => '#3498db','field_type' => 'scientific-fields'],
+            ['name_ar' => 'رياضيات الأعمال','name_en' => 'Business Mathematics','icon' => 'fas fa-subscript','color' => '#e67e22','field_type' => 'literary-fields'],
+            ['name_ar' => 'الثقافة المالية','name_en' => 'Financial Literacy','icon' => 'fas fa-book','color' => '#27ae60','field_type' => 'literary-fields'],
+            ['name_ar' => 'اللغة العربية (تخصص)','name_en' => 'Arabic Language (Specialization)','icon' => 'fas fa-feather-alt','color' => '#e74c3c','field_type' => 'literary-fields'],
+            ['name_ar' => 'التربية الإسلامية (تخصص)','name_en' => 'Islamic Education (Specialization)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'literary-fields'],
+            ['name_ar' => 'مبحث إنساني','name_en' => 'Humanities','icon' => 'fas fa-language','color' => '#9b59b6','field_type' => 'literary-fields']
         ];
 
-        foreach ($subjectTypes as $type) {
-            $createdType = Category::create($type);
-            $this->createSpecificSubjects($createdType->id, $fieldName, $type['name_ar']);
-        }
-    }
-
-    /**
-     * Create specific subjects based on field and type
-    */
-    private function createSpecificDirectSubjects($parentId, $fieldName)
-    {
-        $subjects = [];
-
-        switch ($fieldName) {
-            case 'الحقل الطبي':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                    ['name_ar'     => 'الكيمياء', 'name_en' => 'Chemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22' ,
-                        'is_ministry'  => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'العلوم الحياتية', 'name_en' => 'Biology', 'icon' => 'fas fa-dna', 'color' => '#27ae60' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language (advanced)', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                        'is_ministry'  => true ,'is_optional'    => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                ]);
-                break;
-
-            case 'الحقل الهندسي':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry' => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry' => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                    ['name_ar'     => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar' => 'الفيزياء', 'name_en' => 'Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث علمي', 'name_en' => 'optional Scientific field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'scientific' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                ]);
-                break;
-
-            case 'حقل تكنولوجيا المعلومات':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry' => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry' => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-
-                    ['name_ar'     => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => false,'field_type' => 'scientific','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث علمي', 'name_en' => 'optional Scientific field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => true ,'is_optional'    => true,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ['name_ar'     => 'مبحث علمي', 'name_en' => 'optional Scientific field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'scientific' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                ]);
-                break;
-
-            case 'حقل الأعمال':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                    ['name_ar'     => 'رياضيات الأعمال', 'name_en' => 'Business Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#e67e22' ,
-                        'is_ministry'  => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'الثقافة المالية', 'name_en' => 'Financial Literacy', 'icon' => 'fas fa-book', 'color' => '#27ae60' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language (advanced)', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                ]);
-                break;
-
-            case 'حقل اللغات والعلوم الإجتماعية':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                    ['name_ar'     => 'اللغة العربية (تخصص)', 'name_en' => 'Arabic Language (Specialization)', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'التربية الإسلامية (تخصص)', 'name_en' => 'Islamic Education (Specialization)', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إنساني', 'name_en' => 'Humanities', 'icon' => 'fas fa-language', 'color' => '#9b59b6' ,
-                        'is_ministry' => true ,'is_optional' => true,'field_type' => 'literary','optional_form_field_type' => 'literary' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                ]);
-                break;
-
-            case 'حقل القانون والشريعة':
-                $subjects = array_merge($subjects, [
-                    ['name_ar'     => 'المهارات الرقمية', 'name_en' => 'Digital skills', 'icon' => 'fas fa-keyboard', 'color' => '#3498db' ,
-                        'is_ministry' => false ,'is_optional' => false,'field_type' => 'general','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                    'is_ministry'  => false ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-
-                    ['name_ar'     => 'اللغة العربية (تخصص)', 'name_en' => 'Arabic Language (Specialization)', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language (advanced)', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional' => false,'field_type' => 'literary','optional_form_field_type' => null ],
-                    ['name_ar'     => 'مبحث إنساني', 'name_en' => 'Humanities', 'icon' => 'fas fa-language', 'color' => '#9b59b6' ,
-                        'is_ministry' => true ,'is_optional' => true,'field_type' => 'literary','optional_form_field_type' => 'literary' ],
-                    ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                        'is_ministry' => true ,'is_optional'    => true,'field_type' => null,'optional_form_field_type' => 'general' ],
-                ]);
-                break;
-        }
-
         $sortOrder = 1;
-        foreach ($subjects as $subject) {
-            Category::create([
-                'name_ar'     => $subject['name_ar'],
-                'name_en'     => $subject['name_en'],
-                'is_ministry' => $subject['is_ministry'],
-                'is_optional' => $subject['is_optional'],
-                'field_type'  => $subject['field_type'],
-                'optional_form_field_type'    => $subject['optional_form_field_type'],
-                'icon'       => $subject['icon'],
-                'color'      => $subject['color'],
-                'sort_order' => $sortOrder,
-                'parent_id'  => $parentId,
-                'type'       => 'lesson',  // These are the actual lessons
-                'level'      => 'tawjihi_program_subject'  // These are the actual lessons
+        foreach ($uniqueSubjects as $uniqueSubject) {
+           $createdSubject = Subject::create([
+                'name_ar'     => $uniqueSubject['name_ar'],
+                'name_en'     => $uniqueSubject['name_en'],
+                'icon'        => $uniqueSubject['icon'],
+                'color'       => $uniqueSubject['color'],
+                'sort_order'  => $sortOrder,
+                'field_type'  => $uniqueSubject['field_type'],
+                'grade_id'    => $grade_id,
+                'programm_id' => $programm_id,
             ]);
             $sortOrder++;
         }
-    }
 
-    /**
-     * Create specific subjects based on field and type
-    */
-    private function createSpecificSubjects($parentId, $fieldName, $subjectType)
-    {
+        // related subjects
+
         $subjects = [];
-        // ['name_ar' => 'الأحياء', 'name_en' => 'Biology', 'icon' => 'fas fa-dna', 'color' => '#27ae60' ,
-        //  'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-        // ['name_ar' => 'الفيزياء', 'name_en' => 'Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db' ,
-        //  'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
 
-        // Common mandatory subjects for all fields
-        if ($subjectType === 'مواد إجبارية') {
-            // Add field-specific mandatory subjects
-            switch ($fieldName) {
-                case 'الحقل الطبي':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar'     => 'الكيمياء', 'name_en' => 'Chemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22' ,
-                        'is_ministry'  => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar'     => 'الأحياء', 'name_en' => 'Biology', 'icon' => 'fas fa-dna', 'color' => '#27ae60' ,
-                         'is_ministry' => true ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar'     => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                        'is_ministry'  => false ,'is_optional'    => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar'     => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db' ,
-                         'is_ministry' => true ,'is_optional'    => true,'field_type' => 'scientific','optional_form_field_type' => 'general' ],
-                    ]);
-                    break;
+        // الحقل الطبي
+        $medicalCategory = Category::where('name_ar', 'الحقل الطبي')->first();
 
-                case 'الحقل الهندسي':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar' => 'الفيزياء', 'name_en' => 'Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'الكيمياء', 'name_en' => 'Chemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'الرسم الهندسي', 'name_en' => 'Engineering Drawing', 'icon' => 'fas fa-drafting-compass', 'color' => '#34495e' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ]);
-                    break;
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id' => $medicalCategory->id],
+            ['name_en' => 'Mathematics','is_ministry' => false,'is_optional' => false,'category_id' => $medicalCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $medicalCategory->id],
+            ['name_en' => 'Chemistry','is_ministry' => true,'is_optional' => false,'category_id' => $medicalCategory->id],
+            ['name_en' => 'Biology','is_ministry' => true,'is_optional' => false,'category_id' => $medicalCategory->id],
+            ['name_en' => 'English Language (advanced)','is_ministry' => true,'is_optional' => false,'category_id' => $medicalCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id' => $medicalCategory->id]
+        ]);
 
-                case 'حقل تكنولوجيا المعلومات':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar' => 'علوم الحاسوب', 'name_en' => 'Computer Science', 'icon' => 'fas fa-laptop-code', 'color' => '#2ecc71' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'الفيزياء', 'name_en' => 'Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'الإحصاء', 'name_en' => 'Statistics', 'icon' => 'fas fa-chart-bar', 'color' => '#9b59b6' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ]);
-                    break;
+        // الحقل الهندسي
+        $engineeringCategory = Category::where('name_ar', 'الحقل الهندسي')->first();
 
-                case 'حقل الأعمال':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar' => 'الاقتصاد', 'name_en' => 'Economics', 'icon' => 'fas fa-chart-line', 'color' => '#f39c12' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'إدارة الأعمال', 'name_en' => 'Business Administration', 'icon' => 'fas fa-briefcase', 'color' => '#34495e' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'المحاسبة', 'name_en' => 'Accounting', 'icon' => 'fas fa-calculator', 'color' => '#27ae60' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ]);
-                    break;
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'Mathematics','is_ministry' => true,'is_optional' => false,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'Physics','is_ministry' => true,'is_optional' => false,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'optional Scientific field','is_ministry' => true,'is_optional' => true,'category_id' => $engineeringCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id' => $engineeringCategory->id]
+        ]);
 
-                case 'حقل اللغات':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar' => 'الأدب العربي', 'name_en' => 'Arabic Literature', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'الأدب الإنجليزي', 'name_en' => 'English Literature', 'icon' => 'fas fa-book', 'color' => '#3498db' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'اللسانيات', 'name_en' => 'Linguistics', 'icon' => 'fas fa-language', 'color' => '#9b59b6' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ]);
-                    break;
+        // حقل تكنولوجيا المعلومات
+        $itCategory = Category::where('name_ar', 'حقل تكنولوجيا المعلومات')->first();
 
-                case 'حقل القانون والشريعة':
-                    $subjects = array_merge($subjects, [
-                        ['name_ar' => 'الفقه الإسلامي', 'name_en' => 'Islamic Jurisprudence', 'icon' => 'fas fa-balance-scale', 'color' => '#16a085' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'القانون المدني', 'name_en' => 'Civil Law', 'icon' => 'fas fa-gavel', 'color' => '#8e44ad' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                        ['name_ar' => 'أصول الفقه', 'name_en' => 'Principles of Jurisprudence', 'icon' => 'fas fa-scroll', 'color' => '#e67e22' ,
-                         'is_ministry' => false ,'is_optional' => false,'field_type' => 'scientific','optional_form_field_type' => 'scientific' ],
-                    ]);
-                    break;
-            }
-            $sortOrder = 1;
-            foreach ($subjects as $subject) {
-                Category::create([
-                    'name_ar'    => $subject['name_ar'],
-                    'name_en'    => $subject['name_en'],
-                    'icon'       => $subject['icon'],
-                    'color'      => $subject['color'],
-                    'sort_order' => $sortOrder,
-                    'parent_id'  => $parentId,
-                    'type'       => 'lesson',  // These are the actual lessons
-                    'level'      => 'tawjihi_program_subject'  // These are the actual lessons
-                ]);
-                $sortOrder++;
-            }
-        } else {
-            // Optional subjects - more general
-            $subjects = [
-                ['name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad','is_optional' => true,'field_type'=>'litrature','optional_form_field_type'=>'general'],
-                ['name_ar' => 'الجغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-globe', 'color' => '#16a085','is_optional' => true,'field_type'=>'litrature','optional_form_field_type'=>'general'],
-                ['name_ar' => 'التربية الفنية', 'name_en' => 'Art Education', 'icon' => 'fas fa-palette', 'color' => '#e91e63','is_optional' => true,'field_type'=>'general','optional_form_field_type'=>'general'],
-                ['name_ar' => 'التربية الرياضية', 'name_en' => 'Physical Education', 'icon' => 'fas fa-running', 'color' => '#f39c12','is_optional' => true,'field_type'=>'general','optional_form_field_type'=>'general'],
-            ];
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id' => $itCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $itCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $itCategory->id,],
+            ['name_en' => 'Mathematics','is_ministry' => true,'is_optional' => false,'category_id' => $itCategory->id],
+            ['name_en' => 'optional Scientific field','is_ministry' => true,'is_optional' => true,'category_id' => $itCategory->id],
+            ['name_en' => 'optional Scientific field','is_ministry' => true,'is_optional' => true,'category_id' => $itCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id' => $itCategory->id]
+        ]);
+
+        // حقل الأعمال
+        $businessCategory = Category::where('name_ar', 'حقل الأعمال')->first();
+
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id' => $businessCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $businessCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $businessCategory->id],
+            ['name_en' => 'Business Mathematics','is_ministry' => true,'is_optional' => false,'category_id' => $businessCategory->id],
+            ['name_en' => 'Financial Literacy','is_ministry' => true,'is_optional' => false,'category_id' => $businessCategory->id],
+            ['name_en' => 'English Language (advanced)','is_ministry' => true,'is_optional' => false,'category_id' => $businessCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id' => $businessCategory->id]
+        ]);
+
+        // حقل اللغات والعلوم الإجتماعية
+        $langCategory = Category::where('name_ar', 'حقل اللغات والعلوم الإجتماعية')->first();
+
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id' => $langCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $langCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $langCategory->id],
+            ['name_en' => 'Arabic Language (Specialization)','is_ministry' => true,'is_optional' => false,'category_id' => $langCategory->id],
+            ['name_en' => 'Islamic Education (Specialization)','is_ministry' => true,'is_optional' => false,'category_id' => $langCategory->id],
+            ['name_en' => 'Humanities','is_ministry' => true,'is_optional' => true,'category_id' => $langCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id' => $langCategory->id]
+        ]);
+
+        // حقل القانون والشريعة
+        $lawCategory = Category::where('name_ar', 'حقل القانون والشريعة')->first();
+
+        $subjects = array_merge($subjects, [
+            ['name_en' => 'Digital skills','is_ministry' => false,'is_optional' => false,'category_id'=> $lawCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $lawCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => false,'is_optional' => true,'category_id' => $lawCategory->id],
+            ['name_en' => 'Arabic Language (Specialization)','is_ministry' => true,'is_optional' => false,'category_id' => $lawCategory->id],
+            ['name_en' => 'English Language (advanced)','is_ministry' => true,'is_optional' => false,'category_id' => $lawCategory->id],
+            ['name_en' => 'Humanities','is_ministry' => true,'is_optional' => true,'category_id'  => $lawCategory->id],
+            ['name_en' => 'Optional field','is_ministry' => true,'is_optional' => true,'category_id'  => $lawCategory->id]
+        ]);
+
+        foreach ($subjects as $key => $subject) {
+            $subject['subject_id'] = Subject::where('name_en',$subject['name_en'])->first()?->id;
+            unset($subject['name_en']);
         }
-
-        $sortOrder = 1;
-        foreach ($subjects as $subject) {
-            Category::create([
-                'name_ar'    => $subject['name_ar'],
-                'name_en'    => $subject['name_en'],
-                'icon'       => $subject['icon'],
-                'color'      => $subject['color'],
-                'sort_order' => $sortOrder,
-                'parent_id'  => $parentId,
-                'type'       => 'lesson',  // These are the actual lessons
-                'level'      => 'tawjihi_program_subject'  // These are the actual lessons
-            ]);
-            $sortOrder++;
-        }
+        CategorySubject::create($subject);
     }
+
 
     /**
      * Create Elementary Program structure
@@ -678,7 +456,7 @@ class CategoriesSeeder extends Seeder
                 'sort_order' => $sortOrder,
                 'parent_id'  => $parentId,
                 'type'       => 'class',
-                'level'      => 'tawjihi_grade'  // These are the actual lessons
+                'level'      => 'tawjihi_grade'
             ]);
 
             // Create semesters for each grade
@@ -717,16 +495,15 @@ class CategoriesSeeder extends Seeder
 
         foreach ($semesters as $semester) {
             $createdSemester = Category::create($semester);
-
             // Create subjects for each semester
-            $this->createElementarySubjects($createdSemester->id);
+            $this->createElementarySubjects($createdSemester->id,$gradeId);
         }
     }
 
     /**
      * Create subjects for elementary grades
      */
-    private function createElementarySubjects($semesterId)
+    private function createElementarySubjects($semesterId,$gradeId)
     {
         $subjects = [
             [
@@ -773,212 +550,97 @@ class CategoriesSeeder extends Seeder
             ]
         ];
 
+        $programm_id = Category::where('name_en','Elementary Grades Program')->first()?->id;
         foreach ($subjects as $subject) {
-            $subject['parent_id'] = $semesterId;
-            $subject['type'] = 'lesson';  // These are the actual lessons
-            Category::create($subject);
+            $subject['grade_id']    = $gradeId;
+            $subject['programm_id'] = $programm_id;
+            $createdSubject = Subject::create($subject);
+            CategorySubject::create([
+                'subject_id' => $createdSubject->id,
+                'category_id' => $semesterId,
+            ]);
         }
-    }
 
-    /**
-     * Create International Program structure
-     */
-    private function createInternationalProgram($parentId)
-    {
-        $programs = [
-            [
-                'name_ar' => 'البرنامج الأمريكي',
-                'name_en' => 'American Program',
-                'icon' => 'fas fa-flag-usa',
-                'color' => '#e74c3c',
-                'sort_order' => 1,
-                'parent_id' => $parentId,
-                'type' => 'class'
-            ],
-            [
-                'name_ar' => 'البرنامج البريطاني',
-                'name_en' => 'British Program',
-                'icon' => 'fas fa-crown',
-                'color' => '#3498db',
-                'sort_order' => 2,
-                'parent_id' => $parentId,
-                'type' => 'class'
-            ]
-        ];
-
-        // foreach ($programs as $program) {
-        //     $createdProgram = Category::create($program);
-        //     $this->createInternationalSubjects($createdProgram->id, $program['name_ar']);
-        // }
     }
 
     /**
      * Create subjects for international programs
     */
-    private function createInternationalSubjects($parentId, $programName)
+    private function createInternationalSubjects($programmId)
     {
-        if ($programName === 'البرنامج الأمريكي') {
-            $subjects = [
-                ['name_ar' => 'اللغة الإنجليزية', 'name_en' => 'English Language Arts', 'icon' => 'fas fa-language', 'color' => '#3498db'],
-                ['name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
-                ['name_ar' => 'العلوم', 'name_en' => 'Science', 'icon' => 'fas fa-microscope', 'color' => '#27ae60'],
-                ['name_ar' => 'الدراسات الاجتماعية', 'name_en' => 'Social Studies', 'icon' => 'fas fa-globe-americas', 'color' => '#8e44ad'],
-                ['name_ar' => 'الفنون', 'name_en' => 'Arts', 'icon' => 'fas fa-palette', 'color' => '#e91e63'],
-            ];
-        } else {
-            $subjects = [
-                ['name_ar' => 'اللغة الإنجليزية', 'name_en' => 'English', 'icon' => 'fas fa-language', 'color' => '#3498db'],
-                ['name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
-                ['name_ar' => 'العلوم', 'name_en' => 'Science', 'icon' => 'fas fa-microscope', 'color' => '#27ae60'],
-                ['name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
-                ['name_ar' => 'الجغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-globe', 'color' => '#16a085'],
-            ];
-        }
+        $subjects = [
+            ['name_ar' => 'اللغة الإنجليزية', 'name_en' => 'English Language Arts', 'icon' => 'fas fa-language', 'color' => '#3498db'],
+            ['name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
+            ['name_ar' => 'العلوم', 'name_en' => 'Science', 'icon' => 'fas fa-microscope', 'color' => '#27ae60'],
+            ['name_ar' => 'الدراسات الاجتماعية', 'name_en' => 'Social Studies', 'icon' => 'fas fa-globe-americas', 'color' => '#8e44ad'],
+            ['name_ar' => 'الفنون', 'name_en' => 'Arts', 'icon' => 'fas fa-palette', 'color' => '#e91e63'],
+            ['name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
+            ['name_ar' => 'الجغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-globe', 'color' => '#16a085'],
+        ];
 
         $sortOrder = 1;
         foreach ($subjects as $subject) {
-            Category::create([
+            $createdSubject = Subject::create([
                 'name_ar' => $subject['name_ar'],
                 'name_en' => $subject['name_en'],
                 'icon' => $subject['icon'],
                 'color' => $subject['color'],
                 'sort_order' => $sortOrder,
-                'parent_id' => $parentId,
-                'type' => 'lesson'  // These are the actual lessons
+                'grade_id' => $programmId,
+                'programm_id' => $programmId,
             ]);
             $sortOrder++;
-        }
-    }
-
-    /**
-     * Create university subjects
-     */
-    private function createUniversitySubjects($parentId)
-    {
-        $faculties = [
-            [
-                'name_ar' => 'كلية الطب',
-                'name_en' => 'Faculty of Medicine',
-                'icon' => 'fas fa-stethoscope',
-                'color' => '#e74c3c',
-                'sort_order' => 1,
-                'type' => 'class'
-            ],
-            [
-                'name_ar' => 'كلية الهندسة',
-                'name_en' => 'Faculty of Engineering',
-                'icon' => 'fas fa-cogs',
-                'color' => '#34495e',
-                'sort_order' => 2,
-                'type' => 'class'
-            ],
-            [
-                'name_ar' => 'كلية الآداب',
-                'name_en' => 'Faculty of Arts',
-                'icon' => 'fas fa-feather-alt',
-                'color' => '#9b59b6',
-                'sort_order' => 3,
-                'type' => 'class'
-            ],
-            [
-                'name_ar' => 'كلية الأعمال',
-                'name_en' => 'Faculty of Business',
-                'icon' => 'fas fa-briefcase',
-                'color' => '#f39c12',
-                'sort_order' => 4,
-                'type' => 'class'
-            ],
-            [
-                'name_ar' => 'كلية الحاسوب',
-                'name_en' => 'Faculty of Computer Science',
-                'icon' => 'fas fa-laptop-code',
-                'color' => '#2ecc71',
-                'sort_order' => 5,
-                'type' => 'class'
-            ]
-        ];
-
-        foreach ($faculties as $faculty) {
-            $createdFaculty = Category::create([
-                'name_ar' => $faculty['name_ar'],
-                'name_en' => $faculty['name_en'],
-                'icon' => $faculty['icon'],
-                'color' => $faculty['color'],
-                'sort_order' => $faculty['sort_order'],
-                'parent_id' => $parentId,
-                'type' => $faculty['type']
+            CategorySubject::create([
+                'subject_id' => $createdSubject->id,
+                'category_id' => $programmId,
             ]);
-
-            $this->createFacultySubjects($createdFaculty->id, $faculty['name_ar']);
         }
     }
 
     /**
      * Create subjects for university faculties
      */
-    private function createFacultySubjects($parentId, $facultyName)
+    private function createFacultySubjects($programmId)
     {
-        $subjects = [];
-
-        switch ($facultyName) {
-            case 'كلية الطب':
-                $subjects = [
-                    ['name_ar' => 'التشريح', 'name_en' => 'Anatomy', 'icon' => 'fas fa-bone', 'color' => '#e74c3c'],
-                    ['name_ar' => 'علم وظائف الأعضاء', 'name_en' => 'Physiology', 'icon' => 'fas fa-heartbeat', 'color' => '#27ae60'],
-                    ['name_ar' => 'الكيمياء الحيوية', 'name_en' => 'Biochemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22'],
-                    ['name_ar' => 'الأمراض', 'name_en' => 'Pathology', 'icon' => 'fas fa-virus', 'color' => '#8e44ad'],
-                ];
-                break;
-
-            case 'كلية الهندسة':
-                $subjects = [
-                    ['name_ar' => 'الرياضيات الهندسية', 'name_en' => 'Engineering Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
-                    ['name_ar' => 'الفيزياء الهندسية', 'name_en' => 'Engineering Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db'],
-                    ['name_ar' => 'المواد الهندسية', 'name_en' => 'Engineering Materials', 'icon' => 'fas fa-cube', 'color' => '#34495e'],
-                    ['name_ar' => 'التصميم الهندسي', 'name_en' => 'Engineering Design', 'icon' => 'fas fa-drafting-compass', 'color' => '#2ecc71'],
-                ];
-                break;
-
-            case 'كلية الآداب':
-                $subjects = [
-                    ['name_ar' => 'الأدب العربي', 'name_en' => 'Arabic Literature', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c'],
-                    ['name_ar' => 'اللسانيات', 'name_en' => 'Linguistics', 'icon' => 'fas fa-language', 'color' => '#9b59b6'],
-                    ['name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
-                    ['name_ar' => 'الفلسفة', 'name_en' => 'Philosophy', 'icon' => 'fas fa-brain', 'color' => '#16a085'],
-                ];
-                break;
-
-            case 'كلية الأعمال':
-                $subjects = [
-                    ['name_ar' => 'إدارة الأعمال', 'name_en' => 'Business Administration', 'icon' => 'fas fa-briefcase', 'color' => '#f39c12'],
-                    ['name_ar' => 'المحاسبة', 'name_en' => 'Accounting', 'icon' => 'fas fa-calculator', 'color' => '#27ae60'],
-                    ['name_ar' => 'التسويق', 'name_en' => 'Marketing', 'icon' => 'fas fa-bullhorn', 'color' => '#e74c3c'],
-                    ['name_ar' => 'الاقتصاد', 'name_en' => 'Economics', 'icon' => 'fas fa-chart-line', 'color' => '#3498db'],
-                ];
-                break;
-
-            case 'كلية الحاسوب':
-                $subjects = [
-                    ['name_ar' => 'البرمجة', 'name_en' => 'Programming', 'icon' => 'fas fa-code', 'color' => '#2ecc71'],
-                    ['name_ar' => 'قواعد البيانات', 'name_en' => 'Database', 'icon' => 'fas fa-database', 'color' => '#3498db'],
-                    ['name_ar' => 'الشبكات', 'name_en' => 'Networks', 'icon' => 'fas fa-network-wired', 'color' => '#f39c12'],
-                    ['name_ar' => 'أمن المعلومات', 'name_en' => 'Information Security', 'icon' => 'fas fa-shield-alt', 'color' => '#e74c3c'],
-                ];
-                break;
-        }
+        $subjects = [
+            ['name_ar' => 'التشريح', 'name_en' => 'Anatomy', 'icon' => 'fas fa-bone', 'color' => '#e74c3c'],
+            ['name_ar' => 'علم وظائف الأعضاء', 'name_en' => 'Physiology', 'icon' => 'fas fa-heartbeat', 'color' => '#27ae60'],
+            ['name_ar' => 'الكيمياء الحيوية', 'name_en' => 'Biochemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22'],
+            ['name_ar' => 'الأمراض', 'name_en' => 'Pathology', 'icon' => 'fas fa-virus', 'color' => '#8e44ad'],
+            ['name_ar' => 'الرياضيات الهندسية', 'name_en' => 'Engineering Mathematics', 'icon' => 'fas fa-calculator', 'color' => '#f39c12'],
+            ['name_ar' => 'الفيزياء الهندسية', 'name_en' => 'Engineering Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db'],
+            ['name_ar' => 'المواد الهندسية', 'name_en' => 'Engineering Materials', 'icon' => 'fas fa-cube', 'color' => '#34495e'],
+            ['name_ar' => 'التصميم الهندسي', 'name_en' => 'Engineering Design', 'icon' => 'fas fa-drafting-compass', 'color' => '#2ecc71'],
+            ['name_ar' => 'الأدب العربي', 'name_en' => 'Arabic Literature', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c'],
+            ['name_ar' => 'اللسانيات', 'name_en' => 'Linguistics', 'icon' => 'fas fa-language', 'color' => '#9b59b6'],
+            ['name_ar' => 'التاريخ', 'name_en' => 'History', 'icon' => 'fas fa-landmark', 'color' => '#8e44ad'],
+            ['name_ar' => 'الفلسفة', 'name_en' => 'Philosophy', 'icon' => 'fas fa-brain', 'color' => '#16a085'],
+            ['name_ar' => 'إدارة الأعمال', 'name_en' => 'Business Administration', 'icon' => 'fas fa-briefcase', 'color' => '#f39c12'],
+            ['name_ar' => 'المحاسبة', 'name_en' => 'Accounting', 'icon' => 'fas fa-calculator', 'color' => '#27ae60'],
+            ['name_ar' => 'التسويق', 'name_en' => 'Marketing', 'icon' => 'fas fa-bullhorn', 'color' => '#e74c3c'],
+            ['name_ar' => 'الاقتصاد', 'name_en' => 'Economics', 'icon' => 'fas fa-chart-line', 'color' => '#3498db'],
+            ['name_ar' => 'البرمجة', 'name_en' => 'Programming', 'icon' => 'fas fa-code', 'color' => '#2ecc71'],
+            ['name_ar' => 'قواعد البيانات', 'name_en' => 'Database', 'icon' => 'fas fa-database', 'color' => '#3498db'],
+            ['name_ar' => 'الشبكات', 'name_en' => 'Networks', 'icon' => 'fas fa-network-wired', 'color' => '#f39c12'],
+            ['name_ar' => 'أمن المعلومات', 'name_en' => 'Information Security', 'icon' => 'fas fa-shield-alt', 'color' => '#e74c3c'],
+        ];
 
         $sortOrder = 1;
         foreach ($subjects as $subject) {
-            Category::create([
+            $createdSubject = Subject::create([
                 'name_ar' => $subject['name_ar'],
                 'name_en' => $subject['name_en'],
                 'icon' => $subject['icon'],
                 'color' => $subject['color'],
                 'sort_order' => $sortOrder,
-                'parent_id' => $parentId,
-                'type' => 'lesson'  // These are the actual lessons
+                'grade_id' => $programmId,
+                'programm_id' => $programmId,
             ]);
             $sortOrder++;
+            CategorySubject::create([
+                'subject_id' => $createdSubject->id,
+                'category_id' => $programmId,
+            ]);
         }
     }
 
@@ -1004,7 +666,6 @@ class CategoriesSeeder extends Seeder
                 'color' => $subject['color'],
                 'sort_order' => $sortOrder,
                 'parent_id' => $parentId,
-                'type' => 'lesson',                    // These are the actual lessons
             ]);
             $sortOrder++;
         }

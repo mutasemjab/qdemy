@@ -28,12 +28,12 @@ class HomeController extends Controller
         $blogs = Blog::take(4)->get(); // Get first 4 blogs
 
         return view('web.home', compact(
-            'specialQdemies', 
-            'socialMediaVideos', 
-            'teachers', 
-            'settings', 
-            'faqs', 
-            'opinionStudents', 
+            'specialQdemies',
+            'socialMediaVideos',
+            'teachers',
+            'settings',
+            'faqs',
+            'opinionStudents',
             'blogs'
         ));
     }

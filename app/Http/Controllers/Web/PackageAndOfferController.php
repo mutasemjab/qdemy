@@ -58,7 +58,7 @@ class PackageAndOfferController extends Controller
             $categoriesTree = $categoriesTree->push(Category::getFlatList($ctg->id,'-- ','with_parent')->where('type','class'));
         }
 
-        if($is_type_class && $clas->id){
+        if($is_type_class && $clas?->id){
             $lessons     = Category::where('type','lesson')->where('parent_id',$clas->id)->get();
         }elseif(!$is_type_class){
             $lessons     = $package->categories?->where('type','lessons');
@@ -68,4 +68,122 @@ class PackageAndOfferController extends Controller
 
         return view('web.package', compact('categoriesTree','package','classes','lessons','choosen_lessons','clas','is_type_class'));
     }
+
+    /**
+     * عرض صفحة الباقة
+    */
+    public function show(Request $request, $packageId, $clasId = null)
+    {
+        $package = Package::with(['categories' => function($query) {
+            $query->where('is_active', 1);
+        }])->findOrFail($packageId);
+
+        $clas = null;
+        $categoriesTree = [];
+        $lessons = collect();
+        $is_type_class = false;
+
+        // Check if package type is class
+        if ($package->type === 'class') {
+            $is_type_class = true;
+
+            // Get categories tree for class selector
+            $categoriesTree = CategoryRepository()->getCategoriesTreeForPackage($package->id);
+
+            if ($clasId) {
+                $clas = Category::find($clasId);
+                // Get lessons for selected class
+                $lessons = CategoryRepository()->getLessonsForClass($clasId, $package->id);
+            } else {
+                // Get all lessons for package
+                $lessons = CategoryRepository()->getAllLessonsForPackage($package->id);
+            }
+        } else {
+            // For lesson type packages
+            $lessons = $package->categories()->where('type', 'lesson')->get();
+        }
+
+        return view('web.package', compact('package', 'clas', 'categoriesTree', 'lessons', 'is_type_class'));
+    }
+
+    /**
+     * تحديث السلة بكورسات الباقة
+     */
+    public function updatePackageCart(Request $request)
+    {
+        $request->validate([
+            'package_id' => 'required|exists:packages,id',
+            'courses' => 'required|array',
+            'courses.*' => 'exists:courses,id'
+        ]);
+
+        try {
+            $packageId = $request->package_id;
+            $courseIds = $request->courses;
+
+            // Get package
+            $package = Package::find($packageId);
+
+            // Validate courses count
+            if (count($courseIds) != $package->how_much_course_can_select) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "يجب اختيار {$package->how_much_course_can_select} كورسات بالضبط"
+                ], 400);
+            }
+
+            // Verify all courses belong to package categories
+            // $validCourses = CartRepository()->validateCoursesForPackage($courseIds, $packageId);
+            // if (!$validCourses) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'بعض الكورسات لا تنتمي لهذه الباقة'
+            //     ], 400);
+            // }
+
+            $validOnePackgeOnlyOnCart = CartRepository()->validCartContent($packageId);
+            if (!$validOnePackgeOnlyOnCart) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'لا يمكن الجمع بين الكورسات المنفردة والباكدجات ف الكارت و لا بين 2 باكدج .'
+                ], 400);
+            }
+
+            CartRepository()->clearCart();
+            CartRepository()->setPackageCart($packageId, $courseIds);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث السلة بنجاح',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء تحديث السلة',
+                'e' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * الحصول على محتويات السلة الحالية
+     */
+    public function getPackageCart(Request $request)
+    {
+        try {
+            $cart = CartRepository()->getPackageCart();
+
+            return response()->json([
+                'success' => true,
+                'cart' => $cart
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'حدث خطأ أثناء جلب محتويات السلة'
+            ], 500);
+        }
+    }
+
 }

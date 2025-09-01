@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title',__('messages.packages_offers'))
+@section('title',translate_lang('packages_offers'))
 
 @section('content')
 <section class="pkgo-wrap">
@@ -7,19 +7,19 @@
 
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{__('messages.packages_offers')}}</h2>
+            <h2>{{translate_lang('packages_offers')}}</h2>
         </div>
     </div>
 
   <div class="co-chooser">
     <button class="co-chooser-btn" id="coChooserBtn">
-      <span> {{$programm?->localized_name ?? __('messages.choose the programm') }} </span>
+      <span> {{$programm?->localized_name ?? translate_lang('choose the programm') }} </span>
       <i class="fa-solid fa-caret-down"></i>
     </button>
     @if($programms && $programms->count())
     <ul class="co-chooser-list" id="coChooserList">
       <li><a href="{{ route('packages-offers') }}" class='text-decoration-none'>
-        {{__('messages.all programms')}}</a>
+        {{translate_lang('all programms')}}</a>
       </li>
       @foreach($programms as $prog)
       <li><a href="{{ route('packages-offers',$prog) }}" class='text-decoration-none'>
@@ -31,7 +31,7 @@
   </div>
 
   <div class="pkgo-head">
-    {{__('messages.cards')}} {{$programm?->localized_name}}
+    {{translate_lang('cards')}} {{$programm?->localized_name}}
    </div>
 
     @foreach($packages as $package)
@@ -57,7 +57,7 @@
         @endif
         </div>
         <div class="pkgo-cta-col">
-        <a href="{{route('package',$package)}}" class="pkgo-cta">{{__('messages.buy_or_activate')}}</a>
+        <a href="{{route('package',$package)}}" class="pkgo-cta">{{translate_lang('buy_or_activate')}}</a>
         </div>
         <div class="pkgo-price">{{ sprintf('%g', $package->price) }} <span>{{CURRENCY}}</span></div>
     </div>

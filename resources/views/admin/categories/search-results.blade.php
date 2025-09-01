@@ -20,8 +20,8 @@
         <div class="card-body">
             <form method="GET" action="{{ route('categories.index') }}" class="row g-3">
                 <div class="col-md-8">
-                    <input type="text" name="search" class="form-control" 
-                           value="{{ request('search') }}" 
+                    <input type="text" name="search" class="form-control"
+                           value="{{ request('search') }}"
                            placeholder="{{ __('messages.Search categories...') }}">
                 </div>
                 <div class="col-md-4 d-flex gap-2">
@@ -41,7 +41,7 @@
         <div class="card-header">
             <h5 class="mb-0">{{ __('messages.Search Results') }}</h5>
         </div>
-        
+
         <div class="card-body p-0">
             @if($categories->count() > 0)
                 <div class="table-responsive">
@@ -99,23 +99,16 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             @can('category-table')
-                                                <a href="{{ route('categories.show', $category) }}" 
+                                                <a href="{{ route('categories.show', $category) }}"
                                                    class="btn btn-sm btn-outline-info" title="{{ __('messages.View') }}">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                             @endcan
-                                            
+
                                             @can('category-edit')
-                                                <a href="{{ route('categories.edit', $category) }}" 
+                                                <a href="{{ route('categories.edit', $category) }}"
                                                    class="btn btn-sm btn-outline-primary" title="{{ __('messages.Edit') }}">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
-                                            @endcan
-                                            
-                                            @can('category-add')
-                                                <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" 
-                                                   class="btn btn-sm btn-outline-success" title="{{ __('messages.Add Child') }}">
-                                                    <i class="fas fa-plus"></i>
                                                 </a>
                                             @endcan
                                         </div>
@@ -125,7 +118,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <!-- Pagination -->
                 <div class="card-footer">
                     {{ $categories->withQueryString()->links() }}

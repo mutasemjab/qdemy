@@ -39,12 +39,6 @@
                 </a>
             @endcan
 
-            @can('category-add')
-                <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>{{ __('messages.Add Subcategory') }}
-                </a>
-            @endcan
-
             <a href="{{ route('categories.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>{{ __('messages.Back') }}
             </a>
@@ -146,11 +140,6 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ __('messages.Subcategories') }} ({{ $category->children->count() }})</h5>
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-sm btn-primary">
-                                <i class="fas fa-plus me-1"></i>{{ __('messages.Add') }}
-                            </a>
-                        @endcan
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -224,13 +213,6 @@
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @endcan
-
-                                                    @can('category-add')
-                                                        <a href="{{ route('categories.create', ['parent_id' => $child->id]) }}"
-                                                           class="btn btn-sm btn-outline-success" title="{{ __('messages.Add Child') }}">
-                                                            <i class="fas fa-plus"></i>
-                                                        </a>
-                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -246,11 +228,6 @@
                         <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
                         <h5>{{ __('messages.No subcategories found') }}</h5>
                         <p class="text-muted">{{ __('messages.This category has no subcategories yet') }}</p>
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>{{ __('messages.Add First Subcategory') }}
-                            </a>
-                        @endcan
                     </div>
                 </div>
             @endif
@@ -268,12 +245,6 @@
                         @can('category-edit')
                             <a href="{{ route('categories.edit', $category) }}" class="btn btn-outline-primary">
                                 <i class="fas fa-edit me-2"></i>{{ __('messages.Edit Category') }}
-                            </a>
-                        @endcan
-
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-outline-success">
-                                <i class="fas fa-plus me-2"></i>{{ __('messages.Add Subcategory') }}
                             </a>
                         @endcan
 
@@ -457,12 +428,6 @@
                 </a>
             @endcan
 
-            @can('category-add')
-                <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-success">
-                    <i class="fas fa-plus me-2"></i>{{ __('Add Subcategory') }}
-                </a>
-            @endcan
-
             <a href="{{ route('categories.index') }}" class="btn btn-outline-secondary">
                 <i class="fas fa-arrow-left me-2"></i>{{ __('Back') }}
             </a>
@@ -549,11 +514,6 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">{{ __('Subcategories') }} ({{ $category->children->count() }})</h5>
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-sm btn-primary">
-                                <i class="fas fa-plus me-1"></i>{{ __('Add') }}
-                            </a>
-                        @endcan
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -619,13 +579,6 @@
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @endcan
-
-                                                    @can('category-add')
-                                                        <a href="{{ route('categories.create', ['parent_id' => $child->id]) }}"
-                                                           class="btn btn-sm btn-outline-success" title="{{ __('Add Child') }}">
-                                                            <i class="fas fa-plus"></i>
-                                                        </a>
-                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -641,11 +594,6 @@
                         <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
                         <h5>{{ __('No subcategories found') }}</h5>
                         <p class="text-muted">{{ __('This category has no subcategories yet') }}</p>
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>{{ __('Add First Subcategory') }}
-                            </a>
-                        @endcan
                     </div>
                 </div>
             @endif
@@ -663,12 +611,6 @@
                         @can('category-edit')
                             <a href="{{ route('categories.edit', $category) }}" class="btn btn-outline-primary">
                                 <i class="fas fa-edit me-2"></i>{{ __('Edit Category') }}
-                            </a>
-                        @endcan
-
-                        @can('category-add')
-                            <a href="{{ route('categories.create', ['parent_id' => $category->id]) }}" class="btn btn-outline-success">
-                                <i class="fas fa-plus me-2"></i>{{ __('Add Subcategory') }}
                             </a>
                         @endcan
 

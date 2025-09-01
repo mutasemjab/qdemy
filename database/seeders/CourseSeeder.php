@@ -14,9 +14,7 @@ class CourseSeeder extends Seeder
     public function run()
     {
         // جلب الكاتيجوريز المطلوبة فقط
-        $categories = Category::where('type','lesson')
-            ->orWhereIn('ctg_key', ['universities-and-colleges-program', 'international-program'])
-            ->get();
+        $subjects = Subject::get();
 
         // بيانات حقيقة لكورسات مترابطة (سيتم تكرارها لكل كاتيجوري)
         $coursesData = [
@@ -54,14 +52,14 @@ class CourseSeeder extends Seeder
             ],
         ];
 
-        foreach ($categories as $category) {
+        foreach ($subjects as $subject) {
             foreach ($coursesData as $courseData) {
                 // جلب مدرس عشوائي لكل كورس
                 $teacher = Teacher::inRandomOrder()->first();
 
                 // تعديل العنوان بإضافة اسم الكاتيجوري
-                $title_en = $courseData['title_en'] . ' - ' . ($category->name_en ?? $category->name_ar);
-                $title_ar = $courseData['title_ar'] . ' - ' . ($category->name_ar ?? $category->name_en);
+                $title_en = $courseData['title_en'] . ' - ' . ($subject->name_en ?? $subject->name_ar);
+                $title_ar = $courseData['title_ar'] . ' - ' . ($subject->name_ar ?? $subject->name_en);
 
                 $course = Course::create([
                     'title_en' => $title_en,
@@ -70,8 +68,10 @@ class CourseSeeder extends Seeder
                     'description_ar' => $courseData['description_ar'],
                     'selling_price' => $courseData['selling_price'],
                     'photo' => $courseData['photo'],
-                    'category_id' => $category->id,
+                    'subject_id' => $subject->id,
                     'teacher_id' => $teacher->id,
+                    'programm_id' => $subject->programm_id,
+                    'grade_id'    => $subject->grade_id,
                 ]);
 
                 // إنشاء سكاشن حقيقة لكل كورس

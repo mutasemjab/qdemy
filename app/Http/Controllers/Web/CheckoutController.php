@@ -18,16 +18,17 @@ class CheckoutController extends Controller
     {
         $user = auth_student();
         // الكورسات الموجودة في الـ Session
-        $courses = Session::get('courses', []);
+        $courses = CartRepository()->cart_session;
+        $package = CartRepository()->getPackageCart();
 
         // تصفية الكورسات بحيث يظهر فقط غير المشترك فيها
-        $coursesIds = array_filter($courses, function ($course) use ($user) {
+        $packageIds = array_filter($courses, function ($course) use ($user) {
             return !CourseUser::where('user_id', $user->id)
                               ->where('course_id', $course)
                               ->exists();
         });
         $courses = Course::whereIn('id',$coursesIds)->get();
-        return view('web.checkout', compact('courses'));
+        return view('web.checkout', compact('courses','package'));
     }
 
     public function activateCard(Request $request)
@@ -44,12 +45,12 @@ class CheckoutController extends Controller
         if (!$cardNumber) {
             return response()->json([
                 'success' => false,
-                'message' => __('messages.invalid_card'),
+                'message' => translate_lang('invalid_card'),
             ]);
         }
 
         $user    = auth_student();
-        $courses = Session::get('courses', []);
+        $courses = CartRepository()->cart_session;
         // تصفية الكورسات لغير المشترك فيها
         $coursesIds = array_filter($courses, function ($course) use ($user) {
             return !CourseUser::where('user_id', $user->id)
@@ -64,7 +65,7 @@ class CheckoutController extends Controller
         if ($totalCost != $cardNumber->card->price) {
             return response()->json([
                 'success' => false,
-                'message' => __('messages.card_price_mismatch'),
+                'message' => translate_lang('card_price_mismatch'),
             ]);
         }
 
@@ -104,13 +105,13 @@ class CheckoutController extends Controller
                 'course_id' => $course->id,
                 'teacher_id' => $course->teacher_id,
                 'amount' => $course->selling_price,
-                'notes' => __('messages.payment_notes'),
+                'notes' => translate_lang('payment_notes'),
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => __('messages.card_activated'),
+            'message' => translate_lang('card_activated'),
         ]);
     }
 }

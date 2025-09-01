@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('image', 128)->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->integer('how_much_course_can_select')->default(1);
-            $table->enum('type', ['class', 'lesson'])->default('class');
+            $table->enum('type', ['class', 'subject'])->default('class');
             $table->timestamps();
         });
     }

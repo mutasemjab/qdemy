@@ -3,6 +3,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Package;
 
 class CategoryRepository
 {
@@ -118,8 +119,15 @@ class CategoryRepository
         return $category->children;
     }
 
+    // @param $category = instance of Category
+    // الحصول علي المواد الاختيارية لمبحث اختياري
+    // معين ف احدي حقول توجيهي السنة النهائية
+    // return collection
     public function getOtionalSubjectsForField($category)
     {
+        if (!$category) {
+            return collect();
+        }
         $optional_form_field_type = $category->optional_form_field_type;
 
         // احصل علي الواد الموجودة اجباريا ف هذا الحقل
@@ -145,6 +153,63 @@ class CategoryRepository
 
         // dd($subjects);
         return $subjects;
+    }
+
+    /**
+     * الحصول على شجرة الفئات للباقة
+     */
+    public function getCategoriesTreeForPackage($packageId)
+    {
+        $package = Package::with('categories.parent')->find($packageId);
+
+        if (!$package) {
+            return collect();
+        }
+
+        // Group categories by parent
+        $grouped = [];
+        foreach ($package->categories as $category) {
+            if ($category->parent) {
+                $parentId = $category->parent->id;
+                if (!isset($grouped[$parentId])) {
+                    $grouped[$parentId] = [];
+                }
+                $grouped[$parentId][] = [
+                    'id' => $category->id,
+                    'name' => $category->localized_name,
+                    'category' => $category
+                ];
+            }
+        }
+
+        return collect($grouped);
+    }
+
+    /**
+     * الحصول على الدروس للصف
+     */
+    public function getLessonsForClass($classId, $packageId)
+    {
+        return Category::where('parent_id', $classId)
+            ->where('type', 'lesson')
+            ->whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })
+            ->orderBy('sort_order')
+            ->get();
+    }
+
+    /**
+     * الحصول على جميع الدروس للباقة
+     */
+    public function getAllLessonsForPackage($packageId)
+    {
+        return Category::where('type', 'lesson')
+            ->whereHas('packages', function($query) use ($packageId) {
+                $query->where('packages.id', $packageId);
+            })
+            ->orderBy('sort_order')
+            ->get();
     }
 
     // احصل علي كل ابناء category معين شجريا

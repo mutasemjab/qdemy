@@ -97,14 +97,16 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/activate-card', [EnrollmentController::class, 'activateCard'])->name('activate.card');
         Route::post('/payment-with-card', [EnrollmentController::class, 'paymentWithCard'])->name('payment.card');
         Route::post('/remove-course', [EnrollmentController::class, 'removeCourse'])->name('remove.course');
-        Route::post('/process-payment', [EnrollmentController::class, 'processPayment'])->name('process.payment');
-        Route::get('/payment-success', [EnrollmentController::class, 'paymentSuccess'])->name('payment.success');
+        Route::post('/cart-package-get', [EnrollmentController::class, 'getPackageFromSession'])->name('cart.package.get');
+        Route::get('/cart-package-update', [EnrollmentController::class, 'addPackageToSession'])->name('cart.package.update');
     });
 
     // packages routes
     Route::group(['prefix'=>'packages'], function () {
         Route::get('/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
-        Route::get('/package/{package?}/{clas?}', [PackageAndOfferController::class, 'package'])->name('package');
+        Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'package'])->name('package');
+        Route::post('/cart/package/update', [PackageAndOfferController::class, 'updatePackageCart'])->name('cart.package.update');
+        Route::get('/cart/package/get', [PackageAndOfferController::class, 'getPackageCart'])->name('cart.package.get');
     });
 
     // enrollment routes

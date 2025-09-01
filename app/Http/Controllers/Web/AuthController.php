@@ -129,7 +129,7 @@ class AuthController extends Controller
         }
 
         return redirect()->back()
-            ->withErrors(['phone' => __('messages.auth_failed')])
+            ->withErrors(['phone' => translate_lang('auth_failed')])
             ->withInput($request->except('password'));
     }
 

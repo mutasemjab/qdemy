@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('messages.basic_grades'))
+@section('title', translate_lang('basic_grades'))
 
 @section('content')
 <section class="grades-basic-page">
@@ -8,7 +8,7 @@
 <div class="grades-header-wrapper">
     <div class="grades-header">
         <img data-src="{{ asset('assets_front/images/booksframe.png') }}" class="header-icon">
-        <h2>{{ __('messages.basic_grades') }}</h2>
+        <h2>{{ translate_lang('basic_grades') }}</h2>
         <img data-src="{{ asset('assets_front/images/bookssearch.png') }}" class="header-icon">
     </div>
     </div>

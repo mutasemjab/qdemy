@@ -14,7 +14,7 @@
     <div class="tj2009__inner">
         <header class="tj2009__head">
         <h2>{{$field?->localized_name}}</h2>
-        <h3 class="">{{__('messages.Ministry Subjects')}}</h3>
+        <h3 class="">{{translate_lang('Ministry Subjects')}}</h3>
         </header>
 
         @if($ministrySubjects && $ministrySubjects->count())
@@ -55,7 +55,7 @@
         </div>
         @endif
 
-        <h3 class="tj2009__subtitle">{{__('messages.School Subjects')}}</h3>
+        <h3 class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
         @if($schoolSubjects && $schoolSubjects->count())
         <div class="tj2009__subjects">
             @foreach($schoolSubjects as $index => $schoolSubject)

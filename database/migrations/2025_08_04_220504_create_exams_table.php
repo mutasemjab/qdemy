@@ -31,8 +31,13 @@ return new class extends Migration
             $table->datetime('end_date')->nullable();
 
             // Foreign keys
+
+            $table->unsignedBigInteger('subject_id')->nullable();
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
+
             $table->unsignedBigInteger('course_id')->nullable();
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
+
             $table->unsignedBigInteger('section_id')->nullable();
             $table->foreign('section_id')->references('id')->on('course_sections')->onDelete('cascade');
 
