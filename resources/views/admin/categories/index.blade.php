@@ -10,13 +10,6 @@
             <h1 class="h3 mb-0">{{ __('messages.Categories') }}</h1>
             <p class="text-muted">{{ __('messages.Manage category hierarchy') }}</p>
         </div>
-        <div>
-            @can('category-add')
-                <a href="{{ route('categories.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus mr-2"></i>{{ __('messages.Add Category') }}
-                </a>
-            @endcan
-        </div>
     </div>
 
     <!-- Search Bar -->
@@ -68,11 +61,6 @@
                     <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
                     <h5>{{ __('messages.No categories found') }}</h5>
                     <p class="text-muted">{{ __('messages.Create your first category to get started') }}</p>
-                    @can('category-add')
-                        <a href="{{ route('categories.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus mr-2"></i>{{ __('messages.Add Category') }}
-                        </a>
-                    @endcan
                 </div>
             @endif
         </div>

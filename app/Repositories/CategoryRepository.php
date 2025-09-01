@@ -214,7 +214,7 @@ class CategoryRepository
 
     // احصل علي كل ابناء category معين شجريا
     // if withParent = true  && !is_array($parentId) - ضع ال parent category علس راس القائمة
-    public function getAllSubChilds($parentId, $withParent = false)
+    public function getAllSubChilds($parentId,$is_active = null, $withParent = false)
     {
         $categories = collect();
         $query = Category::Query();
@@ -223,8 +223,12 @@ class CategoryRepository
         }else{
             $query->where('parent_id', $parentId);
         }
-        $items = $query->where('is_active', true)
-            ->orderBy('sort_order')
+
+        if($is_active !== null){
+            $items = $query->where('is_active', $is_active);
+        }
+
+         $items = $query->orderBy('sort_order')
             ->orderBy('name_ar')
             ->get();
         if($withParent && !is_array($parentId)){

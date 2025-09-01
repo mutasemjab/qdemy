@@ -117,12 +117,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::patch('categories/{category}/toggle-status', [CategoryController::class, 'toggleStatus'])
             ->name('categories.toggle-status');
 
-        Route::patch('categories/{category}/move-up', [CategoryController::class, 'moveUp'])
-            ->name('categories.move-up');
-
-        Route::patch('categories/{category}/move-down', [CategoryController::class, 'moveDown'])
-            ->name('categories.move-down');
-
         Route::get('categories/subcategories/{parent_id?}', [CategoryController::class, 'getSubcategories'])
             ->name('categories.subcategories');
 

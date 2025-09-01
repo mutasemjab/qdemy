@@ -80,7 +80,6 @@
                         </a>
                     @endcan
 
-
                     @can('category-edit')
                         <form method="POST" action="{{ route('categories.toggle-status', $category) }}"
                               class="d-inline">
@@ -94,20 +93,6 @@
                         </form>
                     @endcan
 
-                    @can('category-delete')
-                        @if($category->children()->count() === 0)
-                            <form method="POST" action="{{ route('categories.destroy', $category) }}"
-                                  class="d-inline"
-                                  onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this category?') }}')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger"
-                                        title="{{ __('messages.Delete') }}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        @endif
-                    @endcan
                 </div>
             </div>
         </div>

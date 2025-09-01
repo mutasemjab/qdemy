@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-
 use App\Models\Category;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateCategoryRequest;
+
 class CategoryController extends Controller
 {
 
@@ -45,56 +48,12 @@ class CategoryController extends Controller
             ->with(['children' => function($query) {
                 $query->where('is_active', true)->orderBy('sort_order')->orderBy('name_ar');
             }])
-            ->where('is_active', true)
+            // ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('name_ar')
             ->get();
 
         return view('admin.categories.index', compact('rootCategories'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(Request $request)
-    {
-        $parentCategories = Category::getFlatList();
-        $parentId         = $request->get('parent_id');
-        $tawjihi_optional_fields_ctg_ids = $this->tawjihi_optional_fields_ctg_ids;
-        return view('admin.categories.create', compact('parentCategories', 'parentId','tawjihi_optional_fields_ctg_ids'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'nullable|string|max:255',
-            'description_ar' => 'nullable|string',
-            'description_en' => 'nullable|string',
-            'icon'  => 'nullable|string|max:255',
-            'color' => 'nullable|string|max:7',
-            'sort_order'  => 'nullable|integer|min:0',
-            'is_active'   => 'boolean',
-            'parent_id'   => 'nullable|exists:categories,id',
-            'type'        => 'required|in:class,lesson,major',
-            'is_optional' => 'nullable|required_if:type,lesson|in:0,1',
-            'is_ministry' => 'nullable|required_if:type,lesson|in:0,1',
-            'field_type'  => 'nullable|required_if:type,lesson|in:'.implode(',',FIELD_TYPE),
-            'optional_form_field_type' => 'nullable|required_if:type,lesson|in:'.implode(',',OPTIONAL_FROM_FIELD_TYPE),
-        ]);
-        // tawjihi_program_subject
-        $data = $request->all();
-        $data['is_active']  = $request->boolean('is_active', true);
-        $data['sort_order'] = $data['sort_order'] ?? 0;
-        if ($data['type']  == 'lesson') { $data['level'] = 'tawjihi_program_subject';}
-
-        Category::create($data);
-
-        return redirect()->route('categories.index')
-            ->with('success', __('messages.Category created successfully'));
     }
 
     /**
@@ -112,72 +71,72 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        // Get all categories except the current one and its descendants to prevent circular references
-        $excludeIds = collect([$category->id]);
-        $this->addDescendantIds($category, $excludeIds);
-
-        $parentCategories = Category::whereNotIn('id', $excludeIds)->get();
-        $parentCategories = $this->buildFlatList($parentCategories);
-        $is_editable = $category->is_ediatble;
-        $tawjihi_optional_fields_ctg_ids = $this->tawjihi_optional_fields_ctg_ids;
-        return view('admin.categories.edit', compact('category', 'parentCategories','is_editable','tawjihi_optional_fields_ctg_ids'));
+        return view('admin.categories.edit', compact('category'));
     }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
-        if(!$category->is_ediatble) return false;
-        $request->validate([
-            'name_ar' => 'required|string|max:255',
-            'name_en' => 'nullable|string|max:255',
-            'description_ar' => 'nullable|string',
-            'description_en' => 'nullable|string',
-            'icon'        => 'nullable|string|max:255',
-            'color'       => 'nullable|string|max:7',
-            'sort_order'  => 'nullable|integer|min:0',
-            'is_active'   => 'boolean',
-            'parent_id'   => 'nullable|exists:categories,id',
-            'type'        => 'required|in:class,lesson,major',
-            'is_optional' => 'nullable|required_if:type,lesson|in:0,1',
-            'is_ministry' => 'nullable|required_if:type,lesson|in:0,1',
-            'field_type'  => 'nullable|required_if:is_optional,1|required_if:type,lesson|in:'.implode(',',FIELD_TYPE),
-            'optional_form_field_type' => 'nullable|required_if:is_optional,1|required_if:type,lesson|in:'.implode(',',OPTIONAL_FROM_FIELD_TYPE),
-        ]);
+        // Get validated data
+        $validated = $request->validated();
 
-        $data = $request->all();
+        DB::beginTransaction();
+        try {
+            // Check if is_active status changed
+            $statusChanged = $category->is_active != $validated['is_active'];
 
-        $data['is_active'] = $request->boolean('is_active', true);
-        $data['sort_order'] = $data['sort_order'] ?? 0;
-        if ($data['type']  == 'lesson') { $data['level'] = 'tawjihi_program_subject';}
+            // Update category
+            $category->update($validated);
 
-        // Prevent circular reference
-        if ($data['parent_id'] == $category->id) {
-            return back()->withErrors(['parent_id' => __('messages.Category cannot be its own parent')]);
+            // If status changed, update all children
+            if ($statusChanged) {
+                $this->updateChildrenStatus($category->id, $validated['is_active']);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('categories.show', $category)
+                ->with('success', __('messages.category_updated_successfully'));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', __('messages.error_updating_category'));
         }
+    }
 
-        $category->update($data);
-
-        return redirect()->route('categories.index')
-            ->with('success', __('messages.Category updated successfully'));
+    /**
+     * Update all children categories status recursively
+     */
+    protected function updateChildrenStatus($parentId, $status)
+    {
+        // Get all children using the repository method
+        $children = CategoryRepository()->getAllSubChilds($parentId,null,'with_parent');
+        foreach ($children as $child) {
+            $child->update(['is_active' => $status]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
-    {
-        // Check if category has children
-        if ($category->children()->count() > 0) {
-            return back()->with('error', __('messages.Cannot delete category with subcategories'));
-        }
+    // public function destroy(Category $category)
+    // {
+    //     // Check if category has children
+    //     if ($category->children()->count() > 0) {
+    //         return back()->with('error', __('messages.Cannot delete category with subcategories'));
+    //     }
 
-        $category->delete();
+    //     $category->delete();
 
-        return redirect()->route('categories.index')
-            ->with('success', __('messages.Category deleted successfully'));
-    }
+    //     return redirect()->route('categories.index')
+    //         ->with('success', __('messages.Category deleted successfully'));
+    // }
 
     /**
      * Get category tree as JSON for API or AJAX requests
@@ -191,52 +150,14 @@ class CategoryController extends Controller
     }
 
     /**
-     * Move category up in sort order
-     */
-    public function moveUp(Category $category)
-    {
-        $sibling = Category::where('parent_id', $category->parent_id)
-            ->where('sort_order', '<', $category->sort_order)
-            ->orderBy('sort_order', 'desc')
-            ->first();
-
-        if ($sibling) {
-            $tempOrder = $category->sort_order;
-            $category->update(['sort_order' => $sibling->sort_order]);
-            $sibling->update(['sort_order' => $tempOrder]);
-        }
-
-        return back()->with('success', __('messages.Category moved up successfully'));
-    }
-
-    /**
-     * Move category down in sort order
-     */
-    public function moveDown(Category $category)
-    {
-        $sibling = Category::where('parent_id', $category->parent_id)
-            ->where('sort_order', '>', $category->sort_order)
-            ->orderBy('sort_order', 'asc')
-            ->first();
-
-        if ($sibling) {
-            $tempOrder = $category->sort_order;
-            $category->update(['sort_order' => $sibling->sort_order]);
-            $sibling->update(['sort_order' => $tempOrder]);
-        }
-
-        return back()->with('success', __('messages.Category moved down successfully'));
-    }
-
-    /**
      * Toggle category active status
      */
     public function toggleStatus(Category $category)
     {
-        $category->update(['is_active' => !$category->is_active]);
-
-        $status = $category->is_active ? 'activated' : 'deactivated';
-        return back()->with('success', __("messages.Category {$status} successfully"));
+        $status_changed = $category->is_active ? 'deactivated' : 'activated';
+        $status = !$category->is_active;
+        $this->updateChildrenStatus($category->id, $status);
+        return back()->with('success', __("messages.Category {$status_changed} successfully"));
     }
 
     /**
@@ -252,44 +173,6 @@ class CategoryController extends Controller
             ->get(['id', 'name_ar', 'name_en', 'type']);
 
         return response()->json($subcategories);
-    }
-
-    /**
-     * Get lessons only for AJAX requests (for connecting to other tables)
-     */
-    public function getLessons(Request $request)
-    {
-        $parentId = $request->get('parent_id');
-        $query = Category::where('type', 'lesson')
-            ->where('is_active', true);
-
-        if ($parentId) {
-            $query->where('parent_id', $parentId);
-        }
-
-        $lessons = $query->orderBy('sort_order')
-            ->orderBy('name_ar')
-            ->get(['id', 'name_ar', 'name_en', 'parent_id']);
-
-        return response()->json($lessons);
-    }
-
-    /**
-     * Get categories by type
-     */
-    public function getByType(Request $request, $type)
-    {
-        $request->validate([
-            'type' => 'in:class,lesson,major'
-        ]);
-
-        $categories = Category::where('type', $type)
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->orderBy('name_ar')
-            ->get(['id', 'name_ar', 'name_en', 'parent_id', 'type']);
-
-        return response()->json($categories);
     }
 
     /**
@@ -328,18 +211,6 @@ class CategoryController extends Controller
         }
 
         return back()->with('success', $message);
-    }
-
-    /**
-     * Helper method to add descendant IDs recursively
-     */
-    private function addDescendantIds($category, &$excludeIds)
-    {
-        $children = $category->children;
-        foreach ($children as $child) {
-            $excludeIds->push($child->id);
-            $this->addDescendantIds($child, $excludeIds);
-        }
     }
 
     /**
