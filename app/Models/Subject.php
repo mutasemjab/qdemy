@@ -58,26 +58,40 @@ class Subject extends Model
         $query->where('is_active', true);
         return $query;
     }
+    // Relations
+    public function fieldType()
+    {
+        return $this->belongsTo(Category::class, 'field_type_id');
+    }
     /**
      * Get the category  grade that owns the course.
      */
     public function grade()
     {
-        return $this->belongsTo(Category::class,'id','grade_id');
+        return $this->belongsTo(Category::class,'grade_id');
     }
     /**
      * Get the category  semester that owns the course - if exists.
      */
     public function semester()
     {
-        return $this->belongsTo(Category::class,'id','semester_id');
+        return $this->belongsTo(Category::class,'semester_id');
     }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'category_subjects')
+            ->withPivot(['pivot_level', 'is_optional', 'is_ministry'])
+            ->withTimestamps();
+    }
+
+
     /**
      * Get the category  main programm that owns the course.
     */
-    public function programm()
+    public function program()
     {
-        return $this->belongsTo(Category::class,'id','programm_id');
+        return $this->belongsTo(Category::class,'programm_id');
     }
 
     /**

@@ -92,7 +92,7 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'توجيهي 2009',
                 'name_en' => 'Tawjihi 2009',
                 'ctg_key' => 'first_year',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon'    => 'fas fa-book',
                 'color'   => '#e74c3c',
                 'sort_order' => 1,
@@ -103,7 +103,7 @@ class CategoriesSeeder extends Seeder
                 'name_ar' => 'توجيهي 2008',
                 'name_en' => 'Tawjihi 2008',
                 'ctg_key' => 'final_year',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon'    => 'fas fa-book-open',
                 'color'   => '#c0392b',
                 'sort_order' => 2,
@@ -113,8 +113,9 @@ class CategoriesSeeder extends Seeder
             [
                 'name_ar' => 'النظام المهني',
                 'name_en' => 'Vocational System',
-                'icon' => 'fas fa-tools',
+                'level' => 'tawjihi_grade',
                 'color' => '#8e44ad',
+                'is_active' => 0,
                 'sort_order' => 3,
                 'parent_id' => $parentId,
                 'type' => 'class'
@@ -456,7 +457,7 @@ class CategoriesSeeder extends Seeder
                 'sort_order' => $sortOrder,
                 'parent_id'  => $parentId,
                 'type'       => 'class',
-                'level'      => 'tawjihi_grade'
+                'level'      => 'elementray_grade'
             ]);
 
             // Create semesters for each grade
@@ -552,8 +553,10 @@ class CategoriesSeeder extends Seeder
 
         $programm_id = Category::where('name_en','Elementary Grades Program')->first()?->id;
         foreach ($subjects as $subject) {
+            $subject['semester_id'] = $semesterId;
             $subject['grade_id']    = $gradeId;
             $subject['programm_id'] = $programm_id;
+
             $createdSubject = Subject::create($subject);
             CategorySubject::create([
                 'subject_id' => $createdSubject->id,

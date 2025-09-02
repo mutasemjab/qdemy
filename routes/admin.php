@@ -1,34 +1,35 @@
 <?php
 
-use App\Http\Controllers\Admin\BankQuestionController;
-use App\Http\Controllers\Admin\BannerController;
+use Illuminate\Support\Facades\Route;
+use Spatie\Permission\Models\Permission;
+use App\Http\Controllers\Admin\POSController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\CardController;
-use App\Http\Controllers\Admin\CardNumberController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ContactUsController;
-use App\Http\Controllers\Admin\CourseController;
-use App\Http\Controllers\Admin\CourseSectionController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\LoginController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExamController;
-use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
-use App\Http\Controllers\Admin\OnBoardingController;
-use App\Http\Controllers\Admin\OpinionStudentController;
-use App\Http\Controllers\Admin\PackageController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\ParentController;
-use App\Http\Controllers\Admin\POSController;
-use App\Http\Controllers\Admin\QuestionController;
-use App\Http\Controllers\Admin\QuestionWebsiteController;
+use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\SpecialQdemyController;
+use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\TeacherController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ContactUsController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\CardNumberController;
+use App\Http\Controllers\Admin\OnBoardingController;
+use App\Http\Controllers\Admin\BankQuestionController;
+use App\Http\Controllers\Admin\SpecialQdemyController;
+use App\Http\Controllers\Admin\CourseSectionController;
+use App\Http\Controllers\Admin\OpinionStudentController;
+use App\Http\Controllers\Admin\QuestionWebsiteController;
 use App\Http\Controllers\Admin\WalletTransactionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use Spatie\Permission\Models\Permission;
+use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -122,6 +123,11 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         Route::post('categories/bulk-action', [CategoryController::class, 'bulkAction'])
             ->name('categories.bulk-action');
+
+        Route::resource('subjects', SubjectController::class);
+        Route::post('subjects/getGrades', [SubjectController::class, 'getGrades'])->name('admin.subjects.getGrades');
+        Route::post('subjects/getSemesters', [SubjectController::class, 'getSemesters'])->name('admin.subjects.getSemesters');
+        Route::post('subjects/getFields', [SubjectController::class, 'getFields'])->name('admin.subjects.getFields');
 
         // end المواد والتقسيمات
 

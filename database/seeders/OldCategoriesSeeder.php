@@ -91,7 +91,7 @@ class OldCategoriesSeeder extends Seeder
             [
                 'name_ar' => 'توجيهي 2009',
                 'name_en' => 'Tawjihi 2009',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon'    => 'fas fa-book',
                 'color'   => '#e74c3c',
                 'sort_order' => 1,
@@ -101,7 +101,7 @@ class OldCategoriesSeeder extends Seeder
             [
                 'name_ar' => 'توجيهي 2008',
                 'name_en' => 'Tawjihi 2008',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'ctg_key'   => 'final_year',
                 'icon' => 'fas fa-book-open',
                 'color' => '#c0392b',
@@ -112,12 +112,13 @@ class OldCategoriesSeeder extends Seeder
             [
                 'name_ar' => 'النظام المهني',
                 'name_en' => 'Vocational System',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon' => 'fas fa-tools',
                 'color' => '#8e44ad',
                 'sort_order' => 3,
                 'parent_id' => $parentId,
-                'type' => 'class'
+                'type' => 'class',
+                'is_active' => 0
             ]
         ];
 

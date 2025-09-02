@@ -90,7 +90,7 @@ class ReferenceCategoriesSeeder extends Seeder
                 'name_ar' => 'توجيهي 2009',
                 'name_en' => 'Tawjihi 2009',
                 'ctg_key' => 'first_year',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon'    => 'fas fa-book',
                 'color'   => '#e74c3c',
                 'sort_order' => 1,
@@ -101,7 +101,7 @@ class ReferenceCategoriesSeeder extends Seeder
                 'name_ar' => 'توجيهي 2008',
                 'name_en' => 'Tawjihi 2008',
                 'ctg_key' => 'final_year',
-                'level'   => 'tawjihi_program',
+                'level'   => 'tawjihi_grade',
                 'icon'    => 'fas fa-book-open',
                 'color'   => '#c0392b',
                 'sort_order' => 2,
@@ -678,7 +678,7 @@ class ReferenceCategoriesSeeder extends Seeder
                 'sort_order' => $sortOrder,
                 'parent_id'  => $parentId,
                 'type'       => 'class',
-                'level'      => 'tawjihi_grade'  // These are the actual lessons
+                'level'      => 'elementray_grade'  // These are the actual lessons
             ]);
 
             // Create semesters for each grade
