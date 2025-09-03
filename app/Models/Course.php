@@ -15,22 +15,31 @@ class Course extends Model
      protected $casts = [
         'selling_price' => 'decimal:2',
     ];
-    /**
+       /**
      * Get content title based on current locale
      */
     public function getTitleAttribute()
     {
         return app()->getLocale() === 'ar' ? $this->attributes['title_ar'] : $this->attributes['title_en'];
     }
+
     public function getDescriptionAttribute()
     {
         return app()->getLocale() === 'ar' ? $this->attributes['description_ar'] : $this->attributes['description_en'];
     }
-     public function teacher()
+
+    /**
+     * Get the teacher (user) that owns the course
+     * teacher_id refers to users.id where role_name = 'teacher'
+     */
+    public function teacher()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(User::class, 'teacher_id')->where('role_name', 'teacher');
     }
 
+    /**
+     * Get the subject that owns the course
+     */
     public function subject()
     {
         return $this->belongsTo(Subject::class);

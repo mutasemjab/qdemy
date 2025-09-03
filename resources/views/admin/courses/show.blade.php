@@ -56,7 +56,7 @@
                                 <tr>
                                     <th>{{ __('messages.selling_price') }}:</th>
                                     <td>
-                                        <span class="badge bg-success fs-6">${{ number_format($course->selling_price, 2) }}</span>
+                                        <span class="badge bg-success fs-6">JD {{ number_format($course->selling_price, 2) }}</span>
                                     </td>
                                 </tr>
                                 <tr>
@@ -70,12 +70,12 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>{{ __('messages.category') }}:</th>
+                                    <th>{{ __('messages.Subject') }}:</th>
                                     <td>
-                                        @if($course->category)
-                                            <span class="badge bg-primary">{{ $course->category->name }}</span>
+                                        @if($course->subject)
+                                            <span class="badge bg-primary">{{ $course->subject->localized_name }}</span>
                                         @else
-                                            <span class="text-muted">{{ __('messages.no_category') }}</span>
+                                            <span class="text-muted">{{ __('messages.No Subject') }}</span>
                                         @endif
                                     </td>
                                 </tr>

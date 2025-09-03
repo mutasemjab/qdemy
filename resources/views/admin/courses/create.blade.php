@@ -139,18 +139,17 @@
 
                             <!-- Category -->
                             <div class="col-md-6">
-                                <label for="category_id" class="form-label">{{ __('messages.Category') }}</label>
-                                <select class="form-control @error('category_id') is-invalid @enderror"
-                                        id="category_id" name="category_id">
+                                <label for="category_id" class="form-label">{{ __('messages.Subject') }}</label>
+                                <select class="form-control @error('subject_id') is-invalid @enderror"
+                                        id="subject_id" name="subject_id">
                                     <option value="">{{ __('messages.select_category') }}</option>
-                                    @foreach($parentCategories as $parent)
-                                        <option value="{{ $parent['category']->id }}"
-                                                {{ (old('category_id', $parentId) == $parent['category']->id) ? 'selected' : '' }}>
-                                            {{ $parent['name'] }}
+                                    @foreach($subjects as $subject)
+                                        <option value="{{ $subject->id }}">
+                                             {{ $subject->localized_name }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('category_id')
+                                @error('subject_id')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>

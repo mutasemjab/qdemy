@@ -22,24 +22,40 @@ class Exam extends Model
         'total_grade' => 'decimal:2',
         'passing_grade' => 'decimal:2',
     ];
+
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
     /**
-     * Get the course that owns the exam.
+     * Get the course that owns the exam
      */
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
+
+    /**
+     * Get the section that owns the exam
+     */
     public function section()
     {
-        return $this->belongsTo(CourseSection::class, 'sections','id','section_id');
+        return $this->belongsTo(CourseSection::class, 'section_id');
     }
 
     /**
-     * Get the user who created the exam.
+     * Get the user who created this exam (teacher)
      */
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by')->where('role_name', 'teacher');
+    }
+
+    public function admin_creator()
+    {
+        return $this->belongsTo(Admin::class, 'created_by_admin');
     }
 
     /**
@@ -48,9 +64,9 @@ class Exam extends Model
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'exam_questions')
-                    ->withPivot('order', 'grade')
-                    ->orderBy('exam_questions.order')
-                    ->withTimestamps();
+            ->withPivot('order', 'grade')
+            ->orderBy('exam_questions.order')
+            ->withTimestamps();
     }
 
     /**
@@ -65,14 +81,14 @@ class Exam extends Model
     public function current_user_attempt()
     {
         return $this->user_attempts()->where('status', 'in_progress')
-        ->where('submitted_at',null)?->first();
+            ->where('submitted_at', null)?->first();
     }
 
     // exam attempts for current login student
     public function current_user_attempts()
     {
         return $this->user_attempts()->where('status', 'in_progress')
-        ->where('submitted_at',null);
+            ->where('submitted_at', null);
     }
 
     /**
@@ -119,7 +135,7 @@ class Exam extends Model
 
     /**
      * Calculate total grade from questions
-    */
+     */
     public function calculateTotalGrade()
     {
         return $this->questions()->sum('exam_questions.grade');
@@ -153,28 +169,28 @@ class Exam extends Model
     // true if user can add new attempt becuase he has attempts_allowed and there is no current one
     // false if user cant add new attempt becuase he hasnot attempts_allowed and there is exist current one
     // for current login student
-    public function can_add_attempt ()
+    public function can_add_attempt()
     {
-        $attempts_allowed = $this->attempts_allowed;//99;
+        $attempts_allowed = $this->attempts_allowed; //99;
         $user_id = $user_id ?? auth('user')->id();
         $attempts = $this->attempts()->where('user_id', $user_id);
-       return ($attempts->count() < $attempts_allowed && !$attempts->where('submitted_at',null)->count());
+        return ($attempts->count() < $attempts_allowed && !$attempts->where('submitted_at', null)->count());
     }
 
     // return last completed attmept to exam for current login student
-    public function result_attempt ()
+    public function result_attempt()
     {
         $user_id = $user_id ?? auth('user')->id();
-        return $this->attempts()->where('user_id', $user_id)->where('status','completed')->where('submitted_at','!=',null)
-        ->orderBy('score','desc')->first();
+        return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->where('submitted_at', '!=', null)
+            ->orderBy('score', 'desc')->first();
     }
 
     // return all completed attmept to exam for current login student
-    public function result_attempts ()
+    public function result_attempts()
     {
         $user_id = $user_id ?? auth('user')->id();
-        return $this->attempts()->where('user_id', $user_id)->where('status','completed')->where('submitted_at','!=',null)
-        ->orderBy('score','desc')->get();
+        return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->where('submitted_at', '!=', null)
+            ->orderBy('score', 'desc')->get();
     }
 
     /**
@@ -194,11 +210,5 @@ class Exam extends Model
         }
 
         return sprintf('%d %s', $minutes, __('messages.minutes'));
-    }
-
-
-    public function admin_creator()
-    {
-        return $this->belongsTo(Admin::class, 'created_by_admin');
     }
 }

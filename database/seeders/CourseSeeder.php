@@ -8,6 +8,8 @@ use App\Models\Category;
 use App\Models\Teacher;
 use App\Models\CourseSection;
 use App\Models\CourseContent;
+use App\Models\Subject;
+use App\Models\User;
 
 class CourseSeeder extends Seeder
 {
@@ -55,7 +57,7 @@ class CourseSeeder extends Seeder
         foreach ($subjects as $subject) {
             foreach ($coursesData as $courseData) {
                 // جلب مدرس عشوائي لكل كورس
-                $teacher = Teacher::inRandomOrder()->first();
+                $teacher = User::where('role_name','teacher')->inRandomOrder()->first();
 
                 // تعديل العنوان بإضافة اسم الكاتيجوري
                 $title_en = $courseData['title_en'] . ' - ' . ($subject->name_en ?? $subject->name_ar);

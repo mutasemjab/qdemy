@@ -13,7 +13,10 @@
                             <h3 class="card-title mb-0">{{ __('messages.manage_exam_questions') }}</h3>
                             <p class="text-muted mb-0">
                                 {{ __('messages.exam') }}: {{ app()->getLocale() == 'ar' ? $exam->title_ar : $exam->title_en }}
-                                | {{ __('messages.course') }}: {{ app()->getLocale() == 'ar' ? $exam->course->name_ar : $exam->course->name_en }}
+                                | {{ __('messages.course') }}:
+                                 @if ($exam->course)
+                                    {{ app()->getLocale() == 'ar' ? $exam->course->name_ar : $exam->course->name_en }}
+                                @endif
                             </p>
                         </div>
                         <div class="btn-group">
@@ -77,12 +80,46 @@
                             <h5 class="mb-0">
                                 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#addQuestionsCollapse">
                                     <i class="fas fa-plus"></i> {{ __('messages.add_questions') }}
-                                    <span class="badge badge-info ml-2">{{ $availableQuestions->count() }} {{ __('messages.available') }}</span>
+                                    <span class="badge badge-info ml-2" id="availableCount">{{ $availableQuestions->count() }} {{ __('messages.available') }}</span>
                                 </button>
                             </h5>
                         </div>
                         <div id="addQuestionsCollapse" class="collapse">
                             <div class="card-body">
+                                <!-- Filters -->
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <label>{{ __('messages.search') }}</label>
+                                        <input type="text" id="questionSearch" class="form-control" placeholder="{{ __('messages.search_questions') }}">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>{{ __('messages.course') }}</label>
+                                        <select id="courseFilter" class="form-control">
+                                            <option value="">{{ __('messages.all_courses') }}</option>
+                                            @foreach($courses as $course)
+                                                <option value="{{ $course->id }}">
+                                                    {{ app()->getLocale() == 'ar' ? $course->name_ar : $course->name_en }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>{{ __('messages.type') }}</label>
+                                        <select id="typeFilter" class="form-control">
+                                            <option value="">{{ __('messages.all_types') }}</option>
+                                            @foreach($questionTypes as $type => $label)
+                                                <option value="{{ $type }}">{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label>&nbsp;</label>
+                                        <button type="button" class="btn btn-outline-secondary btn-block" id="clearFilters">
+                                            <i class="fas fa-times"></i> {{ __('messages.clear') }}
+                                        </button>
+                                    </div>
+                                </div>
+
                                 <form action="{{ route('exams.questions.add', $exam) }}" method="POST" id="addQuestionsForm">
                                     @csrf
                                     <div class="table-responsive">
@@ -96,11 +133,15 @@
                                                     <th width="100px">{{ __('messages.type') }}</th>
                                                     <th width="120px">{{ __('messages.default_grade') }}</th>
                                                     <th width="120px">{{ __('messages.exam_grade') }}</th>
+                                                    <th width="80px">{{ __('messages.actions') }}</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody id="questionsTableBody">
                                                 @foreach($availableQuestions as $question)
-                                                <tr>
+                                                <tr class="question-row" 
+                                                    data-course="{{ $question->course_id }}" 
+                                                    data-type="{{ $question->type }}"
+                                                    data-search="{{ strtolower($question->title_en . ' ' . $question->title_ar . ' ' . $question->question_en . ' ' . $question->question_ar) }}">
                                                     <td>
                                                         <input type="checkbox" name="selected_questions[]" value="{{ $question->id }}"
                                                                class="form-check-input question-checkbox">
@@ -111,6 +152,11 @@
                                                             <p class="text-muted small mb-0">
                                                                 {{ Str::limit(app()->getLocale() == 'ar' ? $question->question_ar : $question->question_en, 100) }}
                                                             </p>
+                                                            @if($question->course)
+                                                            <small class="text-info">
+                                                                <i class="fas fa-book"></i> {{ app()->getLocale() == 'ar' ? $question->course->name_ar : $question->course->name_en }}
+                                                            </small>
+                                                            @endif
                                                         </div>
                                                     </td>
                                                     <td>
@@ -122,15 +168,24 @@
                                                         <span class="badge badge-info">{{ number_format($question->grade, 2) }}</span>
                                                     </td>
                                                     <td>
-                                                        <input type="hidden" name="questions[{{ $question->id }}][id]" value="{{ $question->id }}">
                                                         <input type="number" name="questions[{{ $question->id }}][grade]"
                                                                value="{{ $question->grade }}" step="0.01" min="0.1" max="999.99"
-                                                               class="form-control form-control-sm" disabled>
+                                                               class="form-control form-control-sm grade-input" disabled>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-sm btn-outline-info"
+                                                                onclick="showQuestionDetails({{ $question->id }})"
+                                                                title="{{ __('messages.view_details') }}">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
                                                     </td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
+                                        <div id="noQuestionsMessage" class="text-center py-3" style="display: none;">
+                                            <p class="text-muted">{{ __('messages.no_questions_found') }}</p>
+                                        </div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-3">
                                         <div>
@@ -344,6 +399,10 @@
 .badge {
     font-size: 0.875em;
 }
+
+.question-row.table-primary {
+    background-color: rgba(0, 123, 255, 0.1);
+}
 </style>
 @endpush
 
@@ -356,20 +415,20 @@ $(document).ready(function() {
 
     // Select All functionality
     $('#selectAll').change(function() {
-        $('.question-checkbox').prop('checked', this.checked);
+        $('.question-checkbox:visible').prop('checked', this.checked);
         updateSelectedCount();
         toggleGradeInputs();
     });
 
-    $('.question-checkbox').change(function() {
+    $(document).on('change', '.question-checkbox', function() {
         updateSelectedCount();
         toggleGradeInputs();
 
         // Update select all checkbox
-        const totalCheckboxes = $('.question-checkbox').length;
-        const checkedCheckboxes = $('.question-checkbox:checked').length;
-        $('#selectAll').prop('indeterminate', checkedCheckboxes > 0 && checkedCheckboxes < totalCheckboxes);
-        $('#selectAll').prop('checked', checkedCheckboxes === totalCheckboxes);
+        const visibleCheckboxes = $('.question-checkbox:visible').length;
+        const checkedCheckboxes = $('.question-checkbox:visible:checked').length;
+        $('#selectAll').prop('indeterminate', checkedCheckboxes > 0 && checkedCheckboxes < visibleCheckboxes);
+        $('#selectAll').prop('checked', checkedCheckboxes === visibleCheckboxes && visibleCheckboxes > 0);
     });
 
     function updateSelectedCount() {
@@ -380,17 +439,68 @@ $(document).ready(function() {
 
     function toggleGradeInputs() {
         $('.question-checkbox').each(function() {
-            const questionId = $(this).val();
-            const gradeInput = $(`input[name="questions[${questionId}][grade]"]`);
+            const row = $(this).closest('tr');
+            const gradeInput = row.find('.grade-input');
             gradeInput.prop('disabled', !this.checked);
 
             if (this.checked) {
-                $(this).closest('tr').addClass('table-primary');
+                row.addClass('table-primary');
             } else {
-                $(this).closest('tr').removeClass('table-primary');
+                row.removeClass('table-primary');
             }
         });
     }
+
+    // Filter functionality
+    function applyFilters() {
+        const searchTerm = $('#questionSearch').val().toLowerCase();
+        const courseFilter = $('#courseFilter').val();
+        const typeFilter = $('#typeFilter').val();
+        let visibleCount = 0;
+
+        $('.question-row').each(function() {
+            const $row = $(this);
+            const searchText = $row.data('search');
+            const course = $row.data('course');
+            const type = $row.data('type');
+
+            let show = true;
+
+            // Search filter
+            if (searchTerm && searchText.indexOf(searchTerm) === -1) {
+                show = false;
+            }
+
+            // Course filter
+            if (courseFilter && course != courseFilter) {
+                show = false;
+            }
+
+            // Type filter
+            if (typeFilter && type !== typeFilter) {
+                show = false;
+            }
+
+            if (show) {
+                $row.show();
+                visibleCount++;
+            } else {
+                $row.hide();
+                $row.find('.question-checkbox').prop('checked', false);
+            }
+        });
+
+        $('#availableCount').text(visibleCount + ' {{ __("messages.available") }}');
+        $('#noQuestionsMessage').toggle(visibleCount === 0);
+        updateSelectedCount();
+    }
+
+    $('#questionSearch, #courseFilter, #typeFilter').on('input change', applyFilters);
+
+    $('#clearFilters').click(function() {
+        $('#questionSearch, #courseFilter, #typeFilter').val('');
+        applyFilters();
+    });
 
     // Edit Mode Toggle
     $('#editModeBtn').click(function() {
@@ -399,7 +509,6 @@ $(document).ready(function() {
 
     $('#cancelEditBtn').click(function() {
         toggleEditMode(false);
-        // Reset form values
         location.reload();
     });
 
@@ -407,29 +516,18 @@ $(document).ready(function() {
         isEditMode = enable;
 
         if (enable) {
-            // Show edit form and hide edit button
             $('#updateQuestionsForm').show();
             $('#editModeBtn').hide();
-
-            // Show drag handles and input fields
             $('.drag-handle-header, .drag-handle').show();
             $('.order-display, .grade-display').hide();
             $('.order-input, .grade-input').show();
-
-            // Initialize sortable
             initSortable();
-
         } else {
-            // Hide edit form and show edit button
             $('#updateQuestionsForm').hide();
             $('#editModeBtn').show();
-
-            // Hide drag handles and input fields
             $('.drag-handle-header, .drag-handle').hide();
             $('.order-display, .grade-display').show();
             $('.order-input, .grade-input').hide();
-
-            // Destroy sortable
             if (sortable) {
                 sortable.destroy();
                 sortable = null;
@@ -456,8 +554,6 @@ $(document).ready(function() {
         $('#questionsList tr').each(function(index) {
             $(this).find('.order-input').val(index + 1);
             $(this).find('.order-display').text(index + 1);
-
-            // Update input names to maintain correct order
             $(this).find('.question-id-input').attr('name', `questions[${index}][id]`);
             $(this).find('.order-input').attr('name', `questions[${index}][order]`);
             $(this).find('.grade-input').attr('name', `questions[${index}][grade]`);
@@ -473,9 +569,56 @@ $(document).ready(function() {
             return false;
         }
 
+        // Prepare the data in the correct format expected by the trait
+        const formData = new FormData();
+        formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+        
+        const questionsData = {};
+        $('.question-checkbox:checked').each(function() {
+            const questionId = $(this).val();
+            const grade = $(this).closest('tr').find('.grade-input').val();
+            questionsData[questionId] = {
+                id: questionId,
+                grade: parseFloat(grade)
+            };
+        });
+        
+        formData.append('questions', JSON.stringify(questionsData));
+
         if (!confirm(`{{ __("messages.confirm_add_questions") }} ${selectedCount} {{ __("messages.questions") }}?`)) {
             e.preventDefault();
+            return false;
         }
+
+        // Submit via AJAX to handle the JSON format properly
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert(response.message || 'An error occurred');
+                }
+            },
+            error: function(xhr) {
+                const response = xhr.responseJSON;
+                if (response && response.errors) {
+                    let errorMsg = 'Validation errors:\n';
+                    Object.keys(response.errors).forEach(key => {
+                        errorMsg += `- ${response.errors[key].join(', ')}\n`;
+                    });
+                    alert(errorMsg);
+                } else {
+                    alert('An error occurred while adding questions');
+                }
+            }
+        });
+
+        e.preventDefault();
     });
 
     $('#updateQuestionsForm').submit(function(e) {
@@ -493,8 +636,6 @@ $(document).ready(function() {
 
 // Show question details in modal
 function showQuestionDetails(questionId) {
-    // You can implement AJAX call to fetch question details
-    // For now, we'll show a placeholder
     $('#questionDetailsContent').html(`
         <div class="text-center">
             <i class="fas fa-spinner fa-spin fa-2x"></i>
@@ -503,13 +644,87 @@ function showQuestionDetails(questionId) {
     `);
     $('#questionDetailsModal').modal('show');
 
-    // Simulate loading (replace with actual AJAX call)
-    setTimeout(() => {
-        $('#questionDetailsContent').html(`
-            <p>{{ __("messages.question_details_placeholder") }}</p>
-            <p><strong>ID:</strong> ${questionId}</p>
-        `);
-    }, 1000);
+    $.ajax({
+        url: '{{ route("questions.details", ":questionId") }}'.replace(':questionId', questionId),
+        method: 'GET',
+        success: function(response) {
+            if (response.success) {
+                const question = response.data;
+                let optionsHtml = '';
+
+                if (question.options && question.options.length > 0) {
+                    optionsHtml = '<div class="mt-3"><h6>{{ __("messages.options") }}:</h6>';
+                    question.options.forEach((option, index) => {
+                        const letter = String.fromCharCode(65 + index);
+                        const correctIcon = option.is_correct ? '<i class="fas fa-check text-success ml-2"></i>' : '';
+                        const locale = '{{ app()->getLocale() }}';
+                        const optionText = locale === 'ar' ? option.option_ar : option.option_en;
+                        
+                        optionsHtml += `
+                            <div class="mb-2 p-2 ${option.is_correct ? 'bg-light border-left border-success' : ''}">
+                                <strong>${letter}.</strong> ${optionText} ${correctIcon}
+                            </div>
+                        `;
+                    });
+                    optionsHtml += '</div>';
+                }
+
+                const locale = '{{ app()->getLocale() }}';
+                const content = `
+                    <div class="question-details">
+                        <div class="mb-3">
+                            <h5>${locale === 'ar' ? question.title_ar : question.title_en}</h5>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <h6>{{ __("messages.question") }}:</h6>
+                            <p>${locale === 'ar' ? question.question_ar : question.question_en}</p>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>{{ __("messages.type") }}:</strong>
+                                <span class="badge badge-secondary ml-2">${question.type.replace('_', ' ')}</span>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>{{ __("messages.grade") }}:</strong>
+                                <span class="badge badge-info ml-2">${question.grade}</span>
+                            </div>
+                            <div class="col-md-4">
+                                ${question.course ? `<strong>{{ __("messages.course") }}:</strong><br><small>${locale === 'ar' ? question.course.name_ar : question.course.name_en}</small>` : ''}
+                            </div>
+                        </div>
+
+                        ${optionsHtml}
+
+                        ${question.explanation_en || question.explanation_ar ? `
+                            <div class="mt-3">
+                                <h6>{{ __("messages.explanation") }}:</h6>
+                                <p class="text-muted">${locale === 'ar' ? (question.explanation_ar || question.explanation_en) : (question.explanation_en || question.explanation_ar)}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                $('#questionDetailsContent').html(content);
+            } else {
+                $('#questionDetailsContent').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ __("messages.error_loading_question_details") }}
+                    </div>
+                `);
+            }
+        },
+        error: function() {
+            $('#questionDetailsContent').html(`
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ __("messages.error_loading_question_details") }}
+                </div>
+            `);
+        }
+    });
 }
 </script>
 @endpush

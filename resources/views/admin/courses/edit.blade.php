@@ -101,7 +101,7 @@
                                         {{ __('messages.selling_price') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">JD</span>
                                         <input type="number"
                                                class="form-control @error('selling_price') is-invalid @enderror"
                                                id="selling_price"
@@ -121,7 +121,7 @@
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label for="teacher_id" class="form-label">{{ __('messages.teacher') }}</label>
-                                    <select class="form-select @error('teacher_id') is-invalid @enderror"
+                                    <select class="form-control @error('teacher_id') is-invalid @enderror"
                                             id="teacher_id"
                                             name="teacher_id">
                                         <option value="">{{ __('messages.select_teacher') }}</option>
@@ -141,19 +141,19 @@
                             <!-- Category -->
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
-                                    <label for="category_id" class="form-label">{{ __('messages.category') }}</label>
-                                    <select class="form-select @error('category_id') is-invalid @enderror"
-                                            id="category_id"
-                                            name="category_id">
-                                        <option value="">{{ __('messages.select_category') }}</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}"
-                                                    {{ old('category_id', $course->category_id) == $category->id ? 'selected' : '' }}>
-                                                {{ $category->localized_name }}
+                                    <label for="category_id" class="form-label">{{ __('messages.Subject') }}</label>
+                                    <select class="form-control @error('subject_id') is-invalid @enderror"
+                                            id="subject_id"
+                                            name="subject_id">
+                                        <option value="">{{ __('messages.select_subject') }}</option>
+                                        @foreach($subjects as $subject)
+                                            <option value="{{ $subject->id }}"
+                                                    {{ old('subject_id', $course->subject_id) == $subject->id ? 'selected' : '' }}>
+                                                {{ $subject->localized_name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id')
+                                    @error('subject_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

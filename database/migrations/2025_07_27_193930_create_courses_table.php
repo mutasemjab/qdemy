@@ -22,7 +22,7 @@ return new class extends Migration
             $table->double('selling_price');
             $table->string('photo');
             $table->unsignedBigInteger('teacher_id')->nullable();
-            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
+            $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');

@@ -30,6 +30,8 @@ use App\Http\Controllers\Admin\QuestionWebsiteController;
 use App\Http\Controllers\Admin\WalletTransactionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
+use App\Http\Controllers\Admin\NotificationController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -185,12 +187,15 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::get('questions', [ExamController::class, 'manageQuestions'])->name('questions.manage');
             Route::post('questions', [ExamController::class, 'addQuestions'])->name('questions.add');
             Route::put('questions', [ExamController::class, 'updateQuestions'])->name('questions.update');
-            Route::get('questions/{question}/remove', [ExamController::class, 'removeQuestion'])->name('questions.remove');
+            Route::delete('questions/{question}', [ExamController::class, 'removeQuestion'])->name('questions.remove');
+        });
 
+        // Add this route for question details
+        Route::get('questions/{question}/details', [ExamController::class, 'getQuestionDetails'])->name('questions.details');
             // Exam Results
             Route::get('results', [ExamController::class, 'results'])->name('results');
             Route::get('attempts/{attempt}', [ExamController::class, 'viewAttempt'])->name('attempts.view');
-        });
+     
         Route::post('courses/sections-ajax/{course?}', [ExamController::class, 'getCourseSections'])
             ->name('sections.ajax');
 
@@ -225,7 +230,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
-
+       
 
 
 
@@ -234,6 +239,16 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::patch('packages/{package}/toggle-status', [PackageController::class, 'toggleStatus'])->name('packages.toggle-status');
         Route::post('packages/bulk-action', [PackageController::class, 'bulkAction'])->name('packages.bulk-action');
         Route::get('packages/categories/by-type', [PackageController::class, 'getCategoriesByType'])->name('packages.get-categories-by-type');
+   
+   
+  
+        // Ajax
+        Route::get('admin/subjects/{subject}/courses', [ExamController::class, 'getSubjectCourses'])
+            ->name('admin.subjects.courses');
+
+        Route::get('admin/courses/{course}/sections', [ExamController::class, 'getCourseSections'])
+            ->name('admin.courses.sections');
+   
     });
 });
 

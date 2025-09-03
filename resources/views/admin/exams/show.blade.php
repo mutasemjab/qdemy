@@ -11,7 +11,9 @@
                 <div>
                     <h2 class="mb-1">{{ app()->getLocale() == 'ar' ? $exam->title_ar : $exam->title_en }}</h2>
                     <p class="text-muted mb-0">
+                         @if ($exam->course)
                         {{ __('messages.course') }}: {{ app()->getLocale() == 'ar' ? $exam->course->name_ar : $exam->course->name_en }}
+                        @endif
                     </p>
                 </div>
                 <div class="btn-group">
@@ -102,6 +104,7 @@
                                     <th class="text-muted">{{ __('messages.title_ar') }}:</th>
                                     <td dir="rtl">{{ $exam->title_ar }}</td>
                                 </tr>
+                                   @if ($exam->course)
                                 <tr>
                                     <th class="text-muted">{{ __('messages.course') }}:</th>
                                     <td>
@@ -110,6 +113,7 @@
                                         </a>
                                     </td>
                                 </tr>
+                                @endif
                                 <tr>
                                     <th class="text-muted">{{ __('messages.duration') }}:</th>
                                     <td>

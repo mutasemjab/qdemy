@@ -93,37 +93,68 @@
                                 </div>
                             </div>
 
+                            <!-- Subject (ADDED REQUIRED FIELD) -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="subject_id" class="form-label">
+                                        {{ __('messages.subject') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-select form-control @error('subject_id') is-invalid @enderror"
+                                            id="subject_id"
+                                            name="subject_id"
+                                            onchange="loadSubjectCourses(this.value)">
+                                        <option value="">{{ __('messages.select_subject') }}</option>
+                                        @foreach($subjects as $subject)
+                                            <option value="{{ $subject->id }}"
+                                                    {{ old('subject_id', $exam->subject_id) == $subject->id ? 'selected' : '' }}>
+                                                {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                                @if($subject->grade)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                                @endif
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('subject_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
                             <!-- Course -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="course_id" class="form-label">
-                                        {{ __('messages.course') }} <span class="text-danger"></span>
+                                        {{ __('messages.course') }}
                                     </label>
                                     <select class="form-select form-control @error('course_id') is-invalid @enderror"
                                             id="course_id"
                                             name="course_id"
-                                            onchange="loadCourseSections(this.value)">
-                                        <option value="">{{ __('messages.select_course') }}</option>
-                                        @foreach($courses as $course)
-                                            <option value="{{ $course->id }}"
-                                                    {{ old('course_id', $exam->course_id) == $course->id ? 'selected' : '' }}>
-                                                {{ $course->title_en }}
-                                            </option>
-                                        @endforeach
+                                            onchange="loadCourseSections(this.value)"
+                                            {{ $exam->subject_id ? '' : 'disabled' }}>
+                                        <option value="">{{ __('messages.select_course_optional') }}</option>
+                                        @if($exam->subject_id && isset($courses))
+                                            @foreach($courses as $course)
+                                                <option value="{{ $course->id }}"
+                                                        {{ old('course_id', $exam->course_id) == $course->id ? 'selected' : '' }}>
+                                                    {{ $course->title_en }}
+                                                </option>
+                                            @endforeach
+                                        @endif
                                     </select>
+                                    <small class="form-text text-muted">{{ __('messages.select_subject_first') }}</small>
                                     @error('course_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
-                            <!-- Section (New Field) -->
+                            <!-- Section -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="section_id" class="form-label">
                                         {{ __('messages.section') }}
                                     </label>
-                                    <select class="form-select  form-control @error('section_id') is-invalid @enderror"
+                                    <select class="form-select form-control @error('section_id') is-invalid @enderror"
                                             id="section_id"
                                             name="section_id"
                                             {{ $exam->course_id ? '' : 'disabled' }}>
@@ -251,7 +282,7 @@
                             <div class="col-12">
                                 <h5 class="text-primary mb-3">{{ __('messages.exam_settings') }}</h5>
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input"
                                                    type="checkbox"
@@ -265,7 +296,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input"
                                                    type="checkbox"
@@ -279,7 +310,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input"
                                                    type="checkbox"
@@ -293,7 +324,7 @@
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-check form-switch mb-3">
                                             <input class="form-check-input"
                                                    type="checkbox"
@@ -340,6 +371,53 @@
 
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+// Function to load courses when subject is selected
+function loadSubjectCourses(subjectId) {
+    const courseSelect = document.getElementById('course_id');
+    const sectionSelect = document.getElementById('section_id');
+    
+    // Clear current options
+    courseSelect.innerHTML = '<option value="">{{ __('messages.select_course_optional') }}</option>';
+    sectionSelect.innerHTML = '<option value="">{{ __('messages.select_section_optional') }}</option>';
+    sectionSelect.disabled = true;
+
+    if (!subjectId) {
+        courseSelect.disabled = true;
+        return;
+    }
+
+    // Enable the course select
+    courseSelect.disabled = false;
+
+    // Fetch courses by subject via AJAX using named route
+    fetch(`{{ route('admin.subjects.courses', ':subject') }}`.replace(':subject', subjectId), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+        })
+        .then(response => response.json())
+        .then(courses => {
+            courses.forEach(course => {
+                const option = new Option(course.title_en || course.title_ar, course.id);
+                courseSelect.add(option);
+            });
+            
+            // Restore selected course if editing
+            const selectedCourseId = '{{ old('course_id', $exam->course_id) }}';
+            if (selectedCourseId) {
+                courseSelect.value = selectedCourseId;
+                loadCourseSections(selectedCourseId);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading courses:', error);
+            courseSelect.disabled = true;
+        });
+}
+
 // Function to load sections when course is selected
 function loadCourseSections(courseId, selectedSectionId = null) {
     const sectionSelect = document.getElementById('section_id');
@@ -355,9 +433,9 @@ function loadCourseSections(courseId, selectedSectionId = null) {
     // Enable the section select
     sectionSelect.disabled = false;
 
-    // Fetch sections via AJAX
-    fetch(`{{ route('sections.ajax') }}/${courseId}`, {
-            method: 'POST', // استخدم POST أو أي Method محتاج حماية
+    // Fetch sections via AJAX using named route
+    fetch(`{{ route('admin.courses.sections', ':course') }}`.replace(':course', courseId), {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
@@ -379,16 +457,23 @@ function loadCourseSections(courseId, selectedSectionId = null) {
         });
 }
 
-// Load sections on page load if course is selected
+// Load courses and sections on page load
 document.addEventListener('DOMContentLoaded', function() {
+    const subjectId = document.getElementById('subject_id').value;
     const courseId = document.getElementById('course_id').value;
     const selectedSectionId = '{{ old('section_id', $exam->section_id) }}';
 
-    if (courseId) {
-        // If sections are already loaded from server (on edit), don't reload
-        const sectionSelect = document.getElementById('section_id');
-        if (sectionSelect.options.length <= 1) {
-            loadCourseSections(courseId, selectedSectionId);
+    if (subjectId) {
+        // If courses are already loaded from server (on edit), don't reload unless needed
+        const courseSelect = document.getElementById('course_id');
+        if (!courseId || courseSelect.options.length <= 1) {
+            loadSubjectCourses(subjectId);
+        } else if (courseId) {
+            // If sections are already loaded from server (on edit), don't reload
+            const sectionSelect = document.getElementById('section_id');
+            if (sectionSelect.options.length <= 1) {
+                loadCourseSections(courseId, selectedSectionId);
+            }
         }
     }
 });

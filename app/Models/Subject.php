@@ -17,15 +17,7 @@ class Subject extends Model
         'sort_order' => 'integer',
     ];
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
-    //     static::creating(function ($category) {
-    //         if (!empty($category->name_en) && empty($category->ctg_key)) {
-    //             $category->ctg_key = Str::slug($category->name_en);
-    //         }
-    //     });
-    // }
+
 
     public function isOptional()
     {

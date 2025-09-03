@@ -32,7 +32,7 @@
                                     <th>{{ __('messages.photo') }}</th>
                                     <th>{{ __('messages.title') }}</th>
                                     <th>{{ __('messages.teacher') }}</th>
-                                    <th>{{ __('messages.category') }}</th>
+                                    <th>{{ __('messages.Subject') }}</th>
                                     <th>{{ __('messages.price') }}</th>
                                     <th>{{ __('messages.created_at') }}</th>
                                     <th>{{ __('messages.actions') }}</th>
@@ -60,10 +60,10 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if($course->category)
-                                                {{ $course->category->name }}
+                                            @if($course->subject)
+                                                {{ $course->subject->localized_name }}
                                             @else
-                                                <span class="text-muted">{{ __('messages.no_category') }}</span>
+                                                <span class="text-muted">{{ __('messages.No Subject') }}</span>
                                             @endif
                                         </td>
                                         <td>

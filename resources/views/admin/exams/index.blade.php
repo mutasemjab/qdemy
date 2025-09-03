@@ -81,7 +81,7 @@
                                             <small class="text-muted">{{ $exam->title_ar }}</small>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $exam->course->title_en }}</span>
+                                            <span class="badge bg-info">{{ $exam->course->title_en ?? null }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-primary">{{ $exam->questions->count() }}</span>
