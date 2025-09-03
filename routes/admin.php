@@ -191,13 +191,14 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::post('questions', [ExamController::class, 'addQuestions'])->name('questions.add');
             Route::put('questions', [ExamController::class, 'updateQuestions'])->name('questions.update');
             Route::delete('questions/{question}', [ExamController::class, 'removeQuestion'])->name('questions.remove');
+            // Exam Results
+            Route::get('results', [ExamController::class, 'results'])->name('results');
+            Route::get('attempts/{attempt}', [ExamController::class, 'viewAttempt'])->name('attempts.view');
         });
 
         // Add this route for question details
         Route::get('questions/{question}/details', [ExamController::class, 'getQuestionDetails'])->name('questions.details');
-            // Exam Results
-            Route::get('results', [ExamController::class, 'results'])->name('results');
-            Route::get('attempts/{attempt}', [ExamController::class, 'viewAttempt'])->name('attempts.view');
+     
      
         Route::post('courses/sections-ajax/{course?}', [ExamController::class, 'getCourseSections'])
             ->name('sections.ajax');
