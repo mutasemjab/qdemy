@@ -64,8 +64,8 @@
                                     <option value="class" {{ old('type') == 'class' ? 'selected' : '' }}>
                                         {{ __('messages.Class') }} - {{ __('messages.Organizational categories') }}
                                     </option>
-                                    <option value="lesson" {{ old('type') == 'lesson' ? 'selected' : '' }}>
-                                        {{ __('messages.Lesson') }} - {{ __('messages.Teachable subjects') }}
+                                    <option value="subject" {{ old('type') == 'subject' ? 'selected' : '' }}>
+                                        {{ __('messages.Subject') }} - {{ __('messages.Academic subjects') }}
                                     </option>
                                 </select>
                                 <div class="form-text">
@@ -137,6 +137,20 @@
                                 @enderror
                             </div>
 
+                            <!-- Subjects Selection -->
+                            <div class="col-12" id="subjects-section" style="display: none;">
+                                <label class="form-label">{{ __('messages.Available Subjects') }}</label>
+                                <div id="subjects-container">
+                                    <div class="text-muted text-center py-4">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        {{ __('messages.Please select categories first to load available subjects') }}
+                                    </div>
+                                </div>
+                                @error('subjects')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Description -->
                             <div class="col-12">
                                 <label for="description" class="form-label">{{ __('messages.Description') }}</label>
@@ -183,10 +197,21 @@ function previewImage(input) {
 // Load categories based on selected type
 function loadCategories() {
     const type = document.getElementById('type').value;
-    const container = document.getElementById('categories-container');
+    const categoriesContainer = document.getElementById('categories-container');
+    const subjectsSection = document.getElementById('subjects-section');
+    const subjectsContainer = document.getElementById('subjects-container');
+    
+    // Reset subjects
+    subjectsSection.style.display = 'none';
+    subjectsContainer.innerHTML = `
+        <div class="text-muted text-center py-4">
+            <i class="fas fa-info-circle me-2"></i>
+            {{ __('messages.Please select categories first to load available subjects') }}
+        </div>
+    `;
     
     if (!type) {
-        container.innerHTML = `
+        categoriesContainer.innerHTML = `
             <div class="text-muted text-center py-4">
                 <i class="fas fa-info-circle me-2"></i>
                 {{ __('messages.Please select a package type first to load available categories') }}
@@ -196,7 +221,7 @@ function loadCategories() {
     }
 
     // Show loading
-    container.innerHTML = `
+    categoriesContainer.innerHTML = `
         <div class="text-center py-4">
             <div class="spinner-border spinner-border-sm me-2"></div>
             {{ __('messages.Loading categories...') }}
@@ -208,7 +233,7 @@ function loadCategories() {
         .then(response => response.json())
         .then(data => {
             if (data.length === 0) {
-                container.innerHTML = `
+                categoriesContainer.innerHTML = `
                     <div class="text-muted text-center py-4">
                         <i class="fas fa-exclamation-circle me-2"></i>
                         {{ __('messages.No categories available for this type') }}
@@ -231,9 +256,10 @@ function loadCategories() {
                     <div class="col-md-6">
                         <div class="form-check p-3 border rounded category-item" 
                              style="cursor: pointer; transition: all 0.3s ease;">
-                            <input class="form-check-input" type="checkbox" 
+                            <input class="form-check-input category-checkbox" type="checkbox" 
                                    value="${category.id}" id="category_${category.id}" 
-                                   name="categories[]" ${isChecked ? 'checked' : ''}>
+                                   name="categories[]" ${isChecked ? 'checked' : ''} 
+                                   onchange="loadSubjects()">
                             <label class="form-check-label d-flex align-items-center" 
                                    for="category_${category.id}" style="cursor: pointer;">
                                 <div class="flex-grow-1">
@@ -253,7 +279,7 @@ function loadCategories() {
             });
 
             html += '</div>';
-            container.innerHTML = html;
+            categoriesContainer.innerHTML = html;
 
             // Add hover effects
             document.querySelectorAll('.category-item').forEach(item => {
@@ -271,16 +297,134 @@ function loadCategories() {
                     if (e.target.type !== 'checkbox') {
                         const checkbox = this.querySelector('input[type="checkbox"]');
                         checkbox.checked = !checkbox.checked;
+                        loadSubjects();
+                    }
+                });
+            });
+
+            // Show subjects section
+            subjectsSection.style.display = 'block';
+            loadSubjects();
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+            categoriesContainer.innerHTML = `
+                <div class="text-danger text-center py-4">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ __('messages.Error loading categories. Please try again.') }}
+                </div>
+            `;
+        });
+}
+
+// Load subjects based on selected categories
+function loadSubjects() {
+    const checkedCategories = document.querySelectorAll('.category-checkbox:checked');
+    const subjectsContainer = document.getElementById('subjects-container');
+    
+    if (checkedCategories.length === 0) {
+        subjectsContainer.innerHTML = `
+            <div class="text-muted text-center py-4">
+                <i class="fas fa-info-circle me-2"></i>
+                {{ __('messages.Please select categories first to load available subjects') }}
+            </div>
+        `;
+        return;
+    }
+
+    // Show loading
+    subjectsContainer.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border spinner-border-sm me-2"></div>
+            {{ __('messages.Loading subjects...') }}
+        </div>
+    `;
+
+    // Get subjects for all selected categories
+    const categoryIds = Array.from(checkedCategories).map(cb => cb.value);
+    const promises = categoryIds.map(categoryId => 
+        fetch(`{{ route('packages.get-subjects-by-category') }}?category_id=${categoryId}`)
+            .then(response => response.json())
+    );
+
+    Promise.all(promises)
+        .then(results => {
+            // Combine all subjects and remove duplicates
+            const allSubjects = results.flat();
+            const uniqueSubjects = allSubjects.filter((subject, index, self) => 
+                index === self.findIndex(s => s.id === subject.id)
+            );
+
+            if (uniqueSubjects.length === 0) {
+                subjectsContainer.innerHTML = `
+                    <div class="text-muted text-center py-4">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        {{ __('messages.No subjects available for selected categories') }}
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="form-text mb-3">
+                    <i class="fas fa-info-circle me-1"></i>
+                    {{ __('messages.Select the subjects that will be included in this package') }}
+                </div>
+                <div class="row g-2">
+            `;
+
+            uniqueSubjects.forEach(subject => {
+                const isChecked = @json(old('subjects', [])).includes(subject.id.toString());
+                html += `
+                    <div class="col-md-4">
+                        <div class="form-check p-2 border rounded subject-item" 
+                             style="cursor: pointer; transition: all 0.3s ease;">
+                            <input class="form-check-input" type="checkbox" 
+                                   value="${subject.id}" id="subject_${subject.id}" 
+                                   name="subjects[]" ${isChecked ? 'checked' : ''}>
+                            <label class="form-check-label d-flex align-items-center" 
+                                   for="subject_${subject.id}" style="cursor: pointer;">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center">
+                                        ${subject.icon ? `<i class="${subject.icon} me-2" style="color: ${subject.color}"></i>` : ''}
+                                        <strong class="small">${subject.name_ar}</strong>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            subjectsContainer.innerHTML = html;
+
+            // Add hover effects for subjects
+            document.querySelectorAll('.subject-item').forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.backgroundColor = '#f8f9fa';
+                    this.style.borderColor = '#28a745';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.backgroundColor = '';
+                    this.style.borderColor = '';
+                });
+
+                item.addEventListener('click', function(e) {
+                    if (e.target.type !== 'checkbox') {
+                        const checkbox = this.querySelector('input[type="checkbox"]');
+                        checkbox.checked = !checkbox.checked;
                     }
                 });
             });
         })
         .catch(error => {
-            console.error('Error loading categories:', error);
-            container.innerHTML = `
+            console.error('Error loading subjects:', error);
+            subjectsContainer.innerHTML = `
                 <div class="text-danger text-center py-4">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    {{ __('messages.Error loading categories. Please try again.') }}
+                    {{ __('messages.Error loading subjects. Please try again.') }}
                 </div>
             `;
         });

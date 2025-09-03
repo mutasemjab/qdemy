@@ -52,8 +52,8 @@
                         <option value="class" {{ request('type') === 'class' ? 'selected' : '' }}>
                             {{ __('messages.Class') }}
                         </option>
-                        <option value="lesson" {{ request('type') === 'lesson' ? 'selected' : '' }}>
-                            {{ __('messages.Lesson') }}
+                        <option value="subject" {{ request('type') === 'subject' ? 'selected' : '' }}>
+                            {{ __('messages.Subject') }}
                         </option>
                     </select>
                 </div>
@@ -104,6 +104,7 @@
                                 <th>{{ __('messages.Type') }}</th>
                                 <th>{{ __('messages.Course Selection') }}</th>
                                 <th>{{ __('messages.Categories') }}</th>
+                                <th>{{ __('messages.Subjects') }}</th>
                                 <th>{{ __('messages.Status') }}</th>
                                 <th width="150">{{ __('messages.Actions') }}</th>
                             </tr>
@@ -149,11 +150,38 @@
                                     </td>
                                     <td>
                                         @if($package->categories->count() > 0)
-                                            <span class="badge badge-secondary">
-                                                {{ $package->categories->count() }} {{ __('messages.Categories') }}
-                                            </span>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach($package->categories->take(2) as $category)
+                                                    <span class="badge badge-secondary small">
+                                                        {{ $category->name_ar }}
+                                                    </span>
+                                                @endforeach
+                                                @if($package->categories->count() > 2)
+                                                    <span class="badge badge-light small">
+                                                        +{{ $package->categories->count() - 2 }}
+                                                    </span>
+                                                @endif
+                                            </div>
                                         @else
                                             <span class="text-muted">{{ __('messages.No categories') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($package->subjects->count() > 0)
+                                            <div class="d-flex flex-wrap gap-1">
+                                                @foreach($package->subjects->take(2) as $subject)
+                                                    <span class="badge badge-primary small">
+                                                        {{ $subject->name_ar }}
+                                                    </span>
+                                                @endforeach
+                                                @if($package->subjects->count() > 2)
+                                                    <span class="badge badge-light small">
+                                                        +{{ $package->subjects->count() - 2 }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-muted">{{ __('messages.No subjects') }}</span>
                                         @endif
                                     </td>
                                     <td>

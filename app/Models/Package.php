@@ -11,21 +11,99 @@ class Package extends Model
 
      protected $guarded = [];
 
-     protected $casts = [
-        'price' => 'decimal:3',
-        'how_much_course_can_select' => 'integer'
-    ];
-
-    /**
-     * Get the categories associated with this package
-     */
-    public function categories()
+     protected static function boot()
     {
-        return $this->belongsToMany(Category::class, 'package_categories');
+        parent::boot();
+
+        // When package is deleted, delete the pivot records too
+        static::deleting(function ($package) {
+            $package->packageCategories()->delete();
+        });
     }
 
     /**
-     * Scope to get active packages
+     * Relationship with package_categories pivot table
+     */
+    public function packageCategories()
+    {
+        return $this->hasMany(PackageCategory::class);
+    }
+
+    /**
+     * Many-to-many relationship with categories through package_categories
+     */
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'package_categories')
+                   ->withTimestamps()
+                   ->distinct();
+    }
+
+    /**
+     * Many-to-many relationship with subjects through package_categories
+     */
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'package_categories')
+                   ->withTimestamps()
+                   ->distinct();
+    }
+
+    /**
+     * Get all category-subject combinations for this package
+     */
+    public function getCategorySubjectCombinations()
+    {
+        return $this->packageCategories()
+                   ->with(['category', 'subject'])
+                   ->get();
+    }
+
+    /**
+     * Get formatted price with currency
+     */
+    public function getFormattedPriceAttribute()
+    {
+        return number_format($this->price, 3) . ' ' . __('messages.Currency');
+    }
+
+    /**
+     * Get image URL
+     */
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('assets/admin/uploads/' . $this->image);
+        }
+        return asset('assets/admin/images/placeholder.jpg'); // Default placeholder
+    }
+
+    /**
+     * Get status badge class for Bootstrap
+     */
+    public function getStatusBadgeClassAttribute()
+    {
+        return match($this->status) {
+            'active' => 'bg-success',
+            'inactive' => 'bg-secondary',
+            default => 'bg-secondary'
+        };
+    }
+
+    /**
+     * Get type badge class for Bootstrap
+     */
+    public function getTypeBadgeClassAttribute()
+    {
+        return match($this->type) {
+            'class' => 'bg-primary',
+            'subject' => 'bg-info',
+            default => 'bg-secondary'
+        };
+    }
+
+    /**
+     * Scope for active packages
      */
     public function scopeActive($query)
     {
@@ -33,42 +111,84 @@ class Package extends Model
     }
 
     /**
-     * Scope to get packages by type
+     * Scope for inactive packages
      */
-    public function scopeByType($query, $type)
+    public function scopeInactive($query)
+    {
+        return $query->where('status', 'inactive');
+    }
+
+    /**
+     * Scope for packages by type
+     */
+    public function scopeOfType($query, $type)
     {
         return $query->where('type', $type);
     }
 
     /**
-     * Get the image URL
+     * Scope for packages with specific categories
      */
-    public function getImageUrlAttribute()
+    public function scopeWithCategories($query, array $categoryIds)
     {
-        return $this->attributes['image'] ? asset('assets/admin/uploads/' . $this->image) : null;
+        return $query->whereHas('categories', function ($q) use ($categoryIds) {
+            $q->whereIn('categories.id', $categoryIds);
+        });
     }
 
     /**
-     * Get formatted price
+     * Scope for packages with specific subjects
      */
-    public function getFormattedPriceAttribute()
+    public function scopeWithSubjects($query, array $subjectIds)
     {
-        return number_format($this->attributes['price'], 3) . ' ' . __('messages.Currency');
+        return $query->whereHas('subjects', function ($q) use ($subjectIds) {
+            $q->whereIn('subjects.id', $subjectIds);
+        });
+    }
+
+    
+
+    /**
+     * Check if package has specific category
+     */
+    public function hasCategory($categoryId)
+    {
+        return $this->categories()->where('categories.id', $categoryId)->exists();
     }
 
     /**
-     * Get status badge class
+     * Check if package has specific subject
      */
-    public function getStatusBadgeClassAttribute()
+    public function hasSubject($subjectId)
     {
-        return $this->attributes['status'] === 'active' ? 'badge-success' : 'badge-danger';
+        return $this->subjects()->where('subjects.id', $subjectId)->exists();
+    }
+
+
+    /**
+     * Create package with categories and subjects
+     */
+    public function attachCategorySubjectCombinations(array $categories, array $subjects)
+    {
+        foreach ($categories as $categoryId) {
+            foreach ($subjects as $subjectId) {
+                $this->packageCategories()->create([
+                    'category_id' => $categoryId,
+                    'subject_id' => $subjectId,
+                ]);
+            }
+        }
     }
 
     /**
-     * Get type badge class
+     * Update package categories and subjects
      */
-    public function getTypeBadgeClassAttribute()
+    public function syncCategorySubjectCombinations(array $categories, array $subjects)
     {
-        return $this->attributes['type'] === 'lesson' ? 'badge-success' : 'badge-info';
+        // Delete existing combinations
+        $this->packageCategories()->delete();
+        
+        // Create new combinations
+        $this->attachCategorySubjectCombinations($categories, $subjects);
     }
 }

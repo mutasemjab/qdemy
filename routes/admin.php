@@ -198,10 +198,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // Add this route for question details
         Route::get('questions/{question}/details', [ExamController::class, 'getQuestionDetails'])->name('questions.details');
-     
-     
-        Route::post('courses/sections-ajax/{course?}', [ExamController::class, 'getCourseSections'])
-            ->name('sections.ajax');
 
 
         Route::prefix('community')->name('admin.community.')->group(function () {
@@ -234,25 +230,27 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
-       
+
 
 
 
         Route::resource('wallet_transactions', WalletTransactionController::class);
+
+        // packages
         Route::resource('packages', PackageController::class);
         Route::patch('packages/{package}/toggle-status', [PackageController::class, 'toggleStatus'])->name('packages.toggle-status');
         Route::post('packages/bulk-action', [PackageController::class, 'bulkAction'])->name('packages.bulk-action');
         Route::get('packages/categories/by-type', [PackageController::class, 'getCategoriesByType'])->name('packages.get-categories-by-type');
-   
-   
-  
+        // Add this line right here with the other package routes:
+        Route::get('packages/subjects/by-category', [PackageController::class, 'getSubjectsByCategory'])->name('packages.get-subjects-by-category');
+
+
         // Ajax
         Route::get('admin/subjects/{subject}/courses', [ExamController::class, 'getSubjectCourses'])
             ->name('admin.subjects.courses');
 
         Route::get('admin/courses/{course}/sections', [ExamController::class, 'getCourseSections'])
             ->name('admin.courses.sections');
-   
     });
 });
 

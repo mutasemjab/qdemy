@@ -95,6 +95,14 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <th>{{ __('messages.Subjects') }}:</th>
+                                    <td>
+                                        <span class="badge badge-primary fs-6">
+                                            {{ $package->subjects->count() }} {{ __('messages.Subjects') }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>{{ __('messages.Created') }}:</th>
                                     <td>{{ $package->created_at->format('Y-m-d H:i:s') }}</td>
                                 </tr>
@@ -116,63 +124,107 @@
                 </div>
             </div>
 
-            <!-- Package Categories -->
+            <!-- Package Category-Subject Combinations -->
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ __('messages.Package Categories') }}</h5>
-                    <span class="badge badge-primary">{{ $package->categories->count() }} {{ __('messages.Categories') }}</span>
+                    <h5 class="mb-0">{{ __('messages.Package Contents') }}</h5>
+                    <span class="badge badge-primary">{{ $package->packageCategories->count() }} {{ __('messages.Combinations') }}</span>
                 </div>
                 <div class="card-body">
-                    @if($package->categories->count() > 0)
+                    @if($package->packageCategories->count() > 0)
                         <div class="row g-3">
-                            @foreach($package->categories as $category)
+                            @foreach($package->packageCategories as $packageCategory)
                                 <div class="col-md-6">
                                     <div class="card border h-100">
                                         <div class="card-body">
-                                            <div class="d-flex align-items-start">
-                                                @if($category->icon)
+                                            <!-- Category Information -->
+                                            <div class="d-flex align-items-start mb-3">
+                                                @if($packageCategory->category && $packageCategory->category->icon)
                                                     <div class="me-3">
-                                                        <i class="{{ $category->icon }} fa-2x" style="color: {{ $category->color }}"></i>
+                                                        <i class="{{ $packageCategory->category->icon }} fa-2x" 
+                                                           style="color: {{ $packageCategory->category->color }}"></i>
                                                     </div>
                                                 @endif
                                                 <div class="flex-grow-1">
-                                                    <h6 class="card-title mb-1">{{ $category->name_ar }}</h6>
-                                                    @if($category->name_en)
-                                                        <p class="text-muted small mb-2">{{ $category->name_en }}</p>
+                                                    <h6 class="card-title mb-1">
+                                                        <i class="fas fa-folder me-1"></i>
+                                                        {{ $packageCategory->category ? $packageCategory->category->name_ar : __('messages.Unknown Category') }}
+                                                    </h6>
+                                                    @if($packageCategory->category && $packageCategory->category->name_en)
+                                                        <p class="text-muted small mb-2">{{ $packageCategory->category->name_en }}</p>
                                                     @endif
                                                     
                                                     <!-- Parent Category -->
-                                                    @if($category->parent)
+                                                    @if($packageCategory->category && $packageCategory->category->parent)
                                                         <div class="mb-2">
                                                             <span class="badge badge-light">
-                                                                <i class="fas fa-arrow-up me-1"></i>{{ $category->parent->name_ar }}
+                                                                <i class="fas fa-arrow-up me-1"></i>{{ $packageCategory->category->parent->name_ar }}
                                                             </span>
                                                         </div>
                                                     @endif
-                                                    
-                                                    <!-- Category Type -->
-                                                    <div class="d-flex gap-2">
-                                                        @if($category->type == 'lesson')
-                                                            <span class="badge badge-success">
-                                                                <i class="fas fa-book-open me-1"></i>{{ __('messages.Lesson') }}
-                                                            </span>
-                                                        @elseif($category->type == 'major')
-                                                            <span class="badge badge-primary">
-                                                                <i class="fas fa-star me-1"></i>{{ __('messages.Major') }}
-                                                            </span>
-                                                        @else
-                                                            <span class="badge badge-secondary">
-                                                                <i class="fas fa-folder me-1"></i>{{ __('messages.Class') }}
-                                                            </span>
-                                                        @endif
-                                                        
-                                                        @if($category->is_active)
-                                                            <span class="badge badge-success">{{ __('messages.Active') }}</span>
-                                                        @else
-                                                            <span class="badge badge-danger">{{ __('messages.Inactive') }}</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Subject Information -->
+                                            @if($packageCategory->subject)
+                                                <hr class="my-2">
+                                                <div class="d-flex align-items-start">
+                                                    @if($packageCategory->subject->icon)
+                                                        <div class="me-2">
+                                                            <i class="{{ $packageCategory->subject->icon }}" 
+                                                               style="color: {{ $packageCategory->subject->color }}"></i>
+                                                        </div>
+                                                    @endif
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1">
+                                                            <i class="fas fa-book me-1"></i>
+                                                            {{ $packageCategory->subject->name_ar }}
+                                                        </h6>
+                                                        @if($packageCategory->subject->name_en)
+                                                            <p class="text-muted small mb-0">{{ $packageCategory->subject->name_en }}</p>
                                                         @endif
                                                     </div>
                                                 </div>
+                                            @else
+                                                <hr class="my-2">
+                                                <div class="text-center text-muted">
+                                                    <i class="fas fa-asterisk me-1"></i>
+                                                    <small>{{ __('messages.All subjects in this category') }}</small>
+                                                </div>
+                                            @endif
+
+                                            <!-- Status badges -->
+                                            <hr class="my-2">
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                @if($packageCategory->category)
+                                                    @if($packageCategory->category->type == 'subject')
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-graduation-cap me-1"></i>{{ __('messages.Subject') }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge badge-primary">
+                                                            <i class="fas fa-folder me-1"></i>{{ __('messages.Class') }}
+                                                        </span>
+                                                    @endif
+                                                    
+                                                    @if($packageCategory->category->is_active)
+                                                        <span class="badge badge-success">{{ __('messages.Active') }}</span>
+                                                    @else
+                                                        <span class="badge badge-danger">{{ __('messages.Inactive') }}</span>
+                                                    @endif
+                                                @endif
+
+                                                @if($packageCategory->subject)
+                                                    @if($packageCategory->subject->is_active)
+                                                        <span class="badge badge-success">
+                                                            <i class="fas fa-book me-1"></i>{{ __('messages.Subject Active') }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge badge-danger">
+                                                            <i class="fas fa-book me-1"></i>{{ __('messages.Subject Inactive') }}
+                                                        </span>
+                                                    @endif
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -182,11 +234,11 @@
                     @else
                         <div class="text-center py-5">
                             <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">{{ __('messages.No categories assigned') }}</h5>
-                            <p class="text-muted">{{ __('messages.This package has no categories assigned to it yet.') }}</p>
+                            <h5 class="text-muted">{{ __('messages.No content assigned') }}</h5>
+                            <p class="text-muted">{{ __('messages.This package has no categories or subjects assigned to it yet.') }}</p>
                             @can('package-edit')
                                 <a href="{{ route('packages.edit', $package) }}" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i>{{ __('messages.Add Categories') }}
+                                    <i class="fas fa-plus me-2"></i>{{ __('messages.Add Content') }}
                                 </a>
                             @endcan
                         </div>
@@ -253,16 +305,16 @@
                         <div class="col-6">
                             <div class="card bg-success text-white">
                                 <div class="card-body">
-                                    <h4 class="mb-0">{{ $package->categories->where('is_active', true)->count() }}</h4>
-                                    <small>{{ __('messages.Active Categories') }}</small>
+                                    <h4 class="mb-0">{{ $package->subjects->count() }}</h4>
+                                    <small>{{ __('messages.Total Subjects') }}</small>
                                 </div>
                             </div>
                         </div>
                         <div class="col-6">
                             <div class="card bg-info text-white">
                                 <div class="card-body">
-                                    <h4 class="mb-0">{{ $package->categories->where('type', 'lesson')->count() }}</h4>
-                                    <small>{{ __('messages.Lessons') }}</small>
+                                    <h4 class="mb-0">{{ $package->packageCategories->count() }}</h4>
+                                    <small>{{ __('messages.Combinations') }}</small>
                                 </div>
                             </div>
                         </div>
@@ -271,6 +323,14 @@
                                 <div class="card-body">
                                     <h4 class="mb-0">{{ $package->how_much_course_can_select }}</h4>
                                     <small>{{ __('messages.Max Selection') }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="card bg-secondary text-white">
+                                <div class="card-body">
+                                    <h4 class="mb-0">{{ $package->categories->where('is_active', true)->count() }}</h4>
+                                    <small>{{ __('messages.Active Categories') }}</small>
                                 </div>
                             </div>
                         </div>

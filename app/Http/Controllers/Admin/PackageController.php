@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 
 use App\Models\Package;
 use App\Models\Category;
+use App\Models\Subject;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PackageController extends Controller
 {
@@ -23,14 +25,14 @@ class PackageController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Package::with('categories');
+        $query = Package::with(['categories', 'subjects']);
 
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -57,9 +59,6 @@ class PackageController extends Controller
         return view('admin.packages.create');
     }
 
-    /**
-     * Store a newly created package
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -68,14 +67,21 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:active,inactive',
-            'type' => 'required|in:class,lesson',
+            'type' => 'required|in:class,subject',
             'how_much_course_can_select' => 'required|integer|min:1',
-            'categories' => 'nullable|array',
-            'categories.*' => 'exists:categories,id'
+            'categories' => 'required|array|min:1', // Categories are required
+            'categories.*' => 'exists:categories,id',
+            'subjects' => 'nullable|array',
+            'subjects.*' => 'exists:subjects,id'
         ]);
 
         $packageData = $request->only([
-            'name', 'price', 'description', 'status', 'type', 'how_much_course_can_select'
+            'name',
+            'price',
+            'description',
+            'status',
+            'type',
+            'how_much_course_can_select'
         ]);
 
         // Handle image upload
@@ -85,21 +91,27 @@ class PackageController extends Controller
 
         $package = Package::create($packageData);
 
-        // Attach selected categories
-        if ($request->filled('categories')) {
-            $package->categories()->attach($request->categories);
-        }
+        // Save categories and subjects
+        $this->savePackageCategories(
+            $package,
+            $request->categories,
+            $request->subjects ?? []
+        );
 
         return redirect()->route('packages.index')
             ->with('success', __('messages.Package created successfully'));
     }
+
+
+
+
 
     /**
      * Display the specified package
      */
     public function show(Package $package)
     {
-        $package->load('categories.parent');
+        $package->load(['categories.parent', 'subjects', 'packageCategories.category', 'packageCategories.subject']);
 
         return view('admin.packages.show', compact('package'));
     }
@@ -109,14 +121,11 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
-        $package->load('categories');
+        $package->load(['categories', 'subjects', 'packageCategories']);
 
         return view('admin.packages.edit', compact('package'));
     }
 
-    /**
-     * Update the specified package
-     */
     public function update(Request $request, Package $package)
     {
         $request->validate([
@@ -125,14 +134,21 @@ class PackageController extends Controller
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:active,inactive',
-            'type' => 'required|in:class,lesson',
+            'type' => 'required|in:class,subject',
             'how_much_course_can_select' => 'required|integer|min:1',
             'categories' => 'nullable|array',
-            'categories.*' => 'exists:categories,id'
+            'categories.*' => 'exists:categories,id',
+            'subjects' => 'nullable|array',
+            'subjects.*' => 'exists:subjects,id'
         ]);
 
         $packageData = $request->only([
-            'name', 'price', 'description', 'status', 'type', 'how_much_course_can_select'
+            'name',
+            'price',
+            'description',
+            'status',
+            'type',
+            'how_much_course_can_select'
         ]);
 
         // Handle image upload
@@ -149,8 +165,14 @@ class PackageController extends Controller
 
         $package->update($packageData);
 
-        // Sync selected categories
-        $package->categories()->sync($request->categories ?? []);
+        \DB::table('package_categories')->where('package_id', $package->id)->delete();
+
+        // Save new categories and subjects
+        $this->savePackageCategories(
+            $package,
+            $request->categories,
+            $request->subjects ?? []
+        );
 
         return redirect()->route('packages.index')
             ->with('success', __('messages.Package updated successfully'));
@@ -175,6 +197,41 @@ class PackageController extends Controller
             ->with('success', __('messages.Package deleted successfully'));
     }
 
+
+    private function savePackageCategories($package, $categories, $subjects = [])
+    {
+        $packageCategoriesData = [];
+
+        foreach ($categories as $categoryId) {
+            if (!empty($subjects)) {
+                // Create entry for each category-subject combination
+                foreach ($subjects as $subjectId) {
+                    $packageCategoriesData[] = [
+                        'package_id' => $package->id,
+                        'category_id' => $categoryId,
+                        'subject_id' => $subjectId,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            } else {
+                // Create entry for category only (no specific subject)
+                $packageCategoriesData[] = [
+                    'package_id' => $package->id,
+                    'category_id' => $categoryId,
+                    'subject_id' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
+        if (!empty($packageCategoriesData)) {
+            \DB::table('package_categories')->insert($packageCategoriesData);
+        }
+    }
+
+
     /**
      * Toggle package status
      */
@@ -193,7 +250,7 @@ class PackageController extends Controller
     {
         $type = $request->get('type');
 
-        if (!in_array($type, ['class', 'lesson'])) {
+        if (!in_array($type, ['class', 'subject'])) {
             return response()->json(['error' => 'Invalid type'], 400);
         }
 
@@ -220,6 +277,39 @@ class PackageController extends Controller
         return response()->json($categories);
     }
 
+
+    /**
+     * Get subjects by category (AJAX)
+     */
+    public function getSubjectsByCategory(Request $request)
+    {
+        $categoryId = $request->get('category_id');
+
+        if (!$categoryId) {
+            return response()->json(['error' => 'Category ID is required'], 400);
+        }
+
+        // Get subjects through the category_subjects pivot table using direct DB query
+        $subjects = \DB::table('subjects')
+            ->join('category_subjects', 'subjects.id', '=', 'category_subjects.subject_id')
+            ->where('category_subjects.category_id', $categoryId)
+            ->where('subjects.is_active', 1)
+            ->select('subjects.id', 'subjects.name_ar', 'subjects.name_en', 'subjects.icon', 'subjects.color')
+            ->orderBy('subjects.sort_order')
+            ->orderBy('subjects.name_ar')
+            ->get()
+            ->map(function ($subject) {
+                return [
+                    'id' => (int) $subject->id,
+                    'name_ar' => $subject->name_ar,
+                    'name_en' => $subject->name_en,
+                    'icon' => $subject->icon,
+                    'color' => $subject->color,
+                ];
+            });
+
+        return response()->json($subjects);
+    }
     /**
      * Bulk actions
      */
