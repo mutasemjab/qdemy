@@ -13,6 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
+        // ما يميز qdemy
         Schema::create('special_qdemies', function (Blueprint $table) {
             $table->id();
             $table->string('title_ar');

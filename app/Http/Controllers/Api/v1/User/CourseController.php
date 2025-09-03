@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Category;
 use App\Models\CourseContent;
 use App\Models\ContentUserProgress;
+use App\Models\Subject;
 use App\Repositories\CourseRepository;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
@@ -29,7 +30,7 @@ class CourseController extends Controller
     {
         try {
             $user = $request->user(); // authenticated user from token
-
+            
             // Get course contents and sections
             $contents = $course->contents;
             $mainSections = $course->sections?->where('parent_id', null);
@@ -60,12 +61,28 @@ class CourseController extends Controller
                         'whatsapp' => $course->teacher->whataspp
                     ]
                 ] : null,
-                'category' => $course->category ? [
-                    'id' => $course->category->id,
-                    'name_ar' => $course->category->name_ar,
-                    'name_en' => $course->category->name_en,
-                    'color' => $course->category->color,
-                    'icon' => $course->category->icon
+                'subject' => $course->subject ? [
+                    'id' => $course->subject->id,
+                    'name_ar' => $course->subject->name_ar,
+                    'name_en' => $course->subject->name_en,
+                    'color' => $course->subject->color,
+                    'icon' => $course->subject->icon,
+                    'grade_info' => $course->subject->grade ? [
+                        'id' => $course->subject->grade->id,
+                        'name_ar' => $course->subject->grade->name_ar,
+                        'name_en' => $course->subject->grade->name_en,
+                        'level' => $course->subject->grade->level
+                    ] : null,
+                    'semester_info' => $course->subject->semester ? [
+                        'id' => $course->subject->semester->id,
+                        'name_ar' => $course->subject->semester->name_ar,
+                        'name_en' => $course->subject->semester->name_en
+                    ] : null,
+                    'program_info' => $course->subject->program ? [
+                        'id' => $course->subject->program->id,
+                        'name_ar' => $course->subject->program->name_ar,
+                        'name_en' => $course->subject->program->name_en
+                    ] : null
                 ] : null,
                 'is_enrolled' => $is_enrolled,
                 'created_at' => $course->created_at,
@@ -76,17 +93,13 @@ class CourseController extends Controller
             $courseData['main_sections'] = $mainSections ? $mainSections->map(function ($section) {
                 return [
                     'id' => $section->id,
-                    'title' => $section->title,
-                    'description' => $section->description,
-                    'sort_order' => $section->sort_order,
-                    'is_active' => $section->is_active,
+                    'title_ar' => $section->title_ar,
+                    'title_en' => $section->title_en,
                     'children' => $section->children ? $section->children->map(function ($child) {
                         return [
                             'id' => $child->id,
-                            'title' => $child->title,
-                            'description' => $child->description,
-                            'sort_order' => $child->sort_order,
-                            'is_active' => $child->is_active
+                            'title_ar' => $child->title_ar,
+                            'title_en' => $child->title_en,
                         ];
                     }) : []
                 ];
@@ -95,26 +108,28 @@ class CourseController extends Controller
             $courseData['contents'] = $contents ? $contents->map(function ($content) {
                 return [
                     'id' => $content->id,
-                    'title' => $content->title,
-                    'description' => $content->description,
+                    'title_ar' => $content->title_ar,
+                    'title_en' => $content->title_en,
                     'content_type' => $content->content_type,
                     'is_free' => $content->is_free,
-                    'sort_order' => $content->sort_order,
-                    'duration' => $content->duration,
-                    'file_path' => $content->file_path,
+                    'order' => $content->order,
+                    'video_duration' => $content->video_duration,
+                    'video_type' => $content->video_type,
                     'video_url' => $content->video_url,
+                    'file_path' => $content->file_path,
+                    'pdf_type' => $content->pdf_type,
                     'section_id' => $content->section_id
                 ];
             }) : [];
 
             $courseData['free_content'] = $freeContents ? [
                 'id' => $freeContents->id,
-                'title' => $freeContents->title,
-                'description' => $freeContents->description,
+                'title_ar' => $freeContents->title_ar,
+                'title_en' => $freeContents->title_en,
                 'content_type' => $freeContents->content_type,
                 'video_url' => $freeContents->video_url,
                 'file_path' => $freeContents->file_path,
-                'duration' => $freeContents->duration
+                'video_duration' => $freeContents->video_duration
             ] : null;
 
             // If user is enrolled, calculate progress
@@ -199,18 +214,18 @@ class CourseController extends Controller
     }
 
     /**
-     * Get courses by subject/category
+     * Get courses by subject
      */
     public function coursesBySubject(Request $request, $subjectId)
     {
         try {
-            $subject = Category::findOrFail($subjectId);
+            $subject = Subject::with(['grade', 'semester', 'program'])->findOrFail($subjectId);
 
             $perPage = $request->get('per_page', 10);
             $page = $request->get('page', 1);
 
-            $courses = Course::where('category_id', $subject->id)
-                ->with(['teacher', 'category'])
+            $courses = Course::where('subject_id', $subject->id)
+                ->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program'])
                 ->latest()
                 ->paginate($perPage);
 
@@ -230,12 +245,12 @@ class CourseController extends Controller
                         'name_of_lesson' => $course->teacher->name_of_lesson,
                         'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
                     ] : null,
-                    'category' => $course->category ? [
-                        'id' => $course->category->id,
-                        'name_ar' => $course->category->name_ar,
-                        'name_en' => $course->category->name_en,
-                        'color' => $course->category->color,
-                        'icon' => $course->category->icon
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon
                     ] : null
                 ];
             });
@@ -248,7 +263,23 @@ class CourseController extends Controller
                     'description_ar' => $subject->description_ar,
                     'description_en' => $subject->description_en,
                     'icon' => $subject->icon,
-                    'color' => $subject->color
+                    'color' => $subject->color,
+                    'grade_info' => $subject->grade ? [
+                        'id' => $subject->grade->id,
+                        'name_ar' => $subject->grade->name_ar,
+                        'name_en' => $subject->grade->name_en,
+                        'level' => $subject->grade->level
+                    ] : null,
+                    'semester_info' => $subject->semester ? [
+                        'id' => $subject->semester->id,
+                        'name_ar' => $subject->semester->name_ar,
+                        'name_en' => $subject->semester->name_en
+                    ] : null,
+                    'program_info' => $subject->program ? [
+                        'id' => $subject->program->id,
+                        'name_ar' => $subject->program->name_ar,
+                        'name_en' => $subject->program->name_en
+                    ] : null
                 ],
                 'courses' => $coursesData,
                 'pagination' => [
@@ -272,12 +303,26 @@ class CourseController extends Controller
     /**
      * Get international program courses
      */
-    public function internationalProgramSubjects(Request $request, $program = null)
+    public function internationalProgramCourses(Request $request, $program = null)
     {
         try {
             $perPage = $request->get('per_page', 10);
 
-            $courses = $this->courseRepository->internationalProgramSubjects($program)->paginate($perPage);
+            // Get international program subjects, then get courses for those subjects
+            $internationalProgram = \App\Models\Category::where('ctg_key', 'international-program')->first();
+            
+            if (!$internationalProgram) {
+                return $this->error_response('International program not found', null);
+            }
+
+            $subjects = Subject::where('programm_id', $internationalProgram->id)
+                ->where('is_active', true)
+                ->pluck('id');
+
+            $courses = Course::whereIn('subject_id', $subjects)
+                ->with(['teacher', 'subject'])
+                ->latest()
+                ->paginate($perPage);
 
             $coursesData = $courses->getCollection()->map(function ($course) {
                 return [
@@ -295,18 +340,23 @@ class CourseController extends Controller
                         'name_of_lesson' => $course->teacher->name_of_lesson,
                         'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
                     ] : null,
-                    'category' => $course->category ? [
-                        'id' => $course->category->id,
-                        'name_ar' => $course->category->name_ar,
-                        'name_en' => $course->category->name_en,
-                        'color' => $course->category->color,
-                        'icon' => $course->category->icon
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon
                     ] : null
                 ];
             });
 
             $responseData = [
-                'program_title' => 'International Program',
+                'program' => [
+                    'id' => $internationalProgram->id,
+                    'name_ar' => $internationalProgram->name_ar,
+                    'name_en' => $internationalProgram->name_en,
+                    'ctg_key' => $internationalProgram->ctg_key
+                ],
                 'program_type' => $program,
                 'courses' => $coursesData,
                 'pagination' => [
@@ -330,12 +380,26 @@ class CourseController extends Controller
     /**
      * Get universities program courses
      */
-    public function universitiesProgramSubjects(Request $request)
+    public function universitiesProgramCourses(Request $request)
     {
         try {
             $perPage = $request->get('per_page', 10);
 
-            $courses = $this->courseRepository->universitiesProgramSubjects()->paginate($perPage);
+            // Get universities program subjects, then get courses for those subjects
+            $universitiesProgram = \App\Models\Category::where('ctg_key', 'universities-and-colleges-program')->first();
+            
+            if (!$universitiesProgram) {
+                return $this->error_response('Universities program not found', null);
+            }
+
+            $subjects = Subject::where('programm_id', $universitiesProgram->id)
+                ->where('is_active', true)
+                ->pluck('id');
+
+            $courses = Course::whereIn('subject_id', $subjects)
+                ->with(['teacher', 'subject'])
+                ->latest()
+                ->paginate($perPage);
 
             $coursesData = $courses->getCollection()->map(function ($course) {
                 return [
@@ -353,18 +417,23 @@ class CourseController extends Controller
                         'name_of_lesson' => $course->teacher->name_of_lesson,
                         'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
                     ] : null,
-                    'category' => $course->category ? [
-                        'id' => $course->category->id,
-                        'name_ar' => $course->category->name_ar,
-                        'name_en' => $course->category->name_en,
-                        'color' => $course->category->color,
-                        'icon' => $course->category->icon
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon
                     ] : null
                 ];
             });
 
             $responseData = [
-                'program_title' => 'Universities and Colleges Program',
+                'program' => [
+                    'id' => $universitiesProgram->id,
+                    'name_ar' => $universitiesProgram->name_ar,
+                    'name_en' => $universitiesProgram->name_en,
+                    'ctg_key' => $universitiesProgram->ctg_key
+                ],
                 'courses' => $coursesData,
                 'pagination' => [
                     'current_page' => $courses->currentPage(),
@@ -391,16 +460,16 @@ class CourseController extends Controller
     {
         try {
             $perPage = $request->get('per_page', 10);
-            $categoryId = $request->get('category_id');
+            $subjectId = $request->get('subject_id');
             $teacherId = $request->get('teacher_id');
             $search = $request->get('search');
             $sortBy = $request->get('sort_by', 'latest'); // latest, price_low, price_high, name
 
-            $query = Course::with(['teacher', 'category']);
+            $query = Course::with(['teacher', 'subject']);
 
             // Apply filters
-            if ($categoryId) {
-                $query->where('category_id', $categoryId);
+            if ($subjectId) {
+                $query->where('subject_id', $subjectId);
             }
 
             if ($teacherId) {
@@ -449,12 +518,12 @@ class CourseController extends Controller
                         'name_of_lesson' => $course->teacher->name_of_lesson,
                         'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
                     ] : null,
-                    'category' => $course->category ? [
-                        'id' => $course->category->id,
-                        'name_ar' => $course->category->name_ar,
-                        'name_en' => $course->category->name_en,
-                        'color' => $course->category->color,
-                        'icon' => $course->category->icon
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon
                     ] : null
                 ];
             });
@@ -462,7 +531,7 @@ class CourseController extends Controller
             $responseData = [
                 'courses' => $coursesData,
                 'filters' => [
-                    'category_id' => $categoryId,
+                    'subject_id' => $subjectId,
                     'teacher_id' => $teacherId,
                     'search' => $search,
                     'sort_by' => $sortBy

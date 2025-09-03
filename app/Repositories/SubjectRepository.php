@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Repositories;
 
+use App\Models\Course;
 use App\Models\Subject;
 
 class SubjectRepository
@@ -20,8 +22,8 @@ class SubjectRepository
     public function universitiesProgramSubjects()
     {
         $universityProgramId = CategoryRepository()->getUniversitiesProgram()?->id;
-        if($universityProgramId){
-            return $this->model->where('is_active', true)->where('programm_id',$universityProgramId);
+        if ($universityProgramId) {
+            return $this->model->where('is_active', true)->where('programm_id', $universityProgramId);
         }
         return [];
     }
@@ -37,8 +39,8 @@ class SubjectRepository
     public function internationalProgramSubjects($programm = null)
     {
         $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
-        if($internationalProgramId){
-            return $this->model->where('is_active', true)->where('programm_id',$internationalProgramId);
+        if ($internationalProgramId) {
+            return $this->model->where('is_active', true)->where('programm_id', $internationalProgramId);
         }
         return [];
     }
@@ -63,17 +65,17 @@ class SubjectRepository
     public function getTawjihiFinalGradesFieldMinistrySubjects($field)
     {
         return $this->model->where('is_active', true)
-        ->whereHas('grade',function ($q) {
-            $q->where('ctg_key','final_year');
-            $q->where('is_active', true);
-        })
-        ->whereHas('category_subjects',function ($q)use($field) {
-            $q->where('category_id', $field->id);
-            $q->where('is_ministry', true);
-            $q->where('pivot_level', 'field');
-            // $q->where('is_optional', false);
-        })
-        ->get();
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'final_year');
+                $q->where('is_active', true);
+            })
+            ->whereHas('category_subjects', function ($q) use ($field) {
+                $q->where('category_id', $field->id);
+                $q->where('is_ministry', true);
+                $q->where('pivot_level', 'field');
+                // $q->where('is_optional', false);
+            })
+            ->get();
     }
 
     // get all school subjects for first tawjihi grade
@@ -82,17 +84,17 @@ class SubjectRepository
     public function getTawjihiFinalGradesFieldSchoolSubjects($field)
     {
         return $this->model->where('is_active', true)
-        ->whereHas('grade',function ($q) {
-            $q->where('ctg_key','final_year');
-            $q->where('is_active', true);
-        })
-        ->whereHas('category_subjects',function ($q)use($field) {
-            $q->where('category_id', $field->id);
-            $q->where('is_ministry', false);
-            $q->where('pivot_level', 'field');
-            // $q->where('is_optional', false);
-        })
-        ->get();
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'final_year');
+                $q->where('is_active', true);
+            })
+            ->whereHas('category_subjects', function ($q) use ($field) {
+                $q->where('category_id', $field->id);
+                $q->where('is_ministry', false);
+                $q->where('pivot_level', 'field');
+                // $q->where('is_optional', false);
+            })
+            ->get();
     }
 
 
@@ -100,24 +102,24 @@ class SubjectRepository
     // الحصول علي المواد الاختيارية لمبحث اختياري
     // معين ف احدي حقول توجيهي السنة النهائية
     // return collection
-    public function getOptionalSubjectOptions($field,$subject)
+    public function getOptionalSubjectOptions($field, $subject)
     {
         return $this->model->where('is_active', true)
-        ->where('id', '!=',$subject->id)
-        ->where('field_type_id', $subject->field_type_id)
-        ->whereHas('grade',function ($q) {
-            $q->where('ctg_key','final_year');
-            $q->where('is_active', true);
-        })
-        ->whereDoesntHave('category_subjects',function ($q)use($subject,$field) {
-            $q->where('category_id', $field->id);
-            $q->where('pivot_level', 'field');
-        })
-        ->whereDoesntHave('category_subjects',function ($q)use($subject,$field) {
-            $q->where('is_optional', true);
-            $q->where('is_ministry', false);
-        })
-        ->get();
+            ->where('id', '!=', $subject->id)
+            ->where('field_type_id', $subject->field_type_id)
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'final_year');
+                $q->where('is_active', true);
+            })
+            ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
+                $q->where('category_id', $field->id);
+                $q->where('pivot_level', 'field');
+            })
+            ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
+                $q->where('is_optional', true);
+                $q->where('is_ministry', false);
+            })
+            ->get();
 
         return collect();
     }
@@ -131,10 +133,10 @@ class SubjectRepository
     // subjects is directly under grade
     public function subjectsForGrade($grade = null)
     {
-       return $this->model->where('is_active', true)
-       ->where(function ($q)use($grade) {
-          if($grade) $q->where('grade_id',$grade?->id);
-       });
+        return $this->model->where('is_active', true)
+            ->where(function ($q) use ($grade) {
+                if ($grade) $q->where('grade_id', $grade?->id);
+            });
     }
 
     // query->get() for all subjects under grade
@@ -148,7 +150,7 @@ class SubjectRepository
     // subjects is directly under international programm
     public function subjectsForSemester($semester = null)
     {
-       return $this->model->where('is_active', true)->where('semester_id',$semester->id);
+        return $this->model->where('is_active', true)->where('semester_id', $semester->id);
     }
 
     // query->get() for all courses under international programm
@@ -163,7 +165,7 @@ class SubjectRepository
     public function directSubjectCourses($subjectId)
     {
         $courses = [];
-        $courses = Course::where('subject_id',$subjectId)->where('is_active', true)->get();
+        $courses = Course::where('subject_id', $subjectId)->where('is_active', true)->get();
         return $courses;
     }
 
@@ -171,5 +173,4 @@ class SubjectRepository
     {
         return $this->directSubjectCourses($subjectId);
     }
-
 }
