@@ -43,8 +43,8 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::prefix('courses')->group(function () {
         Route::get('/', [CourseController::class, 'index']);
         Route::get('/subject/{subjectId}', [CourseController::class, 'coursesBySubject']);
-        Route::get('/international/{program?}', [CourseController::class, 'internationalProgramCourses']);
-        Route::get('/universities', [CourseController::class, 'universitiesProgramCourses']);
+        Route::get('/international/{program?}', [CourseController::class, 'internationalProgramSubjects']);
+        Route::get('/universities', [CourseController::class, 'universitiesProgramSubjects']);
     });
 
     Route::get('/exams', [ExamController::class, 'getElectronicExams']);
@@ -52,7 +52,7 @@ Route::group(['prefix' => 'v1/user'], function () {
     // Auth Route
     Route::group(['middleware' => ['auth:user-api']], function () {
 
-        
+
         Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);
@@ -62,4 +62,3 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
     });
 });
-   

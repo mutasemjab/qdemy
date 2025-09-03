@@ -15,8 +15,10 @@ class ExamController extends Controller
 {
     public function e_exam(Request $request)
     {
+        $programms                   = CategoryRepository()->getMajors();
         $programmsGrades             = CategoryRepository()->getProgrammsGrades();
         $gradesSemesters             = CategoryRepository()->getGradesSemesters();
+        $subjects                    = SubjectRepository()->getSubjectsForGrade();
         // $query                       = Exam::Query()->where('is_active',1);
         // $exams                       = $query->paginate(PGN);
         $query = Exam::query()
@@ -38,6 +40,8 @@ class ExamController extends Controller
 
         return view('web.exam.e-exam',[
             'exams'           => $exams,
+            'programms'       => $programms,
+            'subjects'        => $subjects,
             'programmsGrades' => $programmsGrades,
             'gradesSemesters' => $gradesSemesters,
         ]);

@@ -74,7 +74,7 @@
 
             @else
                 <!-- if lesson category is optional get first field optional lessons -->
-                @php $optionals = CategoryRepository()->getOtionalSubjectsForField($lesson); @endphp
+                @php $optionals = SubjectRepository()->getOptionalSubjectOptions($lesson); @endphp
                 <div class="optional-subjects">
                 @foreach ($optionals as $optional_lesson)
                     <div class="sp2-group sp2-nested">

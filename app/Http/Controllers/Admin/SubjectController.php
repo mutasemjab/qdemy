@@ -20,19 +20,94 @@ class SubjectController extends Controller
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function index()
+    // في SubjectController.php، استبدل دالة index بهذه:
+    public function index(Request $request)
     {
-        $subjects = Subject::with(['program', 'grade', 'semester', 'fieldType'])
-              ->orderBy('id','desc')
-            ->paginate(15);
+        $query = Subject::with(['program', 'grade', 'semester', 'fieldType', 'courses']);
 
-        return view('admin.subjects.index', compact('subjects'));
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name_ar', 'like', "%{$search}%")
+                ->orWhere('name_en', 'like', "%{$search}%");
+            });
+        }
+
+        // Program filter
+        if ($request->filled('program_id')) {
+            $query->where('programm_id', $request->program_id);
+        }
+
+        // Grade filter
+        if ($request->filled('grade_id')) {
+            $query->where('grade_id', $request->grade_id);
+        }
+
+        // Status filter
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status);
+        }
+
+        // Order by program, grade, semester, then sort_order
+        $subjects = $query->orderBy('programm_id')
+                        ->orderBy('grade_id')
+                        ->orderBy('semester_id')
+                        ->orderBy('sort_order')
+                        ->orderBy('id', 'desc')
+                        ->paginate(15)
+                        ->withQueryString();
+
+        // Get filter data
+        $programs = $this->categoryRepository->getMajors();
+        $grades = collect();
+        if ($request->filled('program_id')) {
+            $program = Category::find($request->program_id);
+            if ($program && in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
+                if($program->ctg_key == 'elementary-grades-program'){
+                    $grades = $this->categoryRepository->getElementryProgramGrades();
+                } else {
+                    $grades = $this->categoryRepository->getTawjihiProgrammGrades();
+                }
+            }
+        }
+
+        return view('admin.subjects.index', compact('subjects', 'programs', 'grades'));
+    }
+
+    public function show(Subject $subject)
+    {
+        // Load all relationships
+        $subject->load([
+            'program',
+            'grade',
+            'semester',
+            'fieldType',
+            'categories' => function($query) {
+                $query->withPivot(['pivot_level', 'is_optional', 'is_ministry']);
+            },
+            'courses' => function($query) {
+                $query->withCount('students');
+            }
+        ]);
+
+        // Get related fields if Tawjihi last year
+        $relatedFields = collect();
+        if ($subject->grade && $subject->grade->ctg_key == 'final_year') {
+            $relatedFields = $subject->categories()
+                ->wherePivot('pivot_level', 'field')
+                ->withPivot(['is_optional', 'is_ministry'])
+                ->get();
+        }
+
+        return view('admin.subjects.show', compact('subject', 'relatedFields'));
     }
 
     public function create()
     {
         $fieldTypes = $this->categoryRepository->getFieldTypes();
-        $programs   = $this->categoryRepository->getMajors();
+        $programs = $this->categoryRepository->getMajors();
+
         return view('admin.subjects.create', compact('fieldTypes', 'programs'));
     }
 
@@ -72,9 +147,10 @@ class SubjectController extends Controller
     public function edit(Subject $subject)
     {
         $fieldTypes = $this->categoryRepository->getFieldTypes();
-        $programs   = $this->categoryRepository->getMajors();
-        $semesters  = [];
-        $fields     = [];
+        $programs = $this->categoryRepository->getMajors();
+        $semesters = [];
+        $fields = [];
+        $grades = [];
 
         if ($subject->grade_id) {
             $grade = Category::find($subject->grade_id);
@@ -91,12 +167,12 @@ class SubjectController extends Controller
         }elseif($subject->program?->ctg_key == 'tawjihi-and-secondary-program'){
             $grades = $this->categoryRepository->getTawjihiProgrammGrades();
         }
-
         // Get existing field relationships for Tawjihi last year
         $existingFields = $subject->categories()
-            ->wherePivot('pivot_level', 'field')
-            ->get()
-            ->keyBy('id');
+        ->wherePivot('pivot_level', 'field')
+        ->get()
+        ->keyBy('id');
+
 
         return view('admin.subjects.edit', compact(
             'subject',
@@ -105,7 +181,7 @@ class SubjectController extends Controller
             'grades',
             'semesters',
             'fields',
-            'existingFields'
+            'existingFields',
         ));
     }
 
@@ -116,8 +192,8 @@ class SubjectController extends Controller
         DB::beginTransaction();
 
         try {
-            $filteredValidatedData = Arr::except($validated, ['category_id', 'is_optional', 'is_ministry']);
-            $subject->update($filteredValidatedData);
+
+            $subject->update($validated);
 
             // Clear existing relationships and recreate
             $subject->categories()->detach();
@@ -135,6 +211,82 @@ class SubjectController extends Controller
             return back()->withInput()
                 ->withErrors(['error' => $e->getMessage() . __('messages.something_went_wrong')]);
         }
+    }
+
+
+    // أضف هذه الدوال الجديدة:
+    public function toggleStatus(Subject $subject)
+    {
+        $subject->is_active = !$subject->is_active;
+        $subject->save();
+
+        return redirect()->back()->with('success', __('messages.status_updated'));
+    }
+
+    public function moveUp(Subject $subject)
+    {
+        $previousSubject = Subject::where('programm_id', $subject->programm_id)
+            ->where(function($q) use ($subject) {
+                if ($subject->grade_id) {
+                    $q->where('grade_id', $subject->grade_id);
+                } else {
+                    $q->whereNull('grade_id');
+                }
+            })
+            ->where(function($q) use ($subject) {
+                if ($subject->semester_id) {
+                    $q->where('semester_id', $subject->semester_id);
+                } else {
+                    $q->whereNull('semester_id');
+                }
+            })
+            ->where('sort_order', '<', $subject->sort_order)
+            ->orderBy('sort_order', 'desc')
+            ->first();
+
+        if ($previousSubject) {
+            $tempOrder = $subject->sort_order;
+            $subject->sort_order = $previousSubject->sort_order;
+            $previousSubject->sort_order = $tempOrder;
+
+            $subject->save();
+            $previousSubject->save();
+        }
+
+        return redirect()->back()->with('success', __('messages.order_updated'));
+    }
+
+    public function moveDown(Subject $subject)
+    {
+        $nextSubject = Subject::where('programm_id', $subject->programm_id)
+            ->where(function($q) use ($subject) {
+                if ($subject->grade_id) {
+                    $q->where('grade_id', $subject->grade_id);
+                } else {
+                    $q->whereNull('grade_id');
+                }
+            })
+            ->where(function($q) use ($subject) {
+                if ($subject->semester_id) {
+                    $q->where('semester_id', $subject->semester_id);
+                } else {
+                    $q->whereNull('semester_id');
+                }
+            })
+            ->where('sort_order', '>', $subject->sort_order)
+            ->orderBy('sort_order', 'asc')
+            ->first();
+
+        if ($nextSubject) {
+            $tempOrder = $subject->sort_order;
+            $subject->sort_order = $nextSubject->sort_order;
+            $nextSubject->sort_order = $tempOrder;
+
+            $subject->save();
+            $nextSubject->save();
+        }
+
+        return redirect()->back()->with('success', __('messages.order_updated'));
     }
 
     public function destroy(Subject $subject)
@@ -205,7 +357,6 @@ class SubjectController extends Controller
             'color' => 'nullable|max:100',
             'is_active' => 'required|boolean',
             'sort_order' => 'nullable|integer',
-            'field_type_id' => 'required|exists:categories,id',
             'programm_id' => 'required|exists:categories,id',
         ];
 
@@ -217,28 +368,38 @@ class SubjectController extends Controller
             $rules['grade_id'] = 'nullable|exists:categories,id';
         }
 
-        // Conditional validation for semester_id
         if ($request->grade_id) {
+
             $grade = Category::find($request->grade_id);
-            if ($grade && $grade->level == 'elementray_grade') {
+            if ($grade && $grade->level == 'elementray_grade') {  // Conditional validation for semester_id
+
                 $rules['semester_id'] = 'required|exists:categories,id';
-            }
-        }
 
-        // Validation for Tawjihi last year fields
-        if ($request->grade_id) {
-            $grade = Category::find($request->grade_id);
-            if ($grade && $grade->ctg_key == 'final_year') {
-                $rules['category_id'] = 'required|array';
+            }elseif ($grade && $grade->ctg_key == 'final_year') { // Validation for Tawjihi last year fields
+
+                $rules['field_type_id'] = 'required|exists:categories,id';
+                $rules['category_id']   = 'required|array';
                 $rules['category_id.*'] = 'exists:categories,id';
-                $rules['is_optional'] = 'required|array';
+                $rules['is_optional']   = 'required|array';
                 $rules['is_optional.*'] = 'boolean';
-                $rules['is_ministry'] = 'required|array';
+                $rules['is_ministry']   = 'required|array';
                 $rules['is_ministry.*'] = 'boolean';
+
+            }elseif ($grade && $grade->ctg_key == 'first_year') { // Validation for Tawjihi first year
+
+                $rules['is_optional_single'] = 'boolean';
+                $rules['is_ministry_single'] = 'boolean';
+
             }
         }
 
-        return $request->validate($rules);
+        $validated = $request->validate($rules);
+
+        $filteredValidatedData = Arr::except($validated, ['category_id', 'is_optional_single', 'is_ministry_single','is_optional','is_ministry']);
+        if (!$grade || $grade->ctg_key != 'final_year') {
+            $filteredValidatedData['field_type_id'] = null;
+        }
+        return $filteredValidatedData;
     }
 
     private function generateSortOrder($programId, $gradeId = null, $semesterId = null)
@@ -264,6 +425,8 @@ class SubjectController extends Controller
         if (!in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
             $subject->categories()->attach($subject->programm_id, [
                 'pivot_level' => 'programm',
+                'is_optional' => false,
+                'is_ministry' => true,
             ]);
             return;
         }
@@ -276,28 +439,22 @@ class SubjectController extends Controller
                 // Attach to the selected semester only
                 $subject->categories()->attach($subject->semester_id, [
                     'pivot_level' => 'semester',
+                    'is_optional' => false,
+                    'is_ministry' => true,
                 ]);
             }
-
             // Case 3: Tawjihi first year
             elseif ($program->ctg_key == 'tawjihi-and-secondary-program' && $grade->ctg_key == 'first_year') {
                 $subject->categories()->attach($subject->grade_id, [
                     'pivot_level' => 'grade',
-                    'is_optional' => false,
-                    'is_ministry' => true
+                    'is_optional' => $request->is_optional_single ?? false,
+                    'is_ministry' => $request->is_ministry_single ?? true
                 ]);
             }
             // Case 4: Tawjihi last year with fields
             elseif ($program->ctg_key == 'tawjihi-and-secondary-program' && $grade->ctg_key == 'final_year') {
                 if ($request->has('category_id')) {
                     foreach ($request->category_id as $fieldId) {
-                        // CategorySubject::Create([
-                        //     'subject_id'  => $subject->id,
-                        //     'category_id'  => $request->category_id[$fieldId],
-                        //     'pivot_level' => 'field',
-                        //     'is_optional' => $request->is_optional[$fieldId] ?? false,
-                        //     'is_ministry' => $request->is_ministry[$fieldId] ?? true
-                        // ]);
                         $subject->categories()->attach($fieldId, [
                             'pivot_level' => 'field',
                             'is_optional' => $request->is_optional[$fieldId] ?? false,
@@ -345,6 +502,28 @@ class SubjectController extends Controller
     {
         $fields = $this->categoryRepository->getTawjihiLastGradeFieldes();
 
+        // Check if we're in edit mode
+        if ($request->has('subject_id') && $request->subject_id) {
+            $subject = Subject::find($request->subject_id);
+
+            if ($subject) {
+                // Get existing category relationships for fields
+                $existingRelations = $subject->categories()
+                    ->wherePivot('pivot_level', 'field')
+                    ->get()
+                    ->keyBy('id');
+
+                // Add relationship data to each field
+                $fields = $fields->map(function($field) use ($existingRelations) {
+                    $field->checked = $existingRelations->has($field->id);
+                    $field->is_optional = $field->checked ? $existingRelations->get($field->id)->pivot->is_optional : false;
+                    $field->is_ministry = $field->checked ? $existingRelations->get($field->id)->pivot->is_ministry : true;
+                    return $field;
+                });
+            }
+        }
+
         return response()->json($fields);
     }
+
 }

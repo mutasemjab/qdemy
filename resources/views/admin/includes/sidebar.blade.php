@@ -54,6 +54,15 @@
                         </li>
                         @endif
 
+                        @if ($user->can('subject-table') || $user->can('subject-add') || $user->can('subject-edit') || $user->can('subject-delete'))
+                        <li class="nav-item">
+                            <a href="{{ route('subjects.index') }}" class="nav-link {{ request()->routeIs('subjects.*') ? 'active' : '' }}">
+                                <i class="far fa-book nav-icon"></i>
+                                <p>{{ __('messages.subjects') }}</p>
+                            </a>
+                        </li>
+                        @endif
+
                         @if ($user->can('course-table') || $user->can('course-add') || $user->can('course-edit') || $user->can('course-delete'))
                         <li class="nav-item">
                             <a href="{{ route('courses.index') }}" class="nav-link {{ request()->routeIs('courses.*') ? 'active' : '' }}">
@@ -244,7 +253,7 @@
                             </a>
                         </li>
                         @endif
-                    
+
                         @if ($user->can('onboarding-table') || $user->can('onboarding-add') || $user->can('onboarding-edit') || $user->can('onboarding-delete'))
                         <li class="nav-item">
                             <a href="{{ route('onboardings.index') }}" class="nav-link {{ request()->routeIs('onboardings.*') ? 'active' : '' }}">
@@ -253,7 +262,7 @@
                             </a>
                         </li>
                         @endif
-                      
+
                         @if ($user->can('special-qdemie-table') || $user->can('special-qdemie-add') || $user->can('special-qdemie-edit') || $user->can('special-qdemie-delete'))
                         <li class="nav-item">
                             <a href="{{ route('special-qdemies.index') }}" class="nav-link {{ request()->routeIs('special-qdemies.*') ? 'active' : '' }}">
@@ -316,7 +325,7 @@
                             </a>
                         </li>
                         @endif
-                     
+
                         @if ($user->can('contactUs-table') || $user->can('contactUs-add') || $user->can('contactUs-edit') || $user->can('contactUs-delete'))
                         <li class="nav-item">
                             <a href="{{ route('contactUs.index') }}" class="nav-link {{ request()->routeIs('contactUs.*') ? 'active' : '' }}">

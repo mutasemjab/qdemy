@@ -51,9 +51,20 @@ class Subject extends Model
         return $query;
     }
     // Relations
+    public function courses()
+    {
+        return $this->hasMany(Course::class);
+    }
     public function fieldType()
     {
         return $this->belongsTo(Category::class, 'field_type_id');
+    }
+    /**
+     * Get the category  porgramm that owns the course.
+     */
+    public function porgramm()
+    {
+        return $this->belongsTo(Category::class,'programm_id');
     }
     /**
      * Get the category  grade that owns the course.
@@ -77,6 +88,13 @@ class Subject extends Model
             ->withTimestamps();
     }
 
+    /**
+     * Get the category  main programm that owns the course.
+    */
+    public function category_subjects()
+    {
+        return $this->hasMany(CategorySubject::class);
+    }
 
     /**
      * Get the category  main programm that owns the course.
@@ -120,6 +138,21 @@ class Subject extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderBy('name_ar');
+    }
+
+    /**
+     * Get localized name based on app locale
+     */
+    public function getHasOptionalSubjectAttribute()
+    {
+        $has = CategorySubject::where('subject_id',$this->id)
+        ->where(function ($q) {
+            $q->where('subject_id', $this->id);
+            $q->where('pivot_level', 'field');
+            $q->where('is_optional', true);
+            $q->where('is_ministry', true);
+        })->exists();
+        return $has;
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace  App\Http\Controllers\Web;
 
 use App\Models\Course;
+use App\Models\Subject;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\CourseContent;
@@ -104,30 +105,11 @@ class CourseController extends Controller
 
     public function subject_courses($subject)
     {
-        $subject = Category::FindOrFail($subject);
-        $courses = Course::where('category_id',$subject->id)->latest()->paginate(PGN);
+        $subject = Subject::FindOrFail($subject);
+        $courses = Course::where('subject_id',$subject->id)->latest()->paginate(PGN);
         return view('web.courses',[
             'subject' => $subject,
             'title'   => $subject->name_en,
-            'courses' => $courses,
-        ]);
-    }
-
-
-    public function international_programm_courses($programm = null)
-    {
-        $courses = CourseRepository()->internationalProgramCourses($programm)->paginate(PGN);
-        return view('web.courses',[
-            'title'    => 'International Program',
-            'courses'  => $courses,
-        ]);
-    }
-
-    public function universities_programm_courses()
-    {
-        $courses = CourseRepository()->universitiesProgramCourses()->paginate(PGN);
-        return view('web.courses',[
-            'title'   => 'Universities and Colleges Program',
             'courses' => $courses,
         ]);
     }

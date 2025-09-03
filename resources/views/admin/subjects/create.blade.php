@@ -143,60 +143,14 @@
                                     <select class="form-control @error('is_active') is-invalid @enderror"
                                             id="is_active"
                                             name="is_active">
-                                        <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>
-                                            {{ __('messages.active') }}
-                                        </option>
                                         <option value="0" {{ old('is_active') == 0 ? 'selected' : '' }}>
                                             {{ __('messages.inactive') }}
                                         </option>
+                                        <option value="1" {{ old('is_active', 1) == 1 ? 'selected' : '' }}>
+                                            {{ __('messages.active') }}
+                                        </option>
                                     </select>
                                     @error('is_active')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Sort Order -->
-                            <div class="col-md-3">
-                                <div class="form-group mb-3">
-                                    <label for="sort_order" class="form-label">
-                                        {{ __('messages.sort_order') }}
-                                    </label>
-                                    <input type="number"
-                                           class="form-control @error('sort_order') is-invalid @enderror"
-                                           id="sort_order"
-                                           name="sort_order"
-                                           value="{{ old('sort_order') }}"
-                                           placeholder="{{ __('messages.auto_generate') }}"
-                                           min="0">
-                                    <small class="form-text text-muted">
-                                        {{ __('messages.leave_empty_for_auto') }}
-                                    </small>
-                                    @error('sort_order')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Field Type -->
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="field_type_id" class="form-label">
-                                        {{ __('messages.field_type') }} <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-control @error('field_type_id') is-invalid @enderror"
-                                            id="field_type_id"
-                                            name="field_type_id"
-                                            required>
-                                        <option value="">{{ __('messages.select_field_type') }}</option>
-                                        @foreach($fieldTypes as $fieldType)
-                                            <option value="{{ $fieldType->id }}"
-                                                    {{ old('field_type_id') == $fieldType->id ? 'selected' : '' }}>
-                                                {{ app()->getLocale() == 'ar' ? $fieldType->name_ar : ($fieldType->name_en ?? $fieldType->name_ar) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('field_type_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -236,6 +190,7 @@
                                     <select class="form-control @error('grade_id') is-invalid @enderror"
                                             id="grade_id"
                                             name="grade_id">
+                                        <option value="">{{ __('messages.select_grade') }}</option>
                                     </select>
                                     @error('grade_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -260,8 +215,80 @@
                                 </div>
                             </div>
 
-                            <!-- Fields Selection (Hidden initially) -->
+                            <!-- Tawjihi First Year Options (Hidden initially) -->
+                            <div class="col-12" id="tawjihiFirstYearSection" style="display: none;">
+
+                            <!-- Field Type -->
+                            <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="is_optional_single" class="form-label">
+                                                {{ __('messages.is_optional') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control @error('is_optional_single') is-invalid @enderror"
+                                                    id="is_optional_single"
+                                                    name="is_optional_single">
+                                                <option value="0" {{ old('is_optional_single', 0) == 0 ? 'selected' : '' }}>
+                                                    {{ __('messages.no') }}
+                                                </option>
+                                                <option value="1" {{ old('is_optional_single') == 1 ? 'selected' : '' }}>
+                                                    {{ __('messages.yes') }}
+                                                </option>
+                                            </select>
+                                            @error('is_optional_single')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="is_ministry_single" class="form-label">
+                                                {{ __('messages.is_ministry') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control @error('is_ministry_single') is-invalid @enderror"
+                                                    id="is_ministry_single"
+                                                    name="is_ministry_single">
+                                                <option value="1" {{ old('is_ministry_single', 1) == 1 ? 'selected' : '' }}>
+                                                    {{ __('messages.yes') }}
+                                                </option>
+                                                <option value="0" {{ old('is_ministry_single') == 0 ? 'selected' : '' }}>
+                                                    {{ __('messages.no') }}
+                                                </option>
+                                            </select>
+                                            @error('is_ministry_single')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- field_type_select && Fields Selection (Hidden initially) -->
                             <div class="col-12" id="fieldsSelectionSection" style="display: none;">
+
+                                <!-- field_type_select -->
+                                <div class="col-md-6 p-0">
+                                    <div class="form-group mb-3">
+                                        <label for="field_type_id" class="form-label">
+                                            {{ __('messages.field_type') }} <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-control @error('field_type_id') is-invalid @enderror"
+                                                id="field_type_id"
+                                                name="field_type_id">
+                                            <option value="">{{ __('messages.select_field_type') }}</option>
+                                            @foreach($fieldTypes as $fieldType)
+                                                <option value="{{ $fieldType->id }}"
+                                                        {{ old('field_type_id') == $fieldType->id ? 'selected' : '' }}>
+                                                    {{ app()->getLocale() == 'ar' ? $fieldType->name_ar : ($fieldType->name_en ?? $fieldType->name_ar) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('field_type_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
                                 <div class="form-group mb-3">
                                     <label class="form-label">
                                         {{ __('messages.select_fields') }} <span class="text-danger">*</span>
@@ -281,7 +308,7 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    @error('category_id')
+                                    @error('field_categories')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>

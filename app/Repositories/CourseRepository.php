@@ -17,7 +17,7 @@ class CourseRepository
 
     // query for all courses under univertisy programm
     // courses is directly under univertisy programm
-    public function universitiesProgramCourses()
+    public function universitiesProgramSubjects()
     {
         $universityProgramId = CategoryRepository()->getUniversitiesProgram()?->id;
         if($universityProgramId){
@@ -27,14 +27,14 @@ class CourseRepository
     }
 
     // query->get() for all courses under univertisy programm
-    public function getUniversitiesProgramCourses()
+    public function getuniversitiesProgramSubjects()
     {
-        return $this->universitiesProgramCourses()->get();
+        return $this->universitiesProgramSubjects()->get();
     }
 
     // query for all courses under international programm
     // courses is directly under international programm
-    public function internationalProgramCourses($programm = null)
+    public function internationalProgramSubjects($programm = null)
     {
         $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
         if($internationalProgramId){
@@ -44,9 +44,9 @@ class CourseRepository
     }
 
     // query->get() for all courses under international programm
-    public function getInternationalProgramCourses($programm)
+    public function getinternationalProgramSubjects($programm)
     {
-        return $this->internationalProgramCourses($programm)->get();
+        return $this->internationalProgramSubjects($programm)->get();
     }
 
     // query direct courses under courses
@@ -58,6 +58,9 @@ class CourseRepository
         $courses = Course::where('category_id',$categoryId)->get();
         return $courses;
     }
+
+
+    // user courses section
 
     // query enrollend courses for currnt login user
     public function userCourses($userId)

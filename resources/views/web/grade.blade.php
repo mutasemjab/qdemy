@@ -24,7 +24,7 @@
     @foreach($semesters as $index => $semester)
         <div class="subjects-grid semester-content"  id="{{$index}}_semester_content"
             style="{{ !$loop->first ? 'display:none;' : '' }}">
-            @php $subjects  = CategoryRepository()->getDirectChilds($semester) ?? []; @endphp
+            @php $subjects  = SubjectRepository()->getSubjectsForSemester($semester) ?? []; @endphp
             @if($subjects && $subjects->count())
                 @foreach($subjects as $index => $subject)
                 <a href="{{route('subject',['subject'=>$subject->id,'slug'=>$subject->slug])}}" class="subject-card dark">

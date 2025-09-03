@@ -157,52 +157,6 @@
                                 </div>
                             </div>
 
-                            <!-- Sort Order -->
-                            <div class="col-md-3">
-                                <div class="form-group mb-3">
-                                    <label for="sort_order" class="form-label">
-                                        {{ __('messages.sort_order') }}
-                                    </label>
-                                    <input type="number"
-                                           class="form-control @error('sort_order') is-invalid @enderror"
-                                           id="sort_order"
-                                           name="sort_order"
-                                           value="{{ old('sort_order', $subject->sort_order) }}"
-                                           placeholder="{{ __('messages.auto_generate') }}"
-                                           min="0">
-                                    <small class="form-text text-muted">
-                                        {{ __('messages.leave_empty_for_auto') }}
-                                    </small>
-                                    @error('sort_order')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Field Type -->
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="field_type_id" class="form-label">
-                                        {{ __('messages.field_type') }} <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-control @error('field_type_id') is-invalid @enderror"
-                                            id="field_type_id"
-                                            name="field_type_id"
-                                            required>
-                                        <option value="">{{ __('messages.select_field_type') }}</option>
-                                        @foreach($fieldTypes as $fieldType)
-                                            <option value="{{ $fieldType->id }}"
-                                                    {{ old('field_type_id', $subject->field_type_id) == $fieldType->id ? 'selected' : '' }}>
-                                                {{ app()->getLocale() == 'ar' ? $fieldType->name_ar : ($fieldType->name_en ?? $fieldType->name_ar) }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('field_type_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-
                             <!-- Program -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -238,7 +192,6 @@
                                     <label for="grade_id" class="form-label">
                                         {{ __('messages.grade') }} <span class="text-danger grade-required" style="{{ $showGrade ? '' : 'display: none;' }}">*</span>
                                     </label>
-                                    <!-- {{old('grade_id', $subject->grade_id)}} -->
                                     <select class="form-control @error('grade_id') is-invalid @enderror"
                                             id="grade_id"
                                             name="grade_id"
@@ -287,11 +240,94 @@
                                 </div>
                             </div>
 
+                            <!-- Tawjihi First Year Options -->
+                            @php
+                                $showTawjihiFirstYear = $subject->program && $subject->program->ctg_key == 'tawjihi-and-secondary-program'
+                                    && $subject->grade && $subject->grade->ctg_key == 'first_year';
+                                $existingGradeRelation = null;
+                                if ($showTawjihiFirstYear) {
+                                    $existingGradeRelation = $subject->categories()
+                                        ->wherePivot('pivot_level', 'grade')
+                                        ->first();
+                                }
+                            @endphp
+                            <div class="col-12" id="tawjihiFirstYearSection" style="{{ $showTawjihiFirstYear ? '' : 'display: none;' }}">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="is_optional_single" class="form-label">
+                                                {{ __('messages.is_optional') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control @error('is_optional_single') is-invalid @enderror"
+                                                    id="is_optional_single"
+                                                    name="is_optional_single"
+                                                    {{ $showTawjihiFirstYear ? 'required' : '' }}>
+                                                <option value="0" {{ old('is_optional_single', $existingGradeRelation ? $existingGradeRelation->pivot->is_optional : 0) == 0 ? 'selected' : '' }}>
+                                                    {{ __('messages.no') }}
+                                                </option>
+                                                <option value="1" {{ old('is_optional_single', $existingGradeRelation ? $existingGradeRelation->pivot->is_optional : 0) == 1 ? 'selected' : '' }}>
+                                                    {{ __('messages.yes') }}
+                                                </option>
+                                            </select>
+                                            @error('is_optional_single')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label for="is_ministry_single" class="form-label">
+                                                {{ __('messages.is_ministry') }} <span class="text-danger">*</span>
+                                            </label>
+                                            <select class="form-control @error('is_ministry_single') is-invalid @enderror"
+                                                    id="is_ministry_single"
+                                                    name="is_ministry_single"
+                                                    {{ $showTawjihiFirstYear ? 'required' : '' }}>
+                                                <option value="1" {{ old('is_ministry_single', $existingGradeRelation ? $existingGradeRelation->pivot->is_ministry : 1) == 1 ? 'selected' : '' }}>
+                                                    {{ __('messages.yes') }}
+                                                </option>
+                                                <option value="0" {{ old('is_ministry_single', $existingGradeRelation ? $existingGradeRelation->pivot->is_ministry : 1) == 0 ? 'selected' : '' }}>
+                                                    {{ __('messages.no') }}
+                                                </option>
+                                            </select>
+                                            @error('is_ministry_single')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Fields Selection (for Tawjihi last year) -->
                             @php
                                 $showFieldsSelection = $subject->grade && $subject->grade->ctg_key == 'last_year' && count($fields) > 0;
                             @endphp
                             <div class="col-12" id="fieldsSelectionSection" style="{{ $showFieldsSelection ? '' : 'display: none;' }}">
+
+                                <!-- field_type_select -->
+                                <div class="col-md-6 p-0">
+                                    <div class="form-group mb-3">
+                                        <label for="field_type_id" class="form-label">
+                                            {{ __('messages.field_type') }} <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-control @error('field_type_id') is-invalid @enderror"
+                                                id="field_type_id"
+                                                name="field_type_id">
+                                            <option value="">{{ __('messages.select_field_type') }}</option>
+                                            @foreach($fieldTypes as $fieldType)
+                                                <option value="{{ $fieldType->id }}"
+                                                        {{ old('field_type_id', $subject->field_type_id) == $fieldType->id ? 'selected' : '' }}>
+                                                    {{ app()->getLocale() == 'ar' ? $fieldType->name_ar : ($fieldType->name_en ?? $fieldType->name_ar) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('field_type_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+
                                 <div class="form-group mb-3">
                                     <label class="form-label">
                                         {{ __('messages.select_fields') }} <span class="text-danger">*</span>
@@ -311,10 +347,11 @@
                                                     @foreach($fields as $field)
                                                         @php
                                                             $existingField = $existingFields->get($field->id);
-                                                            $isChecked = $existingField !== null;
+                                                            $isChecked  = $existingField !== null;
                                                             $isOptional = $existingField ? $existingField->pivot->is_optional : false;
                                                             $isMinistry = $existingField ? $existingField->pivot->is_ministry : true;
                                                         @endphp
+                                                        @dd($existingField)
                                                         <tr>
                                                             <td>
                                                                 {{ app()->getLocale() == 'ar' ? $field->name_ar : ($field->name_en ?? $field->name_ar) }}
@@ -323,7 +360,7 @@
                                                                 <div class="form-check">
                                                                     <input type="checkbox"
                                                                            class="form-check-input field-checkbox"
-                                                                           name="category_id[]"
+                                                                           name="field_categories[]"
                                                                            value="{{ $field->id }}"
                                                                            id="field_{{ $field->id }}"
                                                                            {{ $isChecked ? 'checked' : '' }}
@@ -354,10 +391,11 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    @error('category_id')
+                                    @error('field_categories')
                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                     @enderror
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -382,7 +420,19 @@
 @push('scripts')
  <script>
      {!! file_get_contents(resource_path('views/admin/subjects/subjects-js.js')) !!}
-    // Initialize the SubjectFormManager
+    // Helper function for edit page
+    function toggleFieldSelects(fieldId) {
+        const checkbox = document.getElementById('field_' + fieldId);
+        const optionalSelect = document.getElementById('is_optional_' + fieldId);
+        const ministrySelect = document.getElementById('is_ministry_' + fieldId);
+
+        if (checkbox && optionalSelect && ministrySelect) {
+            optionalSelect.disabled = !checkbox.checked;
+            ministrySelect.disabled = !checkbox.checked;
+        }
+    }
+
+    // Initialize the SubjectFormManager for edit
     document.addEventListener('DOMContentLoaded', function() {
         const formManager = new SubjectFormManager({
             formId: 'subjectForm',
@@ -397,6 +447,13 @@
                 selectField: '{{ __("messages.select_field") }}',
                 yes: '{{ __("messages.yes") }}',
                 no: '{{ __("messages.no") }}'
+            },
+            isEditMode: true,
+            existingData: {
+                subjectId: {{ $subject->id ?? 'null' }},
+                programId: {{ $subject->programm_id ?? 'null' }},
+                gradeId: {{ $subject->grade_id ?? 'null' }},
+                semesterId: {{ $subject->semester_id ?? 'null' }}
             }
         });
     });

@@ -83,29 +83,9 @@ class CategoryRepository
 
     // get tawjihi 2009 grades
     // sql from this.tawjihiProgrammGrades  where 'ctg_key','!=','final_year' && 'ctg_key','!=','vocational-system'
-    public function getTawjihiFirstGrades()
+    public function getTawjihiFirstGrade()
     {
         return $this->tawjihiProgrammGrades()->where('ctg_key','!=','final_year')->where('ctg_key','!=','vocational-system')->first();
-    }
-
-    // get all ministry subjects for first tawjihi grade
-    // if is active
-    // if has parent with ctg = ministry-subjects
-    public function getTawjihiFirstGradesMinistrySubjects()
-    {
-        return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
-            $q->where('ctg_key','ministry-subjects');
-        })->get();
-    }
-
-    // get all school subjects for first tawjihi grade
-    // if is active
-    // if has parent with ctg = school-subjects
-    public function getTawjihiFirstGradesSchoolSubjects()
-    {
-        return $this->model->where('is_active', true)->whereHas('parent',function ($q) {
-            $q->where('ctg_key','school-subjects');
-        })->get();
     }
 
     // get tawjihi last year (2008) grades - get by ctg_key
@@ -149,42 +129,6 @@ class CategoryRepository
     public function getDirectChilds($category)
     {
         return $category->children;
-    }
-
-    // @param $category = instance of Category
-    // الحصول علي المواد الاختيارية لمبحث اختياري
-    // معين ف احدي حقول توجيهي السنة النهائية
-    // return collection
-    public function getOtionalSubjectsForField($category)
-    {
-        if (!$category) {
-            return collect();
-        }
-        $optional_form_field_type = $category->optional_form_field_type;
-
-        // احصل علي الواد الموجودة اجباريا ف هذا الحقل
-        $this_field_subjects      = Category::where('parent_id',$category->parent_id)
-                                    ->where('is_optional',0)->pluck('ctg_key')->toArray();
-
-        $subjects = Category::where('type','lesson')
-            ->where('level','tawjihi_program_subject')
-            ->whereNotNull('field_type') // thats mean its belong to tawjihi last year becuase this year seperate to fields
-            ->where('is_optional',0)
-            ->where(function ($q) use($optional_form_field_type,$this_field_subjects) {
-                // اذا كانت المادة اختيارية من حقل معين يجب ان تنتمي المواد له
-                if($optional_form_field_type != 'general') {
-                    $q->where('field_type',$optional_form_field_type);
-                }
-                if($this_field_subjects && is_array($this_field_subjects)){
-                    $q->whereNotIn('id',Category::whereIn('ctg_key',$this_field_subjects)->pluck('id')->toArray());
-                }
-            })
-            ->get()
-            ->unique('ctg_key')  // فلترة التكرار بعد جلب البيانات
-            ->values();
-
-        // dd($subjects);
-        return $subjects;
     }
 
     /**

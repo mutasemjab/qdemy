@@ -1591,14 +1591,14 @@ return [
     'add_first_item' => 'إضافة العنصر الأول',
     'confirm_delete' => 'هل أنت متأكد من حذف هذا العنصر؟',
     'no_image' => 'لا توجد صورة',
-    
+
     // Onboarding specific
     'onboardings' => 'التعريف بالخدمة',
     'onboarding' => 'التعريف بالخدمة',
     'add_onboarding' => 'إضافة تعريف جديد',
     'edit_onboarding' => 'تعديل التعريف',
     'view_onboarding' => 'عرض التعريف',
-    
+
     // Fields
     'title' => 'العنوان',
     'title_en' => 'العنوان (إنجليزي)',
@@ -1609,7 +1609,7 @@ return [
     'photo' => 'الصورة',
     'current_photo' => 'الصورة الحالية',
     'photo_requirements' => 'الصيغ المدعومة: JPEG, PNG, JPG, GIF. الحد الأقصى: 2 ميجابايت',
-    
+
     // Messages
     'created_successfully' => 'تم إنشاء العنصر بنجاح',
     'updated_successfully' => 'تم تحديث العنصر بنجاح',
@@ -1620,10 +1620,106 @@ return [
     'edit_special_qdemy' => 'تعديل الأكاديمية المميزة',
     'view_special_qdemy' => 'عرض الأكاديمية المميزة',
     "contactUs" => "الذين تواصلو معنا",
-   "" => "",
-   "" => "",
-   "" => "",
-   "" => "",
 
+    // Subject CRUD
+    'subjects' => 'المواد',
+    'subject' => 'المادة',
+    'add_subject' => 'إضافة مادة',
+    'edit_subject' => 'تعديل المادة',
+    'subjects_list' => 'قائمة المواد',
+    'subject_details' => 'تفاصيل المادة',
+    'subject_created_successfully' => 'تم إنشاء المادة بنجاح',
+    'subject_updated_successfully' => 'تم تحديث المادة بنجاح',
+    'subject_deleted_successfully' => 'تم حذف المادة بنجاح',
+    'cannot_delete_subject' => 'لا يمكن حذف المادة',
+    'no_subjects_found' => 'لا توجد مواد',
+
+    // Form Fields
+    'name_ar' => 'الاسم بالعربية',
+    'name_en' => 'الاسم بالإنجليزية',
+    'enter_name_ar' => 'أدخل الاسم بالعربية',
+    'enter_name_en' => 'أدخل الاسم بالإنجليزية',
+    'description_ar' => 'الوصف بالعربية',
+    'description_en' => 'الوصف بالإنجليزية',
+    'enter_description_ar' => 'أدخل الوصف بالعربية',
+    'enter_description_en' => 'أدخل الوصف بالإنجليزية',
+    'icon' => 'الأيقونة',
+    'enter_icon_class' => 'أدخل كلاس الأيقونة',
+    'color' => 'اللون',
+    'status' => 'الحالة',
+    'active' => 'نشط',
+    'inactive' => 'غير نشط',
+    'sort_order' => 'ترتيب العرض',
+    'auto_generate' => 'توليد تلقائي',
+    'leave_empty_for_auto' => 'اترك فارغاً للتوليد التلقائي',
+
+    // Relations
+    'field_type' => 'نوع الحقل',
+    'select_field_type' => 'اختر نوع الحقل',
+    'program' => 'البرنامج',
+    'select_program' => 'اختر البرنامج',
+    'grade' => 'الصف',
+    'select_grade' => 'اختر الصف',
+    'semester' => 'الفصل الدراسي',
+    'select_semester' => 'اختر الفصل الدراسي',
+    'select_semesters' => 'اختر الفصول الدراسية',
+    'select_fields' => 'اختر الشُعب',
+    'field' => 'الشُعبة',
+    'add_to_field' => 'إضافة للشُعبة',
+    'is_optional' => 'اختياري',
+    'is_ministry' => 'وزاري',
+
+    // Filters & Search
+    'search_by_name' => 'البحث بالاسم',
+    'all_programs' => 'جميع البرامج',
+    'all_grades' => 'جميع الصفوف',
+    'all_status' => 'جميع الحالات',
+    'search' => 'بحث',
+
+    // Table Headers
+    'name' => 'الاسم',
+    'courses_count' => 'عدد الكورسات',
+    'order' => 'الترتيب',
+    'actions' => 'الإجراءات',
+    'sort' => 'الترتيب',
+
+    // Actions
+    'move_up' => 'نقل لأعلى',
+    'move_down' => 'نقل لأسفل',
+    'view' => 'عرض',
+    'edit' => 'تعديل',
+    'delete' => 'حذف',
+    'save' => 'حفظ',
+    'update' => 'تحديث',
+    'cancel' => 'إلغاء',
+    'back' => 'رجوع',
+    'back_to_list' => 'العودة للقائمة',
+
+    // Messages
+    'confirm_delete' => 'هل أنت متأكد من الحذف؟',
+    'something_went_wrong' => 'حدث خطأ ما',
+    'status_updated' => 'تم تحديث الحالة',
+    'order_updated' => 'تم تحديث الترتيب',
+    'yes' => 'نعم',
+    'no' => 'لا',
+
+    // Validation
+    'name_ar_already_exists' => 'الاسم بالعربية موجود مسبقاً',
+    'name_en_already_exists' => 'الاسم بالإنجليزية موجود مسبقاً',
+
+    // Show Page
+    'basic_information' => 'المعلومات الأساسية',
+    'category_relations' => 'علاقات الأقسام',
+    'timestamps' => 'التواريخ',
+    'created_at' => 'تاريخ الإنشاء',
+    'updated_at' => 'تاريخ التحديث',
+    'related_fields' => 'الشُعب المرتبطة',
+    'related_courses' => 'الكورسات المرتبطة',
+    'course_name' => 'اسم الكورس',
+    'teacher' => 'المدرس',
+    'price' => 'السعر',
+    'students_count' => 'عدد الطلاب',
+    'currency' => 'دينار',
+    'no_courses_for_this_subject' => 'لا توجد كورسات لهذه المادة',
 
 ];
