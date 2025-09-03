@@ -29,4 +29,14 @@ class Post extends Model
     {
         return $this->hasMany(Comment::class)->where('is_approved', true)->where('is_active', true);
     }
+
+      public function likes()
+    {
+        return $this->hasMany(PostLike::class);
+    }
+
+    public function isLikedBy($userId)
+    {
+        return $this->likes()->where('user_id', $userId)->exists();
+    }
 }

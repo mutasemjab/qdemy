@@ -46,7 +46,6 @@ class HomeController extends Controller
                     'color',
                     'sort_order',
                     'type',
-                    'field_type'
                 ])
                 ->get()
                 ->map(function ($category) {
@@ -62,7 +61,6 @@ class HomeController extends Controller
                         'color' => $category->color,
                         'sort_order' => $category->sort_order,
                         'type' => $category->type,
-                        'field_type' => $category->field_type
                     ];
                 });
 
@@ -101,7 +99,7 @@ class HomeController extends Controller
             ];
 
             // Get latest courses with teacher and category info
-            $courses = Course::with(['teacher', 'category'])
+            $courses = Course::with(['teacher', 'subject'])
                 ->select([
                     'id',
                     'title_en',
@@ -111,7 +109,7 @@ class HomeController extends Controller
                     'selling_price',
                     'photo',
                     'teacher_id',
-                    'category_id',
+                    'subject_id',
                     'created_at'
                 ])
                 ->orderBy('created_at', 'desc')
@@ -133,13 +131,7 @@ class HomeController extends Controller
                             'name_of_lesson' => $course->teacher->name_of_lesson,
                             'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
                         ] : null,
-                        'category' => $course->category ? [
-                            'id' => $course->category->id,
-                            'name_ar' => $course->category->name_ar,
-                            'name_en' => $course->category->name_en,
-                            'color' => $course->category->color,
-                            'icon' => $course->category->icon
-                        ] : null
+                       
                     ];
                 });
 

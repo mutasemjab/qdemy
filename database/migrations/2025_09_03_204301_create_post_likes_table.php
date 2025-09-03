@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('posts', function (Blueprint $table) {
+        Schema::create('post_likes', function (Blueprint $table) {
             $table->id();
-            $table->text('content');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->boolean('is_approved')->default(false);
-            $table->boolean('is_active')->default(true);
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['user_id', 'post_id']); // Prevent duplicate likes
         });
+
     }
 
     /**
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('post_likes');
     }
 };

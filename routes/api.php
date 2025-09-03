@@ -41,13 +41,33 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 
     Route::prefix('courses')->group(function () {
+        // Get all courses with filters
         Route::get('/', [CourseController::class, 'index']);
+
+        // Get courses by subject
         Route::get('/subject/{subjectId}', [CourseController::class, 'coursesBySubject']);
-        Route::get('/international/{program?}', [CourseController::class, 'internationalProgramSubjects']);
-        Route::get('/universities', [CourseController::class, 'universitiesProgramSubjects']);
+
+        // Special programs
+        Route::get('/international-program/{program?}', [CourseController::class, 'internationalProgramCourses']);
+        Route::get('/universities-program', [CourseController::class, 'universitiesProgramCourses']);
     });
 
-    Route::get('/exams', [ExamController::class, 'getElectronicExams']);
+    Route::prefix('categories')->group(function () {
+        // Grade types
+        Route::get('/grades/elementary', [CategoryController::class, 'getElementaryGrades']);
+        Route::get('/grades/{gradeId}/semesters', [CategoryController::class, 'getGradeSemesters']);
+        Route::get('/grades/tawjihi', [CategoryController::class, 'getTawjihiGrades']);
+
+        // Tawjihi specific
+        Route::get('/tawjihi/final-grade-fields', [CategoryController::class, 'getTawjihiFinalGradeFields']);
+
+        // Special programs
+        Route::get('/international-program', [CategoryController::class, 'getInternationalProgram']);
+        Route::get('/universities-program', [CategoryController::class, 'getUniversitiesProgram']);
+    });
+
+
+    Route::get('/exams', [ExamController::class, 'index']);
 
     // Auth Route
     Route::group(['middleware' => ['auth:user-api']], function () {
@@ -58,7 +78,22 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);
         Route::delete('/delete-account', [AuthController::class, 'deleteAccount']);
 
+        // مجتمع كيودمي
+        Route::apiResource('posts', PostController::class);
+        // Comments for a post
+        Route::get('posts/{post}/comments', [CommentController::class, 'index']);
+        Route::post('posts/{post}/comments', [CommentController::class, 'store']);
+        // Comments CRUD
+        Route::delete('posts/comments/{id}', [CommentController::class, 'destroy']);
+
+        Route::post('posts/{post}/like', [LikeController::class, 'like']);
+        Route::delete('posts/{post}/unlike', [LikeController::class, 'unlike']);
+        Route::get('posts/{post}/likes', [LikeController::class, 'index']);
 
         Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
+
+        // bank questions
+        Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
+        Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
     });
 });
