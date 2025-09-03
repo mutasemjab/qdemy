@@ -15,11 +15,14 @@ class CategoryRepository
     }
 
     //  categories where type = major (main programms)
-    public function getMajors()
+    public function majors()
     {
         return $this->model->where('is_active', true)
-        ->where('type', 'major')
-        ->get();
+        ->where('type', 'major');
+    }
+    public function getMajors()
+    {
+        return $this->majors()->get();
     }
 
     //  categories where level = tawjihi_program_fields (الشعب الرئيسية  - حقول علمية وادبية)
@@ -218,4 +221,5 @@ class CategoryRepository
         }
         return $categories;
     }
+
 }

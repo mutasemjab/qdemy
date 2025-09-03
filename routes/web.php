@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
-use App\Http\Controllers\Web\CartController;
 use App\Http\Controllers\Web\ExamController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\PagesController;
@@ -16,7 +15,6 @@ use App\Http\Controllers\Web\ProductController;
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
 use App\Http\Controllers\Web\TeacherController;
-use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\ContactUsController;
 use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\VideoProgressController;
@@ -98,7 +96,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/courses-count', [EnrollmentController::class, 'getCoursesCount'])->name('courses.count');
         Route::post('/activate-card', [EnrollmentController::class, 'activateCard'])->name('activate.card');
         Route::post('/payment-with-card', [EnrollmentController::class, 'paymentWithCard'])->name('payment.card');
-        Route::post('/remove-course', [EnrollmentController::class, 'removeCourse'])->name('remove.course');
+        Route::post('/remove-course', [EnrollmentController::class, 'removeCourseFromCart'])->name('remove.course');
+        Route::post('/remove-package', [EnrollmentController::class, 'removeCartFromAnyPackage'])->name('remove.package');
         Route::post('/cart-package-get', [EnrollmentController::class, 'getPackageFromSession'])->name('cart.package.get');
         Route::get('/cart-package-update', [EnrollmentController::class, 'addPackageToSession'])->name('cart.package.update');
     });

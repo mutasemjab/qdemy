@@ -20,9 +20,18 @@ class EnrollmentController extends Controller
     // get courses from session and shoe it
     public function index()
     {
-        $user = auth_student();
+        $user            = auth_student();
+
+        // احضار كورسات الباكدجات من الكارت
+        $package_courses = collect();
+        $package  = CartRepository()->getPackageCart();
+
+        if($package && $package['courses']){
+           $package_courses = Course::whereIn('id',$package['courses'])->get();
+        }
+
         // الكورسات الموجودة في الـ Session
-        $courses = CartRepository()->cart_session;
+        $courses  = CartRepository()->getCourseCart();
 
         // تصفية الكورسات بحيث يظهر فقط غير المشترك فيها
         $coursesIds = array_filter($courses, function ($course) use ($user) {
@@ -31,7 +40,8 @@ class EnrollmentController extends Controller
                               ->exists();
         });
         $courses = Course::whereIn('id',$coursesIds)->get();
-        return view('web.checkout', compact('courses'));
+
+        return view('web.checkout', compact('courses','package','package_courses'));
     }
 
     // add course to session cart
@@ -261,7 +271,7 @@ class EnrollmentController extends Controller
     }
 
     // remove course from courses session
-    public function removeCourse(Request $request)
+    public function removeCourseFromCart(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'course_id'   => 'required|exists:courses,id'
@@ -275,6 +285,20 @@ class EnrollmentController extends Controller
         }
         $course = Course::findOrFail($request->course_id);
         return CartRepository()->removeItem($course->id);
+
+    }
+
+    // remove package from session && cart
+    public function removeCartFromAnyPackage(Request $request)
+    {
+        $user = auth_student();
+        if (!$user) {
+            return response()->json([
+                'success'   => true,
+                'message'   => 'login first',
+            ]);
+        }
+        return CartRepository()->removeAnyPackageFromCart();
 
     }
 

@@ -12,12 +12,91 @@ use App\Http\Controllers\Controller;
 
 class CourseController extends Controller
 {
-    public function index()
+
+    public function index(Request $request)
     {
-        $courses = Course::get();
-        $courses = Course::paginate(PGN);
-        return view('web.courses',[
+        // Get filter data
+        $programms = CategoryRepository()->getMajors();
+        $grades    = collect();
+        $subjects  = collect();
+
+        // Build main query
+        $query = Course::query();
+        // ->where('is_active', 1);
+
+        // Program filter
+        if ($request->filled('programm_id')) {
+            $selectedProgram = Category::find($request->programm_id);
+            if ($selectedProgram) {
+                // Check if program needs grades
+                if (in_array($selectedProgram->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
+                    // Load grades for this program
+                    if ($selectedProgram->ctg_key == 'elementary-grades-program') {
+                        // dd(CategoryRepository()->getElementryProgramGrades());
+                        $grades = CategoryRepository()->getElementryProgramGrades();
+                    } else {
+                        $grades = CategoryRepository()->getTawjihiProgrammGrades();
+                    }
+
+                    // Filter courses by program through subjects
+                    $query->whereHas('subject', function($q) use ($request) {
+                        $q->where('programm_id', $request->programm_id);
+                    });
+                } else {
+                    // Programs without grades
+                    $query->whereHas('subject', function($q) use ($request) {
+                        $q->where('programm_id', $request->programm_id);
+                    });
+
+                    // Load subjects for this program directly
+                    $subjects = Subject::where('programm_id', $request->programm_id)
+                        ->where('is_active', 1)
+                        ->get();
+                }
+            }
+        }
+
+        // Grade filter
+        if ($request->filled('grade_id')) {
+            $query->whereHas('subject', function($q) use ($request) {
+                $q->where('grade_id', $request->grade_id);
+            });
+
+            // Load subjects for selected grade
+            $subjects = Subject::where('grade_id', $request->grade_id)
+                ->where('is_active', 1)
+                ->get();
+        }
+
+        // Subject filter
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title_ar', 'like', "%{$searchTerm}%")
+                ->orWhere('title_en', 'like', "%{$searchTerm}%")
+                ->orWhere('description_ar', 'like', "%{$searchTerm}%")
+                ->orWhere('description_en', 'like', "%{$searchTerm}%")
+                ->orWhereHas('subject', function($sq) use ($searchTerm) {
+                    $sq->where('name_ar', 'like', "%{$searchTerm}%")
+                        ->orWhere('name_en', 'like', "%{$searchTerm}%");
+                })
+                ->orWhereHas('teacher', function($tq) use ($searchTerm) {
+                    $tq->where('name', 'like', "%{$searchTerm}%");
+                });
+            });
+        }
+        $courses = $query->latest()->paginate(PGN)->withQueryString();
+
+        return view('web.courses', [
             'courses' => $courses,
+            'programms' => $programms,
+            'grades' => $grades,
+            'subjects' => $subjects,
         ]);
     }
 

@@ -4,6 +4,8 @@ namespace  App\Http\Controllers\Web;
 
 use App\Models\Exam;
 use App\Models\Course;
+use App\Models\Subject;
+use App\Models\Category;
 use App\Models\Question;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
@@ -13,14 +15,15 @@ use App\Http\Controllers\Controller;
 
 class ExamController extends Controller
 {
-    public function e_exam(Request $request)
+
+        public function e_exam(Request $request)
     {
-        $programms                   = CategoryRepository()->getMajors();
-        $programmsGrades             = CategoryRepository()->getProgrammsGrades();
-        $gradesSemesters             = CategoryRepository()->getGradesSemesters();
-        $subjects                    = SubjectRepository()->getSubjectsForGrade();
-        // $query                       = Exam::Query()->where('is_active',1);
-        // $exams                       = $query->paginate(PGN);
+        // Get filter data
+        $programms = CategoryRepository()->getMajors();
+        $grades    = collect();
+        $subjects  = collect();
+
+        // Build main query
         $query = Exam::query()
             ->where('is_active', 1)
             ->where(function($q) {
@@ -34,18 +37,112 @@ class ExamController extends Controller
                     ->orWhere('end_date', '>=', $now);
                 });
             })
-            ->where('course_id',null);
+            ->where('course_id', null);
 
-        $exams = $query->paginate(PGN);
+        // Program filter
+        if ($request->filled('programm_id')) {
+            $selectedProgram = Category::find($request->programm_id);
 
-        return view('web.exam.e-exam',[
-            'exams'           => $exams,
-            'programms'       => $programms,
-            'subjects'        => $subjects,
-            'programmsGrades' => $programmsGrades,
-            'gradesSemesters' => $gradesSemesters,
+            if ($selectedProgram) {
+                // Check if program needs grades
+                if (in_array($selectedProgram->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
+                    // Load grades for this program
+                    if ($selectedProgram->ctg_key == 'elementary-grades-program') {
+                        $grades = CategoryRepository()->getElementryProgramGrades();
+                    } else {
+                        $grades = CategoryRepository()->getTawjihiProgrammGrades();
+                    }
+
+                    // Filter exams by program through subjects
+                    $query->whereHas('subject', function($q) use ($request) {
+                        $q->where('programm_id', $request->programm_id);
+                    });
+                } else {
+                    // Programs without grades - program_id acts as grade_id
+                    $query->whereHas('subject', function($q) use ($request) {
+                        $q->where('programm_id', $request->programm_id);
+                    });
+
+                    // Load subjects for this program directly
+                    $subjects = Subject::where('programm_id', $request->programm_id)
+                        ->where('is_active', 1)
+                        ->get();
+                }
+            }
+        }
+
+        // Grade filter
+        if ($request->filled('grade_id')) {
+            $query->whereHas('subject', function($q) use ($request) {
+                $q->where('grade_id', $request->grade_id);
+            });
+
+            // Load subjects for selected grade
+            $subjects = Subject::where('grade_id', $request->grade_id)
+                ->where('is_active', 1)
+                ->get();
+        }
+
+        // Subject filter
+        if ($request->filled('subject_id')) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        // Search filter
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title_ar', 'like', "%{$searchTerm}%")
+                ->orWhere('title_en', 'like', "%{$searchTerm}%")
+                  ->orWhere('description_ar', 'like', "%{$searchTerm}%")
+                  ->orWhere('description_en', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('subject', function($sq) use ($searchTerm) {
+                      $sq->where('name_ar', 'like', "%{$searchTerm}%")
+                         ->orWhere('name_en', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $exams = $query->paginate(PGN)->withQueryString();
+
+        return view('web.exam.e-exam', [
+            'exams' => $exams,
+            'programms' => $programms,
+            'grades' => $grades,
+            'subjects' => $subjects,
         ]);
     }
+
+    // public function e_exam(Request $request)
+    // {
+    //     $programms                   = CategoryRepository()->getMajors();
+    //     $programmsGrades             = CategoryRepository()->getProgrammsGrades();
+    //     $subjects                    = SubjectRepository()->getSubjectsForGrade();
+    //     // $query                       = Exam::Query()->where('is_active',1);
+    //     // $exams                       = $query->paginate(PGN);
+    //     $query = Exam::query()
+    //         ->where('is_active', 1)
+    //         ->where(function($q) {
+    //             $now = now();
+    //             $q->where(function($q) use ($now) {
+    //                 $q->whereNull('start_date')
+    //                 ->orWhere('start_date', '<=', $now);
+    //             })
+    //             ->where(function($q) use ($now) {
+    //                 $q->whereNull('end_date')
+    //                 ->orWhere('end_date', '>=', $now);
+    //             });
+    //         })
+    //         ->where('course_id',null);
+
+    //     $exams = $query->paginate(PGN);
+
+    //     return view('web.exam.e-exam',[
+    //         'exams'           => $exams,
+    //         'programms'       => $programms,
+    //         'subjects'        => $subjects,
+    //     ]);
+    // }
 
     public function exam(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {

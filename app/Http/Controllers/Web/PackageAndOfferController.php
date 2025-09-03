@@ -23,7 +23,7 @@ class PackageAndOfferController extends Controller
 
         // get all sub childs for passed category
         $programmParentCtgs = null;
-        if($programm) $programmParentCtgs = CategoryRepository()->getAllSubChilds($programm?->id)->pluck('id')->toArray();
+        if($programm) $programmParentCtgs = CategoryRepository()->getAllSubChilds($programm?->id,true)->pluck('id')->toArray();
 
         // dd($programm,$programmParentCtgs);
 
@@ -131,15 +131,6 @@ class PackageAndOfferController extends Controller
                     'message' => "يجب اختيار {$package->how_much_course_can_select} كورسات بالضبط"
                 ], 400);
             }
-
-            // Verify all courses belong to package categories
-            // $validCourses = CartRepository()->validateCoursesForPackage($courseIds, $packageId);
-            // if (!$validCourses) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'بعض الكورسات لا تنتمي لهذه الباقة'
-            //     ], 400);
-            // }
 
             $validOnePackgeOnlyOnCart = CartRepository()->validCartContent($packageId);
             if (!$validOnePackgeOnlyOnCart) {

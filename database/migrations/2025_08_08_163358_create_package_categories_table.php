@@ -20,7 +20,7 @@ return new class extends Migration
                 ->constrained('packages')
                 ->onDelete('cascade');
 
-            $table->foreignId('category_id')
+            $table->foreignId('category_id')->nullable()
                 ->constrained('categories')
                 ->onDelete('cascade');
 

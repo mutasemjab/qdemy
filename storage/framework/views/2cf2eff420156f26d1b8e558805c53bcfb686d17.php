@@ -1,75 +1,73 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', translate_lang('cart')); ?>
 
-@section('title', translate_lang('cart'))
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <section class="checkout-wrapper">
 
     <!-- Cart Section -->
     <div class="checkout-box">
-        <h2 class="checkout-heading">{{ translate_lang('cart') }}</h2>
+        <h2 class="checkout-heading"><?php echo e(translate_lang('cart')); ?></h2>
         <div class="checkout-row header">
-            <span class="checkout-col">{{ translate_lang('course') }}</span>
-            <span class="checkout-col">{{ translate_lang('price') }}</span>
+            <span class="checkout-col"><?php echo e(translate_lang('course')); ?></span>
+            <span class="checkout-col"><?php echo e(translate_lang('price')); ?></span>
         </div>
 
-        @php $total = 0; @endphp
-        @if($courses && $courses->count())
-        @foreach ($courses as $course)
-            <div class="checkout-row" id='cart_row_{{$course->id}}'>
+        <?php $total = 0; ?>
+        <?php if($courses && $courses->count()): ?>
+        <?php $__currentLoopData = $courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="checkout-row" id='cart_row_<?php echo e($course->id); ?>'>
                 <div class="checkout-course">
-                    <img data-src="{{ asset('assets_front/images/course-img2.png') }}" alt="{{ $course->title }}">
+                    <img data-src="<?php echo e(asset('assets_front/images/course-img2.png')); ?>" alt="<?php echo e($course->title); ?>">
                     <div class="checkout-course-info">
-                        <a class='text-decoration-none' href="{{route('course',['course'=>$course->id,'slug'=>$course->slug])}}"><h3>{{ $course->category?->localized_name }}</h3></a>
-                        <p>{{ $course->title }}</p>
+                        <a class='text-decoration-none' href="<?php echo e(route('course',['course'=>$course->id,'slug'=>$course->slug])); ?>"><h3><?php echo e($course->category?->localized_name); ?></h3></a>
+                        <p><?php echo e($course->title); ?></p>
                     </div>
                 </div>
-                <span class="checkout-price" data-course-price='{{ $course->selling_price }}'>{{ $course->selling_price }} {{ CURRENCY }}</span>
-                <button class="delete-course" data-course-id="{{ $course->id }}">{{ translate_lang('delete') }}</button>
+                <span class="checkout-price" data-course-price='<?php echo e($course->selling_price); ?>'><?php echo e($course->selling_price); ?> <?php echo e(CURRENCY); ?></span>
+                <button class="delete-course" data-course-id="<?php echo e($course->id); ?>"><?php echo e(translate_lang('delete')); ?></button>
             </div>
-            @php $total += $course->selling_price; @endphp
-        @endforeach
-        @endif
+            <?php $total += $course->selling_price; ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php endif; ?>
 
-        @if($package && $package_courses)
-        @foreach ($package_courses as $package_course)
-            <div class="checkout-row" id='package_row_{{$package_course->id}}'>
+        <?php if($package && $package_courses): ?>
+        <?php $__currentLoopData = $package_courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $package_course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="checkout-row" id='package_row_<?php echo e($package_course->id); ?>'>
                 <div class="checkout-course">
-                    <img data-src="{{ asset('assets_front/images/course-img2.png') }}" alt="{{ $package_course->title }}">
+                    <img data-src="<?php echo e(asset('assets_front/images/course-img2.png')); ?>" alt="<?php echo e($package_course->title); ?>">
                     <div class="checkout-course-info">
-                        <a class='text-decoration-none' href="{{route('course',['course'=>$package_course->id,'slug'=>$package_course->slug])}}"><h3>{{ $package_course->category?->localized_name }}</h3></a>
-                        <p>{{ $package['package_name'] }}</p>
+                        <a class='text-decoration-none' href="<?php echo e(route('course',['course'=>$package_course->id,'slug'=>$package_course->slug])); ?>"><h3><?php echo e($package_course->category?->localized_name); ?></h3></a>
+                        <p><?php echo e($package['package_name']); ?></p>
                     </div>
                 </div>
             </div>
-            @endforeach
-            <span   class="package-checkout-price"  data-package-price="{{ $package['package_price'] }}">{{ $package['package_price'] }} {{ CURRENCY }}</span>
-            <button class="delete-package" data-package-id="{{ $package['package_id'] }}">{{ translate_lang('delete') }}</button>
-        @endif
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            <span   class="package-checkout-price"  data-package-price="<?php echo e($package['package_price']); ?>"><?php echo e($package['package_price']); ?> <?php echo e(CURRENCY); ?></span>
+            <button class="delete-package" data-package-id="<?php echo e($package['package_id']); ?>"><?php echo e(translate_lang('delete')); ?></button>
+        <?php endif; ?>
 
     </div>
 
-    @if($courses && $courses->count())
+    <?php if($courses && $courses->count()): ?>
     <!-- Total Section -->
     <div class="checkout-total-box">
-        <h2 class="checkout-heading">{{ translate_lang('final_cost') }}</h2>
+        <h2 class="checkout-heading"><?php echo e(translate_lang('final_cost')); ?></h2>
         <div class="total-line">
-            <span>{{ translate_lang('sub_total') }}</span>
-            <span id='courses_sub_total'>{{ $total }} {{ CURRENCY }}</span>
+            <span><?php echo e(translate_lang('sub_total')); ?></span>
+            <span id='courses_sub_total'><?php echo e($total); ?> <?php echo e(CURRENCY); ?></span>
         </div>
         <div class="total-line">
-            <span>{{ translate_lang('total') }}</span>
-            <span id='courses_total'>{{ $total }} {{ CURRENCY }}</span>
+            <span><?php echo e(translate_lang('total')); ?></span>
+            <span id='courses_total'><?php echo e($total); ?> <?php echo e(CURRENCY); ?></span>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="checkout-total-box">
         <div class="lesson-card-activation">
-            <h3>{{ translate_lang('card_qdemy') }}</h3>
-            <p>{{ translate_lang('enter_card_qdemy') }}</p>
-            <input class="lesson-card-activation input" type="text" placeholder="{{ translate_lang('enter_card_here') }}">
-            <button class="lesson-card-activation button">{{ translate_lang('activate_card') }}</button>
+            <h3><?php echo e(translate_lang('card_qdemy')); ?></h3>
+            <p><?php echo e(translate_lang('enter_card_qdemy')); ?></p>
+            <input class="lesson-card-activation input" type="text" placeholder="<?php echo e(translate_lang('enter_card_here')); ?>">
+            <button class="lesson-card-activation button"><?php echo e(translate_lang('activate_card')); ?></button>
         </div>
     </div>
 
@@ -109,22 +107,22 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ translate_lang('تم تفعيل البطاقة بنجاح وإضافتك للكورسات!') }}</h3>
+            <h3><?php echo e(translate_lang('تم تفعيل البطاقة بنجاح وإضافتك للكورسات!')); ?></h3>
         </div>
     </div>
     <div id="delete-course-modal" class="messages modal">
         <div class="modal-content">
             <span class="delete-course-modal-close">&times;</span>
             <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ translate_lang('تم حذف الكورس من عربة التسوق!') }}</h3>
+            <h3><?php echo e(translate_lang('تم حذف الكورس من عربة التسوق!')); ?></h3>
         </div>
     </div>
 
 </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -151,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
         activateButton.disabled = true;
         activateButton.textContent = 'جارِ التفعيل...';
 
-        fetch('{{ route("payment.card") }}', {
+        fetch('<?php echo e(route("payment.card")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -195,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.disabled = true;
             this.textContent = 'جاري الحذف...';
 
-            fetch('{{ route("remove.package") }}', {
+            fetch('<?php echo e(route("remove.package")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -226,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 // إعادة تفعيل الزر فقط إذا لم يتم الحذف
                 this.disabled = false;
-                this.textContent = '{{ translate_lang('delete') }}';
+                this.textContent = '<?php echo e(translate_lang('delete')); ?>';
             });
         });
     });
@@ -242,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.disabled = true;
             this.textContent = 'جاري الحذف...';
 
-            fetch('{{ route("remove.course") }}', {
+            fetch('<?php echo e(route("remove.course")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -269,8 +267,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     checkoutPrices.forEach(button => {
                         totalPrice += parseInt(button.getAttribute('data-course-price'));
                     });
-                    document.getElementById('courses_sub_total').innerHTML = totalPrice + ' ' +  "{{CURRENCY}}";
-                    document.getElementById('courses_total').innerHTML = totalPrice + ' ' + "{{CURRENCY}}";
+                    document.getElementById('courses_sub_total').innerHTML = totalPrice + ' ' +  "<?php echo e(CURRENCY); ?>";
+                    document.getElementById('courses_total').innerHTML = totalPrice + ' ' + "<?php echo e(CURRENCY); ?>";
                 } else {
                     alert('خطأ: ' + (data.message || 'Unknown error'));
                 }
@@ -282,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .finally(() => {
                 // إعادة تفعيل الزر فقط إذا لم يتم الحذف
                 this.disabled = false;
-                this.textContent = '{{ translate_lang('delete') }}';
+                this.textContent = '<?php echo e(translate_lang('delete')); ?>';
             });
         });
     });
@@ -306,4 +304,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/web/checkout.blade.php ENDPATH**/ ?>

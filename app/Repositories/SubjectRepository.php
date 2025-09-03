@@ -12,7 +12,6 @@ class SubjectRepository
     }
 
 
-
     //  spiecial progarmms subjects start
 
     // query for all subjects under univertisy programm
@@ -55,9 +54,44 @@ class SubjectRepository
 
 
 
-    //  tawjihi subjects end
+    //  tawjihi subjects start
+
 
     // get all ministry subjects for first tawjihi grade
+    // if is active
+    // where belong to tawjihi first year grade ('ctg_key','first_year')
+    public function tawjihiFirstGradeSubjects()
+    {
+        return $this->model->where('is_active', true)
+        ->whereHas('grade',function ($q) {
+            $q->where('ctg_key','first_year');
+            $q->where('is_active', true);
+        });
+    }
+
+    public function getTawjihiFirstGradesMinistrySubjects()
+    {
+        return $this->tawjihiFirstGradeSubjects()
+        ->whereHas('category_subjects',function ($q) {
+            $q->where('is_ministry', true);
+            $q->where('pivot_level', 'grade');
+        })
+        ->get();
+    }
+
+    // get all school subjects for first tawjihi grade
+    // if is active
+    public function getTawjihiFirstGradesSchoolSubjects()
+    {
+        return $this->tawjihiFirstGradeSubjects()
+        ->whereHas('category_subjects',function ($q) {
+            $q->where('is_ministry', false);
+            $q->where('pivot_level', 'grade');
+        })
+        ->get();
+    }
+
+    // get all ministry subjects for final tawjihi grade
     // if is active
     // if has parent with ctg = ministry-subjects
     public function getTawjihiFinalGradesFieldMinistrySubjects($field)
@@ -76,7 +110,7 @@ class SubjectRepository
         ->get();
     }
 
-    // get all school subjects for first tawjihi grade
+    // get all school subjects for final tawjihi grade
     // if is active
     // if has parent with ctg = school-subjects
     public function getTawjihiFinalGradesFieldSchoolSubjects($field)
@@ -122,8 +156,7 @@ class SubjectRepository
         return collect();
     }
 
-    //  tawjihi subjects start
-
+    //  tawjihi subjects end
 
 
 
@@ -160,16 +193,16 @@ class SubjectRepository
     // query direct courses under subject
     // @param sujectId = Subject.id
     // return collection
-    public function directSubjectCourses($subjectId)
-    {
-        $courses = [];
-        $courses = Course::where('subject_id',$subjectId)->where('is_active', true)->get();
-        return $courses;
-    }
+    // public function directSubjectCourses($subjectId)
+    // {
+    //     $courses = [];
+    //     $courses = Course::where('subject_id',$subjectId)->where('is_active', true)->get();
+    //     return $courses;
+    // }
 
-    public function getDirectSubjectCourses($subjectId)
-    {
-        return $this->directSubjectCourses($subjectId);
-    }
+    // public function getDirectSubjectCourses($subjectId)
+    // {
+    //     return $this->directSubjectCourses($subjectId);
+    // }
 
 }

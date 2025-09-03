@@ -114,11 +114,19 @@ class CartRepository
     }
 
     /**
-     * الحصول على محتويات السلة
+     * الحصول على محتويات من الباكدجاتالسلة
      */
     public function getPackageCart()
     {
         return $this->package_cart_session;
+    }
+
+    /**
+     * الحصول على محتويا من الكورسات
+     */
+    public function getCourseCart()
+    {
+        return $this->cart_session;;
     }
 
     /**
@@ -167,19 +175,9 @@ class CartRepository
     /**
      * إزالة كورس من السلة
      */
-    public function removeCourseFromCart($courseId)
+    public function removeAnyPackageFromCart()
     {
-        $cart = $this->getPackageCart();
-
-        if (isset($cart['courses'])) {
-            $cart['courses'] = array_values(array_filter($cart['courses'], function($id) use ($courseId) {
-                return $id != $courseId;
-            }));
-
-            Session::put('package_cart', $cart);
-            Session::put('courses', $cart['courses']);
-        }
-
-        return $cart;
+        Session::forget('package_cart');
+        return;
     }
 }
