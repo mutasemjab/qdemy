@@ -20,7 +20,7 @@
             <div class="card-image">
                 <span class="rank">#{{ $loop->index + 1}}</span>
                 <img data-src="{{ $course->photo_url }}" alt="Course Image">
-                @if($course->category && $course->category?->parent_id)<span class="course-name">{{$course->category->localized_name}}</span>@endif
+                @if($course->subject?->porgramm)<span class="course-name">{{$course->subject->porgramm->localized_name}}</span>@endif
             </div>
             <div class="card-info">
                 <p class="course-date">{{ $course->created_at->locale(app()->getLocale())->translatedFormat('d F Y') }}</p>

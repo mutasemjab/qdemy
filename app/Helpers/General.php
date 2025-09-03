@@ -79,6 +79,13 @@ if (!function_exists('CourseRepository')) {
   }
 }
 
+if (!function_exists('SubjectRepository')) {
+  function SubjectRepository()
+  {
+    return new \App\Repositories\SubjectRepository;
+  }
+}
+
 if (!function_exists('CartRepository')) {
   function CartRepository()
   {

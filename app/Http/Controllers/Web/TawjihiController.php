@@ -11,22 +11,20 @@ class TawjihiController extends Controller
 {
     public function tawjihi_programm()
     {
-        $tawjihiFirstYear  = CategoryRepository()->getTawjihiFirstGrades();
+        $tawjihiFirstYear  = CategoryRepository()->getTawjihiFirstGrade();
         $tawjihiLastYear   = CategoryRepository()->getTawjihiLastGrades();
-        $tawjihiVocational = CategoryRepository()->getTawjihiVocationalSystemGrades();
 
         return view('web.tawjihi',[
             'tawjihiLastYear'   => $tawjihiLastYear,
             'tawjihiFirstYear'  => $tawjihiFirstYear,
-            'tawjihiVocational' => $tawjihiVocational,
         ]);
     }
 
     public function tawjihi_first_year()
     {
-        $tawjihiFirstYear  = CategoryRepository()->getTawjihiFirstGrades();
-        $ministrySubjects  = CategoryRepository()->getTawjihiFirstGradesMinistrySubjects();
-        $schoolSubjects    = CategoryRepository()->getTawjihiFirstGradesSchoolSubjects();
+        $tawjihiFirstYear  = CategoryRepository()->getTawjihiFirstGrade();
+        $ministrySubjects  = SubjectRepository()->getTawjihiFirstGradesMinistrySubjects();
+        $schoolSubjects    = SubjectRepository()->getTawjihiFirstGradesSchoolSubjects();
         return view('web.tawjihi-first-year',[
             'tawjihiFirstYear' => $tawjihiFirstYear,
             'ministrySubjects' => $ministrySubjects,
@@ -34,7 +32,7 @@ class TawjihiController extends Controller
         ]);
     }
 
-    public function tawjihi_grade_year_fields()
+    public function tawjihi_grade_last_year_fields()
     {
         $tawjihiLastYear       = CategoryRepository()->getTawjihiLastGrades();
         $tawjihiLastYearFields = CategoryRepository()->getDirectChilds($tawjihiLastYear);
@@ -44,11 +42,11 @@ class TawjihiController extends Controller
         ]);
     }
 
-    public function tawjihi_grade_year_field(Category $field)
+    public function tawjihi_last_year_field(Category $field)
     {
         $tawjihiLastYearFields = CategoryRepository()->getDirectChilds($field);
-        $ministrySubjects      = CategoryRepository()->getDirectChilds($field)->where('is_ministry',1);
-        $schoolSubjects        = CategoryRepository()->getDirectChilds($field)->where('is_ministry',0);
+        $ministrySubjects      = SubjectRepository()->getTawjihiFinalGradesFieldMinistrySubjects($field);
+        $schoolSubjects        = SubjectRepository()->getTawjihiFinalGradesFieldSchoolSubjects($field);
         return view('web.tawjihi-last-year-field',[
             'field'                 => $field,
             'ministrySubjects'      => $ministrySubjects,

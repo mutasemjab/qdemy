@@ -25,6 +25,9 @@ return new class extends Migration
             $table->integer('sort_order')->default(0);               // For ordering
             $table->boolean('is_active')->default(true);             // Active status
 
+            // $table->boolean('is_optional')->default(false);                    // if optional or non optional subject
+            // $table->boolean('is_ministry')->default(true);                     // if ministry or school subject
+
             $table->foreignId('field_type_id')->nullable()->comment('require if related to categories.ctg_key=final_year- scientific-fields || literary-fields');
             $table->foreign('field_type_id')->references('id')->on('categories')->onDelete('set null');
 

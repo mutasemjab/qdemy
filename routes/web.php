@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Web\TeacherController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
@@ -12,10 +11,11 @@ use App\Http\Controllers\Web\CourseController;
 use App\Http\Controllers\Web\LessonController;
 use App\Http\Controllers\Web\ContactController;
 use App\Http\Controllers\Web\PackageController;
-
 use App\Http\Controllers\Web\ProductController;
+
 use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
+use App\Http\Controllers\Web\TeacherController;
 use App\Http\Controllers\Web\CheckoutController;
 use App\Http\Controllers\Web\ContactUsController;
 use App\Http\Controllers\Web\EnrollmentController;
@@ -23,7 +23,9 @@ use App\Http\Controllers\Web\VideoProgressController;
 use App\Http\Controllers\Web\StudentAccountController;
 
 use App\Http\Controllers\Web\PackageAndOfferController;
+use App\Http\Controllers\Web\UniversityProgramController;
 use App\Http\Controllers\Web\ElementaryProgrammController;
+use App\Http\Controllers\Web\InternationalProgramController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /*
@@ -57,8 +59,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/courses', [CourseController::class, 'index'])->name('courses');
     Route::get('/course/{course}/{slug?}' , [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
-    Route::get('/universities-programm', [CourseController::class, 'universities_programm_courses'])->name('universities-programm');
-    Route::get('/international-programm/{programm?}/{slug?}',[CourseController::class, 'international_programm_courses'])->name('international-programms');
+    Route::get('/universities-programm/{programm?}/{slug?}', [UniversityProgramController::class, 'index'])->name('universities-programm');
+    Route::get('/international-programm/{programm?}/{slug?}',[InternationalProgramController::class, 'index'])->name('international-programms');
 
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
     Route::get('/teacher/{id}', [TeacherController::class, 'show'])->name('teacher');
@@ -76,9 +78,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::get('/tawjihi-programm',      [TawjihiController::class, 'tawjihi_programm'])->name('tawjihi-programm');
     Route::get('/tawjihi-first-year/{slug?}', [TawjihiController::class, 'tawjihi_first_year'])->name('tawjihi-first-year');
-    Route::get('/tawjihi-grade-year-fields/{slug?}', [TawjihiController::class, 'tawjihi_grade_year_fields'])->name('tawjihi-grade-year-fields');
-    Route::get('/tawjihi-grade-year-field/{field}/{slug?}', [TawjihiController::class, 'tawjihi_grade_year_field'])->name('tawjihi-grade-field');
-    Route::get('/tawjihi-grade-year/{slug?}', [TawjihiController::class, 'tawjihi_grade_year_fields'])->name('tawjihi-grade-year');
+    Route::get('/tawjihi-last-year-fields/{slug?}', [TawjihiController::class, 'tawjihi_grade_last_year_fields'])->name('tawjihi-grade-year-fields');
+    Route::get('/tawjihi-last-year-field/{field}/{slug?}', [TawjihiController::class, 'tawjihi_last_year_field'])->name('tawjihi-grade-field');
+    Route::get('/tawjihi-last-year/{slug?}', [TawjihiController::class, 'tawjihi_last_year_fields'])->name('tawjihi-grade-year');
 
 
     Route::post('/update-video-progress', [VideoProgressController::class, 'updateVideoProgress'])

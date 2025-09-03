@@ -34,7 +34,7 @@ class CourseController extends Controller
             $contents = $course->contents;
             $mainSections = $course->sections?->where('parent_id', null);
             $freeContents = $contents?->where('is_free', 1)->first();
-            
+
             // Check if user is enrolled
             $user_enrollment_courses = $this->courseRepository->getUserCoursesIds($user?->id);
             $is_enrolled = $user ? in_array($course->id, $user_enrollment_courses) : false;
@@ -120,7 +120,7 @@ class CourseController extends Controller
             // If user is enrolled, calculate progress
             if ($is_enrolled && $user) {
                 $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
-                
+
                 $courseData['user_progress'] = [
                     'course_progress' => $calculateCourseProgress['course_progress'],
                     'completed_videos' => $calculateCourseProgress['completed_videos'],
@@ -205,10 +205,10 @@ class CourseController extends Controller
     {
         try {
             $subject = Category::findOrFail($subjectId);
-            
+
             $perPage = $request->get('per_page', 10);
             $page = $request->get('page', 1);
-            
+
             $courses = Course::where('category_id', $subject->id)
                 ->with(['teacher', 'category'])
                 ->latest()
@@ -272,12 +272,12 @@ class CourseController extends Controller
     /**
      * Get international program courses
      */
-    public function internationalProgramCourses(Request $request, $program = null)
+    public function internationalProgramSubjects(Request $request, $program = null)
     {
         try {
             $perPage = $request->get('per_page', 10);
-            
-            $courses = $this->courseRepository->internationalProgramCourses($program)->paginate($perPage);
+
+            $courses = $this->courseRepository->internationalProgramSubjects($program)->paginate($perPage);
 
             $coursesData = $courses->getCollection()->map(function ($course) {
                 return [
@@ -330,12 +330,12 @@ class CourseController extends Controller
     /**
      * Get universities program courses
      */
-    public function universitiesProgramCourses(Request $request)
+    public function universitiesProgramSubjects(Request $request)
     {
         try {
             $perPage = $request->get('per_page', 10);
-            
-            $courses = $this->courseRepository->universitiesProgramCourses()->paginate($perPage);
+
+            $courses = $this->courseRepository->universitiesProgramSubjects()->paginate($perPage);
 
             $coursesData = $courses->getCollection()->map(function ($course) {
                 return [

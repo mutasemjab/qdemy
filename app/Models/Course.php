@@ -49,6 +49,11 @@ class Course extends Model
         return $this->hasMany(CourseSection::class);
     }
 
+    public function students()
+    {
+        return $this->belongsToMany(User::class, 'course_users');
+    }
+
     /**
      * Get the contents for the course.
      */

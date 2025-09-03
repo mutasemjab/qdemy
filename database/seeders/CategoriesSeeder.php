@@ -163,12 +163,14 @@ class CategoriesSeeder extends Seeder
                 'icon'        => $subject['icon'],
                 'color'       => $subject['color'],
                 'sort_order'  => $sortOrder,
+                // 'is_ministry' => $subject['is_ministry'] ?? true,
                 'grade_id'    => $parentId,
                 'programm_id' => $programm_id,
             ]);
             CategorySubject::create([
                 'is_ministry'  => $subject['is_ministry'] ?? true,
                 'category_id'  => $parentId,
+                'pivot_level'  => 'grade',
                 'subject_id'  => $createdSubject->id,
             ]);
             $sortOrder++;
@@ -311,17 +313,23 @@ class CategoriesSeeder extends Seeder
         $uniqueSubjects = [
             ['name_ar' => 'المهارات الرقمية','name_en' => 'Digital skills','icon' => 'fas fa-keyboard','color' => '#3498db','field_type' => 'general'],
             ['name_ar' => 'الرياضيات','name_en' => 'Mathematics','icon' => 'fas fa-subscript','color' => '#3498db','field_type' => 'scientific-fields'],
-            ['name_ar' => 'مبحث إختياري','name_en' => 'Optional field','icon' => 'fas fa-dna','color' => '#3498db','field_type' => 'general'],
             ['name_ar' => 'الكيمياء','name_en' => 'Chemistry','icon' => 'fas fa-flask','color' => '#e67e22','field_type' => 'scientific-fields'],
             ['name_ar' => 'العلوم الحياتية','name_en' => 'Biology','icon' => 'fas fa-dna','color' => '#27ae60','field_type' => 'scientific-fields'],
             ['name_ar' => 'اللغة الإنجليزية (متقدم)','name_en' => 'English Language (advanced)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'scientific-fields'],
             ['name_ar' => 'الفيزياء','name_en' => 'Physics','icon' => 'fas fa-atom','color' => '#3498db','field_type' => 'scientific-fields'],
-            ['name_ar' => 'مبحث علمي','name_en' => 'optional Scientific field','icon' => 'fas fa-dna','color' => '#3498db','field_type' => 'scientific-fields'],
             ['name_ar' => 'رياضيات الأعمال','name_en' => 'Business Mathematics','icon' => 'fas fa-subscript','color' => '#e67e22','field_type' => 'literary-fields'],
             ['name_ar' => 'الثقافة المالية','name_en' => 'Financial Literacy','icon' => 'fas fa-book','color' => '#27ae60','field_type' => 'literary-fields'],
             ['name_ar' => 'اللغة العربية (تخصص)','name_en' => 'Arabic Language (Specialization)','icon' => 'fas fa-feather-alt','color' => '#e74c3c','field_type' => 'literary-fields'],
             ['name_ar' => 'التربية الإسلامية (تخصص)','name_en' => 'Islamic Education (Specialization)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'literary-fields'],
-            ['name_ar' => 'مبحث إنساني','name_en' => 'Humanities','icon' => 'fas fa-language','color' => '#9b59b6','field_type' => 'literary-fields']
+            ['name_ar' => 'مبحث إختياري','name_en' => 'Optional field','icon' => 'fas fa-dna','color' => '#3498db',
+            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'general'
+            ],
+            ['name_ar' => 'مبحث علمي','name_en' => 'optional Scientific field','icon' => 'fas fa-dna','color' => '#3498db',
+            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'scientific-fields'
+            ],
+            ['name_ar' => 'مبحث إنساني','name_en' => 'Humanities','icon' => 'fas fa-language','color' => '#9b59b6',
+            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'literary-fields'
+            ]
         ];
 
         $sortOrder = 1;
@@ -424,6 +432,7 @@ class CategoriesSeeder extends Seeder
         foreach ($subjects as $key => $subject) {
             $subject['subject_id'] = Subject::where('name_en',$subject['name_en'])->first()?->id;
             unset($subject['name_en']);
+            $subject['pivot_level'] = 'field';
         }
         CategorySubject::create($subject);
     }
@@ -561,6 +570,7 @@ class CategoriesSeeder extends Seeder
             CategorySubject::create([
                 'subject_id' => $createdSubject->id,
                 'category_id' => $semesterId,
+                'pivot_level'  => 'semester',
             ]);
         }
 
@@ -596,6 +606,7 @@ class CategoriesSeeder extends Seeder
             CategorySubject::create([
                 'subject_id' => $createdSubject->id,
                 'category_id' => $programmId,
+                'pivot_level'  => 'programm',
             ]);
         }
     }
@@ -643,6 +654,7 @@ class CategoriesSeeder extends Seeder
             CategorySubject::create([
                 'subject_id' => $createdSubject->id,
                 'category_id' => $programmId,
+                'pivot_level'  => 'programm',
             ]);
         }
     }

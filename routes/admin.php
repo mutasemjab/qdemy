@@ -129,6 +129,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('subjects/getSemesters', [SubjectController::class, 'getSemesters'])->name('admin.subjects.getSemesters');
         Route::post('subjects/getFields', [SubjectController::class, 'getFields'])->name('admin.subjects.getFields');
 
+        Route::post('subjects/{subject}/toggle-status', [SubjectController::class, 'toggleStatus'])->name('subjects.toggleStatus');
+        Route::post('subjects/{subject}/move-up', [SubjectController::class, 'moveUp'])->name('subjects.moveUp');
+        Route::post('subjects/{subject}/move-down', [SubjectController::class, 'moveDown'])->name('subjects.moveDown');
         // end المواد والتقسيمات
 
 

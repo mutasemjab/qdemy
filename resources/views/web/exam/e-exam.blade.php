@@ -17,9 +17,12 @@
         <div class="examx-row">
 
             <div class="examx-dropdown">
-                <select class="examx-pill" name="subject" id="subject_id">
+                <select class="examx-pill" name="grade" id="programm_id">
                     <i class="fa-solid fa-caret-down"></i>
-                    <option>اختر المادة</option>
+                    <option>اختر البرنامج</option>
+                    @foreach($programms as $programm)
+                        <option id='programm_{{$programm->id}}' data-grade-id="programm{{$programm->id}}" value="{{$programm->id}}" @if(old("programm") == $programm->id) selected @endif >{{$programm->localized_name}}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -34,11 +37,15 @@
             </div>
 
             <div class="examx-dropdown">
-                <select class="examx-pill" name="semester" id="semester_id">
+                <select class="examx-pill" name="subject" id="subject_id">
                     <i class="fa-solid fa-caret-down"></i>
-                    <option>اختر الفصل</option>
-                    @foreach($gradesSemesters as $semester)
-                    <option id='semester_{{$semester->id}}' data-grade-id="semester_{{$semester->id}}" value="{{$semester->id}}" @if(old("semester") == $semester->id) selected @endif >{{$semester->localized_name}}</option>
+                    <option>اختر المادة</option>
+                    @foreach($subjects as $subject)
+                        <option id='subject_{{$subject->id}}' data-grade-id="subject{{$subject->id}}" value="{{$subject->id}}" @if(old("subject") == $subject->id) selected @endif >
+                            {{$subject->localized_name}}
+                            @if($subject->semester) > {{$subject->semester?->localized_name}} @endif
+                            @if($subject->grade) > {{$subject->grade?->localized_name}} @endif
+                        </option>
                     @endforeach
                 </select>
             </div>

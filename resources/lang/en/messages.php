@@ -1593,14 +1593,14 @@ return [
     'add_first_item' => 'Add First Item',
     'confirm_delete' => 'Are you sure you want to delete this item?',
     'no_image' => 'No Image',
-    
+
     // Onboarding specific
     'onboardings' => 'Onboardings',
     'onboarding' => 'Onboarding',
     'add_onboarding' => 'Add Onboarding',
     'edit_onboarding' => 'Edit Onboarding',
     'view_onboarding' => 'View Onboarding',
-    
+
     // Fields
     'title' => 'Title',
     'title_en' => 'Title (English)',
@@ -1611,7 +1611,7 @@ return [
     'photo' => 'Photo',
     'current_photo' => 'Current Photo',
     'photo_requirements' => 'Supported formats: JPEG, PNG, JPG, GIF. Max size: 2MB',
-    
+
     // Messages
     'created_successfully' => 'Item created successfully',
     'updated_successfully' => 'Item updated successfully',
@@ -1622,12 +1622,106 @@ return [
     'edit_special_qdemy' => 'Edit Special Qdemy',
     'view_special_qdemy' => 'View Special Qdemy',
     "contactUs" => "Contact Us",
-    "" => "",
-    "" => "",
-    "" => "",
-    "" => "",
-    "" => "",
-    "" => "",
-    "" => "",
-    "" => "",
+
+    // Subject CRUD
+    'subjects' => 'Subjects',
+    'subject' => 'Subject',
+    'add_subject' => 'Add Subject',
+    'edit_subject' => 'Edit Subject',
+    'subjects_list' => 'Subjects List',
+    'subject_details' => 'Subject Details',
+    'subject_created_successfully' => 'Subject created successfully',
+    'subject_updated_successfully' => 'Subject updated successfully',
+    'subject_deleted_successfully' => 'Subject deleted successfully',
+    'cannot_delete_subject' => 'Cannot delete subject',
+    'no_subjects_found' => 'No subjects found',
+
+    // Form Fields
+    'name_ar' => 'Arabic Name',
+    'name_en' => 'English Name',
+    'enter_name_ar' => 'Enter Arabic name',
+    'enter_name_en' => 'Enter English name',
+    'description_ar' => 'Arabic Description',
+    'description_en' => 'English Description',
+    'enter_description_ar' => 'Enter Arabic description',
+    'enter_description_en' => 'Enter English description',
+    'icon' => 'Icon',
+    'enter_icon_class' => 'Enter icon class',
+    'color' => 'Color',
+    'status' => 'Status',
+    'active' => 'Active',
+    'inactive' => 'Inactive',
+    'sort_order' => 'Sort Order',
+    'auto_generate' => 'Auto Generate',
+    'leave_empty_for_auto' => 'Leave empty for auto generation',
+
+    // Relations
+    'field_type' => 'Field Type',
+    'select_field_type' => 'Select Field Type',
+    'program' => 'Program',
+    'select_program' => 'Select Program',
+    'grade' => 'Grade',
+    'select_grade' => 'Select Grade',
+    'semester' => 'Semester',
+    'select_semester' => 'Select Semester',
+    'select_semesters' => 'Select Semesters',
+    'select_fields' => 'Select Fields',
+    'field' => 'Field',
+    'add_to_field' => 'Add to Field',
+    'is_optional' => 'Optional',
+    'is_ministry' => 'Ministry',
+
+    // Filters & Search
+    'search_by_name' => 'Search by name',
+    'all_programs' => 'All Programs',
+    'all_grades' => 'All Grades',
+    'all_status' => 'All Status',
+    'search' => 'Search',
+
+    // Table Headers
+    'name' => 'Name',
+    'courses_count' => 'Courses Count',
+    'order' => 'Order',
+    'actions' => 'Actions',
+    'sort' => 'Sort',
+
+    // Actions
+    'move_up' => 'Move Up',
+    'move_down' => 'Move Down',
+    'view' => 'View',
+    'edit' => 'Edit',
+    'delete' => 'Delete',
+    'save' => 'Save',
+    'update' => 'Update',
+    'cancel' => 'Cancel',
+    'back' => 'Back',
+    'back_to_list' => 'Back to List',
+
+    // Messages
+    'confirm_delete' => 'Are you sure you want to delete?',
+    'something_went_wrong' => 'Something went wrong',
+    'status_updated' => 'Status updated',
+    'order_updated' => 'Order updated',
+    'yes' => 'Yes',
+    'no' => 'No',
+
+    // Validation
+    'name_ar_already_exists' => 'Arabic name already exists',
+    'name_en_already_exists' => 'English name already exists',
+
+    // Show Page
+    'basic_information' => 'Basic Information',
+    'category_relations' => 'Category Relations',
+    'timestamps' => 'Timestamps',
+    'created_at' => 'Created At',
+    'updated_at' => 'Updated At',
+    'related_fields' => 'Related Fields',
+    'related_courses' => 'Related Courses',
+    'course_name' => 'Course Name',
+    'teacher' => 'Teacher',
+    'price' => 'Price',
+    'students_count' => 'Students Count',
+    'currency' => 'JD',
+    'no_courses_for_this_subject' => 'No courses for this subject',
+
 ];
