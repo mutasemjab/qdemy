@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\MinisterialYearsQuestion;
 use App\Models\Subject;
+use App\Traits\SubjectCategoryTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MinisterialYearsQuestionController extends Controller
 {
+    use SubjectCategoryTrait;
+    
     public function __construct()
     {
         $this->middleware('permission:ministerial-question-table', ['only' => ['index', 'show']]);
@@ -291,24 +294,19 @@ class MinisterialYearsQuestionController extends Controller
             return response()->json([]);
         }
 
-        // Get subjects that are related to this category through category_subjects pivot table
-        $subjects = Subject::whereHas('categories', function($query) use ($categoryId) {
-            $query->where('categories.id', $categoryId);
-        })
-        ->orWhere('grade_id', $categoryId)
-        ->orWhere('semester_id', $categoryId)
-        ->orWhere('programm_id', $categoryId)
-        ->active()
-        ->ordered()
-        ->get(['id', 'name_ar', 'name_en'])
-        ->map(function($subject) {
-            return [
-                'id' => $subject->id,
-                'name' => app()->getLocale() === 'ar' ? $subject->name_ar : ($subject->name_en ?? $subject->name_ar),
-            ];
-        });
-
-        return response()->json($subjects);
+        try {
+            // Call the trait method that returns formatted data for API
+            $subjects = $this->getSubjectsByCategoryForApi($categoryId);
+            
+            return response()->json($subjects->toArray());
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in getSubjectsByCategory controller: ' . $e->getMessage());
+            \Log::error('Category ID: ' . $categoryId);
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([]);
+        }
     }
 
     /**

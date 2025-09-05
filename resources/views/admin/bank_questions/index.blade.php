@@ -104,11 +104,7 @@
                                         
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <!-- View Button -->
-                                                <a href="{{ route('bank-questions.show', $bankQuestion) }}" 
-                                                   class="btn btn-info btn-sm" title="{{ __('messages.view') }}">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
+                                          
                                                 
                                                 <!-- Download Button -->
                                                 @if($bankQuestion->pdf && $bankQuestion->pdfExists())

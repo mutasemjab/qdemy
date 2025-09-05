@@ -237,4 +237,9 @@ class Category extends Model
         return $this->hasMany(BankQuestion::class);
     }
     
+    public function ministerialYearsQuestions()
+    {
+        return $this->hasMany(MinisterialYearsQuestion::class);
+    }
+    
 }

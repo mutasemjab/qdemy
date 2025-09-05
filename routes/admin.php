@@ -133,13 +133,12 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         Route::resource('blogs', BlogController::class);
-        Route::resource('bank-questions', BankQuestionController::class);
-        Route::get('bank-question/{bankQuestion}/download', [BankQuestionController::class, 'downloadPdf'])->name('bank-questions.download');
+        Route::get('bank-question/{bankQuestion}/download-pdf', [BankQuestionController::class, 'downloadPdf'])->name('bank-questions.download-pdf');
         Route::get('/bank-questions/{parentId}/children', [BankQuestionController::class, 'getChildCategories'])->name('bank-questions.get-children');
         Route::post('/{bankQuestion}/toggle-status', [BankQuestionController::class, 'toggleStatus'])->name('bank-questions.toggle-status');
         Route::get('bank-questions/subjects-by-category', [BankQuestionController::class, 'getSubjectsByCategory'])->name('bank-questions.subjects-by-category');
+        Route::resource('bank-questions', BankQuestionController::class);
 
-        Route::resource('ministerial-questions', MinisterialYearsQuestionController::class);
 
         // Additional  Routes for Ministerial Questions
         Route::prefix('ministerial-questions')->name('ministerial-questions.')->group(function () {
@@ -148,6 +147,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::get('/subjects-by-category', [MinisterialYearsQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
             Route::post('/{ministerialQuestion}/toggle-status', [MinisterialYearsQuestionController::class, 'toggleStatus'])->name('toggle-status');
         });
+        Route::resource('ministerial-questions', MinisterialYearsQuestionController::class);
+
 
 
 
