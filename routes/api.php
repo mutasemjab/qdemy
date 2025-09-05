@@ -31,6 +31,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1/user'], function () {
 
     //---------------- Auth --------------------//
+    Route::get('/classess', [AuthController::class, 'getClassess']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/banners', [BannerController::class, 'index']);

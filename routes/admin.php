@@ -77,14 +77,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         });
 
 
-        Route::prefix('pages')->group(function () {
-            Route::get('/', [PageController::class, 'index'])->name('pages.index');
-            Route::get('/create', [PageController::class, 'create'])->name('pages.create');
-            Route::post('/store', [PageController::class, 'store'])->name('pages.store');
-            Route::get('/edit/{id}', [PageController::class, 'edit'])->name('pages.edit');
-            Route::put('/update/{id}', [PageController::class, 'update'])->name('pages.update');
-            Route::delete('/delete/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
-        });
+  
 
 
 
@@ -97,6 +90,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         // Resource Route
+        Route::resource('pages', PageController::class);
         Route::resource('contactUs', ContactUsController::class);
         Route::resource('onboardings', OnBoardingController::class);
         Route::resource('special-qdemies', SpecialQdemyController::class);
@@ -142,8 +136,22 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('bank-questions', BankQuestionController::class);
         Route::get('bank-question/{bankQuestion}/download', [BankQuestionController::class, 'downloadPdf'])->name('bank-questions.download');
         Route::get('/bank-questions/{parentId}/children', [BankQuestionController::class, 'getChildCategories'])->name('bank-questions.get-children');
+        Route::post('/{bankQuestion}/toggle-status', [BankQuestionController::class, 'toggleStatus'])->name('bank-questions.toggle-status');
+        Route::get('bank-questions/subjects-by-category', [BankQuestionController::class, 'getSubjectsByCategory'])->name('bank-questions.subjects-by-category');
+
         Route::resource('ministerial-questions', MinisterialYearsQuestionController::class);
-        Route::get('/ministerial-categories/{parentId}/children', [MinisterialYearsQuestionController::class, 'getChildCategories'])->name('ministerial-questions.get-children');
+
+        // Additional  Routes for Ministerial Questions
+        Route::prefix('ministerial-questions')->name('ministerial-questions.')->group(function () {
+            Route::get('/{ministerialQuestion}/download-pdf', [MinisterialYearsQuestionController::class, 'downloadPdf'])->name('download-pdf');
+            Route::get('/get-children/{parentId}', [MinisterialYearsQuestionController::class, 'getChildCategories'])->name('get-children');
+            Route::get('/subjects-by-category', [MinisterialYearsQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
+            Route::post('/{ministerialQuestion}/toggle-status', [MinisterialYearsQuestionController::class, 'toggleStatus'])->name('toggle-status');
+        });
+
+
+
+
 
         Route::resource('pos', POSController::class);
         Route::resource('cards', CardController::class);

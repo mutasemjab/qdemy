@@ -61,6 +61,72 @@
                         </div>
 
                         <div class="row">
+                            <!-- Subject -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subject_id">{{ __('messages.subject') }} <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('subject_id') is-invalid @enderror" 
+                                            id="subject_id" name="subject_id" disabled>
+                                        <option value="">{{ __('messages.select_subject') }}</option>
+                                    </select>
+                                    @error('subject_id')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.select_category_first') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Display Name -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="display_name">{{ __('messages.display_name') }}</label>
+                                    <input type="text" class="form-control @error('display_name') is-invalid @enderror" 
+                                           id="display_name" name="display_name" value="{{ old('display_name') }}"
+                                           placeholder="{{ __('messages.enter_display_name') }}">
+                                    @error('display_name')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.leave_empty_to_use_filename') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Sort Order -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sort_order">{{ __('messages.sort_order') }}</label>
+                                    <input type="number" class="form-control @error('sort_order') is-invalid @enderror" 
+                                           id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
+                                    @error('sort_order')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.higher_number_appears_first') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Active Status -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="is_active">{{ __('messages.status') }}</label>
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" 
+                                               value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_active">
+                                            {{ __('messages.active') }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <!-- PDF File -->
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -112,10 +178,13 @@
         $('#parent_category').change(function() {
             var parentId = $(this).val();
             var childSelect = $('#category_id');
+            var subjectSelect = $('#subject_id');
             
-            // Reset child category
+            // Reset child category and subject
             childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+            subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
             childSelect.prop('disabled', true);
+            subjectSelect.prop('disabled', true);
             
             if (parentId) {
                 // Enable the parent category as selectable
@@ -133,6 +202,9 @@
                             });
                         }
                         childSelect.prop('disabled', false);
+                        
+                        // Load subjects for parent category
+                        loadSubjects(parentId);
                     },
                     error: function() {
                         alert('{{ __('messages.error_loading_categories') }}');
@@ -141,10 +213,51 @@
             }
         });
 
+        // Handle child category change
+        $('#category_id').change(function() {
+            var categoryId = $(this).val();
+            if (categoryId) {
+                loadSubjects(categoryId);
+            }
+        });
+
+        // Function to load subjects
+        function loadSubjects(categoryId) {
+            var subjectSelect = $('#subject_id');
+            
+            subjectSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
+            subjectSelect.prop('disabled', true);
+            
+            $.ajax({
+                url: '{{ route('ministerial-questions.subjects-by-category') }}',
+                type: 'GET',
+                data: { category_id: categoryId },
+                success: function(data) {
+                    subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+                    
+                    if (data.length > 0) {
+                        $.each(data, function(key, subject) {
+                            subjectSelect.append('<option value="' + subject.id + '">' + subject.name + '</option>');
+                        });
+                    } else {
+                        subjectSelect.append('<option value="" disabled>{{ __('messages.no_subjects_found') }}</option>');
+                    }
+                    
+                    subjectSelect.prop('disabled', false);
+                },
+                error: function() {
+                    alert('{{ __('messages.error_loading_subjects') }}');
+                    subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+                    subjectSelect.prop('disabled', false);
+                }
+            });
+        }
+
         // Handle file input change
         $('#pdf').change(function() {
             var file = this.files[0];
             var preview = $('#pdf-preview');
+            var displayNameInput = $('#display_name');
             
             if (file) {
                 if (file.type !== 'application/pdf') {
@@ -161,6 +274,11 @@
                 $('#pdf-name').text(fileName);
                 $('#pdf-size').text(fileSize);
                 preview.removeClass('d-none');
+                
+                // Auto-fill display name if empty
+                if (!displayNameInput.val()) {
+                    displayNameInput.val(fileName.replace(/\.[^/.]+$/, "")); // Remove extension
+                }
             } else {
                 $('.custom-file-label').text('{{ __('messages.choose_pdf_file') }}');
                 preview.addClass('d-none');
@@ -172,6 +290,10 @@
             $('#parent_category').trigger('change');
             setTimeout(function() {
                 $('#category_id').val('{{ old('category_id') }}');
+                $('#category_id').trigger('change');
+                setTimeout(function() {
+                    $('#subject_id').val('{{ old('subject_id') }}');
+                }, 500);
             }, 500);
         @endif
     });

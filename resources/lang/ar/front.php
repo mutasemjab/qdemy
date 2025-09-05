@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return array(
   'What Makes QDEMY Special' => 'ما يميز QDEMY',
   'QDEMY Services' => 'خدمات QDEMY',
   'QDEMY Community' => 'مجتمع QDEMY',
@@ -132,4 +132,99 @@ return array (
   'question' => 'question',
   'start_exam' => 'start_exam',
   'continue' => 'continue',
+  'title' => 'المجتمع',
+  'header' => 'مجتمع Qdemy',
+  'write_post' => 'ما الذي تفكر به؟',
+  'submit_post' => 'مشاركة المنشور',
+  'add_comment' => 'أضف تعليق',
+  'login_to_comment' => 'سجل دخولك للتعليق',
+  'like' => 'أعجبني',
+  'liked' => 'أعجبني',
+  'view_all_comments' => 'شاهد جميع التعليقات',
+  'hide_comments' => 'إخفاء التعليقات',
+  'no_posts' => 'لا توجد منشورات بعد',
+  'no_posts_description' => 'كن أول من يشارك شيئاً مع المجتمع!',
+  'post_submitted' => 'تم إرسال منشورك للموافقة عليه.',
+  'comment_submitted' => 'تم إرسال تعليقك للموافقة عليه.',
+  'Follow' => 'متابعة',
+  'Unfollow' => 'إلغاء المتابعة',
+  'Followers' => 'المتابعون',
+  'Loading' => 'جاري التحميل',
+  'Please login to follow teachers' => 'يرجى تسجيل الدخول لمتابعة المدرسين',
+  'Followed successfully' => 'تمت المتابعة بنجاح',
+  'Unfollowed successfully' => 'تم إلغاء المتابعة بنجاح',
+  'An error occurred' => 'حدث خطأ',
+  'page_title' => 'طلب البطاقات',
+  'order_card' => 'طلب بطاقة',
+  'choose_your_card' => 'اختر البطاقة الخاصة بك',
+  'elementary_grades' => 'الصفوف الأساسية',
+  'tawjihi' => 'التوجيهي',
+  'universities_colleges' => 'الجامعات والكليات',
+  'international_program' => 'البرنامج الدولي',
+  'contact_whatsapp' => 'تواصل معنا عبر الواتساب',
+  'contact' => 'تواصل',
+  'cash_payment' => 'الدفع كاش',
+  'submit' => 'إرسال',
+  'visa_payment' => 'الدفع من خلال الفيزا',
+  'pay' => 'ادفع',
+  'please_select_card' => 'يرجى اختيار نوع البطاقة أولاً',
+
+  // قوالب رسائل الواتساب
+  'whatsapp_contact_message' => 'مرحباً! أود الاستفسار عن بطاقة :card_type. هل يمكنكم تزويدي بمزيد من المعلومات؟',
+  'whatsapp_cash_message' => 'مرحباً! أود طلب بطاقة :card_type والدفع كاش. يرجى إعلامي بالخطوات التالية.',
+  'whatsapp_visa_message' => 'مرحباً! أود طلب بطاقة :card_type والدفع بالفيزا/البطاقة. يرجى تزويدي بتفاصيل الدفع.',
+   'ministerial_years_questions' => 'أسئلة سنوات وزارية',
+    'ministerial_questions' => 'أسئلة وزارية',
+    
+    // Form labels - same as bank questions
+    'choose_program' => 'اختر البرنامج',
+    'choose_subject' => 'اختر المادة',
+    'search' => 'البحث',
+    'search_placeholder' => 'البحث...',
+    
+    // Actions
+    'share' => 'المشاركة',
+    'download_file' => 'تحميل الملف',
+    'downloads_count' => 'عدد مرات التحميل (:count)',
+    
+    // Messages
+    'no_ministerial_questions_found' => 'لم يتم العثور على أسئلة وزارية',
+    'loading' => 'جاري التحميل...',
+    'file_not_available' => 'الملف غير متاح',
+    
+    // Categories and Subjects
+    'all_programs' => 'جميع البرامج',
+    'all_subjects' => 'جميع المواد',
+    'select_program_first' => 'اختر البرنامج أولاً',
+     'technical_support' => 'الدعم الفني',
+    'quick_links' => 'روابط سريعة',
+    'contact_us' => 'تواصل معنا',
+    'follow_us_social_media' => 'تابعنا على وسائل التواصل الاجتماعي',
+    
+    // Links
+    'privacy_policy' => 'سياسة الخصوصية',
+    'terms_conditions' => 'الشروط والأحكام',
+    'international_program' => 'البرنامج الدولي',
+    'basic_grades_program' => 'برنامج الصفوف الأساسية',
+    'universities_program' => 'برنامج الجامعات والكليات',
+    'tawjihi_program' => 'برنامج التوجيهي والثانوي',
+    'packages_offers' => 'الباقات والعروض',
+    
+    // Contact information
+    'technical_support_email' => 'الدعم الفني',
+    'careers_email' => 'الوظائف',
+    
+    // Social media
+    'facebook' => 'فيسبوك',
+    'instagram' => 'إنستغرام',
+    'twitter' => 'تويتر',
+    'youtube' => 'يوتيوب',
+    'linkedin' => 'لينكد إن',
+    
+    // Statistics
+    'statistics' => 'إحصائيات',
+    'courses' => 'دورة',
+    'teachers' => 'معلم',
+    'viewing_hours' => 'ساعة مشاهدة',
+    'students' => 'طالب',
 );

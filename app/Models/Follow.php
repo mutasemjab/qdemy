@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class Follow extends Model
 {
     use HasFactory;
-    protected $guarded = [];
-    protected $casts = [
-        'is_approved' => 'boolean',
-        'is_active' => 'boolean',
+
+     protected $fillable = [
+        'user_id',
+        'teacher_id',
     ];
 
     public function user()
@@ -19,8 +19,8 @@ class Comment extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function post()
+    public function teacher()
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Teacher::class);
     }
 }

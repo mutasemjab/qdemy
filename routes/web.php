@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Web\BankQuestionController;
+use App\Http\Controllers\Web\CommunityController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
@@ -26,6 +28,7 @@ use App\Http\Controllers\Web\PackageAndOfferController;
 use App\Http\Controllers\Web\UniversityProgramController;
 use App\Http\Controllers\Web\ElementaryProgrammController;
 use App\Http\Controllers\Web\InternationalProgramController;
+use App\Http\Controllers\Web\MinisterialYearsQuestionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /*
@@ -57,21 +60,30 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::post('/contacts/store', [ContactUsController::class, 'store'])->name('contacts.store');
 
     Route::get('/courses', [CourseController::class, 'index'])->name('courses');
-    Route::get('/course/{course}/{slug?}' , [CourseController::class, 'course'])->name('course');
+    Route::get('/course/{course}/{slug?}', [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
     Route::get('/universities-programm/{programm?}/{slug?}', [UniversityProgramController::class, 'index'])->name('universities-programm');
-    Route::get('/international-programm/{programm?}/{slug?}',[InternationalProgramController::class, 'index'])->name('international-programms');
+    Route::get('/international-programm/{programm?}/{slug?}', [InternationalProgramController::class, 'index'])->name('international-programms');
 
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
     Route::get('/teacher/{id}', [TeacherController::class, 'show'])->name('teacher');
 
 
     Route::get('/download', [PagesController::class, 'download'])->name('download');
-    Route::get('/community', [PagesController::class, 'community'])->name('community');
     Route::get('/sale-point', [PagesController::class, 'sale_point'])->name('sale-point');
     Route::get('/cards-order', [PagesController::class, 'cards_order'])->name('card-order');
-    Route::get('/bank-questions', [PagesController::class, 'bank_questions'])->name('bank-questions');
-    Route::get('/ex-questions', [PagesController::class, 'ex_questions'])->name('ex-questions');
+    
+    Route::prefix('bankQuestions')->name('bankQuestions.')->group(function () {
+        Route::get('/', [BankQuestionController::class, 'index'])->name('index');
+        Route::get('/download/{bankQuestion}', [BankQuestionController::class, 'download'])->name('download');
+        Route::get('/subjects-by-category', [BankQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
+    });
+
+    Route::prefix('ministerialQuestions')->name('ministerialQuestions.')->group(function () {
+        Route::get('/', [MinisterialYearsQuestionController::class, 'index'])->name('index');
+        Route::get('/download/{ministerialQuestion}', [MinisterialYearsQuestionController::class, 'download'])->name('download');
+        Route::get('/subjects-by-category', [MinisterialYearsQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
+    });
 
     Route::get('/grades-basic-programm', [ElementaryProgrammController::class, 'grades_basic_programm'])->name('grades_basic-programm');
     Route::get('/grade/{grade}/{slug?}', [ElementaryProgrammController::class, 'grade_programm'])->name('grade');
@@ -84,14 +96,14 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
     Route::post('/update-video-progress', [VideoProgressController::class, 'updateVideoProgress'])
-    ->name('video.progress.update');
+        ->name('video.progress.update');
 
     Route::post('/mark-video-complete', [VideoProgressController::class, 'markVideoComplete'])
-    ->name('video.progress.complete');
+        ->name('video.progress.complete');
 
     Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
 
-    Route::group(['prefix'=>'cart'], function () {
+    Route::group(['prefix' => 'cart'], function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('checkout');
         Route::post('/add-to-session', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/add-to-session/{courseId?}', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
@@ -104,7 +116,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     });
 
     // packages routes
-    Route::group(['prefix'=>'packages'], function () {
+    Route::group(['prefix' => 'packages'], function () {
         Route::get('/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
         Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'package'])->name('package');
         Route::post('/cart/package/update', [PackageAndOfferController::class, 'updatePackageCart'])->name('cart.package.update');
@@ -135,12 +147,27 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
+    Route::prefix('page')->name('page.')->group(function () {
+        Route::get('/privacy-policy', [PagesController::class, 'privacyPolicy'])->name('privacy-policy');
+        Route::get('/terms-conditions', [PagesController::class, 'termsConditions'])->name('terms-conditions');
+    });
+
     Route::group(['middleware' => 'auth:user'], function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
         Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
+        Route::post('/community/posts/{post}/comments', [CommunityController::class, 'storeComment'])->name('community.comments.store');
+        Route::post('/community/posts/{post}/toggle-like', [CommunityController::class, 'toggleLike'])->name('community.posts.toggle-like');
+        Route::post('/teacher/{teacher}/toggle-follow', [TeacherController::class, 'toggleFollow'])->name('teacher.toggle-follow');
+
     });
+
+    // Community routes
+    Route::get('/community', [CommunityController::class, 'index'])->name('community');
+    // Public routes
+    Route::get('/community/posts/{post}/comments', [CommunityController::class, 'loadMoreComments'])->name('community.posts.comments');
 
     Route::middleware('guest:user')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('user.login');
@@ -153,5 +180,4 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
         Route::get('login/google/callback', [AuthController::class, 'handleGoogleCallback']);
     });
-
 });

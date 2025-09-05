@@ -1,19 +1,19 @@
-{{-- resources/views/bankQuestions.blade.php --}}
+{{-- resources/views/ministerial-questions.blade.php --}}
 @extends('layouts.app')
 
-@section('title', __('front.bank_questions'))
+@section('title', __('front.ministerial_years_questions'))
 
 @section('content')
 <section class="bq-page">
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{ __('front.question_bank') }}</h2>
+            <h2>{{ __('front.ministerial_years_questions') }}</h2>
         </div>
     </div>
 
     <!-- Filters Section -->
     <div class="examx-filters">
-        <form method="GET" action="{{ route('bankQuestions.index') }}" id="filter-form">
+        <form method="GET" action="{{ route('ministerialQuestions.index') }}" id="filter-form">
             <div class="examx-row-2">
                 <!-- Category/Program Dropdown -->
                 <div class="examx-dropdown">
@@ -67,7 +67,7 @@
 
     <!-- Results Section -->
     <div class="bq-list">
-        @forelse($bankQuestions as $question)
+        @forelse($ministerialQuestions as $question)
             <div class="bq-item">
                 <div class="bq-thumb">
                     <img data-src="{{ asset('assets_front/images/pdf.png') }}" alt="PDF">
@@ -89,7 +89,7 @@
                         <span>{{ __('front.downloads_count', ['count' => $question->download_count ?? 0]) }}</span>
                         @if($question->pdf_size)
                             <span class="bq-sep">|</span>
-                            <span>{{ $question->pdf_size }}</span>
+                            <span>{{ $question->formatted_file_size }}</span>
                         @endif
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                         <span>{{ __('front.share') }}</span>
                     </a>
                     @if($question->pdfExists())
-                        <a href="{{ route('bankQuestions.download', $question) }}" class="bq-btn bq-download">
+                        <a href="{{ route('ministerialQuestions.download', $question) }}" class="bq-btn bq-download">
                             <i class="fa-solid fa-download"></i>
                             <span>{{ __('front.download_file') }}</span>
                         </a>
@@ -114,15 +114,15 @@
             </div>
         @empty
             <div class="no-results">
-                <p>{{ __('front.no_questions_found') }}</p>
+                <p>{{ __('front.no_ministerial_questions_found') }}</p>
             </div>
         @endforelse
     </div>
 
     <!-- Pagination -->
-    @if($bankQuestions->hasPages())
+    @if($ministerialQuestions->hasPages())
         <div class="pagination-wrapper">
-            {{ $bankQuestions->links() }}
+            {{ $ministerialQuestions->links() }}
         </div>
     @endif
 </section>
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         subjectMenu.innerHTML = '<li class="disabled">{{ __("front.loading") }}</li>';
         
         // Fetch subjects via AJAX
-          fetch(`{{ route('bankQuestions.subjects-by-category') }}?category_id=${categoryId}`)
+        fetch(`{{ route('ministerialQuestions.subjects-by-category') }}?category_id=${categoryId}`)
             .then(response => response.json())
             .then(subjects => {
                 let html = '<li data-value="">{{ __("front.all_subjects") }}</li>';

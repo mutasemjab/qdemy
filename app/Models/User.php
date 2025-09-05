@@ -83,4 +83,19 @@ class User extends Authenticatable
             ->where('status', 'completed')
             ->count();
     }
+
+     public function getPhotoUrlAttribute()
+    {
+       return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/Profile-picture.png');
+    }
+
+    public function followedTeachers()
+   {
+      return $this->hasMany(Follow::class);
+   }
+
+   public function isFollowing($teacherId)
+   {
+      return $this->followedTeachers()->where('teacher_id', $teacherId)->exists();
+   }
 }

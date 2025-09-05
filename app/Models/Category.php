@@ -231,4 +231,10 @@ class Category extends Model
     {
         return Str::slug(app()->getLocale() === 'ar' ? $this->attributes['name_ar'] : $this->attributes['name_en']);
     }
+
+     public function bankQuestions()
+    {
+        return $this->hasMany(BankQuestion::class);
+    }
+    
 }

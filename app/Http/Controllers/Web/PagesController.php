@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Page;
 use App\Models\POS;
 
 class PagesController extends Controller
@@ -43,19 +44,30 @@ class PagesController extends Controller
         return view('web.cards-order');
     }
 
-    public function community()
+      public function privacyPolicy()
     {
-        return view('web.community');
+        $page = Page::getPrivacyPolicy();
+        
+        if (!$page) {
+            abort(404);
+        }
+
+        return view('pages.privacy-policy', compact('page'));
     }
 
-    public function bank_questions()
+    /**
+     * Display terms and conditions page
+     */
+    public function termsConditions()
     {
-        return view('web.bank-questions');
+        $page = Page::getTermsConditions();
+        
+        if (!$page) {
+            abort(404);
+        }
+
+        return view('pages.terms-conditions', compact('page'));
     }
 
-    public function ex_questions()
-    {
-        return view('web.ex');
-    }
 
 }

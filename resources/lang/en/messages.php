@@ -1724,4 +1724,53 @@ return [
     'currency' => 'JD',
     'no_courses_for_this_subject' => 'No courses for this subject',
 
+    'pages_management' => 'Pages Management',
+    'add_new_page' => 'Add New Page',
+    'edit_page' => 'Edit Page',
+    'view_page' => 'View Page',
+    'create_page' => 'Create Page',
+    'update_page' => 'Update Page',
+    'delete_page' => 'Delete Page',
+    'back_to_list' => 'Back to List',
+    'no_pages_found' => 'No Pages Found',
+    'create_first_page' => 'Create your first page to get started',
+
+    // Page Fields
+    'page_type' => 'Page Type',
+    'select_page_type' => 'Select Page Type',
+    'title_en' => 'Title (English)',
+    'title_ar' => 'Title (Arabic)',
+    'description_en' => 'Description (English)',
+    'description_ar' => 'Description (Arabic)',
+    'english_version' => 'English Version',
+    'arabic_version' => 'Arabic Version',
+
+    // Page Types
+    'terms_and_conditions' => 'Terms and Conditions',
+    'privacy_policy' => 'Privacy Policy',
+    'unknown_type' => 'Unknown Type',
+
+    // Messages
+    'page_created_successfully' => 'Page created successfully!',
+    'page_updated_successfully' => 'Page updated successfully!',
+    'page_deleted_successfully' => 'Page deleted successfully!',
+    'error_creating_page' => 'Error creating page. Please try again.',
+    'error_updating_page' => 'Error updating page. Please try again.',
+    'error_deleting_page' => 'Error deleting page. Please try again.',
+    'page_type_already_exists' => 'A page with this type already exists.',
+
+    // Form Instructions
+    'form_instructions' => 'Instructions',
+    'page_instruction_1' => 'Select the appropriate page type (Terms and Conditions or Privacy Policy)',
+    'page_instruction_2' => 'Fill in both English and Arabic titles for the page',
+    'page_instruction_3' => 'Write comprehensive content in both languages',
+    'page_instruction_4' => 'Only one page per type is allowed in the system',
+
+    // Validation and Confirmations
+    'please_fill_all_required_fields' => 'Please fill in all required fields.',
+    'are_you_sure_update_page' => 'Are you sure you want to update this page?',
+    'are_you_sure_delete_page' => 'Are you sure you want to delete this page?',
+    'confirm_deletion' => 'Confirm Deletion',
+    'this_action_cannot_be_undone' => 'This action cannot be undone.',
+
 ];
