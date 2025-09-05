@@ -13,22 +13,12 @@ class QuestionFactory extends Factory
         $questionTypes = ['multiple_choice', 'true_false', 'essay'];
         $type = $this->faker->randomElement($questionTypes);
 
-        // Generate realistic questions based on type
-        if ($type === 'true_false') {
-            $questionEn = $this->faker->sentence() . " (True/False)";
-            $questionAr = $this->faker->sentence() . " (صحيح/خطأ)";
-        }elseif($type === 'multiple_choice') { // multiple_choice
-            $questionEn = $this->faker->paragraph() . " (choose the correct answers)";
-            $questionAr = $this->faker->paragraph() . " (إختر الإجابة الصحيحة)";
-        }else { // essay
-            $questionEn = "Discuss: " . $this->faker->paragraph();
-            $questionAr = "ناقش: " . $this->faker->paragraph();
-        }
+        // توليد سؤال عشوائي عام (سيتم تعديله في السيدر)
         return [
             'title_en' => $this->faker->sentence(3),
             'title_ar' => 'سؤال: ' . $this->faker->word(),
-            'question_en' => $questionEn,
-            'question_ar' => $questionAr,
+            'question_en' => $this->faker->sentence(),
+            'question_ar' => $this->faker->sentence(),
             'type' => $type,
             'grade' => $this->faker->randomFloat(2, 0.5, 5),
             'explanation_en' => $this->faker->optional(0.7)->paragraph(),

@@ -61,9 +61,34 @@
             @foreach($schoolSubjects as $index => $schoolSubject)
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
-                <a class="text-decoration-none" href="{{route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])}}">
-                    <span> {{$schoolSubject->localized_name}} </span>
-                </a>
+               @if($schoolSubject->has_optional_subject)
+                    <a class="text-decoration-none" href="javascript:void(0)">
+                        <span> {{$schoolSubject->localized_name}} </span>
+                    </a>
+                    @php $subjects = SubjectRepository()->getOptionalSubjectOptions($field,$schoolSubject); @endphp
+
+                    <div class="examx-dropdown subject-plus-dropdown-examx">
+                        <button class="examx-pill" type="button" tabindex="0">
+                            <span>+</span>
+                        </button>
+                        <ul class="examx-menu">
+                        @if($subjects && $subjects->count())
+                        @foreach($subjects as $optiona_subject)
+                            <li>
+                                <a class="text-decoration-none" href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
+                                    {{$optiona_subject->localized_name}}
+                                </a>
+                            </li>
+                        @endforeach
+                        @endif
+                        </ul>
+                    </div>
+
+                @else
+                    <a class="text-decoration-none" href="{{route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])}}">
+                        <span> {{$schoolSubject->localized_name}} </span>
+                    </a>
+                @endif
             </div>
             @endforeach
         </div>

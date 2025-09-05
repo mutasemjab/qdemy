@@ -13,6 +13,12 @@ define('OPTIONAL_FROM_FIELD_TYPE',[
 ]);
 
 // function to add new key langs to lang files
+if (!function_exists('getLocale')) {
+    function getLocale()
+    {
+        return app()->getLocale() ?? 'ar';
+    }
+}
 if (!function_exists('translate_lang')) {
     function translate_lang($key = null, $file = 'front')
     {

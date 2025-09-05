@@ -12,15 +12,75 @@
             <span class="grade-number">{{mb_substr( $title,0,1)}}</span>
         </div>
     </div>
-    @php $user_courses = session()->get('courses', []); @endphp
-    @php $user_enrollment_courses = CourseRepository()->getUserCoursesIds(auth_student()?->id); @endphp
+
+    <div class="examx-filters">
+        @include('web.alert-message')
+        <form action='{{ route("courses") }}' method='get' id="filterForm">
+            <div class="examx-row">
+
+                <div class="examx-dropdown">
+                    <select class="examx-pill" name="programm_id" id="programm_id">
+                        <option value="">{{ translate_lang('select_program') }}</option>
+                        @foreach($programms as $programm)
+                            <option value="{{ $programm->id }}"
+                                    data-ctg-key="{{ $programm->ctg_key }}"
+                                    {{ request('programm_id') == $programm->id ? 'selected' : '' }}>
+                                {{ $programm->localized_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="examx-dropdown" id="gradeSection" style="">
+                    <select class="examx-pill" name="grade_id" id="grade_id">
+                        <option value="">{{ translate_lang('select_grade') }}</option>
+                        @foreach($grades as $grade)
+                            <option value="{{ $grade->id }}"
+                                    {{ request('grade_id') == $grade->id ? 'selected' : '' }}>
+                                {{ $grade->localized_name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="examx-dropdown" id="subjectSection" style="">
+                    <select class="examx-pill" name="subject_id" id="subject_id">
+                        <option value="">{{ translate_lang('select_subject') }}</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject->id }}"
+                                    {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                {{ $subject->localized_name }}
+                                @if($subject->semester) - {{ $subject->semester->localized_name }} @endif
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="examx-search">
+                <input type="text" placeholder="{{ translate_lang('search') }}" name='search' value="{{ request('search') }}">
+                <button type="submit">{{__('messages.search')}}
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    @php
+        $user_courses = session()->get('courses', []);
+        $user_enrollment_courses = CourseRepository()->getUserCoursesIds(auth_student()?->id);
+    @endphp
+
     <div class="grades-grid">
-        @foreach ($courses as $course)
+        @forelse ($courses as $course)
         <div class="university-card">
             <div class="card-image">
                 <span class="rank">#{{ $loop->index + 1}}</span>
                 <img data-src="{{ $course->photo_url }}" alt="Course Image">
-                @if($course->subject?->porgramm)<span class="course-name">{{$course->subject->porgramm->localized_name}}</span>@endif
+                @if($course->subject?->program)
+                    <span class="course-name">{{$course->subject->program->localized_name}}</span>
+                @endif
             </div>
             <div class="card-info">
                 <p class="course-date">{{ $course->created_at->locale(app()->getLocale())->translatedFormat('d F Y') }}</p>
@@ -42,26 +102,35 @@
                     @else
                         <a href="javascript:void(0)" class="join-btn enroll-btn"
                           data-course-id="{{ $course->id }}">{{translate_lang('enroll')}}</a>
+
+                        <a href="{{ route('checkout') }}" id="go_to_checkout_{{$course->id}}" style='display:none;' class="join-btn">
+                             {{translate_lang('go_to_checkout')}}
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+
+                        <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                         <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                     @endif
                 </div>
             </div>
         </div>
-        @endforeach
+        @empty
+        <div class="col-12 text-center">
+            <p>{{ translate_lang('no_courses_found') }}</p>
+        </div>
+        @endforelse
     </div>
-   <!-- <div class="pagination-wrapper"> -->
-       {{ $courses?->links('pagination::custom-bootstrap-5') ?? '' }}
-   <!-- </div> -->
 
+    {{ $courses?->links('pagination::custom-bootstrap-5') ?? '' }}
 
-    <!-- نافذة منبثقة -->
+    <!-- Modal for messages -->
     <div id="enrollment-modal" class="messages modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h3> <i class="fa fa-check"></i> </h3>
-            <h3>{{ translate_lang('course_added') }}</h3>
-            <p>{{ translate_lang('course_added_successfully') }}</p>
-            <div class="modal-buttons">
+            <h3 id="modal-icon"> <i class="fa fa-check"></i> </h3>
+            <h3 id="modal-title">{{ translate_lang('course_added') }}</h3>
+            <p id="modal-message">{{ translate_lang('course_added_successfully') }}</p>
+            <div class="modal-buttons" id="modal-buttons">
                 <button id="continue-shopping">{{ translate_lang('continue_shopping') }}</button>
                 <button id="go-to-checkout">{{ translate_lang('go_to_checkout') }}</button>
             </div>
@@ -73,91 +142,173 @@
 
 @push('scripts')
 <script>
-    let user = "{{auth_student()?->id}}";
+// Course Enrollment Manager
+class EnrollmentManager {
+    constructor() {
+        this.user = "{{auth_student()?->id}}";
+        this.modal = document.getElementById('enrollment-modal');
+        this.csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        this.init();
+    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // الحصول على العناصر
-        const modal = document.getElementById('enrollment-modal');
-        const closeBtn = document.querySelector('.close');
-        const continueBtn = document.getElementById('continue-shopping');
-        const checkoutBtn = document.getElementById('go-to-checkout');
+    init() {
+        this.setupEnrollmentButtons();
+        this.setupModalButtons();
+        this.setupFilterForm();
+    }
+
+    // Show modal with custom content
+    showModal(title, message, showButtons = true, icon = 'fa-check') {
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalButtons = document.getElementById('modal-buttons');
+
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modalIcon.innerHTML = `<i class="fa ${icon}"></i>`;
+        modalButtons.style.display = showButtons ? 'flex' : 'none';
+
+        this.modal.style.display = 'flex';
+    }
+
+    hideModal() {
+        this.modal.style.display = 'none';
+    }
+
+    setupEnrollmentButtons() {
         const enrollButtons = document.querySelectorAll('.enroll-btn');
 
-        // الحصول على CSRF Token من meta tag
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-        // إضافة حدث النقر لأزرار التسجيل
         enrollButtons.forEach(button => {
-            button.addEventListener('click', function(e) {
+            button.addEventListener('click', async (e) => {
                 e.preventDefault();
 
-                if(!user){
-                    alert("{{translate_lang('please login first .')}}");
-                    return 0;
+                if (!this.user) {
+                    this.showModal(
+                        "{{ translate_lang('login_required') }}",
+                        "{{ translate_lang('please_login_first') }}",
+                        false,
+                        'fa-exclamation-circle'
+                    );
+                    setTimeout(() => this.hideModal(), 3000);
+                    return;
                 }
 
-                const courseId = this.getAttribute('data-course-id');
-                // إظهار مؤشر تحميل (اختياري)
-                this.innerHTML = '{{translate_lang("loading")}}...';
-                this.disabled = true;
+                const courseId = button.getAttribute('data-course-id');
+                const originalText = button.innerHTML;
 
-                // إرسال طلب Ajax
-                fetch('{{ route("add.to.session") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ course_id: courseId })
-                })
-                .then(response => {
-                    this.innerHTML = '{{translate_lang("enroll")}}';
-                    this.disabled = false;
-                    return response.json();
-                })
-                .then(data => {
+                // Show loading state
+                button.innerHTML = '{{ translate_lang("loading") }}...';
+                button.disabled = true;
+
+                try {
+                    const response = await fetch('{{ route("add.to.session") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': this.csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ course_id: courseId })
+                    });
+
+                    const data = await response.json();
+
                     if (data.success) {
-                        // عرض النافذة المنبثقة
-                        modal.style.display = 'flex';
-                        // تحويل زر التسجيل إلى لينك لصفحة الدفع
-                        this.innerHTML = "{{translate_lang('go_to_checkout')}} <i class='fas fa-shopping-cart'>";
-                        this.setAttribute('href',"{{route('checkout')}}");
-                        this.disabled = false;
-                        this.classList.remove('enroll-btn');
+                        // Show success modal
+                        this.showModal(
+                            "{{ translate_lang('course_added') }}",
+                            "{{ translate_lang('course_added_successfully') }}",
+                            true,
+                            'fa-check'
+                        );
+
+
+                        button.remove();
+                        document.getElementById('go_to_checkout_'+courseId).style.display = 'block';
                     } else {
-                        alert('حدث خطأ أثناء إضافة الكورس: ' + (data.message || 'Unknown error'));
+                        // Show error modal
+                        this.showModal(
+                            "{{ translate_lang('error') }}",
+                            data.message || "{{ translate_lang('something_went_wrong') }}",
+                            false,
+                            'fa-exclamation-triangle'
+                        );
+                        button.innerHTML = originalText;
+                        button.disabled = false;
                     }
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.log('Error:', error);
-                    alert('حدث خطأ في الاتصال بالخادم');
-                });
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showModal(
+                        "{{ translate_lang('error') }}",
+                        "{{ translate_lang('connection_error') }}",
+                        false,
+                        'fa-exclamation-triangle'
+                    );
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            });
+        });
+    }
+
+    setupModalButtons() {
+        // Close button
+        const closeBtn = document.querySelector('.close');
+        closeBtn?.addEventListener('click', () => this.hideModal());
+
+        // Continue shopping button
+        const continueBtn = document.getElementById('continue-shopping');
+        continueBtn?.addEventListener('click', () => this.hideModal());
+
+        // Go to checkout button
+        const checkoutBtn = document.getElementById('go-to-checkout');
+        checkoutBtn?.addEventListener('click', () => {
+            window.location.href = '{{ route("checkout") }}';
+        });
+
+        // Close on outside click
+        window.addEventListener('click', (event) => {
+            if (event.target === this.modal) {
+                this.hideModal();
+            }
+        });
+    }
+
+    setupFilterForm() {
+        const form = document.getElementById('filterForm');
+        const programmSelect = document.getElementById('programm_id');
+        const gradeSelect = document.getElementById('grade_id');
+        const subjectSelect = document.getElementById('subject_id');
+
+        // Auto submit on filter change
+        [programmSelect, gradeSelect, subjectSelect].forEach(element => {
+            element?.addEventListener('change', () => {
+                // Clear dependent filters
+                if (element === programmSelect) {
+                    gradeSelect.value = '';
+                    subjectSelect.value = '';
+                } else if (element === gradeSelect) {
+                    subjectSelect.value = '';
+                }
+                form.submit();
             });
         });
 
-        // إغلاق النافذة عند النقر على ×
-        closeBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
+        // Show/hide sections based on data
+        if (gradeSelect && document.querySelectorAll('#grade_id option').length > 1) {
+            document.getElementById('gradeSection').style.display = 'block';
+        }
 
-        // الاستمرار في التسوق
-        continueBtn.addEventListener('click', function() {
-            modal.style.display = 'none';
-        });
+        if (subjectSelect && document.querySelectorAll('#subject_id option').length > 1) {
+            document.getElementById('subjectSection').style.display = 'block';
+        }
+    }
+}
 
-        // الانتقال إلى صفحة الدفع
-        checkoutBtn.addEventListener('click', function() {
-            window.location.href = '{{ route("checkout") }}'; // تأكد من وجود هذا المسار
-        });
-
-        // إغلاق النافذة عند النقر خارجها
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    new EnrollmentManager();
+});
 </script>
 @endpush

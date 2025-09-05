@@ -51,20 +51,20 @@
         </div>
     </div>
 
-    @if($lessons && $lessons->count())
+    @if($subjects && $subjects->count())
     <div class="sp2-box">
-    @foreach ($lessons as $lesson)
+    @foreach ($subjects as $subject)
         <div class="sp2-group">
         <button class="sp2-group-head">
             <i class="fa-solid fa-plus"></i>
-            <span>{{ $lesson->localized_name }}</span>
+            <span>{{ $subject->localized_name }}</span>
         </button>
         <div class="sp2-panel">
             <div class="sp2-content">
-            <h4 class="sp2-title">{{ $lesson->localized_name }}</h4>
+            <h4 class="sp2-title">{{ $subject->localized_name }}</h4>
 
-            @if($lesson->is_optional == 0)
-                @php $courses = CourseRepository()->getDirectCategoryCourses($lesson->id); @endphp
+            @if($subject->is_optional == 0)
+                @php $courses = CourseRepository()->getDirectCategoryCourses($subject->id); @endphp
                 @if($courses && $courses->count())
                 <div class="courses-list">
                     @foreach ($courses as $not_optional_subject_course)
@@ -79,7 +79,7 @@
                 @endif
 
             @else
-                @php $optionals = SubjectRepository()->getOptionalSubjectOptions($lesson); @endphp
+                @php $optionals = SubjectRepository()->getOptionalSubjectOptions($subject); @endphp
                 <div class="optional-subjects">
                 @foreach ($optionals as $optional_lesson)
                     <div class="sp2-group sp2-nested">
@@ -139,349 +139,349 @@
 
 @push('styles')
 <style>
-/* قسم الدروس الرئيسي */
-.sp2-box {
-    margin: 20px 0;
-    padding: 0;
-}
-
-/* مجموعة الدرس */
-.sp2-group {
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    background: #fff;
-}
-
-/* رأس المجموعة - الزر */
-.sp2-group-head {
-    width: 100%;
-    padding: 12px 16px;
-    background: #f8f9fa;
-    border: none;
-    text-align: right;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.2s;
-}
-
-.sp2-group-head:hover {
-    background: #e9ecef;
-}
-
-.sp2-group-head i {
-    color: #6c757d;
-    font-size: 12px;
-    transition: transform 0.3s;
-}
-
-/* اللوحة المخفية */
-.sp2-panel {
-    display: none;
-    padding: 16px;
-    background: #fafafa;
-    border-top: 1px solid #e0e0e0;
-}
-
-/* عند فتح اللوحة */
-.sp2-group.open .sp2-panel {
-    display: block;
-}
-
-.sp2-group.open .sp2-group-head i {
-    transform: rotate(45deg);
-}
-
-/* المحتوى داخل اللوحة */
-.sp2-content {
-    padding: 8px 0;
-}
-
-.sp2-title {
-    color: #495057;
-    font-size: 14px;
-    margin-bottom: 12px;
-    font-weight: 500;
-}
-
-/* قائمة الكورسات */
-.courses-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.course-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    background: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 3px;
-    transition: all 0.3s;
-}
-
-.course-item.selected {
-    background: #e7f5ff;
-    border-color: #007bff;
-}
-
-.course-name {
-    color: #333;
-    font-size: 14px;
-}
-
-/* زر إضافة للسلة */
-.btn-add-cart, .btn-remove-cart {
-    padding: 6px 12px;
-    border: none;
-    border-radius: 3px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.btn-add-cart {
-    background: #007bff;
-    color: #fff;
-}
-
-.btn-add-cart:hover {
-    background: #0056b3;
-}
-
-.btn-remove-cart {
-    background: #dc3545;
-    color: #fff;
-}
-
-.btn-remove-cart:hover {
-    background: #c82333;
-}
-
-/* المواد الاختيارية المتداخلة */
-.sp2-nested {
-    margin: 10px 0;
-    border: 1px solid #dee2e6;
-}
-
-.sp2-sub-head {
-    background: #fff;
-    font-size: 14px;
-    padding: 10px 14px;
-}
-
-.sp2-nested .sp2-panel {
-    background: #fff;
-    padding: 12px;
-}
-
-/* Cart Status Section */
-.cart-status-section {
-    margin: 20px 0;
-    position: sticky;
-    top: 10px;
-    z-index: 100;
-}
-
-.cart-status-section .alert {
-    margin: 0;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-#selected-courses-list {
-    margin: 10px 0;
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-.selected-course-item {
-    padding: 5px 10px;
-    background: #f8f9fa;
-    margin: 5px 0;
-    border-radius: 4px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Fixed Cart Button */
-.fixed-cart-btn {
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    background: #007bff;
-    color: white;
-    border-radius: 50px;
-    padding: 15px 25px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-    cursor: pointer;
-    z-index: 1000;
-    transition: all 0.3s;
-    border: none;
-    font-size: 16px;
-}
-
-.fixed-cart-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
-}
-
-.fixed-cart-btn.disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.cart-count {
-    background: #dc3545;
-    color: white;
-    border-radius: 50%;
-    min-width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 0 6px;
-}
-
-/* Modal Styles */
-.messages.modal {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.messages.modal.show {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-    animation: slideDown 0.3s;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
-}
-
-.modal-content .close {
-    position: absolute;
-    top: 15px;
-    left: 20px;
-    font-size: 28px;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.modal-content .close:hover {
-    color: #000;
-}
-
-.modal-content h3 {
-    margin: 0 0 15px;
-    color: #333;
-    text-align: center;
-}
-
-.modal-content p {
-    margin: 15px 0;
-    color: #666;
-    text-align: center;
-    line-height: 1.6;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: center;
-}
-
-.modal-buttons button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
-    min-width: 120px;
-}
-
-#continue-shopping {
-    background-color: #6c757d;
-    color: white;
-}
-
-#continue-shopping:hover {
-    background-color: #5a6268;
-}
-
-#go-to-checkout {
-    background-color: #007bff;
-    color: white;
-}
-
-#go-to-checkout:hover {
-    background-color: #0056b3;
-}
-
-/* Loading state */
-.loading {
-    opacity: 0.6;
-    pointer-events: none;
-}
-
-/* Animations */
-@keyframes slideDown {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
+    /* قسم الدروس الرئيسي */
+    .sp2-box {
+        margin: 20px 0;
+        padding: 0;
     }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
 
-/* تحسينات للاستجابة */
-@media (max-width: 768px) {
-    .course-item {
+    /* مجموعة الدرس */
+    .sp2-group {
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        background: #fff;
+    }
+
+    /* رأس المجموعة - الزر */
+    .sp2-group-head {
+        width: 100%;
+        padding: 12px 16px;
+        background: #f8f9fa;
+        border: none;
+        text-align: right;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: background 0.2s;
+    }
+
+    .sp2-group-head:hover {
+        background: #e9ecef;
+    }
+
+    .sp2-group-head i {
+        color: #6c757d;
+        font-size: 12px;
+        transition: transform 0.3s;
+    }
+
+    /* اللوحة المخفية */
+    .sp2-panel {
+        display: none;
+        padding: 16px;
+        background: #fafafa;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    /* عند فتح اللوحة */
+    .sp2-group.open .sp2-panel {
+        display: block;
+    }
+
+    .sp2-group.open .sp2-group-head i {
+        transform: rotate(45deg);
+    }
+
+    /* المحتوى داخل اللوحة */
+    .sp2-content {
+        padding: 8px 0;
+    }
+
+    .sp2-title {
+        color: #495057;
+        font-size: 14px;
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+
+    /* قائمة الكورسات */
+    .courses-list {
+        display: flex;
         flex-direction: column;
         gap: 8px;
+    }
+
+    .course-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 3px;
+        transition: all 0.3s;
+    }
+
+    .course-item.selected {
+        background: #e7f5ff;
+        border-color: #007bff;
+    }
+
+    .course-name {
+        color: #333;
+        font-size: 14px;
+    }
+
+    /* زر إضافة للسلة */
+    .btn-add-cart, .btn-remove-cart {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 3px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-add-cart {
+        background: #007bff;
+        color: #fff;
+    }
+
+    .btn-add-cart:hover {
+        background: #0056b3;
+    }
+
+    .btn-remove-cart {
+        background: #dc3545;
+        color: #fff;
+    }
+
+    .btn-remove-cart:hover {
+        background: #c82333;
+    }
+
+    /* المواد الاختيارية المتداخلة */
+    .sp2-nested {
+        margin: 10px 0;
+        border: 1px solid #dee2e6;
+    }
+
+    .sp2-sub-head {
+        background: #fff;
+        font-size: 14px;
+        padding: 10px 14px;
+    }
+
+    .sp2-nested .sp2-panel {
+        background: #fff;
+        padding: 12px;
+    }
+
+    /* Cart Status Section */
+    .cart-status-section {
+        margin: 20px 0;
+        position: sticky;
+        top: 10px;
+        z-index: 100;
+    }
+
+    .cart-status-section .alert {
+        margin: 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    #selected-courses-list {
+        margin: 10px 0;
+        max-height: 150px;
+        overflow-y: auto;
+    }
+
+    .selected-course-item {
+        padding: 5px 10px;
+        background: #f8f9fa;
+        margin: 5px 0;
+        border-radius: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Fixed Cart Button */
+    .fixed-cart-btn {
+        position: fixed;
+        bottom: 30px;
+        left: 30px;
+        background: #007bff;
+        color: white;
+        border-radius: 50px;
+        padding: 15px 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        cursor: pointer;
+        z-index: 1000;
+        transition: all 0.3s;
+        border: none;
+        font-size: 16px;
+    }
+
+    .fixed-cart-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    }
+
+    .fixed-cart-btn.disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+    .cart-count {
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        min-width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 12px;
+        padding: 0 6px;
+    }
+
+    /* Modal Styles */
+    .messages.modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .messages.modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        animation: slideDown 0.3s;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content .close {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        color: #aaa;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .modal-content .close:hover {
+        color: #000;
+    }
+
+    .modal-content h3 {
+        margin: 0 0 15px;
+        color: #333;
         text-align: center;
     }
 
-    .btn-add-cart, .btn-remove-cart {
-        width: 100%;
+    .modal-content p {
+        margin: 15px 0;
+        color: #666;
+        text-align: center;
+        line-height: 1.6;
     }
 
-    .fixed-cart-btn {
-        bottom: 20px;
-        left: 20px;
-        padding: 12px 20px;
+    .modal-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
     }
-}
+
+    .modal-buttons button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.3s;
+        min-width: 120px;
+    }
+
+    #continue-shopping {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    #continue-shopping:hover {
+        background-color: #5a6268;
+    }
+
+    #go-to-checkout {
+        background-color: #007bff;
+        color: white;
+    }
+
+    #go-to-checkout:hover {
+        background-color: #0056b3;
+    }
+
+    /* Loading state */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    /* Animations */
+    @keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* تحسينات للاستجابة */
+    @media (max-width: 768px) {
+        .course-item {
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .btn-add-cart, .btn-remove-cart {
+            width: 100%;
+        }
+
+        .fixed-cart-btn {
+            bottom: 20px;
+            left: 20px;
+            padding: 12px 20px;
+        }
+    }
 </style>
 @endpush
 
@@ -496,6 +496,8 @@ class PackageCartManager {
         this.packageId = {{$package->id}};
         this.packageName = "{{$package->name}}";
         this.maxCourses = {{$package->how_much_course_can_select}};
+        this.cartCount = 0;
+        this.updateBtnDisabled = 0;
         this.selectedCourses = new Map(); // Map to store course id and name
         this.csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
         this.init();
@@ -553,7 +555,7 @@ class PackageCartManager {
         button.classList.remove('btn-add-cart');
         button.classList.add('btn-remove-cart');
         button.closest('.course-item').classList.add('selected');
-
+        this.updateBtnDisabled = 1;
         this.updateCartUI();
     }
 
@@ -565,7 +567,7 @@ class PackageCartManager {
         button.classList.remove('btn-remove-cart');
         button.classList.add('btn-add-cart');
         button.closest('.course-item').classList.remove('selected');
-
+        this.updateBtnDisabled = 1;
         this.updateCartUI();
     }
 
@@ -603,11 +605,12 @@ class PackageCartManager {
 
         // Update button state
         const updateBtn = document.getElementById('update-cart-btn');
+        console.log(this.updateBtnDisabled);
         if (updateBtn) {
-            if (this.selectedCourses.size === this.maxCourses) {
-                updateBtn.classList.remove('disabled');
-            } else {
+            if (this.updateBtnDisabled) {
                 updateBtn.classList.add('disabled');
+            } else {
+                updateBtn.classList.remove('disabled');
             }
         }
     }
@@ -616,22 +619,17 @@ class PackageCartManager {
         const button = document.querySelector(`button[data-course-id="${courseId}"]`);
         if (button && button.classList.contains('btn-remove-cart')) {
             button.click();
+            this.updateBtnDisabled = 1;
         }
     }
 
     async updateCart() {
-        if (this.selectedCourses.size !== this.maxCourses) {
-            this.showModal('warning', 'تنبيه',
-                `يجب اختيار ${this.maxCourses} كورسات بالضبط من هذه الباقة`);
-            return;
-        }
 
         const updateBtn = document.getElementById('update-cart-btn');
         updateBtn?.classList.add('loading');
 
         try {
             const coursesArray = Array.from(this.selectedCourses.keys());
-
             const response = await fetch('{{ route("cart.package.update") }}', {
                 method: 'POST',
                 headers: {
@@ -648,6 +646,11 @@ class PackageCartManager {
             const data = await response.json();
 
             if (data.success) {
+
+                this.updateBtnDisabled = 0;
+
+                this.updateCartUI();
+
                 this.showModalWithActions(
                     'success',
                     'تم التحديث',

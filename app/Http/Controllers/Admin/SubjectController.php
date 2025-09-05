@@ -17,6 +17,10 @@ class SubjectController extends Controller
 
     public function __construct(CategoryRepository $categoryRepository)
     {
+        $this->middleware('permission:subject-table', ['only' => ['index', 'show']]);
+        $this->middleware('permission:subject-add', ['only' => ['create', 'store']]);
+        $this->middleware('permission:subject-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:subject-delete', ['only' => ['destroy']]);
         $this->categoryRepository = $categoryRepository;
     }
 
@@ -362,6 +366,7 @@ class SubjectController extends Controller
 
         // Conditional validation for grade_id
         $program = Category::find($request->programm_id);
+        $grade   = null;
         if ($program && in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
             $rules['grade_id'] = 'required|exists:categories,id';
         } else {

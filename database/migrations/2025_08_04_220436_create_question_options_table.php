@@ -19,11 +19,11 @@ return new class extends Migration
             $table->text('option_ar');
             $table->boolean('is_correct')->default(false);
             $table->integer('order')->default(1); // Order of options (A, B, C, D)
-            
+
             // Foreign key
             $table->unsignedBigInteger('question_id');
             $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
-            
+
             $table->timestamps();
         });
     }

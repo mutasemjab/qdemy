@@ -20,11 +20,10 @@ return new class extends Migration
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
 
-            $table->string('pivot_level',191)->default('field')->comment('field | semester | grade | programm');                    // if optional or non optional subject for this category
+            $table->string('pivot_level',191)->default('field')->comment('field | semester | grade | elementray_grade | programm');                    // if optional or non optional subject for this category
             $table->boolean('is_optional')->default(false);                    // if optional or non optional subject for this category
             $table->boolean('is_ministry')->default(true);                     // if ministry or school subject for this category
 
-            $table->unique(['category_id', 'subject_id']);
             $table->index(['category_id', 'subject_id']);
             $table->timestamps();
         });

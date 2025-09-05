@@ -20,7 +20,7 @@ return new class extends Migration
                 ->constrained('packages')
                 ->onDelete('cascade');
 
-            $table->foreignId('category_id')
+            $table->foreignId('category_id')->nullable()
                 ->constrained('categories')
                 ->onDelete('cascade');
 
@@ -28,8 +28,6 @@ return new class extends Migration
             $table->foreignId('subject_id')->nullable()
                 ->constrained('subjects')
                 ->onDelete('cascade');
-
-            $table->unique(['package_id', 'category_id', 'subject_id'], 'unique_package_category_subject');
 
             $table->timestamps();
         });

@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Course;
 use App\Models\Subject;
+use App\Models\CategorySubject;
 
 class SubjectRepository
 {
@@ -12,7 +13,6 @@ class SubjectRepository
     {
         $this->model = new Subject;
     }
-
 
 
     //  spiecial progarmms subjects start
@@ -57,44 +57,88 @@ class SubjectRepository
 
 
 
-    //  tawjihi subjects end
+    //  tawjihi subjects start
+
 
     // get all ministry subjects for first tawjihi grade
     // if is active
-    // if has parent with ctg = ministry-subjects
-    public function getTawjihiFinalGradesFieldMinistrySubjects($field)
+    // where belong to tawjihi first year grade ('ctg_key','first_year')
+    public function tawjihiFirstGradeSubjects()
     {
         return $this->model->where('is_active', true)
-            ->whereHas('grade', function ($q) {
-                $q->where('ctg_key', 'final_year');
-                $q->where('is_active', true);
-            })
-            ->whereHas('category_subjects', function ($q) use ($field) {
-                $q->where('category_id', $field->id);
-                $q->where('is_ministry', true);
-                $q->where('pivot_level', 'field');
-                // $q->where('is_optional', false);
-            })
-            ->get();
+        ->whereHas('grade',function ($q) {
+            $q->where('ctg_key','first_year');
+            $q->where('is_active', true);
+        });
+    }
+
+    public function getTawjihiFirstGradesMinistrySubjects()
+    {
+        return $this->tawjihiFirstGradeSubjects()
+        ->whereHas('category_subjects',function ($q) {
+            $q->where('is_ministry', true);
+            $q->where('pivot_level', 'grade');
+        })
+        ->get();
     }
 
     // get all school subjects for first tawjihi grade
     // if is active
+    public function getTawjihiFirstGradesSchoolSubjects()
+    {
+        return $this->tawjihiFirstGradeSubjects()
+        ->whereHas('category_subjects',function ($q) {
+            $q->where('is_ministry', false);
+            $q->where('pivot_level', 'grade');
+        })
+        ->get();
+    }
+
+    // get all ministry subjects for final tawjihi grade
+    // if is active
+    // if has parent with ctg = ministry-subjects
+    public function getTawjihiFinalGradesFieldMinistrySubjects($field)
+    {
+        $subjects = collect();
+        // dd(CategorySubject::where('category_id', $field->id)->get());
+        $CategorySubjects = CategorySubject::where('category_id', $field->id)
+            ->where('pivot_level', 'field')
+            ->where('is_ministry', true)
+            ->whereHas('subject', function ($q) {
+                $q->where('is_active', true);
+                // $q->whereHas('grade', function ($q) {
+                //     $q->where('ctg_key', 'final_year');
+                // });
+        })
+        ->get();
+        foreach ($CategorySubjects as $key => $CategorySubject) {
+            $subject = Subject::find($CategorySubject->subject_id);
+            $subjects->push($subject); 
+        }
+
+        return $subjects;
+    }
+
+    // get all school subjects for final tawjihi grade
+    // if is active
     // if has parent with ctg = school-subjects
     public function getTawjihiFinalGradesFieldSchoolSubjects($field)
     {
-        return $this->model->where('is_active', true)
-            ->whereHas('grade', function ($q) {
-                $q->where('ctg_key', 'final_year');
+        $subjects = collect();
+        // dd(CategorySubject::where('category_id', $field->id)->get());
+        $CategorySubjects = CategorySubject::where('category_id', $field->id)
+            ->where('pivot_level', 'field')
+            ->where('is_ministry', false)
+            ->whereHas('subject', function ($q) {
                 $q->where('is_active', true);
-            })
-            ->whereHas('category_subjects', function ($q) use ($field) {
-                $q->where('category_id', $field->id);
-                $q->where('is_ministry', false);
-                $q->where('pivot_level', 'field');
-                // $q->where('is_optional', false);
-            })
-            ->get();
+        })
+        ->get();
+        foreach ($CategorySubjects as $key => $CategorySubject) {
+            $subject = Subject::find($CategorySubject->subject_id);
+            $subjects->push($subject); 
+        }
+
+        return $subjects;
     }
 
 
@@ -105,27 +149,19 @@ class SubjectRepository
     public function getOptionalSubjectOptions($field, $subject)
     {
         return $this->model->where('is_active', true)
-            ->where('id', '!=', $subject->id)
-            ->where('field_type_id', $subject->field_type_id)
-            ->whereHas('grade', function ($q) {
-                $q->where('ctg_key', 'final_year');
-                $q->where('is_active', true);
+            ->where( function ($q) use ($subject, $field) {
+                if($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
             })
             ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
                 $q->where('category_id', $field->id);
                 $q->where('pivot_level', 'field');
-            })
-            ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
-                $q->where('is_optional', true);
-                $q->where('is_ministry', false);
             })
             ->get();
 
         return collect();
     }
 
-    //  tawjihi subjects start
-
+    //  tawjihi subjects end
 
 
 

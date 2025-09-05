@@ -309,27 +309,23 @@ class CategoriesSeeder extends Seeder
     {
         $programm_id = Category::where('name_en','Tawjihi and Secondary Program')->first()?->id;
         $grade_id    = Category::where('ctg_key','final_year')->first()?->id;
+        $scientific_fields_id = Category::where('ctg_key','scientific-fields')->first()?->id;
+        $literary_fields_id   = Category::where('ctg_key','literary-fields')->first()?->id;
 
         $uniqueSubjects = [
-            ['name_ar' => 'المهارات الرقمية','name_en' => 'Digital skills','icon' => 'fas fa-keyboard','color' => '#3498db','field_type' => 'general'],
-            ['name_ar' => 'الرياضيات','name_en' => 'Mathematics','icon' => 'fas fa-subscript','color' => '#3498db','field_type' => 'scientific-fields'],
-            ['name_ar' => 'الكيمياء','name_en' => 'Chemistry','icon' => 'fas fa-flask','color' => '#e67e22','field_type' => 'scientific-fields'],
-            ['name_ar' => 'العلوم الحياتية','name_en' => 'Biology','icon' => 'fas fa-dna','color' => '#27ae60','field_type' => 'scientific-fields'],
-            ['name_ar' => 'اللغة الإنجليزية (متقدم)','name_en' => 'English Language (advanced)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'scientific-fields'],
-            ['name_ar' => 'الفيزياء','name_en' => 'Physics','icon' => 'fas fa-atom','color' => '#3498db','field_type' => 'scientific-fields'],
-            ['name_ar' => 'رياضيات الأعمال','name_en' => 'Business Mathematics','icon' => 'fas fa-subscript','color' => '#e67e22','field_type' => 'literary-fields'],
-            ['name_ar' => 'الثقافة المالية','name_en' => 'Financial Literacy','icon' => 'fas fa-book','color' => '#27ae60','field_type' => 'literary-fields'],
-            ['name_ar' => 'اللغة العربية (تخصص)','name_en' => 'Arabic Language (Specialization)','icon' => 'fas fa-feather-alt','color' => '#e74c3c','field_type' => 'literary-fields'],
-            ['name_ar' => 'التربية الإسلامية (تخصص)','name_en' => 'Islamic Education (Specialization)','icon' => 'fas fa-book','color' => '#3498db','field_type' => 'literary-fields'],
-            ['name_ar' => 'مبحث إختياري','name_en' => 'Optional field','icon' => 'fas fa-dna','color' => '#3498db',
-            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'general'
-            ],
-            ['name_ar' => 'مبحث علمي','name_en' => 'optional Scientific field','icon' => 'fas fa-dna','color' => '#3498db',
-            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'scientific-fields'
-            ],
-            ['name_ar' => 'مبحث إنساني','name_en' => 'Humanities','icon' => 'fas fa-language','color' => '#9b59b6',
-            //   'is_optional'=> true,'is_ministry' => true,'field_type' => 'literary-fields'
-            ]
+            ['name_ar' => 'المهارات الرقمية','name_en' => 'Digital skills','icon' => 'fas fa-keyboard','color' => '#3498db','field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'الرياضيات','name_en' => 'Mathematics','icon' => 'fas fa-subscript','color' => '#3498db','field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'الكيمياء','name_en' => 'Chemistry','icon' => 'fas fa-flask','color' => '#e67e22','field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'العلوم الحياتية','name_en' => 'Biology','icon' => 'fas fa-dna','color' => '#27ae60','field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'اللغة الإنجليزية (متقدم)','name_en' => 'English Language (advanced)','icon' => 'fas fa-book','color' => '#3498db','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'الفيزياء','name_en' => 'Physics','icon' => 'fas fa-atom','color' => '#3498db','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'رياضيات الأعمال','name_en' => 'Business Mathematics','icon' => 'fas fa-subscript','color' => '#e67e22','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'الثقافة المالية','name_en' => 'Financial Literacy','icon' => 'fas fa-book','color' => '#27ae60','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'اللغة العربية (تخصص)','name_en' => 'Arabic Language (Specialization)','icon' => 'fas fa-feather-alt','color' => '#e74c3c','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'التربية الإسلامية (تخصص)','name_en' => 'Islamic Education (Specialization)','icon' => 'fas fa-book','color' => '#3498db','field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'مبحث إختياري','name_en' => 'Optional field','icon' => 'fas fa-dna','color' => '#3498db','field_type_id' => null, 'is_subject' => 1],
+            ['name_ar' => 'مبحث علمي','name_en' => 'optional Scientific field','icon' => 'fas fa-dna','color' => '#3498db','field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'مبحث إنساني','name_en' => 'Humanities','icon' => 'fas fa-language','color' => '#9b59b6','field_type_id' => $literary_fields_id, 'is_subject' => 1],
         ];
 
         $sortOrder = 1;
@@ -340,7 +336,8 @@ class CategoriesSeeder extends Seeder
                 'icon'        => $uniqueSubject['icon'],
                 'color'       => $uniqueSubject['color'],
                 'sort_order'  => $sortOrder,
-                'field_type'  => $uniqueSubject['field_type'],
+                'field_type_id'  => $uniqueSubject['field_type_id'],
+                'is_subject'  => $uniqueSubject['is_subject'],
                 'grade_id'    => $grade_id,
                 'programm_id' => $programm_id,
             ]);
@@ -430,11 +427,11 @@ class CategoriesSeeder extends Seeder
         ]);
 
         foreach ($subjects as $key => $subject) {
-            $subject['subject_id'] = Subject::where('name_en',$subject['name_en'])->first()?->id;
-            unset($subject['name_en']);
+            $subject['subject_id']  = Subject::where('name_en',$subject['name_en'])->where('grade_id',$grade_id)->first()?->id;
             $subject['pivot_level'] = 'field';
+            unset($subject['name_en']);
+            CategorySubject::create($subject);
         }
-        CategorySubject::create($subject);
     }
 
 
@@ -642,18 +639,18 @@ class CategoriesSeeder extends Seeder
         $sortOrder = 1;
         foreach ($subjects as $subject) {
             $createdSubject = Subject::create([
-                'name_ar' => $subject['name_ar'],
-                'name_en' => $subject['name_en'],
-                'icon' => $subject['icon'],
-                'color' => $subject['color'],
-                'sort_order' => $sortOrder,
-                'grade_id' => $programmId,
+                'name_ar'     => $subject['name_ar'],
+                'name_en'     => $subject['name_en'],
+                'icon'        => $subject['icon'],
+                'color'       => $subject['color'],
+                'sort_order'  => $sortOrder,
+                'grade_id'    => $programmId,
                 'programm_id' => $programmId,
             ]);
             $sortOrder++;
             CategorySubject::create([
-                'subject_id' => $createdSubject->id,
-                'category_id' => $programmId,
+                'subject_id'   => $createdSubject->id,
+                'category_id'  => $programmId,
                 'pivot_level'  => 'programm',
             ]);
         }

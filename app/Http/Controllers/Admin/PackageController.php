@@ -69,9 +69,9 @@ class PackageController extends Controller
             'status' => 'required|in:active,inactive',
             'type' => 'required|in:class,subject',
             'how_much_course_can_select' => 'required|integer|min:1',
-            'categories' => 'required|array|min:1', // Categories are required
+            'categories' => 'nullable|required_if:type,class|array|min:1', // Categories are required
             'categories.*' => 'exists:categories,id',
-            'subjects' => 'nullable|array',
+            'subjects' => 'nullable|required_if:type,subject|array',
             'subjects.*' => 'exists:subjects,id'
         ]);
 
@@ -254,7 +254,8 @@ class PackageController extends Controller
             return response()->json(['error' => 'Invalid type'], 400);
         }
 
-        $categories = Category::with('parent')
+        if ($type == 'class') {
+           $categories = Category::with('parent')
             ->where('type', $type)
             ->where('is_active', true)
             ->orderBy('sort_order')
@@ -274,7 +275,28 @@ class PackageController extends Controller
                 ];
             });
 
-        return response()->json($categories);
+            return response()->json($categories);
+
+        }
+
+        $subjects = Subject::with(['grade','semester'])
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('name_ar')
+            ->get(['id', 'name_ar', 'name_en', 'icon', 'color'])
+            ->map(function ($subject) {
+                return [
+                    'id' => $subject->id,
+                    'name_ar' => $subject->name_ar,
+                    'name_en' => $subject->name_en,
+                    'display_name' => $subject->grade ? $subject->grade->breadcrumb  . ' >> ' . $subject->name : ($subject->semester ? $subject->semester->breadcrumb  . ' >> ' . $subject->name : $subject->name),
+                    'icon' => $subject->icon,
+                    'color' => $subject->color,
+                    'parent_name' => $subject->parent ? $subject->parent->name_ar : null
+                ];
+            });
+
+        return response()->json($subjects);
     }
 
 

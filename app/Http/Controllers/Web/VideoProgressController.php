@@ -46,10 +46,6 @@ class VideoProgressController extends Controller
             return response()->json(['success' => false, 'message' => 'Not enrolled']);
         }
 
-        // $content = ContentUserProgress::where('user_id',$user->id)->where('course_content_id',$contentId)->first();
-        // if (!$content->) {
-        //     return response()->json(['success' => false, 'message' => 'Content not found']);
-        // }
         // Update or create progress record
         $progress = ContentUserProgress::updateOrCreate(
             [

@@ -9,4 +9,12 @@ class CategorySubject extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

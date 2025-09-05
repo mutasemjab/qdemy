@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')->nullable();
+            $table->foreignId('package_id')->nullable();
             $table->integer('course_no')->nullable();
 
             $table->string('currency', 3)->default(CURRENCY);
@@ -25,6 +26,7 @@ return new class extends Migration
             $table->json('gateway_response')->nullable();
             $table->string('gateway_name')->nullable();
             $table->string('payment_method')->default('card')->nullable()->comment('card|visa|cash');
+            $table->string('deal_type')->default('course')->nullable()->comment('course|packge');
             $table->string('status')->default('completed');
             $table->decimal('sum_amount', 10, 2);
 
@@ -34,6 +36,7 @@ return new class extends Migration
 
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('package_id')->references('id')->on('packages')->onDelete('set null');
             $table->index('user_id');
         });
     }
