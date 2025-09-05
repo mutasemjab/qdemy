@@ -79,11 +79,11 @@
                                     <label for="title" class="form-label">
                                         {{ __('messages.notification_title') }} <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" 
-                                           class="form-control @error('title') is-invalid @enderror" 
-                                           id="title" 
-                                           name="title" 
-                                           value="{{ old('title') }}" 
+                                    <input type="text"
+                                           class="form-control @error('title') is-invalid @enderror"
+                                           id="title"
+                                           name="title"
+                                           value="{{ old('title') }}"
                                            placeholder="{{ __('messages.enter_notification_title') }}"
                                            maxlength="255">
                                     @error('title')
@@ -101,10 +101,10 @@
                                     <label for="body" class="form-label">
                                         {{ __('messages.notification_message') }} <span class="text-danger">*</span>
                                     </label>
-                                    <textarea class="form-control @error('body') is-invalid @enderror" 
-                                              id="body" 
-                                              name="body" 
-                                              rows="5" 
+                                    <textarea class="form-control @error('body') is-invalid @enderror"
+                                              id="body"
+                                              name="body"
+                                              rows="5"
                                               placeholder="{{ __('messages.enter_notification_message') }}">{{ old('body') }}</textarea>
                                     @error('body')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -124,7 +124,7 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="recipient_type" 
+                                                <input class="form-check-input" type="radio" name="recipient_type"
                                                        id="all" value="all" {{ old('recipient_type') == 'all' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="all">
                                                     <i class="fas fa-users text-primary"></i>
@@ -135,7 +135,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="recipient_type" 
+                                                <input class="form-check-input" type="radio" name="recipient_type"
                                                        id="all_users" value="all_users" {{ old('recipient_type') == 'all_users' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="all_users">
                                                     <i class="fas fa-user-graduate text-info"></i>
@@ -146,7 +146,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="recipient_type" 
+                                                <input class="form-check-input" type="radio" name="recipient_type"
                                                        id="all_teachers" value="all_teachers" {{ old('recipient_type') == 'all_teachers' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="all_teachers">
                                                     <i class="fas fa-chalkboard-teacher text-success"></i>
@@ -156,11 +156,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row mt-3">
                                         <div class="col-md-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="recipient_type" 
+                                                <input class="form-check-input" type="radio" name="recipient_type"
                                                        id="specific_user" value="specific_user" {{ old('recipient_type') == 'specific_user' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="specific_user">
                                                     <i class="fas fa-user text-warning"></i>
@@ -171,7 +171,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="recipient_type" 
+                                                <input class="form-check-input" type="radio" name="recipient_type"
                                                        id="specific_teacher" value="specific_teacher" {{ old('recipient_type') == 'specific_teacher' ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="specific_teacher">
                                                     <i class="fas fa-user-tie text-danger"></i>
@@ -194,8 +194,8 @@
                                     <label for="user_id" class="form-label">
                                         {{ __('messages.select_student') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-control select2 @error('user_id') is-invalid @enderror" 
-                                            id="user_id" 
+                                    <select class="form-control select2 @error('user_id') is-invalid @enderror"
+                                            id="user_id"
                                             name="user_id">
                                         <option value="">{{ __('messages.choose_student') }}</option>
                                         @foreach($users as $user)
@@ -216,8 +216,8 @@
                                     <label for="teacher_id" class="form-label">
                                         {{ __('messages.select_teacher') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select class="form-control select2 @error('teacher_id') is-invalid @enderror" 
-                                            id="teacher_id" 
+                                    <select class="form-control select2 @error('teacher_id') is-invalid @enderror"
+                                            id="teacher_id"
                                             name="teacher_id">
                                         <option value="">{{ __('messages.choose_teacher') }}</option>
                                         @foreach($teachers as $teacher)
@@ -270,7 +270,7 @@
                             </div>
                         </div>
 
-                     
+
                     </div>
 
                     <div class="card-footer">
@@ -316,17 +316,17 @@ $(document).ready(function() {
     // Recipient type change
     $('input[name="recipient_type"]').change(function() {
         const selectedType = $(this).val();
-        
+
         // Hide all specific selections
         $('#userSelection, #teacherSelection').hide();
-        
+
         // Show relevant selection
         if (selectedType === 'specific_user') {
             $('#userSelection').show();
         } else if (selectedType === 'specific_teacher') {
             $('#teacherSelection').show();
         }
-        
+
         updateRecipientInfo();
     });
 
@@ -371,18 +371,18 @@ $(document).ready(function() {
     function updatePreview() {
         const title = $('#title').val() || '{{ __('messages.notification_title_placeholder') }}';
         const body = $('#body').val() || '{{ __('messages.notification_body_placeholder') }}';
-        
+
         $('#previewTitle').text(title);
         $('#previewBody').text(body);
     }
 
     // Test notification
-  
+
 
     // Form submission
     $('#notificationForm').submit(function(e) {
         const selectedType = $('input[name="recipient_type"]:checked').val();
-        
+
         if (!selectedType) {
             e.preventDefault();
             alert('{{ __('messages.please_select_recipient_type') }}');

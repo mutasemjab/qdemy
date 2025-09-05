@@ -18,7 +18,7 @@ return new class extends Migration
           $table->foreignId('user_id')->nullable();
           $table->foreignId('course_id')->nullable();
           $table->foreignId('teacher_id')->nullable();
-          $table->decimal('amount', 10, 2);
+          $table->decimal('amount', 10, 2)->nullable();
           $table->text('notes')->nullable();
 
           $table->timestamps();

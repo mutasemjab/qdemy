@@ -69,9 +69,9 @@ class PackageController extends Controller
             'status' => 'required|in:active,inactive',
             'type' => 'required|in:class,subject',
             'how_much_course_can_select' => 'required|integer|min:1',
-            'categories' => 'required|array|min:1', // Categories are required
+            'categories' => 'nullable|required_if:type,class|array|min:1', // Categories are required
             'categories.*' => 'exists:categories,id',
-            'subjects' => 'nullable|array',
+            'subjects' => 'nullable|required_if:type,subject|array',
             'subjects.*' => 'exists:subjects,id'
         ]);
 

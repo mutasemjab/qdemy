@@ -32,7 +32,6 @@ class CourseController extends Controller
                 if (in_array($selectedProgram->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
                     // Load grades for this program
                     if ($selectedProgram->ctg_key == 'elementary-grades-program') {
-                        // dd(CategoryRepository()->getElementryProgramGrades());
                         $grades = CategoryRepository()->getElementryProgramGrades();
                     } else {
                         $grades = CategoryRepository()->getTawjihiProgrammGrades();
@@ -50,7 +49,9 @@ class CourseController extends Controller
 
                     // Load subjects for this program directly
                     $subjects = Subject::where('programm_id', $request->programm_id)
+                        ->where('field_type_id', null)
                         ->where('is_active', 1)
+                        ->where('is_subject', 1)
                         ->get();
                 }
             }
@@ -65,6 +66,7 @@ class CourseController extends Controller
             // Load subjects for selected grade
             $subjects = Subject::where('grade_id', $request->grade_id)
                 ->where('is_active', 1)
+                ->where('is_subject', 1)
                 ->get();
         }
 
@@ -184,13 +186,17 @@ class CourseController extends Controller
 
     public function subject_courses($subject)
     {
-        $subject = Subject::FindOrFail($subject);
-        $courses = Course::where('subject_id',$subject->id)->latest()->paginate(PGN);
+        $subject   = Subject::FindOrFail($subject);
+        return redirect()->route('courses',"programm_id=".$subject->programm_id."&grade_id=".$subject->grade_id."&subject_id=".$subject->id);
+
         return view('web.courses',[
             'subject' => $subject,
             'title'   => $subject->name_en,
+            'programms' => $programms,
+            'grades' => $grades,
+            'subjects' => $subjects,
             'courses' => $courses,
         ]);
     }
-
+   // programms
 }

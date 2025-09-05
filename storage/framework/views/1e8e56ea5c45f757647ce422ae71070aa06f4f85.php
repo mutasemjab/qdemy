@@ -60,9 +60,35 @@
             <?php $__currentLoopData = $schoolSubjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $schoolSubject): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('<?php echo e(asset('images/subject-')); ?><?php echo e($index % 2 ? 'bg.png' : 'bg2.png'); ?>')">
-                <a class="text-decoration-none" href="<?php echo e(route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])); ?>">
-                    <span> <?php echo e($schoolSubject->localized_name); ?> </span>
-                </a>
+               <?php if($schoolSubject->has_optional_subject): ?>
+                    <a class="text-decoration-none" href="javascript:void(0)">
+                        <span> <?php echo e($schoolSubject->localized_name); ?> </span>
+                    </a>
+                    <?php $subjects = SubjectRepository()->getOptionalSubjectOptions($field,$schoolSubject); ?>
+
+                    <div class="examx-dropdown subject-plus-dropdown-examx">
+                        <button class="examx-pill" type="button" tabindex="0">
+                            <span>+</span>
+                        </button>
+                        <ul class="examx-menu">
+                        <?php if($subjects && $subjects->count()): ?>
+                        <?php $__currentLoopData = $subjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $optiona_subject): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li>
+                                <a class="text-decoration-none" href="<?php echo e(route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])); ?>">
+                                    <?php echo e($optiona_subject->localized_name); ?>
+
+                                </a>
+                            </li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endif; ?>
+                        </ul>
+                    </div>
+
+                <?php else: ?>
+                    <a class="text-decoration-none" href="<?php echo e(route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])); ?>">
+                        <span> <?php echo e($schoolSubject->localized_name); ?> </span>
+                    </a>
+                <?php endif; ?>
             </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>

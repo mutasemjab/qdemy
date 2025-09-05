@@ -74,40 +74,41 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/grades-basic-programm', [ElementaryProgrammController::class, 'grades_basic_programm'])->name('grades_basic-programm');
     Route::get('/grade/{grade}/{slug?}', [ElementaryProgrammController::class, 'grade_programm'])->name('grade');
 
-    Route::get('/tawjihi-programm',      [TawjihiController::class, 'tawjihi_programm'])->name('tawjihi-programm');
-    Route::get('/tawjihi-first-year/{slug?}', [TawjihiController::class, 'tawjihi_first_year'])->name('tawjihi-first-year');
-    Route::get('/tawjihi-last-year-fields/{slug?}', [TawjihiController::class, 'tawjihi_grade_last_year_fields'])->name('tawjihi-grade-year-fields');
-    Route::get('/tawjihi-last-year-field/{field}/{slug?}', [TawjihiController::class, 'tawjihi_last_year_field'])->name('tawjihi-grade-field');
-    Route::get('/tawjihi-last-year/{slug?}', [TawjihiController::class, 'tawjihi_last_year_fields'])->name('tawjihi-grade-year');
+    Route::group(['prefix'=>'tawjihi'], function () {
+        Route::get('/tawjihi-programm',      [TawjihiController::class, 'tawjihi_programm'])->name('tawjihi-programm');
+        Route::get('/tawjihi-first-year/{slug?}', [TawjihiController::class, 'tawjihi_first_year'])->name('tawjihi-first-year');
+        Route::get('/tawjihi-last-year-fields/{slug?}', [TawjihiController::class, 'tawjihi_grade_last_year_fields'])->name('tawjihi-grade-year-fields');
+        Route::get('/tawjihi-last-year-field/{field}/{slug?}', [TawjihiController::class, 'tawjihi_last_year_field'])->name('tawjihi-grade-field');
+        Route::get('/tawjihi-last-year/{slug?}', [TawjihiController::class, 'tawjihi_last_year_fields'])->name('tawjihi-grade-year');
+    });
 
-
-    Route::post('/update-video-progress', [VideoProgressController::class, 'updateVideoProgress'])
-    ->name('video.progress.update');
-
-    Route::post('/mark-video-complete', [VideoProgressController::class, 'markVideoComplete'])
-    ->name('video.progress.complete');
+    Route::group(['prefix'=>'video-progress'], function () {
+        Route::post('/update', [VideoProgressController::class, 'updateVideoProgress'])
+        ->name('video.progress.update');
+        Route::post('/mark-as-complete', [VideoProgressController::class, 'markVideoComplete'])
+        ->name('video.progress.complete');
+    });
 
     Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
 
     Route::group(['prefix'=>'cart'], function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('checkout');
         Route::post('/add-to-session', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
-        Route::get('/add-to-session/{courseId?}', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/courses-count', [EnrollmentController::class, 'getCoursesCount'])->name('courses.count');
         Route::post('/activate-card', [EnrollmentController::class, 'activateCard'])->name('activate.card');
-        Route::post('/payment-with-card', [EnrollmentController::class, 'paymentWithCard'])->name('payment.card');
+        Route::post('/payment-for-course-with-card', [EnrollmentController::class, 'paymentForCourseWithCard'])->name('payment.card');
+        Route::post('/payment-for-package-with-card', [EnrollmentController::class, 'paymentForPackageWithCard'])->name('payment.package.card');
         Route::post('/remove-course', [EnrollmentController::class, 'removeCourseFromCart'])->name('remove.course');
         Route::post('/remove-package', [EnrollmentController::class, 'removeCartFromAnyPackage'])->name('remove.package');
-        Route::post('/cart-package-get', [EnrollmentController::class, 'getPackageFromSession'])->name('cart.package.get');
-        Route::get('/cart-package-update', [EnrollmentController::class, 'addPackageToSession'])->name('cart.package.update');
+        Route::post('/remove-course-from-package', [EnrollmentController::class, 'removeCourseFromPackage'])->name('remove.course.from.package');
+        Route::post('/package/update', [EnrollmentController::class, 'updatePackageCart'])->name('cart.package.update');
+        Route::get('/package/get', [EnrollmentController::class, 'getPackageCart'])->name('cart.package.get');
     });
 
     // packages routes
     Route::group(['prefix'=>'packages'], function () {
         Route::get('/{programm?}', [PackageAndOfferController::class, 'index'])->name('packages-offers');
-        Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'package'])->name('package');
-        Route::post('/cart/package/update', [PackageAndOfferController::class, 'updatePackageCart'])->name('cart.package.update');
-        Route::get('/cart/package/get', [PackageAndOfferController::class, 'getPackageCart'])->name('cart.package.get');
+        Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'show'])->name('package');
     });
 
     // enrollment routes

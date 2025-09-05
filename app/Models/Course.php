@@ -81,5 +81,31 @@ class Course extends Model
         return Str::slug(app()->getLocale() === 'ar' ? $this->attributes['title_ar'] : $this->attributes['title_en']);
     }
 
+    public function getIsActiveAttribute()
+    {
+       return $this->subject ? $this->subject?->is_active : true;
+    }
+
+    public function getIsEnrolledAttribute()
+    {
+        $user = auth_student();
+        return CourseUser::where('user_id', $user?->id)
+            ->where('course_id', $this->id)
+            ->exists();
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereDoesntHave('subject',function ($query) {
+            $query->where('is_active',0);
+        });
+    }
+
+    public function scopeNotActive($query)
+    {
+        return $query->whereDoesntHave('subject',function ($query) {
+            $query->where('is_active',1);
+        });
+    }
 
 }

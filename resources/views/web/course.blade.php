@@ -476,6 +476,7 @@
                 e.preventDefault();
 
                 if(!user){
+                    alert("{{__('front.login_required')}}");
                     return 0;
                 }
 
@@ -701,7 +702,7 @@
             let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
             shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
         }
-        fetch('/update-video-progress', {
+        fetch("{{route('video.progress.update')}}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -729,7 +730,7 @@
     }
 
     function markVideoComplete(contentId) {
-        fetch('/mark-video-complete', {
+        fetch("{{route('video.progress.complete')}}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

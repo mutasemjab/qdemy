@@ -4,6 +4,7 @@ namespace  App\Http\Controllers\Web;
 
 use App\Models\Course;
 use App\Models\Package;
+use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -22,20 +23,36 @@ class PackageAndOfferController extends Controller
         $programms   = CategoryRepository()->getMajors();
 
         // get all sub childs for passed category
-        $programmParentCtgs = null;
-        if($programm) $programmParentCtgs = CategoryRepository()->getAllSubChilds($programm?->id,true)->pluck('id')->toArray();
-
-        // dd($programm,$programmParentCtgs);
+        $programmChilds = null;
+        if($programm) $programmChilds = CategoryRepository()->getAllSubChilds($programm?->id,true,true)->pluck('id')->toArray();
 
         // جلب الباكدجات النشطة مع الكاتيجوريز المرتبطة بها
         // في حالة تمرير programm تاتي بالبكدجات المرتبطة به وباحفاده فقط
         $packages = Package::where('status', 'active')
-            // ->with('categories')
-            ->whereHas('categories' ,function($query)use($programm,$programmParentCtgs) {
-                if($programm){
-                    $query->whereIn('categories.id',$programmParentCtgs);
-                }
-                $query->select('packages.id','categories.id', 'categories.name_ar', 'categories.name_en', 'categories.type');
+            ->where(function($query)use($programm,$programmChilds) {
+                $query->where('type','class');
+                $query->whereHas('categories' ,function($query)use($programm,$programmChilds) {
+                    if($programm){
+                        $query->whereIn('categories.id',$programmChilds);
+                    }
+                    $query->select('packages.id','categories.id', 'categories.name_ar', 'categories.name_en', 'categories.type');
+               });
+            })
+            ->orWhere(function($query)use($programmChilds) {
+                $query->where('type','subject');
+                $query->whereHas('subjects' ,function($query)use($programmChilds) {
+                    if($programmChilds && count($programmChilds)){
+                        $query->whereHas('program' ,function($query)use($programmChilds) {
+                            $query->whereIn('categories.id',$programmChilds);
+                        });
+                        $query->orWhereHas('grade' ,function($query)use($programmChilds) {
+                            $query->whereIn('categories.id',$programmChilds);
+                        });
+                        $query->orWhereHas('semester' ,function($query)use($programmChilds) {
+                            $query->whereIn('categories.id',$programmChilds);
+                        });
+                    }
+                });
             })
             ->get();
 
@@ -43,15 +60,15 @@ class PackageAndOfferController extends Controller
     }
 
 
-    // get packege and its categories(classes || lessons) && courses
+    // get packege and its (categories  || subjects) && courses
     // if $package->type == 'class' get package.categories by relation then query for related subject with categories
-    // if $package->type == 'lesson' get package.lessons by relation and no need to categories
-    public function package(Request $request ,Package $package,Category $clas = null)
+    // if $package->type == 'subject' get package.subject  by relation and no need to categories
+    public function show(Request $request ,Package $package,Category $clas = null)
     {
         $is_type_class = ($package->type == 'class');
-        // get subjects from requset or relation direct if $package->type == 'lesson'
+        // get subjects from requset or relation direct if $package->type == 'subject'
         $classes         = $package->categories?->where('type','class');
-        $lessons         = [];
+        $subjects         = [];
         $categoriesTree  = collect();
 
         foreach ($classes as $ctg) {
@@ -59,122 +76,18 @@ class PackageAndOfferController extends Controller
         }
 
         if($is_type_class && $clas?->id){
-            $lessons     = Category::where('type','lesson')->where('parent_id',$clas->id)->get();
+            $classChilds = CategoryRepository()->getAllSubChilds($clas->id,true,true)->pluck('id')->toArray();
+            $subjects     = Subject::where('is_active',true)
+                            ->whereIn('programm_id',$classChilds)
+                            ->orWhereIn('grade_id',$classChilds)
+                            ->orWhereIn('semester_id',$classChilds)
+                            ->get();
         }elseif(!$is_type_class){
-            $lessons     = $package->categories?->where('type','lessons');
+            $subjects     = $package->subjects;
         }
-        $lessonsIds      = $request->lessonsIds ?? [];
-        $choosen_lessons = Category::whereIn('id',$lessonsIds)->get();
+        $subjectsIds      = $request->lessonsIds ?? [];
 
-        return view('web.package', compact('categoriesTree','package','classes','lessons','choosen_lessons','clas','is_type_class'));
-    }
-
-    /**
-     * عرض صفحة الباقة
-    */
-    public function show(Request $request, $packageId, $clasId = null)
-    {
-        $package = Package::with(['categories' => function($query) {
-            $query->where('is_active', 1);
-        }])->findOrFail($packageId);
-
-        $clas = null;
-        $categoriesTree = [];
-        $lessons = collect();
-        $is_type_class = false;
-
-        // Check if package type is class
-        if ($package->type === 'class') {
-            $is_type_class = true;
-
-            // Get categories tree for class selector
-            $categoriesTree = CategoryRepository()->getCategoriesTreeForPackage($package->id);
-
-            if ($clasId) {
-                $clas = Category::find($clasId);
-                // Get lessons for selected class
-                $lessons = CategoryRepository()->getLessonsForClass($clasId, $package->id);
-            } else {
-                // Get all lessons for package
-                $lessons = CategoryRepository()->getAllLessonsForPackage($package->id);
-            }
-        } else {
-            // For lesson type packages
-            $lessons = $package->categories()->where('type', 'lesson')->get();
-        }
-
-        return view('web.package', compact('package', 'clas', 'categoriesTree', 'lessons', 'is_type_class'));
-    }
-
-    /**
-     * تحديث السلة بكورسات الباقة
-     */
-    public function updatePackageCart(Request $request)
-    {
-        $request->validate([
-            'package_id' => 'required|exists:packages,id',
-            'courses' => 'required|array',
-            'courses.*' => 'exists:courses,id'
-        ]);
-
-        try {
-            $packageId = $request->package_id;
-            $courseIds = $request->courses;
-
-            // Get package
-            $package = Package::find($packageId);
-
-            // Validate courses count
-            if (count($courseIds) != $package->how_much_course_can_select) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "يجب اختيار {$package->how_much_course_can_select} كورسات بالضبط"
-                ], 400);
-            }
-
-            $validOnePackgeOnlyOnCart = CartRepository()->validCartContent($packageId);
-            if (!$validOnePackgeOnlyOnCart) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'لا يمكن الجمع بين الكورسات المنفردة والباكدجات ف الكارت و لا بين 2 باكدج .'
-                ], 400);
-            }
-
-            CartRepository()->clearCart();
-            CartRepository()->setPackageCart($packageId, $courseIds);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'تم تحديث السلة بنجاح',
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'حدث خطأ أثناء تحديث السلة',
-                'e' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * الحصول على محتويات السلة الحالية
-     */
-    public function getPackageCart(Request $request)
-    {
-        try {
-            $cart = CartRepository()->getPackageCart();
-
-            return response()->json([
-                'success' => true,
-                'cart' => $cart
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'حدث خطأ أثناء جلب محتويات السلة'
-            ], 500);
-        }
+        return view('web.package', compact('categoriesTree','package','classes','subjects','clas','is_type_class'));
     }
 
 }

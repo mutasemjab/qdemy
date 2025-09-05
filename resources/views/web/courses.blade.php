@@ -102,6 +102,13 @@
                     @else
                         <a href="javascript:void(0)" class="join-btn enroll-btn"
                           data-course-id="{{ $course->id }}">{{translate_lang('enroll')}}</a>
+
+                        <a href="{{ route('checkout') }}" id="go_to_checkout_{{$course->id}}" style='display:none;' class="join-btn">
+                             {{translate_lang('go_to_checkout')}}
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+
+                        <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                         <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
                     @endif
                 </div>
@@ -216,11 +223,9 @@ class EnrollmentManager {
                             'fa-check'
                         );
 
-                        // Update button to checkout link
-                        button.innerHTML = "{{ translate_lang('go_to_checkout') }} <i class='fas fa-shopping-cart'>";
-                        button.setAttribute('href', "{{ route('checkout') }}");
-                        button.classList.remove('enroll-btn');
-                        button.disabled = false;
+
+                        button.remove();
+                        document.getElementById('go_to_checkout_'+courseId).style.display = 'block';
                     } else {
                         // Show error modal
                         this.showModal(

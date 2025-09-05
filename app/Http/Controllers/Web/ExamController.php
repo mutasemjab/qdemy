@@ -156,10 +156,10 @@ class ExamController extends Controller
         $_questions = $exam->questions();
 
         $attempts         = $exam->user_attempts();
-        $result           = $exam->result_attempt($user->id);
+        $result           = $exam->result_attempt($user?->id);
         $current_attempts = $exam->current_user_attempts();
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
-        $can_add_attempt  = $exam->can_add_attempt($user->id);
+        $can_add_attempt  = $exam->can_add_attempt($user?->id);
 
         // Get current attempt or create one if needed
         $current_attempt = $attempt ?? $exam->current_user_attempt();
@@ -211,13 +211,13 @@ class ExamController extends Controller
         $user = auth_student();
 
         // Check if user can start new attempt
-        if (!$exam->can_add_attempt($user->id)) {
+        if (!$exam->can_add_attempt($user?->id)) {
             return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', 'لقد استنفدت عدد المحاولات المسموحة');
         }
 
         // Check if there's already an active attempt
-        $active_attempt = ExamAttempt::where('user_id', $user->id)
+        $active_attempt = ExamAttempt::where('user_id', $user?->id)
             ->where('exam_id', $exam->id)
             ->where('status', 'in_progress')
             ->first();
@@ -239,7 +239,7 @@ class ExamController extends Controller
         $attempt = ExamAttempt::create([
             'started_at' => now(),
             'exam_id' => $exam->id,
-            'user_id' => $user->id,
+            'user_id' => $user?->id,
             'question_order' => $question_order,
             'status' => 'in_progress'
         ]);
@@ -257,7 +257,7 @@ class ExamController extends Controller
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
-        //  ExamAttempt::where('user_id', $user->id)
+        //  ExamAttempt::where('user_id', $user?->id)
         //     ->where('exam_id', $exam->id)
         //     ->where('status', 'in_progress')
         //     ->first();
@@ -423,7 +423,7 @@ class ExamController extends Controller
     {
         $user = auth_student();
 
-        $current_attempt = ExamAttempt::where('user_id', $user->id)
+        $current_attempt = ExamAttempt::where('user_id', $user?->id)
             ->where('exam_id', $exam->id)
             ->where('status', 'in_progress')
             ->first();
@@ -457,7 +457,7 @@ class ExamController extends Controller
         $user = auth_student();
 
         // Check if user owns this attempt
-        if ($attempt->user_id !== $user->id) {
+        if ($attempt->user_id !== $user?->id) {
             abort(403);
         }
 

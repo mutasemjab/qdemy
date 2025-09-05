@@ -11,7 +11,6 @@ class CategoryRepository
     public function __construct()
     {
         $this->model = new Category;
-        // app()->setLocale('ar');
     }
 
     //  categories where type = major (main programms)
@@ -32,17 +31,6 @@ class CategoryRepository
         ->where('level', 'tawjihi_program_fields')
         ->get();
     }
-    //  semester
-    //  categories where level = elementray_grade || tawjihi_grade || unvierisity or international programm
-    public function getAllGradesTypes()
-    {
-        return $this->model->where('is_active', true)
-        ->where('level', 'elementray_grade')
-        ->orWhere('level', 'tawjihi_grade')
-        ->orWhere('ctg_key', 'tawjihi-and-secondary-program')
-        ->orWhere('ctg_key', 'elementary-grades-program')
-        ->get();
-    }
 
     //  elementry
     //where 'level' = 'elementray_grade' (elementray_grade = elementary)
@@ -51,13 +39,6 @@ class CategoryRepository
         return $this->model->where('is_active', true)
         ->where('level', 'elementray_grade')
         ->get();
-    }
-
-    //  get all semesters
-    public function getGradesSemesters()
-    {
-        $semester = $this->model->where('level','semester')->get()->unique('ctg_key');
-        return $semester;
     }
 
     //  subjects under elementry && tawjihi programm grades
@@ -85,10 +66,10 @@ class CategoryRepository
     }
 
     // get tawjihi 2009 grades
-    // sql from this.tawjihiProgrammGrades  where 'ctg_key','!=','final_year' && 'ctg_key','!=','vocational-system'
+    // sql from this.tawjihiProgrammGrades  where 'ctg_key','==','first_year'
     public function getTawjihiFirstGrade()
     {
-        return $this->tawjihiProgrammGrades()->where('ctg_key','!=','final_year')->where('ctg_key','!=','vocational-system')->first();
+        return $this->tawjihiProgrammGrades()->where('ctg_key','first_year')->first();
     }
 
     // get tawjihi last year (2008) grades - get by ctg_key
@@ -132,63 +113,6 @@ class CategoryRepository
     public function getDirectChilds($category)
     {
         return $category->children;
-    }
-
-    /**
-     * الحصول على شجرة الفئات للباقة
-     */
-    public function getCategoriesTreeForPackage($packageId)
-    {
-        $package = Package::with('categories.parent')->find($packageId);
-
-        if (!$package) {
-            return collect();
-        }
-
-        // Group categories by parent
-        $grouped = [];
-        foreach ($package->categories as $category) {
-            if ($category->parent) {
-                $parentId = $category->parent->id;
-                if (!isset($grouped[$parentId])) {
-                    $grouped[$parentId] = [];
-                }
-                $grouped[$parentId][] = [
-                    'id' => $category->id,
-                    'name' => $category->localized_name,
-                    'category' => $category
-                ];
-            }
-        }
-
-        return collect($grouped);
-    }
-
-    /**
-     * الحصول على الدروس للصف
-     */
-    public function getLessonsForClass($classId, $packageId)
-    {
-        return Category::where('parent_id', $classId)
-            ->where('type', 'lesson')
-            ->whereHas('packages', function($query) use ($packageId) {
-                $query->where('packages.id', $packageId);
-            })
-            ->orderBy('sort_order')
-            ->get();
-    }
-
-    /**
-     * الحصول على جميع الدروس للباقة
-     */
-    public function getAllLessonsForPackage($packageId)
-    {
-        return Category::where('type', 'lesson')
-            ->whereHas('packages', function($query) use ($packageId) {
-                $query->where('packages.id', $packageId);
-            })
-            ->orderBy('sort_order')
-            ->get();
     }
 
     // احصل علي كل ابناء category معين شجريا

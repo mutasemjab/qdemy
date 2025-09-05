@@ -12,50 +12,15 @@ class CourseRepository
     public function __construct()
     {
         $this->model = new Course;
-        app()->setLocale('ar');
-    }
-
-    // query for all courses under univertisy programm
-    // courses is directly under univertisy programm
-    public function universitiesProgramSubjects()
-    {
-        $universityProgramId = CategoryRepository()->getUniversitiesProgram()?->id;
-        if($universityProgramId){
-            return $this->model->where('category_id',$universityProgramId);
-        }
-        return [];
-    }
-
-    // query->get() for all courses under univertisy programm
-    public function getuniversitiesProgramSubjects()
-    {
-        return $this->universitiesProgramSubjects()->get();
-    }
-
-    // query for all courses under international programm
-    // courses is directly under international programm
-    public function internationalProgramSubjects($programm = null)
-    {
-        $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
-        if($internationalProgramId){
-            return $this->model->where('category_id',$internationalProgramId);
-        }
-        return [];
-    }
-
-    // query->get() for all courses under international programm
-    public function getinternationalProgramSubjects($programm)
-    {
-        return $this->internationalProgramSubjects($programm)->get();
     }
 
     // query direct courses under courses
     // @param categoryId = Category.id
     // return collection
-    public function getDirectCategoryCourses($categoryId)
+    public function getDirectCategoryCourses($subjectId)
     {
         $courses = [];
-        $courses = Course::where('category_id',$categoryId)->get();
+        $courses = Course::where('subject_id',$subjectId)->get();
         return $courses;
     }
 

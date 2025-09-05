@@ -485,6 +485,7 @@
                 e.preventDefault();
 
                 if(!user){
+                    alert("<?php echo e(__('front.login_required')); ?>");
                     return 0;
                 }
 
@@ -710,7 +711,7 @@
             let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
             shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
         }
-        fetch('/update-video-progress', {
+        fetch("<?php echo e(route('video.progress.update')); ?>", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -738,7 +739,7 @@
     }
 
     function markVideoComplete(contentId) {
-        fetch('/mark-video-complete', {
+        fetch("<?php echo e(route('video.progress.complete')); ?>", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -45,10 +45,9 @@ class Package extends Model
     public function subjects()
     {
         return $this->belongsToMany(Subject::class, 'package_categories')
-                   ->withTimestamps()
-                   ->distinct();
+                    ->withTimestamps()
+                    ->distinct();
     }
-
     /**
      * Get all category-subject combinations for this package
      */
@@ -146,7 +145,7 @@ class Package extends Model
         });
     }
 
-    
+
 
     /**
      * Check if package has specific category
@@ -187,7 +186,7 @@ class Package extends Model
     {
         // Delete existing combinations
         $this->packageCategories()->delete();
-        
+
         // Create new combinations
         $this->attachCategorySubjectCombinations($categories, $subjects);
     }

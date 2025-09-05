@@ -29,8 +29,6 @@ return new class extends Migration
                 ->constrained('subjects')
                 ->onDelete('cascade');
 
-            $table->unique(['package_id', 'category_id', 'subject_id'], 'unique_package_category_subject');
-
             $table->timestamps();
         });
 

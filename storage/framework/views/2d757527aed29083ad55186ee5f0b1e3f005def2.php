@@ -1,4 +1,4 @@
-<?php $__env->startSection('title', __('messages.edit_content')); ?>
+<?php $__env->startSection('title', __('messages.add_content')); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid">
@@ -6,7 +6,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title"><?php echo e(__('messages.edit_content')); ?></h3>
+                    <h3 class="card-title"><?php echo e(__('messages.add_content')); ?></h3>
                     <p class="text-muted mb-0"><?php echo e(__('messages.course')); ?>: <?php echo e($course->title_en); ?></p>
                     <div class="card-tools">
                         <a href="<?php echo e(route('courses.sections.index', $course)); ?>" class="btn btn-secondary">
@@ -16,9 +16,8 @@
                     </div>
                 </div>
 
-                <form action="<?php echo e(route('courses.contents.update', [$course, $content])); ?>" method="POST" enctype="multipart/form-data">
+                <form action="<?php echo e(route('courses.contents.store', $course)); ?>" method="POST" enctype="multipart/form-data">
                     <?php echo csrf_field(); ?>
-                    <?php echo method_field('PUT'); ?>
                     <div class="card-body">
                         <div class="row">
                             <!-- English Title -->
@@ -27,7 +26,7 @@
                                     <label for="title_en" class="form-label">
                                         <?php echo e(__('messages.content_title_en')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text"
+                                    <input type="text" 
                                            class="form-control <?php $__errorArgs = ['title_en'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -35,10 +34,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="title_en"
-                                           name="title_en"
-                                           value="<?php echo e(old('title_en', $content->title_en)); ?>"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="title_en" 
+                                           name="title_en" 
+                                           value="<?php echo e(old('title_en')); ?>" 
                                            placeholder="<?php echo e(__('messages.enter_content_title_en')); ?>">
                                     <?php $__errorArgs = ['title_en'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -59,7 +58,7 @@ unset($__errorArgs, $__bag); ?>
                                     <label for="title_ar" class="form-label">
                                         <?php echo e(__('messages.content_title_ar')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text"
+                                    <input type="text" 
                                            class="form-control <?php $__errorArgs = ['title_ar'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -67,10 +66,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="title_ar"
-                                           name="title_ar"
-                                           value="<?php echo e(old('title_ar', $content->title_ar)); ?>"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="title_ar" 
+                                           name="title_ar" 
+                                           value="<?php echo e(old('title_ar')); ?>" 
                                            placeholder="<?php echo e(__('messages.enter_content_title_ar')); ?>"
                                            dir="rtl">
                                     <?php $__errorArgs = ['title_ar'];
@@ -99,24 +98,24 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="content_type"
+unset($__errorArgs, $__bag); ?>" 
+                                            id="content_type" 
                                             name="content_type"
                                             onchange="toggleContentFields()">
                                         <option value=""><?php echo e(__('messages.select_content_type')); ?></option>
-                                        <option value="video" <?php echo e(old('content_type', $content->content_type) == 'video' ? 'selected' : ''); ?>>
+                                        <option value="video" <?php echo e(old('content_type') == 'video' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.video')); ?>
 
                                         </option>
-                                        <option value="pdf" <?php echo e(old('content_type', $content->content_type) == 'pdf' ? 'selected' : ''); ?>>
+                                        <option value="pdf" <?php echo e(old('content_type') == 'pdf' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.pdf')); ?>
 
                                         </option>
-                                        <option value="quiz" <?php echo e(old('content_type', $content->content_type) == 'quiz' ? 'selected' : ''); ?>>
+                                        <option value="quiz" <?php echo e(old('content_type') == 'quiz' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.quiz')); ?>
 
                                         </option>
-                                        <option value="assignment" <?php echo e(old('content_type', $content->content_type) == 'assignment' ? 'selected' : ''); ?>>
+                                        <option value="assignment" <?php echo e(old('content_type') == 'assignment' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.assignment')); ?>
 
                                         </option>
@@ -147,15 +146,15 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="is_free"
+unset($__errorArgs, $__bag); ?>" 
+                                            id="is_free" 
                                             name="is_free">
                                         <option value=""><?php echo e(__('messages.select_access_type')); ?></option>
-                                        <option value="1" <?php echo e(old('is_free', $content->is_free) == '1' ? 'selected' : ''); ?>>
+                                        <option value="1" <?php echo e(old('is_free') == '1' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.free')); ?>
 
                                         </option>
-                                        <option value="2" <?php echo e(old('is_free', $content->is_free) == '2' ? 'selected' : ''); ?>>
+                                        <option value="2" <?php echo e(old('is_free') == '2' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.paid')); ?>
 
                                         </option>
@@ -179,7 +178,7 @@ unset($__errorArgs, $__bag); ?>
                                     <label for="order" class="form-label">
                                         <?php echo e(__('messages.order')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="number"
+                                    <input type="number" 
                                            class="form-control <?php $__errorArgs = ['order'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -187,10 +186,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="order"
-                                           name="order"
-                                           value="<?php echo e(old('order', $content->order)); ?>"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="order" 
+                                           name="order" 
+                                           value="<?php echo e(old('order', 1)); ?>" 
                                            min="0"
                                            placeholder="1">
                                     <?php $__errorArgs = ['order'];
@@ -217,8 +216,8 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="section_id"
+unset($__errorArgs, $__bag); ?>" 
+                                            id="section_id" 
                                             name="section_id">
                                         <option value=""><?php echo e(__('messages.select_section_or_direct')); ?></option>
                                         <?php
@@ -226,10 +225,10 @@ unset($__errorArgs, $__bag); ?>"
                                         ?>
                                         <?php $__currentLoopData = $parentSections; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $section): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <?php echo $__env->make('admin.courses.partials.section-option', [
-                                                'section' => $section,
-                                                'allSections' => $sections,
+                                                'section' => $section, 
+                                                'allSections' => $sections, 
                                                 'level' => 0,
-                                                'selectedId' => old('section_id', $content->section_id)
+                                                'selectedId' => old('section_id', request('section_id'))
                                             ], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
@@ -256,27 +255,27 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-12">
                                 <h5 class="text-primary"><?php echo e(__('messages.video_details')); ?></h5>
                             </div>
-
+                            
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label for="video_type" class="form-label">
                                         <?php echo e(__('messages.video_type')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <select  onchange="toggleContentFields()" class="form-control <?php $__errorArgs = ['video_type'];
+                                    <select   onchange="toggleContentFields()" class="form-control <?php $__errorArgs = ['video_type'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="video_type"
+unset($__errorArgs, $__bag); ?>" 
+                                            id="video_type" 
                                             name="video_type">
                                         <option value=""><?php echo e(__('messages.select_video_type')); ?></option>
-                                        <option value="youtube" <?php echo e(old('video_type', $content->video_type) == 'youtube' ? 'selected' : ''); ?>>
+                                        <option value="youtube" <?php echo e(old('video_type') == 'youtube' ? 'selected' : ''); ?>>
                                             YouTube
                                         </option>
-                                        <option value="bunny" <?php echo e(old('video_type', $content->video_type) == 'bunny' ? 'selected' : ''); ?>>
+                                        <option value="bunny" <?php echo e(old('video_type') == 'bunny' ? 'selected' : ''); ?>>
                                             Bunny CDN
                                         </option>
                                     </select>
@@ -298,7 +297,7 @@ unset($__errorArgs, $__bag); ?>
                                     <label for="video_url" class="form-label">
                                         <?php echo e(__('messages.video_url')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="url"
+                                    <input type="url" 
                                            class="form-control <?php $__errorArgs = ['video_url'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -306,12 +305,11 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="video_url"
-                                           name="video_url"
-                                           value="<?php echo e(old('video_url', $content->video_url)); ?>"
-                                           placeholder="https://example.com/video"
-                                           >
+unset($__errorArgs, $__bag); ?>" 
+                                           id="video_url" 
+                                           name="video_url" 
+                                           value="<?php echo e(old('video_url')); ?>" 
+                                           placeholder="https://example.com/video">
                                     <?php $__errorArgs = ['video_url'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -331,7 +329,7 @@ unset($__errorArgs, $__bag); ?>
                                         <?php echo e(__('messages.upload_video')); ?>
 
                                     </label>
-                                    <input type="file"
+                                    <input type="file" 
                                            class="form-control <?php $__errorArgs = ['upload_video'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -339,9 +337,9 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="upload_video"
-                                           name="upload_video"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="upload_video" 
+                                           name="upload_video" 
                                            accept="video/*">
                                     <small class="form-text text-muted"><?php echo e(__('messages.video_requirements_optional')); ?></small>
                                     <?php $__errorArgs = ['upload_video'];
@@ -360,7 +358,7 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label for="video_duration" class="form-label"><?php echo e(__('messages.video_duration')); ?></label>
-                                    <input type="number"
+                                    <input type="number" 
                                            class="form-control <?php $__errorArgs = ['video_duration'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -368,10 +366,10 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="video_duration"
-                                           name="video_duration"
-                                           value="<?php echo e(old('video_duration', $content->video_duration)); ?>"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="video_duration" 
+                                           name="video_duration" 
+                                           value="<?php echo e(old('video_duration')); ?>" 
                                            min="0"
                                            placeholder="<?php echo e(__('messages.duration_seconds')); ?>">
                                     <small class="form-text text-muted"><?php echo e(__('messages.duration_seconds_help')); ?></small>
@@ -387,18 +385,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
-
-                            <?php if($content->content_type === 'video' && $content->video_url): ?>
-                                <div class="col-12">
-                                    <div class="alert alert-info">
-                                        <strong><?php echo e(__('messages.current_video')); ?>:</strong>
-                                        <a href="<?php echo e($content->video_url); ?>" target="_blank" class="btn btn-sm btn-primary ms-2">
-                                            <i class="fas fa-external-link-alt"></i> <?php echo e(__('messages.view_current_video')); ?>
-
-                                        </a>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
                         </div>
 
                         <!-- PDF Fields -->
@@ -406,7 +392,7 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-12">
                                 <h5 class="text-primary"><?php echo e(__('messages.pdf_details')); ?></h5>
                             </div>
-
+                            
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="pdf_type" class="form-label">
@@ -419,23 +405,23 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="pdf_type"
+unset($__errorArgs, $__bag); ?>" 
+                                            id="pdf_type" 
                                             name="pdf_type">
                                         <option value=""><?php echo e(__('messages.select_pdf_type')); ?></option>
-                                        <option value="homework" <?php echo e(old('pdf_type', $content->pdf_type) == 'homework' ? 'selected' : ''); ?>>
+                                        <option value="homework" <?php echo e(old('pdf_type') == 'homework' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.homework')); ?>
 
                                         </option>
-                                        <option value="worksheet" <?php echo e(old('pdf_type', $content->pdf_type) == 'worksheet' ? 'selected' : ''); ?>>
+                                        <option value="worksheet" <?php echo e(old('pdf_type') == 'worksheet' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.worksheet')); ?>
 
                                         </option>
-                                        <option value="notes" <?php echo e(old('pdf_type', $content->pdf_type) == 'notes' ? 'selected' : ''); ?>>
+                                        <option value="notes" <?php echo e(old('pdf_type') == 'notes' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.notes')); ?>
 
                                         </option>
-                                        <option value="other" <?php echo e(old('pdf_type', $content->pdf_type) == 'other' ? 'selected' : ''); ?>>
+                                        <option value="other" <?php echo e(old('pdf_type') == 'other' ? 'selected' : ''); ?>>
                                             <?php echo e(__('messages.other')); ?>
 
                                         </option>
@@ -456,10 +442,9 @@ unset($__errorArgs, $__bag); ?>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
                                     <label for="file_path" class="form-label">
-                                        <?php echo e(__('messages.new_pdf_file')); ?>
-
+                                        <?php echo e(__('messages.pdf_file')); ?> <span class="text-danger">*</span>
                                     </label>
-                                    <input type="file"
+                                    <input type="file" 
                                            class="form-control <?php $__errorArgs = ['file_path'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -467,11 +452,11 @@ if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
-unset($__errorArgs, $__bag); ?>"
-                                           id="file_path"
-                                           name="file_path"
+unset($__errorArgs, $__bag); ?>" 
+                                           id="file_path" 
+                                           name="file_path" 
                                            accept=".pdf">
-                                    <small class="form-text text-muted"><?php echo e(__('messages.pdf_requirements_optional')); ?></small>
+                                    <small class="form-text text-muted"><?php echo e(__('messages.pdf_requirements')); ?></small>
                                     <?php $__errorArgs = ['file_path'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -484,17 +469,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
-                            <?php if($content->content_type != 'video' && $content->file_path): ?>
-                                <div class="col-12">
-                                    <div class="alert alert-info">
-                                        <strong><?php echo e(__('messages.current_pdf')); ?>:</strong>
-                                        <a href="<?php echo e($content->file_path); ?>" target="_blank" class="btn btn-sm btn-primary ms-2">
-                                            <i class="fas fa-download"></i> <?php echo e(__('messages.download_current_pdf')); ?>
-
-                                        </a>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -505,7 +479,7 @@ unset($__errorArgs, $__bag); ?>
 
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> <?php echo e(__('messages.update')); ?>
+                                <i class="fas fa-save"></i> <?php echo e(__('messages.save')); ?>
 
                             </button>
                         </div>
@@ -524,14 +498,14 @@ function toggleContentFields() {
     const videoUpload = document.getElementById('upload_video_field');
     const videoUrl    = document.getElementById('video_url_field');
     const pdfFields   = document.getElementById('pdf-fields');
-
+    
 
     // Hide all fields
     videoFields.style.display = 'none';
     videoUpload.style.display = 'none';
     videoUrl.style.display    = 'none';
     pdfFields.style.display   = 'none';
-
+    
     // Show relevant fields
     if (contentType === 'video') {
         videoFields.style.display = 'block';
@@ -550,8 +524,6 @@ function toggleContentFields() {
 document.addEventListener('DOMContentLoaded', function() {
     toggleContentFields();
 });
-
 </script>
 <?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/admin/courses/contents/edit.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.admin', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/admin/courses/contents/create.blade.php ENDPATH**/ ?>

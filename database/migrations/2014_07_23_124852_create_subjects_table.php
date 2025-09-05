@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('name_ar');                               // Arabic name
             $table->string('name_en')->nullable();                   // English name
+            $table->boolean('is_subject')->default(true)->comment('true mean it subject els it just optional field');            // Active status
             $table->text('description_ar')->nullable();              // Arabic description
             $table->text('description_en')->nullable();              // English description
-            // $table->string('field_type')->nullable()->comment('require if related to categories.ctg_key=final_year- scientific-fields || literary-fields');
             $table->string('icon')->nullable();                      // Font Awesome icon class
             $table->string('color')->default('#007bff');           // Category color
             $table->integer('sort_order')->default(0);               // For ordering

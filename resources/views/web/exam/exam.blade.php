@@ -229,7 +229,9 @@
                         <div style="padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
                             <div>
                                 <strong>
-                                    <a href="{{route('review.attempt',['exam'=>$exam->id,'attempt'=>$attempt->id])}}">المحاولة {{ $loop->iteration }}</a>
+                                    <a href="{{route('review.attempt',['exam'=>$exam->id,'attempt'=>$attempt->id])}}">
+                                        محاولة
+                                    </a>
                                 </strong> -
                                 <span>{{ $attempt->submitted_at->format('Y-m-d H:i') }}</span>
                             </div>
