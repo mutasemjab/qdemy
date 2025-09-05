@@ -61,6 +61,7 @@ Route::group(['prefix' => 'v1/user'], function () {
 
         // Tawjihi specific
         Route::get('/tawjihi/final-grade-fields', [CategoryController::class, 'getTawjihiFinalGradeFields']);
+        Route::get('/tawjihi/first-grade-fields', [CategoryController::class, 'getTawjihiFirstYear']);
 
         // Special programs
         Route::get('/international-program', [CategoryController::class, 'getInternationalProgram']);
