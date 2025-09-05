@@ -8,12 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ParentStudent extends Model
 {
     use HasFactory;
-    protected $guarded = [];
-
-    protected $table = 'parent_students';
+     protected $table = 'parent_students';
+    protected $fillable = ['parentt_id', 'user_id'];
 
     /**
-     * Get the parent associated with this relationship.
+     * Get the parent that owns this relationship.
      */
     public function parent()
     {
@@ -21,7 +20,7 @@ class ParentStudent extends Model
     }
 
     /**
-     * Get the student (user) associated with this relationship.
+     * Get the student that belongs to this relationship.
      */
     public function student()
     {
@@ -29,79 +28,42 @@ class ParentStudent extends Model
     }
 
     /**
-     * Scope to get relationships for a specific parent.
+     * Scope to get active relationships only.
      */
-    public function scopeForParent($query, $parentId)
+    public function scopeActive($query)
     {
-        return $query->where('parentt_id', $parentId);
+        return $query->whereHas('student', function($q) {
+            $q->where('activate', 1);
+        });
     }
 
     /**
-     * Scope to get relationships for a specific student.
+     * Check if the relationship is valid (student is active).
      */
-    public function scopeForStudent($query, $studentId)
+    public function isValid()
     {
-        return $query->where('user_id', $studentId);
+        return $this->student && $this->student->activate == 1 && $this->student->role_name === 'student';
     }
 
     /**
-     * Check if a relationship exists between a parent and student.
-     *
-     * @param int $parentId
-     * @param int $studentId
-     * @return bool
+     * Get relationships for a specific parent.
      */
-    public static function relationshipExists($parentId, $studentId)
+    public static function getByParent($parentId)
     {
-        return static::where('parentt_id', $parentId)
-                    ->where('user_id', $studentId)
-                    ->exists();
+        return self::where('parentt_id', $parentId)
+                  ->with(['student' => function($query) {
+                      $query->where('activate', 1)->where('role_name', 'student');
+                  }])
+                  ->get();
     }
 
     /**
-     * Create a relationship if it doesn't exist.
-     *
-     * @param int $parentId
-     * @param int $studentId
-     * @return static|bool
+     * Get relationships for a specific student.
      */
-    public static function createIfNotExists($parentId, $studentId)
+    public static function getByStudent($studentId)
     {
-        if (static::relationshipExists($parentId, $studentId)) {
-            return false;
-        }
-
-        return static::create([
-            'parentt_id' => $parentId,
-            'user_id' => $studentId,
-        ]);
-    }
-
-    /**
-     * Get all parents for a specific student.
-     *
-     * @param int $studentId
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public static function getParentsForStudent($studentId)
-    {
-        return static::where('user_id', $studentId)
-                    ->with('parent')
-                    ->get()
-                    ->pluck('parent');
-    }
-
-    /**
-     * Get all students for a specific parent.
-     *
-     * @param int $parentId
-     * @return \Illuminate\Database\Eloquent\Collection
-     */
-    public static function getStudentsForParent($parentId)
-    {
-        return static::where('parentt_id', $parentId)
-                    ->with('student')
-                    ->get()
-                    ->pluck('student');
+        return self::where('user_id', $studentId)
+                  ->with('parent.user')
+                  ->get();
     }
 }

@@ -37,10 +37,9 @@
               <a href="{{ route('user.login') }}" class="btn btn-outline">تسجيل دخول</a>
             @else
               <a href="{{ route('student.account') }}" class="btn btn-outline">حسابي</a>
-              <form action="{{ route('logout') }}" method='post'>@csrf
+              <form action="{{ route('user.logout') }}" method='post'>@csrf
                 <button style='border: 1px solid #0055D2;padding: 8px;' class="btn btn-primary">تسجيل خروج</button>
               </form>
-              <!-- <a href="{{ route('logout') }}" class="btn btn-primary">تسجيل خروج</a> -->
             @endif
 
             <!-- Language Dropdown -->

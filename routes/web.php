@@ -153,7 +153,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     });
 
     Route::group(['middleware' => 'auth:user'], function () {
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/logout', [AuthController::class, 'logout'])->name('user.logout');
         Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
         Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
@@ -176,8 +176,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/register', [AuthController::class, 'register'])->name('user.register.submit');
         Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.reset');
 
-        // Google Login
-        Route::get('login/google', [AuthController::class, 'redirectToGoogle'])->name('login.google');
-        Route::get('login/google/callback', [AuthController::class, 'handleGoogleCallback']);
+          // AJAX routes for parent registration
+        Route::post('/search-student', [AuthController::class, 'searchStudent'])->name('user.search.student');
+        Route::get('/available-students', [AuthController::class, 'getAvailableStudents'])->name('user.available.students');
     });
 });
+    

@@ -50,6 +50,34 @@ class User extends Authenticatable
       return $this->hasOne(Parentt::class);
    }
 
+   public function getAvailableStudentsToAdd($search = null)
+    {
+        if ($this->role_name !== 'parent') {
+            return collect();
+        }
+
+        $parentRecord = $this->parentRecord;
+        if (!$parentRecord) {
+            return collect();
+        }
+
+        // Get students that are not already this parent's children
+        $existingChildrenIds = $parentRecord->students()->pluck('user_id')->toArray();
+
+        $query = self::where('role_name', 'student')
+                    ->where('activate', 1)
+                    ->whereNotIn('id', $existingChildrenIds);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        return $query->select('id', 'name', 'phone', 'clas_id')->get();
+    }
+    
    public function parentRelationships()
    {
       return $this->hasMany(ParentStudent::class);
