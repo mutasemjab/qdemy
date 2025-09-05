@@ -33,7 +33,6 @@ return new class extends Migration
             $table->integer('sort_order')->default(0);
             
             // Add indexes for better performance
-            $table->index(['category_id', 'subject_id', 'is_active']);
             $table->index(['created_at']);
             $table->index(['sort_order']);
             $table->timestamps();
