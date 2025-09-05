@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Models\Category;
 use App\Models\CourseContent;
 use App\Models\CourseSection;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -19,7 +20,7 @@ class CoursesSeeder extends Seeder
 
         $this->main_course();
 
-        $teachers   = Teacher::pluck('id')->toArray();
+        $teachers   = User::where('role_name','teacher')->pluck('id')->toArray();
         $subjects = Subject::get();
 
         $faker      = Factory::create();
@@ -133,7 +134,7 @@ class CoursesSeeder extends Seeder
         $Subject = Subject::first();
 
         // جلب مدرس عشوائي
-        $teacher = Teacher::inRandomOrder()->first();
+        $teacher =  User::where('role_name','teacher')->inRandomOrder()->first();
 
         // إنشاء الكورس نفسه
         $course = Course::create([

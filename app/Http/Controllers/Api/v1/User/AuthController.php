@@ -17,6 +17,70 @@ class AuthController extends Controller
 {
     use Responses;
 
+    public function getClasses()
+    {
+        try {
+            $classes = collect(range(1, 12))->map(function ($grade) {
+                return [
+                    'id' => $grade,
+                    'name_ar' => "الصف " . $this->getArabicGradeName($grade),
+                    'name_en' => $this->getEnglishGradeName($grade),
+                ];
+            });
+
+            return $this->success_response('Classes retrieved successfully', $classes);
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve classes', $e->getMessage());
+        }
+    }
+
+    /**
+     * Helper for Arabic names
+     */
+    private function getArabicGradeName($grade)
+    {
+        $names = [
+            1 => 'الأول',
+            2 => 'الثاني',
+            3 => 'الثالث',
+            4 => 'الرابع',
+            5 => 'الخامس',
+            6 => 'السادس',
+            7 => 'السابع',
+            8 => 'الثامن',
+            9 => 'التاسع',
+            10 => 'العاشر',
+            11 => 'الحادي عشر',
+            12 => 'الثاني عشر',
+        ];
+
+        return $names[$grade] ?? $grade;
+    }
+
+    /**
+     * Helper for English names
+     */
+    private function getEnglishGradeName($grade)
+    {
+        $names = [
+            1 => 'First Grade',
+            2 => 'Second Grade',
+            3 => 'Third Grade',
+            4 => 'Fourth Grade',
+            5 => 'Fifth Grade',
+            6 => 'Sixth Grade',
+            7 => 'Seventh Grade',
+            8 => 'Eighth Grade',
+            9 => 'Ninth Grade',
+            10 => 'Tenth Grade',
+            11 => 'Eleventh Grade',
+            12 => 'Twelfth Grade',
+        ];
+
+        return $names[$grade] ?? "Grade {$grade}";
+    }
+
+
     /**
      * Register a new student
      */

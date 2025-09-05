@@ -41,7 +41,10 @@ class User extends Authenticatable
       return $this->hasOne(Teacher::class);
    }
 
-
+   public function teacherProfile()
+   {
+      return $this->hasOne(Teacher::class, 'user_id');
+   }
    public function parentt()
    {
       return $this->hasOne(Parentt::class);
@@ -98,4 +101,6 @@ class User extends Authenticatable
    {
       return $this->followedTeachers()->where('teacher_id', $teacherId)->exists();
    }
+
+  
 }
