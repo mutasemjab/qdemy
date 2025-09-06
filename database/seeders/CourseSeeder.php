@@ -59,6 +59,8 @@ class CourseSeeder extends Seeder
                 // جلب مدرس عشوائي لكل كورس
                 $teacher = User::where('role_name','teacher')->inRandomOrder()->first();
 
+      
+
                 // تعديل العنوان بإضافة اسم الكاتيجوري
                 $title_en = $courseData['title_en'] . ' - ' . ($subject->name_en ?? $subject->name_ar);
                 $title_ar = $courseData['title_ar'] . ' - ' . ($subject->name_ar ?? $subject->name_en);

@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\v1\User\AuthController;
 use App\Http\Controllers\Api\v1\User\BannerController;
 use App\Http\Controllers\Api\v1\User\SettingController;
 use App\Http\Controllers\Api\v1\User\HomeController;
+use App\Http\Controllers\Api\v1\User\PosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['prefix' => 'v1/user'], function () {
 
     //---------------- Auth --------------------//
+    Route::get('/classes', [AuthController::class, 'getClasses']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::get('/banners', [BannerController::class, 'index']);
@@ -60,6 +62,7 @@ Route::group(['prefix' => 'v1/user'], function () {
 
         // Tawjihi specific
         Route::get('/tawjihi/final-grade-fields', [CategoryController::class, 'getTawjihiFinalGradeFields']);
+        Route::get('/tawjihi/first-grade-fields', [CategoryController::class, 'getTawjihiFirstYear']);
 
         // Special programs
         Route::get('/international-program', [CategoryController::class, 'getInternationalProgram']);
@@ -69,10 +72,12 @@ Route::group(['prefix' => 'v1/user'], function () {
 
     Route::get('/exams', [ExamController::class, 'index']);
 
+    Route::get('/pos', [PosController::class, 'index']);
+
     // Auth Route
     Route::group(['middleware' => ['auth:user-api']], function () {
 
-
+         Route::get('/exams/{exam}/link', [ExamController::class, 'getExamLink']);
         Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);

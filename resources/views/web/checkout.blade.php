@@ -1,6 +1,5 @@
 @extends('layouts.app')
-
-@section('title', translate_lang('cart'))
+@section('title', __('front.page_title'))
 
 @section('content')
 <section class="checkout-wrapper">
@@ -25,6 +24,7 @@
             <span class="checkout-col">{{ translate_lang('status') }}</span>
             <span class="checkout-col">{{ translate_lang('actions') }}</span>
         </div>
+    </div>
 
         @php
             $total = 0;
@@ -536,4 +536,5 @@ document.addEventListener('DOMContentLoaded', function () {
     new CartManager();
 });
 </script>
-@endpush
+
+@endsection

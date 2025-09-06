@@ -61,6 +61,72 @@
                         </div>
 
                         <div class="row">
+                            <!-- Subject -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="subject_id">{{ __('messages.subject') }} <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('subject_id') is-invalid @enderror" 
+                                            id="subject_id" name="subject_id" disabled>
+                                        <option value="">{{ __('messages.select_subject') }}</option>
+                                    </select>
+                                    @error('subject_id')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.select_category_first') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Display Name -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="display_name">{{ __('messages.display_name') }}</label>
+                                    <input type="text" class="form-control @error('display_name') is-invalid @enderror" 
+                                           id="display_name" name="display_name" value="{{ old('display_name') }}"
+                                           placeholder="{{ __('messages.enter_display_name') }}">
+                                    @error('display_name')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.leave_empty_to_use_filename') }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Sort Order -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="sort_order">{{ __('messages.sort_order') }}</label>
+                                    <input type="number" class="form-control @error('sort_order') is-invalid @enderror" 
+                                           id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}" min="0">
+                                    @error('sort_order')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.higher_number_appears_first') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Active Status -->
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="is_active">{{ __('messages.status') }}</label>
+                                    <div class="form-check mt-2">
+                                        <input type="checkbox" class="form-check-input" id="is_active" name="is_active" 
+                                               value="1" {{ old('is_active', true) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_active">
+                                            {{ __('messages.active') }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <!-- PDF File -->
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -108,72 +174,144 @@
 @push('scripts')
 <script>
     $(document).ready(function() {
-        // Handle parent category change
-        $('#parent_category').change(function() {
-            var parentId = $(this).val();
-            var childSelect = $('#category_id');
+    // Handle parent category change
+    $('#parent_category').change(function() {
+        var parentId = $(this).val();
+        var childSelect = $('#category_id');
+        var subjectSelect = $('#subject_id');
+        
+        // Reset child category and subject
+        childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+        childSelect.prop('disabled', true);
+        subjectSelect.prop('disabled', true);
+        
+        if (parentId) {
+            // Show loading state
+            childSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
             
-            // Reset child category
-            childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
-            childSelect.prop('disabled', true);
-            
-            if (parentId) {
-                // Enable the parent category as selectable
-                childSelect.append('<option value="' + parentId + '">{{ __('messages.use_parent_category') }}</option>');
-                
-                // Fetch child categories
-                $.ajax({
-                    url: '{{ route('bank-questions.get-children', ':id') }}'.replace(':id', parentId),
-                    type: 'GET',
-                    success: function(data) {
-                        if (data.length > 0) {
-                            $.each(data, function(key, category) {
-                                childSelect.append('<option value="' + category.id + '">' + 
-                                    (category.name_ar || category.name_en) + '</option>');
-                            });
-                        }
-                        childSelect.prop('disabled', false);
-                    },
-                    error: function() {
-                        alert('{{ __('messages.error_loading_categories') }}');
+            // Fetch child categories
+            $.ajax({
+                url: '{{ route('bank-questions.get-children', ':id') }}'.replace(':id', parentId),
+                type: 'GET',
+                success: function(data) {
+                    // Reset the select with default option
+                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+                    
+                    // Add option to use parent category itself
+                    childSelect.append('<option value="' + parentId + '">{{ __('messages.use_parent_category') }}</option>');
+                    
+                    // Add child categories if any exist
+                    if (data.length > 0) {
+                        $.each(data, function(key, category) {
+                            childSelect.append('<option value="' + category.id + '">' + 
+                                (category.name_ar || category.name_en) + '</option>');
+                        });
                     }
-                });
-            }
-        });
-
-        // Handle file input change
-        $('#pdf').change(function() {
-            var file = this.files[0];
-            var preview = $('#pdf-preview');
-            
-            if (file) {
-                if (file.type !== 'application/pdf') {
-                    alert('{{ __('messages.please_select_pdf_file') }}');
-                    $(this).val('');
-                    preview.addClass('d-none');
-                    return;
+                    
+                    // Enable the child select
+                    childSelect.prop('disabled', false);
+                },
+                error: function() {
+                    alert('{{ __('messages.error_loading_categories') }}');
+                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+                    childSelect.prop('disabled', false);
                 }
+            });
+        }
+    });
+
+    // Handle child category change - this is where we load subjects
+    $('#category_id').change(function() {
+        var categoryId = $(this).val();
+        var subjectSelect = $('#subject_id');
+        
+        // Reset subjects
+        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+        subjectSelect.prop('disabled', true);
+        
+        if (categoryId) {
+            loadSubjects(categoryId);
+        }
+    });
+
+    // Function to load subjects based on selected category
+    function loadSubjects(categoryId) {
+        var subjectSelect = $('#subject_id');
+        
+        // Show loading state
+        subjectSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
+        subjectSelect.prop('disabled', true);
+        
+        $.ajax({
+            url: '{{ route('bank-questions.subjects-by-category') }}',
+            type: 'GET',
+            data: { category_id: categoryId },
+            success: function(data) {
+                // Reset with default option
+                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
                 
-                var fileName = file.name;
-                var fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                
-                $('.custom-file-label').text(fileName);
-                $('#pdf-name').text(fileName);
-                $('#pdf-size').text(fileSize);
-                preview.removeClass('d-none');
-            } else {
-                $('.custom-file-label').text('{{ __('messages.choose_pdf_file') }}');
-                preview.addClass('d-none');
+                if (data.length > 0) {
+                    $.each(data, function(key, subject) {
+                        subjectSelect.append('<option value="' + subject.id + '">' + subject.name + '</option>');
+                    });
+                    subjectSelect.prop('disabled', false);
+                } else {
+                    subjectSelect.append('<option value="" disabled>{{ __('messages.no_subjects_found') }}</option>');
+                    subjectSelect.prop('disabled', true);
+                }
+            },
+            error: function() {
+                alert('{{ __('messages.error_loading_subjects') }}');
+                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+                subjectSelect.prop('disabled', false);
             }
         });
+    }
 
-        // Restore old values if validation fails
-        @if(old('parent_category'))
-            $('#parent_category').trigger('change');
-            setTimeout(function() {
-                $('#category_id').val('{{ old('category_id') }}');
-            }, 500);
-        @endif
+    // Handle file input change
+    $('#pdf').change(function() {
+        var file = this.files[0];
+        var preview = $('#pdf-preview');
+        var displayNameInput = $('#display_name');
+        
+        if (file) {
+            if (file.type !== 'application/pdf') {
+                alert('{{ __('messages.please_select_pdf_file') }}');
+                $(this).val('');
+                preview.addClass('d-none');
+                return;
+            }
+            
+            var fileName = file.name;
+            var fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            
+            $('.custom-file-label').text(fileName);
+            $('#pdf-name').text(fileName);
+            $('#pdf-size').text(fileSize);
+            preview.removeClass('d-none');
+            
+            // Auto-fill display name if empty
+            if (!displayNameInput.val()) {
+                displayNameInput.val(fileName.replace(/\.[^/.]+$/, "")); // Remove extension
+            }
+        } else {
+            $('.custom-file-label').text('{{ __('messages.choose_pdf_file') }}');
+            preview.addClass('d-none');
+        }
     });
+
+    // Restore old values if validation fails
+    @if(old('parent_category'))
+        $('#parent_category').trigger('change');
+        setTimeout(function() {
+            $('#category_id').val('{{ old('category_id') }}');
+            $('#category_id').trigger('change');
+            setTimeout(function() {
+                $('#subject_id').val('{{ old('subject_id') }}');
+            }, 500);
+        }, 500);
+    @endif
+});
 </script>
 @endpush

@@ -99,41 +99,44 @@ class HomeController extends Controller
             ];
 
             // Get latest courses with teacher and category info
-            $courses = Course::with(['teacher', 'subject'])
-                ->select([
-                    'id',
-                    'title_en',
-                    'title_ar',
-                    'description_en',
-                    'description_ar',
-                    'selling_price',
-                    'photo',
-                    'teacher_id',
-                    'subject_id',
-                    'created_at'
-                ])
-                ->orderBy('created_at', 'desc')
-                ->limit(10) // Limit to latest 10 courses for home page
-                ->get()
-                ->map(function ($course) {
-                    return [
-                        'id' => $course->id,
-                        'title_en' => $course->title_en,
-                        'title_ar' => $course->title_ar,
-                        'description_en' => $course->description_en,
-                        'description_ar' => $course->description_ar,
-                        'selling_price' => $course->selling_price,
-                        'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
-                        'created_at' => $course->created_at,
-                        'teacher' => $course->teacher ? [
-                            'id' => $course->teacher->id,
-                            'name' => $course->teacher->name,
-                            'name_of_lesson' => $course->teacher->name_of_lesson,
-                            'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
-                        ] : null,
-                       
-                    ];
-                });
+            $courses = Course::with(['teacher.teacherProfile', 'subject'])
+                        ->select([
+                            'id',
+                            'title_en',
+                            'title_ar',
+                            'description_en',
+                            'description_ar',
+                            'selling_price',
+                            'photo',
+                            'teacher_id',
+                            'subject_id',
+                            'created_at'
+                        ])
+                        ->orderBy('created_at', 'desc')
+                        ->limit(10)
+                        ->get()
+                        ->map(function ($course) {
+                            return [
+                                'id' => $course->id,
+                                'title_en' => $course->title_en,
+                                'title_ar' => $course->title_ar,
+                                'description_en' => $course->description_en,
+                                'description_ar' => $course->description_ar,
+                                'selling_price' => $course->selling_price,
+                                'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                                'created_at' => $course->created_at,
+                                'teacher' => $course->teacher ? [
+                                    'id' => $course->teacher->id,
+                                    'name' => $course->teacher->name,
+                                    'email' => $course->teacher->email,
+                                    // Teacher profile fields (from teachers table)
+                                    'name_of_lesson' => optional($course->teacher->teacherProfile)->name_of_lesson,
+                                    'photo' => $course->teacher->teacherProfile && $course->teacher->teacherProfile->photo
+                                        ? asset('assets/admin/uploads/' . $course->teacher->teacherProfile->photo)
+                                        : null,
+                                ] : null,
+                            ];
+                        });
 
             // Get featured teachers
             $teachers = Teacher::with('user')

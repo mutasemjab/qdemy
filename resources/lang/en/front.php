@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return array(
   'What Makes QDEMY Special' => 'What Makes QDEMY Special',
   'QDEMY Services' => 'QDEMY Services',
   'QDEMY Community' => 'QDEMY Community',
@@ -127,6 +127,102 @@ return array (
   'question' => 'question',
   'start_exam' => 'start_exam',
   'continue' => 'continue',
+  // Community section
+  'title' => 'Community',
+  'header' => 'Qdemy Community',
+  'write_post' => 'What\'s on your mind?',
+  'submit_post' => 'Share Post',
+  'add_comment' => 'Add a comment',
+  'login_to_comment' => 'Login to comment',
+  'like' => 'Like',
+  'liked' => 'Liked',
+  'view_all_comments' => 'View all comments',
+  'hide_comments' => 'Hide comments',
+  'no_posts' => 'No posts yet',
+  'no_posts_description' => 'Be the first to share something with the community!',
+  'post_submitted' => 'Your post has been submitted for approval.',
+  'comment_submitted' => 'Your comment has been submitted for approval.',
+  'Follow' => 'Follow',
+  'Unfollow' => 'Unfollow',
+  'Followers' => 'Followers',
+  'Loading' => 'Loading',
+  'Please login to follow teachers' => 'Please login to follow teachers',
+  'Followed successfully' => 'Followed successfully',
+  'Unfollowed successfully' => 'Unfollowed successfully',
+  'An error occurred' => 'An error occurred',
+    'page_title' => 'Card Order',
+    'order_card' => 'Order Card',
+    'choose_your_card' => 'Choose Your Card',
+    'elementary_grades' => 'Elementary Grades',
+    'tawjihi' => 'Tawjihi',
+    'universities_colleges' => 'Universities and Colleges',
+    'international_program' => 'International Program',
+    'contact_whatsapp' => 'Contact us via WhatsApp',
+    'contact' => 'Contact',
+    'cash_payment' => 'Cash Payment',
+    'submit' => 'Submit',
+    'visa_payment' => 'Visa Payment',
+    'pay' => 'Pay',
+    'please_select_card' => 'Please select a card type first',
+    
+    // WhatsApp message templates
+    'whatsapp_contact_message' => 'Hello! I would like to inquire about the :card_type card. Can you please provide me with more information?',
+    'whatsapp_cash_message' => 'Hello! I would like to order a :card_type card and pay with cash. Please let me know the next steps.',
+    'whatsapp_visa_message' => 'Hello! I would like to order a :card_type card and pay with visa/card. Please provide me with payment details.',
+  'ministerial_years_questions' => 'Ministerial Years Questions',
+    'ministerial_questions' => 'Ministerial Questions',
+    
+    // Form labels - same as bank questions
+    'choose_program' => 'Choose Program',
+    'choose_subject' => 'Choose Subject',
+    'search' => 'Search',
+    'search_placeholder' => 'Search...',
+    
+    // Actions
+    'share' => 'Share',
+    'download_file' => 'Download File',
+    'downloads_count' => 'Downloads (:count)',
+    
+    // Messages
+    'no_ministerial_questions_found' => 'No ministerial questions found',
+    'loading' => 'Loading...',
+    'file_not_available' => 'File not available',
+    
+    // Categories and Subjects
+    'all_programs' => 'All Programs',
+    'all_subjects' => 'All Subjects',
+    'select_program_first' => 'Select program first',
+     'technical_support' => 'Technical Support',
+    'quick_links' => 'Quick Links',
+    'contact_us' => 'Contact Us',
+    'follow_us_social_media' => 'Follow Us on Social Media',
+    
+    // Links
+    'privacy_policy' => 'Privacy Policy',
+    'terms_conditions' => 'Terms & Conditions',
+    'international_program' => 'International Program',
+    'basic_grades_program' => 'Basic Grades Program',
+    'universities_program' => 'Universities and Colleges Program',
+    'tawjihi_program' => 'Tawjihi & Secondary Program',
+    'packages_offers' => 'Packages & Offers',
+    
+    // Contact information
+    'technical_support_email' => 'Technical Support',
+    'careers_email' => 'Careers',
+    
+    // Social media
+    'facebook' => 'Facebook',
+    'instagram' => 'Instagram',
+    'twitter' => 'Twitter',
+    'youtube' => 'YouTube',
+    'linkedin' => 'LinkedIn',
+    
+    // Statistics (if you want to display them)
+    'statistics' => 'Statistics',
+    'courses' => 'Courses',
+    'teachers' => 'Teachers',
+    'viewing_hours' => 'Viewing Hours',
+    'students' => 'Students',
   'English Language' => 'English Language',
   'select_program' => 'Select Program',
   'select_grade' => 'Select Grade',

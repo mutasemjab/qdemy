@@ -166,6 +166,45 @@ class CategoryController extends Controller
         }
     }
 
+    public function getTawjihiFirstYear()
+    {
+        try {
+            $tawjihiFirstYear  = $this->categoryRepo->getTawjihiFirstGrade();
+
+            $data = [
+                'id' => $tawjihiFirstYear->id,
+                'name_ar' => $tawjihiFirstYear->name_ar,
+                'name_en' => $tawjihiFirstYear->name_en,
+                'level' => $tawjihiFirstYear->level,
+                'ctg_key' => $tawjihiFirstYear->ctg_key,
+                'sort_order' => $tawjihiFirstYear->sort_order,
+                'ministry_subjects' => $this->subjectRepo->getTawjihiFirstGradesMinistrySubjects()->map(function ($subject) {
+                    return [
+                        'id' => $subject->id,
+                        'name_ar' => $subject->name_ar,
+                        'name_en' => $subject->name_en,
+                        'icon' => $subject->icon,
+                        'color' => $subject->color
+                    ];
+                }),
+                'school_subjects' => $this->subjectRepo->getTawjihiFirstGradesSchoolSubjects()->map(function ($subject) {
+                    return [
+                        'id' => $subject->id,
+                        'name_ar' => $subject->name_ar,
+                        'name_en' => $subject->name_en,
+                        'icon' => $subject->icon,
+                        'color' => $subject->color
+                    ];
+                }),
+            ];
+
+            return $this->success_response('Tawjihi first year retrieved successfully', $data);
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve Tawjihi first year', $e->getMessage());
+        }
+    }
+
+
     /**
      * Get international program
      * GET /api/categories/international-program

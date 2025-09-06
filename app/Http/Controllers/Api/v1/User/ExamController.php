@@ -8,6 +8,7 @@ use App\Repositories\CategoryRepository;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\URL;
 
 class ExamController extends Controller
 {
@@ -19,6 +20,26 @@ class ExamController extends Controller
 
         return $this->success_response(__('Exams fetched successfully'), $exams);
     }
+
+
+    public function getExamLink(Request $request, $examId)
+  {
+      $user = auth()->user(); // user from mobile token (Sanctum / Passport)
+
+      // Check if exam exists
+      $exam = Exam::findOrFail($examId);
+
+      // ✅ Generate a signed URL (safe, expires after some minutes)
+      $signedUrl = URL::temporarySignedRoute(
+          'exam',  // route name
+          now()->addMinutes(30), // expiration time
+          ['exam' => $exam->id, 'user' => $user->id]
+      );
+
+      return $this->success_response(__('Exam link generated successfully'), [
+          'exam_link' => $signedUrl
+      ]);
+  }
 
     
 }

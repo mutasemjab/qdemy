@@ -289,6 +289,14 @@
                             </a>
                         </li>
                         @endif
+                         @if ($user->can('page-table') || $user->can('page-add') || $user->can('page-edit') || $user->can('page-delete'))
+                        <li class="nav-item">
+                            <a href="{{ route('pages.index') }}" class="nav-link {{ request()->routeIs('pages.*') ? 'active' : '' }}">
+                                <i class="far fa-star nav-icon"></i>
+                                <p>{{ __('messages.pages_management') }}</p>
+                            </a>
+                        </li>
+                        @endif
                     </ul>
                 </li>
                 @endif
@@ -334,6 +342,7 @@
                             </a>
                         </li>
                         @endif
+                       
                     </ul>
                 </li>
                 @endif

@@ -84,8 +84,8 @@
         <a href="{{ route('e-exam') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
         <a href="{{ route('courses') }}" class="service-btn dark">{{ __('front.Courses') }}</a>
         <a href="{{ route('sale-point') }}" class="service-btn light">{{ __('front.Sale Points') }}</a>
-        <a href="{{ route('ex-questions') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
-        <a href="{{ route('bank-questions') }}" class="service-btn light">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
+        <a href="{{ route('ministerialQuestions.index') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
+        <a href="{{ route('bankQuestions.index') }}" class="service-btn light">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
@@ -144,10 +144,7 @@
             @foreach($teachers as $teacher)
                 <div class="carousel-slide">
                     <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
-                    <div class="teacher-info">
-                        <h4>{{ $teacher->name }}</h4>
-                        <p>{{ $teacher->name_of_lesson }}</p>
-                    </div>
+                
                 </div>
             @endforeach
         </div>

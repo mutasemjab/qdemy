@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Comment extends Model
 {
     use HasFactory;
-protected $guarded = [];
-      protected $casts = [
+    protected $guarded = [];
+    protected $casts = [
         'is_approved' => 'boolean',
         'is_active' => 'boolean',
     ];
@@ -23,5 +23,4 @@ protected $guarded = [];
     {
         return $this->belongsTo(Post::class);
     }
-
 }

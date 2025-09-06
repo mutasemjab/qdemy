@@ -11,13 +11,13 @@
 
     <div class="examx-filters">
         <div class="examx-row">
-            <!-- Category Filter -->
+            <!-- Subject Filter -->
             <div class="examx-dropdown">
                 <button class="examx-pill">
                     <i class="fa-solid fa-caret-down"></i>
                     <span>
-                        @if(request('category') && $categories->find(request('category')))
-                            {{ app()->getLocale() == 'ar' ? $categories->find(request('category'))->name_ar : $categories->find(request('category'))->name_en }}
+                        @if(request('subject') && $subjects->find(request('subject')))
+                            {{ app()->getLocale() == 'ar' ? $subjects->find(request('subject'))->name_ar : $subjects->find(request('subject'))->name_en }}
                         @else
                             {{ __('front.Choose Subject') }}
                         @endif
@@ -25,10 +25,10 @@
                 </button>
                 <ul class="examx-menu">
                     <li><a href="{{ route('teachers') }}">{{ __('front.All Subjects') }}</a></li>
-                    @foreach($categories as $category)
+                    @foreach($subjects as $subject)
                         <li>
-                            <a href="{{ route('teachers', ['category' => $category->id]) }}">
-                                {{ app()->getLocale() == 'ar' ? $category->name_ar : $category->name_en }}
+                            <a href="{{ route('teachers', ['subject' => $subject->id]) }}">
+                                {{ app()->getLocale() == 'ar' ? $subject->name_ar : $subject->name_en }}
                             </a>
                         </li>
                     @endforeach
