@@ -19,13 +19,23 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['user', 'comments', 'likesCount', 'commentsCount'])
+        $posts = Post::with(['user', 'comments.user'])
+            ->withCount(['likes', 'comments'])
             ->latest()
             ->paginate(10);
         
         // Add can_delete flag to each post
         $posts->getCollection()->transform(function ($post) {
             $post->can_delete = $post->canBeDeletedBy(auth('user-api')->id());
+            
+            // Transform comments to include can_delete flag
+            if ($post->relationLoaded('comments')) {
+                $post->comments->transform(function ($comment) {
+                    $comment->can_delete = $comment->canBeDeletedBy(auth('user-api')->id());
+                    return $comment;
+                });
+            }
+            
             return $post;
         });
         
