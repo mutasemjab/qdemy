@@ -19,15 +19,21 @@ class CommentController extends Controller
     public function index($postId)
     {
         $post = Post::find($postId);
-
+        
         if (!$post) {
             return $this->error_response(__('Post not found'), null);
         }
-
+        
         $comments = $post->comments()->with('user')->latest()->get();
-
+        
+        // Add can_delete flag to each comment
+        $comments->transform(function ($comment) {
+            $comment->can_delete = $comment->canBeDeletedBy(auth('user-api')->id());
+            return $comment;
+        });
+        
         return $this->success_response(__('Comments fetched successfully'), $comments);
-    }
+}
 
     /**
      * Add comment to a post
@@ -50,7 +56,7 @@ class CommentController extends Controller
 
         $comment = Comment::create([
             'content' => $request->content,
-            'user_id' => auth()->id(),
+            'user_id' => auth('user-api')->id(),
             'post_id' => $post->id,
         ]);
 
@@ -68,7 +74,7 @@ class CommentController extends Controller
             return $this->error_response(__('Comment not found'), null);
         }
 
-        if ($comment->user_id !== auth()->id()) {
+        if ($comment->user_id !== auth('user-api')->id()) {
             return $this->error_response(__('Unauthorized'), null);
         }
 

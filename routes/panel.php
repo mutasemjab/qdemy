@@ -62,11 +62,16 @@ Route::group([
         Route::get('/profile', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'profile'])->name('profile');
         Route::get('/courses', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'courses'])->name('courses');
         Route::get('/students', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'students'])->name('students');
-        Route::get('/class-schedule', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'classSchedule'])->name('class-schedule');
-        Route::get('/attendance', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'attendance'])->name('attendance');
-        Route::get('/grade-assignments', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'gradeAssignments'])->name('grade-assignments');
-        Route::get('/student-reports', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'studentReports'])->name('student-reports');
         Route::get('/create-course', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'createCourse'])->name('create-course');
+
+        Route::post('/update-account', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'updateAccount'])->name('update.account');
+        Route::post('/notifications/{id}/read', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'markAsRead'])->name('notifications.read');
+        
+        // Community Routes
+        Route::get('/community', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'community'])->name('community');
+        Route::post('/community/post', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'createPost'])->name('create-post');
+        Route::post('/community/like', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'toggleLike'])->name('toggle-like');
+        Route::post('/community/comment', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'addComment'])->name('add-comment');
     });
     
     // General panel route that redirects based on role

@@ -19,7 +19,16 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['user', 'comments'])->latest()->paginate(10);
+        $posts = Post::with(['user', 'comments', 'likesCount', 'commentsCount'])
+            ->latest()
+            ->paginate(10);
+        
+        // Add can_delete flag to each post
+        $posts->getCollection()->transform(function ($post) {
+            $post->can_delete = $post->canBeDeletedBy(auth('user-api')->id());
+            return $post;
+        });
+        
         return $this->success_response(__('Posts fetched successfully'), $posts);
     }
 

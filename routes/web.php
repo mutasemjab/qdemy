@@ -101,7 +101,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         ->name('video.progress.complete');
     });
 
-    Route::get('/student-account', [StudentAccountController::class, 'index'])->name('student.account');
+    Route::get('/student-account', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('student.account');
 
     Route::group(['prefix' => 'cart'], function () {
         Route::get('/', [EnrollmentController::class, 'index'])->name('checkout');
@@ -157,6 +157,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
         Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
         Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+
+
         Route::post('/community', [CommunityController::class, 'store'])->name('community.store');
         Route::post('/community/posts/{post}/comments', [CommunityController::class, 'storeComment'])->name('community.comments.store');
         Route::post('/community/posts/{post}/toggle-like', [CommunityController::class, 'toggleLike'])->name('community.posts.toggle-like');

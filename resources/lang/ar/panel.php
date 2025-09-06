@@ -31,4 +31,12 @@ return [
     'faq_change_password_answer' => 'يمكنك تغيير كلمة المرور من خلال إعدادات الحساب',
     'faq_contact_teacher_question' => 'كيف أتواصل مع المعلم؟',
     'faq_contact_teacher_answer' => 'يمكنك إرسال رسالة من خلال نظام الرسائل في المنصة',
+       'lesson_name'     => 'اسم الدرس',
+    'description_en'  => 'الوصف (الإنجليزية)',
+    'description_ar'  => 'الوصف (العربية)',
+    'social_media'    => 'روابط وسائل التواصل الاجتماعي',
+    'facebook'        => 'فيسبوك',
+    'instagram'       => 'انستغرام',
+    'youtube'         => 'يوتيوب',
+    'whatsapp'        => 'واتساب',
 ];

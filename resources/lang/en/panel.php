@@ -32,6 +32,14 @@ return [
     'faq_change_password_answer' => 'You can change your password through account settings.',
     'faq_contact_teacher_question' => 'How can I contact my teacher?',
     'faq_contact_teacher_answer' => 'You can send a message via the messaging system on the platform.',
+       'lesson_name'     => 'Lesson Name',
+    'description_en'  => 'Description (English)',
+    'description_ar'  => 'Description (Arabic)',
+    'social_media'    => 'Social Media Links',
+    'facebook'        => 'Facebook',
+    'instagram'       => 'Instagram',
+    'youtube'         => 'YouTube',
+    'whatsapp'        => 'WhatsApp',
 
 
 ];

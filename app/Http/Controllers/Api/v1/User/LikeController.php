@@ -22,7 +22,7 @@ class LikeController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        $userId = auth()->id();
+        $userId = auth('user-api')->id();
 
         if ($post->isLikedBy($userId)) {
             return $this->error_response(__('You already liked this post'), null);
@@ -46,7 +46,7 @@ class LikeController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        $userId = auth()->id();
+        $userId = auth('user-api')->id();
 
         $like = PostLike::where('post_id', $post->id)->where('user_id', $userId)->first();
 

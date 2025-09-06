@@ -19,6 +19,7 @@ trait HasCommunity
         return Post::with(['user', 'comments.user', 'likes'])
             ->where('is_approved', true)
             ->where('is_active', true)
+            ->where('user_id',auth()->user()->id)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();

@@ -15,6 +15,18 @@ class Post extends Model
         'is_active' => 'boolean',
     ];
 
+     public function canBeDeletedBy($userId)
+    {
+        return $this->user_id == $userId;
+    }
+
+    // Add this accessor to include the flag in JSON responses
+    public function getCanDeleteAttribute()
+    {
+        $userId = auth()->id();
+        return $userId ? $this->canBeDeletedBy($userId) : false;
+    }
+    
     public function user()
     {
         return $this->belongsTo(User::class);
