@@ -1,14 +1,28 @@
+
+
 <div class="ud-panel" id="notifications">
   <div class="ud-title">{{ __('panel.notifications') }}</div>
   <div class="ud-list">
-    @for($i=0;$i<5;$i++)
-      <div class="ud-note">
+    @forelse($notifications as $note)
+      <div class="ud-note {{ is_null($note->read_at) ? 'bg-light' : '' }}">
         <div class="ud-note-main">
-          <b>{{ ['تم رفع مادة جديدة', 'تذكير بموعد الامتحان', 'تم تحديث الدرجات', 'رسالة من المعلم', 'عرض جديد متاح'][$i] }}</b>
-          <small>{{ ['يمكنك مشاهدة المادة الآن', 'الامتحان غداً الساعة 10 صباحاً', 'تم رفع درجات الاختبار الأخير', 'يرجى مراجعة الواجب المطلوب', 'خصم 20% على الدورات الجديدة'][$i] }}</small>
+          <b>{{ $note->title }}</b>
+          <small>{{ $note->body }}</small>
         </div>
-        <span class="ud-badge">{{ $i < 2 ? 'جديد' : '' }}</span>
+        <span class="ud-badge">
+          {{ is_null($note->read_at) ? __('panel.new') : '' }}
+        </span>
+
+        {{-- زر لتحديد مقروء --}}
+        @if(is_null($note->read_at))
+          <form method="POST" action="{{ route('student.notifications.read', $note->id) }}">
+            @csrf
+            <button type="submit" class="btn btn-sm btn-link">{{ __('panel.mark_as_read') }}</button>
+          </form>
+        @endif
       </div>
-    @endfor
+    @empty
+      <p class="text-muted">{{ __('panel.no_notifications') }}</p>
+    @endforelse
   </div>
 </div>

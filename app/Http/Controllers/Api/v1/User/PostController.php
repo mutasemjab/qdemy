@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\Responses;
 
+
+
 class PostController extends Controller
 {
     use Responses;
@@ -36,13 +38,11 @@ class PostController extends Controller
 
         $post = Post::create([
             'content' => $request->content,
-            'user_id' => auth()->id(), // logged-in user
+            'user_id' => auth('user-api')->id(), // Use the correct guard
         ]);
 
         return $this->success_response(__('Post created successfully'), $post);
     }
-
-  
 
     /**
      * Update post
@@ -55,7 +55,8 @@ class PostController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        if ($post->user_id !== auth()->id()) {
+        // Use the correct guard for authorization
+        if ($post->user_id !== auth('user-api')->id()) {
             return $this->error_response(__('Unauthorized'), null);
         }
 
@@ -84,7 +85,8 @@ class PostController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        if ($post->user_id !== auth()->id()) {
+        // Use the correct guard for authorization
+        if ($post->user_id !== auth('user-api')->id()) {
             return $this->error_response(__('Unauthorized'), null);
         }
 

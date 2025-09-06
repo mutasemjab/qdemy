@@ -15,7 +15,7 @@ Route::group([
 ], function () {
     
     // Student Panel Routes
-    Route::group([
+     Route::group([
         'prefix' => 'student',
         'middleware' => 'role:student',
         'as' => 'student.'
@@ -23,7 +23,14 @@ Route::group([
         Route::get('/dashboard', [App\Http\Controllers\Panel\Student\StudentController::class, 'dashboard'])->name('dashboard');
         Route::get('/courses', [App\Http\Controllers\Panel\Student\StudentController::class, 'courses'])->name('courses');
         Route::get('/profile', [App\Http\Controllers\Panel\Student\StudentController::class, 'profile'])->name('profile');
-        // Add more student routes here
+        Route::post('/update-account', [App\Http\Controllers\Panel\Student\StudentController::class, 'updateAccount'])->name('update.account');
+        Route::post('/notifications/{id}/read', [App\Http\Controllers\Panel\Student\StudentController::class, 'markAsRead'])->name('notifications.read');
+        
+        // Community Routes
+        Route::get('/community', [App\Http\Controllers\Panel\Student\StudentController::class, 'community'])->name('community');
+        Route::post('/community/post', [App\Http\Controllers\Panel\Student\StudentController::class, 'createPost'])->name('create-post');
+        Route::post('/community/like', [App\Http\Controllers\Panel\Student\StudentController::class, 'toggleLike'])->name('toggle-like');
+        Route::post('/community/comment', [App\Http\Controllers\Panel\Student\StudentController::class, 'addComment'])->name('add-comment');
     });
     
     // Parent Panel Routes
@@ -64,4 +71,6 @@ Route::group([
     
     // General panel route that redirects based on role
     Route::get('/', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('panel.index');
+
+ 
 });

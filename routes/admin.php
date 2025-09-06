@@ -48,10 +48,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
-    Route::resource('notifications', NotificationController::class);
-
-    Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
-        ->name('notifications.resend');
 
     Route::group(['prefix' => 'admin', 'middleware' => 'auth:admin'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
@@ -88,6 +84,11 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
+
+        Route::resource('notifications', NotificationController::class);
+
+        Route::post('notifications/{notification}/resend', [NotificationController::class, 'resend'])
+            ->name('notifications.resend');
 
         // Resource Route
         Route::resource('pages', PageController::class);

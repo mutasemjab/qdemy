@@ -1,0 +1,37 @@
+<?php
+
+return [
+    'personal_profile'   => 'Personal Profile',
+    'account_settings'   => 'Account Settings',
+    'notifications'      => 'Notifications',
+    'messages'           => 'Messages',
+    'my_courses'         => 'My Courses',
+    'schedule'           => 'Schedule',
+    'question_bank'      => 'Question Bank',
+    'assignments'        => 'Assignments',
+    'my_results'         => 'My Results',
+    'offers'             => 'Offers',
+    'wallet'             => 'Wallet',
+    'q_community'        => 'Q&A Community',
+    'technical_support'  => 'Technical Support',
+    'logout'             => 'Logout',
+    'name'               => 'Name',
+    'email'              => 'Email',
+    'phone'              => 'Phone',
+    'grade'              => 'Grade',
+    'my_account'         => 'My Account',
+    'save'            => 'Save',
+    'account_updated' => 'Account updated successfully',
+    'new' => 'New',
+    'mark_as_read' => 'Mark as read',
+    'notification_read' => 'Notification marked as read successfully',
+    'no_notifications' => 'No notifications found',
+    'support_text' => 'For any technical issues, please contact us via WhatsApp at the following number',
+    'faq_title' => 'Frequently Asked Questions',
+    'faq_change_password_question' => 'How can I change my password?',
+    'faq_change_password_answer' => 'You can change your password through account settings.',
+    'faq_contact_teacher_question' => 'How can I contact my teacher?',
+    'faq_contact_teacher_answer' => 'You can send a message via the messaging system on the platform.',
+
+
+];

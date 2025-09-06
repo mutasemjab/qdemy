@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Panel\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Traits\HasCommunity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TeacherController extends Controller
 {
+    use HasCommunity;
+    
     public function dashboard()
     {
         $user = Auth::user();
@@ -35,42 +38,28 @@ class TeacherController extends Controller
         $courses = []; // Replace with actual courses query
         return view('panel.teacher.courses', compact('user', 'courses'));
     }
-    
-    public function studentReports()
-    {
-        $user = Auth::user();
-        // Get student reports
-        $reports = []; // Replace with actual reports query
-        return view('panel.teacher.student-reports', compact('user', 'reports'));
-    }
-    
-    public function attendance()
-    {
-        $user = Auth::user();
-        // Get attendance records
-        $attendance = []; // Replace with actual attendance query
-        return view('panel.teacher.attendance', compact('user', 'attendance'));
-    }
-    
-    public function classSchedule()
-    {
-        $user = Auth::user();
-        // Get class schedule
-        $schedule = []; // Replace with actual schedule query
-        return view('panel.teacher.class-schedule', compact('user', 'schedule'));
-    }
-    
-    public function gradeAssignments()
-    {
-        $user = Auth::user();
-        // Get assignments to grade
-        $assignments = []; // Replace with actual assignments query
-        return view('panel.teacher.grade-assignments', compact('user', 'assignments'));
-    }
+   
     
     public function createCourse()
     {
         $user = Auth::user();
         return view('panel.teacher.create-course', compact('user'));
     }
+
+      // Community methods
+     public function createPost(Request $request)
+    {
+        return $this->handleCreatePost($request);
+    }
+
+    public function toggleLike(Request $request)
+    {
+        return $this->handleToggleLike($request);
+    }
+
+    public function addComment(Request $request)
+    {
+        return $this->handleAddComment($request);
+    }
+
 }

@@ -39,4 +39,14 @@ class Post extends Model
     {
         return $this->likes()->where('user_id', $userId)->exists();
     }
+
+    public function likesCount()
+    {
+        return $this->likes()->count();
+    }
+
+    public function commentsCount()
+    {
+        return $this->comments()->count();
+    }
 }
