@@ -69,7 +69,7 @@ class CategoriesSeeder extends Seeder
             case 'برنامج التوجيهي والثانوي':
                 $this->createTawjihiProgram($mainProgram->id);
                 break;
-            // international program has american && britesh programm - 
+            // international program has american && britesh programm -
             // subjects.programm_id =  major_programm.id
             // subjects.grade_id    =  american && britesh programm
             case 'البرنامج الدولي':
@@ -358,7 +358,7 @@ class CategoriesSeeder extends Seeder
             ['name_en' => 'Digital skills', 'is_ministry' => false, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $medicalCategory->id],
-            
+
             ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Chemistry', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Biology', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
@@ -427,15 +427,15 @@ class CategoriesSeeder extends Seeder
         $langCategory = Category::where('name_ar', 'حقل اللغات والعلوم الإجتماعية')->first();
 
         $subjects = array_merge($subjects, [
-            ['name_en' => 'Digital skills', 'is_ministry' => false, 'is_optional' => false, 'category_id' => $lawCategory->id],
-            ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $lawCategory->id],
-            ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $lawCategory->id],
+            ['name_en' => 'Digital skills', 'is_ministry' => false, 'is_optional' => false, 'category_id' => $langCategory->id],
+            ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $langCategory->id],
+            ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $langCategory->id],
 
             ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
-            ['name_en' => 'Arabic Language (Specialization)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $lawCategory->id],
-            ['name_en' => 'English Language (advanced)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $lawCategory->id],
-            ['name_en' => 'Humanities', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $lawCategory->id],
-            // ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $lawCategory->id],
+            ['name_en' => 'Arabic Language (Specialization)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
+            ['name_en' => 'English Language (advanced)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
+            ['name_en' => 'Humanities', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $langCategory->id],
+            // ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $langCategory->id],
         ]);
 
         foreach ($subjects as $key => $subject) {

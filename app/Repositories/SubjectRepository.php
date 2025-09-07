@@ -107,9 +107,11 @@ class SubjectRepository
                 // });
         })
         ->get();
+        // dd($CategorySubjects->get() ,$field);
+
         foreach ($CategorySubjects as $key => $CategorySubject) {
             $subject = Subject::find($CategorySubject->subject_id);
-            $subjects->push($subject); 
+            $subjects->push($subject);
         }
 
         return $subjects;
@@ -131,7 +133,7 @@ class SubjectRepository
         ->get();
         foreach ($CategorySubjects as $key => $CategorySubject) {
             $subject = Subject::find($CategorySubject->subject_id);
-            $subjects->push($subject); 
+            $subjects->push($subject);
         }
 
         return $subjects;

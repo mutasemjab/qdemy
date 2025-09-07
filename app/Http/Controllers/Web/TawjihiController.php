@@ -46,6 +46,7 @@ class TawjihiController extends Controller
     {
         $tawjihiLastYearFields = CategoryRepository()->getDirectChilds($field);
         $ministrySubjects      = SubjectRepository()->getTawjihiFinalGradesFieldMinistrySubjects($field);
+        // dd($field,$ministrySubjects);
         $schoolSubjects        = SubjectRepository()->getTawjihiFinalGradesFieldSchoolSubjects($field);
         return view('web.tawjihi-last-year-field',[
             'field'                 => $field,
