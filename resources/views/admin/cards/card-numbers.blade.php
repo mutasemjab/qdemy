@@ -105,7 +105,7 @@
                                         <tr>
                                             <td>{{ $cardNumber->id }}</td>
                                             <td>
-                                                <code class="fs-6">{{ $cardNumber->formatted_number }}</code>
+                                              {{ $cardNumber->number }}
                                             </td>
                                             <td>
                                                 @if($cardNumber->status == 1)

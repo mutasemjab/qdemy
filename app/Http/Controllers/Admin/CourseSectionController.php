@@ -23,35 +23,54 @@ class CourseSectionController extends Controller
         $this->middleware('permission:course-delete', ['only' => ['destroy', 'destroyContent']]);
     }
 
-    /**
-     * Display sections and contents for a course
+      /**
+     * Show the form for creating content
      */
     public function index(Course $course)
     {
-        $course->load(['sections.contents' => function($query) {
-            $query->orderBy('order');
-        }]);
+        // Load course with nested relationships
+        $course->load([
+            'sections' => function($query) {
+                $query->whereNull('parent_id')->orderBy('created_at');
+            },
+            'sections.contents' => function($query) {
+                $query->orderBy('created_at');
+            },
+            
+          
+        ]);
 
-        $directContents = $course->contents()->whereNull('section_id')->orderBy('order')->get();
+        $directContents = $course->contents()
+            ->whereNull('section_id')
+            ->orderBy('created_at')
+            ->get();
 
         return view('admin.courses.sections.index', compact('course', 'directContents'));
     }
 
     /**
-     * Show a specific section
+     * Handle section show with proper authorization
      */
     public function show(Course $course, CourseSection $section)
     {
+        // Ensure the section belongs to this course
         if ($section->course_id !== $course->id) {
-            abort(404);
+            abort(404, 'Section not found for this course');
         }
 
-        $section->load(['contents' => function($query) {
-            $query->orderBy('order');
-        }, 'children.contents']);
+        $section->load([
+            'contents' => function($query) {
+                $query->orderBy('created_at');
+            }, 
+            'children.contents' => function($query) {
+                $query->orderBy('created_at');
+            }
+        ]);
 
         return view('admin.courses.sections.show', compact('course', 'section'));
     }
+
+
 
     /**
      * Show the form for creating a new section
@@ -72,15 +91,21 @@ class CourseSectionController extends Controller
     }
 
     /**
-     * Show the form for editing a section
+     * Enhanced edit method with better validation
      */
     public function edit(Course $course, CourseSection $section)
     {
+        // Ensure the section belongs to this course
         if ($section->course_id !== $course->id) {
-            abort(404);
+            abort(404, 'Section not found for this course');
         }
 
-        $sections = $course->sections->where('id', '!=', $section->id);
+        // Get all sections except this one for parent selection
+        $sections = $course->sections()
+            ->where('id', '!=', $section->id)
+            ->whereNull('parent_id') // Only allow top-level sections as parents
+            ->get();
+            
         return view('admin.courses.sections.edit', compact('course', 'section', 'sections'));
     }
 
@@ -104,15 +129,13 @@ class CourseSectionController extends Controller
 
     // === CONTENT MANAGEMENT ===
 
-    /**
-     * Show the form for creating content
-     */
-    public function createContent(Course $course)
+    public function createContent(Request $request, Course $course)
     {
         $sections = $course->sections;
-        return view('admin.courses.contents.create', compact('course', 'sections'));
+        $selectedSectionId = $request->get('section_id');
+        
+        return view('admin.courses.contents.create', compact('course', 'sections', 'selectedSectionId'));
     }
-
     /**
      * Store course content - USING TRAIT
      */
@@ -138,8 +161,13 @@ class CourseSectionController extends Controller
     /**
      * Update course content - USING TRAIT
      */
-    public function updateContent(Request $request, CourseContent $content)
+      public function updateContent(Request $request, Course $course, CourseContent $content)
     {
+        // Ensure the content belongs to this course
+        if ($content->course_id !== $course->id) {
+            abort(404, 'Content not found for this course');
+        }
+
         // The trait now handles both API and web responses automatically
         return $this->updateCourseContent($request, $content);
     }
@@ -147,7 +175,7 @@ class CourseSectionController extends Controller
     /**
      * Delete course content - USING TRAIT
      */
-    public function destroyContent(CourseContent $content)
+    public function destroyContent( Course $course, CourseContent $content)
     {
         // The trait now handles both API and web responses automatically
         return $this->deleteCourseContent($content);
