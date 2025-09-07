@@ -67,19 +67,8 @@ class CourseSectionController extends Controller
      */
     public function store(Request $request, Course $course)
     {
-        $response = $this->storeCourseSection($request, $course);
-        
-        if ($request->expectsJson()) {
-            return $response;
-        }
-        
-        $data = $response->getData();
-        if ($data->success) {
-            return redirect()->route('courses.sections.index', $course)
-                ->with('success', $data->message);
-        }
-        
-        return redirect()->back()->with('error', $data->message);
+        // The trait now handles both API and web responses automatically
+        return $this->storeCourseSection($request, $course);
     }
 
     /**
@@ -100,19 +89,8 @@ class CourseSectionController extends Controller
      */
     public function update(Request $request, Course $course, CourseSection $section)
     {
-        $response = $this->updateCourseSection($request, $course, $section);
-        
-        if ($request->expectsJson()) {
-            return $response;
-        }
-        
-        $data = $response->getData();
-        if ($data->success) {
-            return redirect()->route('courses.sections.index', $course)
-                ->with('success', $data->message);
-        }
-        
-        return redirect()->back()->with('error', $data->message);
+        // The trait now handles both API and web responses automatically
+        return $this->updateCourseSection($request, $course, $section);
     }
 
     /**
@@ -120,19 +98,8 @@ class CourseSectionController extends Controller
      */
     public function destroy(Course $course, CourseSection $section)
     {
-        $response = $this->deleteCourseSection($course, $section);
-        
-        if (request()->expectsJson()) {
-            return $response;
-        }
-        
-        $data = $response->getData();
-        if ($data->success) {
-            return redirect()->route('courses.sections.index', $course)
-                ->with('success', $data->message);
-        }
-        
-        return redirect()->back()->with('error', $data->message);
+        // The trait now handles both API and web responses automatically
+        return $this->deleteCourseSection($course, $section);
     }
 
     // === CONTENT MANAGEMENT ===
@@ -151,6 +118,7 @@ class CourseSectionController extends Controller
      */
     public function storeContent(Request $request, Course $course)
     {
+        // The trait now handles both API and web responses automatically
         return $this->storeCourseContent($request, $course);
     }
 
@@ -172,6 +140,7 @@ class CourseSectionController extends Controller
      */
     public function updateContent(Request $request, CourseContent $content)
     {
+        // The trait now handles both API and web responses automatically
         return $this->updateCourseContent($request, $content);
     }
 
@@ -180,20 +149,7 @@ class CourseSectionController extends Controller
      */
     public function destroyContent(CourseContent $content)
     {
-        $response = $this->deleteCourseContent($content);
-        
-        if (request()->expectsJson()) {
-            return $response;
-        }
-        
-        $data = $response->getData();
-        $course = $content->course;
-        
-        if ($data->success) {
-            return redirect()->route('courses.sections.index', $course)
-                ->with('success', $data->message);
-        }
-        
-        return redirect()->back()->with('error', $data->message);
+        // The trait now handles both API and web responses automatically
+        return $this->deleteCourseContent($content);
     }
 }
