@@ -152,6 +152,10 @@ return array (
   'order_card' => 'Order Card',
   'choose_your_card' => 'Choose Your Card',
   'elementary_grades' => 'Elementary Grades',
+<<<<<<< HEAD
+=======
+  'tawjihi' => 'Tawjihi',
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'universities_colleges' => 'Universities and Colleges',
   'international_program' => 'International Program',
   'contact_whatsapp' => 'Contact us via WhatsApp',
@@ -161,11 +165,17 @@ return array (
   'visa_payment' => 'Visa Payment',
   'pay' => 'Pay',
   'please_select_card' => 'Please select a card type first',
+<<<<<<< HEAD
+=======
+
+  // WhatsApp message templates
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'whatsapp_contact_message' => 'Hello! I would like to inquire about the :card_type card. Can you please provide me with more information?',
   'whatsapp_cash_message' => 'Hello! I would like to order a :card_type card and pay with cash. Please let me know the next steps.',
   'whatsapp_visa_message' => 'Hello! I would like to order a :card_type card and pay with visa/card. Please provide me with payment details.',
   'ministerial_years_questions' => 'Ministerial Years Questions',
   'ministerial_questions' => 'Ministerial Questions',
+<<<<<<< HEAD
   'choose_program' => 'Choose Program',
   'choose_subject' => 'Choose Subject',
   'search' => 'search',
@@ -175,6 +185,26 @@ return array (
   'downloads_count' => 'Downloads (:count)',
   'no_ministerial_questions_found' => 'No ministerial questions found',
   'file_not_available' => 'File not available',
+=======
+
+  // Form labels - same as bank questions
+  'choose_program' => 'Choose Program',
+  'choose_subject' => 'Choose Subject',
+  'search' => 'Search',
+  'search_placeholder' => 'Search...',
+
+  // Actions
+  'share' => 'Share',
+  'download_file' => 'Download File',
+  'downloads_count' => 'Downloads (:count)',
+
+  // Messages
+  'no_ministerial_questions_found' => 'No ministerial questions found',
+  'loading' => 'Loading...',
+  'file_not_available' => 'File not available',
+
+  // Categories and Subjects
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'all_programs' => 'All Programs',
   'all_subjects' => 'All Subjects',
   'select_program_first' => 'Select program first',
@@ -182,6 +212,7 @@ return array (
   'quick_links' => 'Quick Links',
   'contact_us' => 'Contact Us',
   'follow_us_social_media' => 'Follow Us on Social Media',
+<<<<<<< HEAD
   'privacy_policy' => 'Privacy Policy',
   'terms_conditions' => 'Terms & Conditions',
   'basic_grades_program' => 'Basic Grades Program',
@@ -189,12 +220,36 @@ return array (
   'tawjihi_program' => 'Tawjihi & Secondary Program',
   'technical_support_email' => 'Technical Support',
   'careers_email' => 'Careers',
+=======
+
+  // Links
+  'privacy_policy' => 'Privacy Policy',
+  'terms_conditions' => 'Terms & Conditions',
+  'international_program' => 'International Program',
+  'basic_grades_program' => 'Basic Grades Program',
+  'universities_program' => 'Universities and Colleges Program',
+  'tawjihi_program' => 'Tawjihi & Secondary Program',
+  'packages_offers' => 'Packages & Offers',
+
+  // Contact information
+  'technical_support_email' => 'Technical Support',
+  'careers_email' => 'Careers',
+
+  // Social media
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'facebook' => 'Facebook',
   'instagram' => 'Instagram',
   'twitter' => 'Twitter',
   'youtube' => 'YouTube',
   'linkedin' => 'LinkedIn',
+<<<<<<< HEAD
   'statistics' => 'Statistics',
+=======
+
+  // Statistics (if you want to display them)
+  'statistics' => 'Statistics',
+  'courses' => 'Courses',
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'teachers' => 'Teachers',
   'viewing_hours' => 'Viewing Hours',
   'students' => 'Students',
@@ -224,6 +279,7 @@ return array (
   'add_to_cart' => 'add_to_cart',
   'auth_failed' => 'auth_failed',
   'Digital skills' => 'Digital skills',
+<<<<<<< HEAD
   'e_exams' => 'e_exams',
   'all_courses' => 'all_courses',
   'all_statuses' => 'all_statuses',
@@ -288,4 +344,65 @@ return array (
   'best_results' => 'best_results',
   'my exam results' => 'my exam results',
   'courses progress' => 'courses progress',
+=======
+  'login' => 'Login',
+  'start_building_future' => 'Start building your future',
+  'learning_platform_desc' => 'An educational platform that helps you learn and grow anytime, anywhere',
+  'welcome_to' => 'Welcome to',
+  'phone_number' => 'Phone Number',
+  'password' => 'Password',
+  'no_account' => "Don't have an account?",
+  'create_account' => 'Create Account',
+  'start_building_future' => 'Start building your future',
+  'learning_platform_desc' => 'An educational platform that helps you learn and grow anytime, anywhere',
+  'welcome_to' => 'Welcome to',
+  'register_new_account' => 'Register a new account',
+  'student_account' => 'Student Account',
+  'parent_account' => 'Parent Account',
+  'full_name' => 'Full Name',
+  'phone_number' => 'Phone Number',
+  'email' => 'Email',
+  'password' => 'Password',
+  'select_grade' => 'Select Grade',
+  'grade_1' => 'Grade 1',
+  'grade_2' => 'Grade 2',
+  'grade_3' => 'Grade 3',
+  'grade_4' => 'Grade 4',
+  'grade_5' => 'Grade 5',
+  'grade_6' => 'Grade 6',
+  'grade_7' => 'Grade 7',
+  'grade_8' => 'Grade 8',
+  'grade_9' => 'Grade 9',
+  'add_children' => 'Add Children',
+  'enter_child_phone' => 'Enter the student’s phone number to search and add as child',
+  'child_phone' => 'Student Phone Number',
+  'search' => 'Search',
+  'selected_children' => 'Selected Children:',
+  'create_account' => 'Create Account',
+  'have_account' => 'Already have an account?',
+  'login' => 'Login',
+  'enter_phone' => 'Please enter a phone number',
+  'searching' => 'Searching...',
+  'search' => 'Search',
+  'search_error' => 'An error occurred while searching',
+  'phone_label' => 'Phone',
+  'grade_label' => 'Grade',
+  'not_specified' => 'Not specified',
+  'already_added' => 'Already added',
+  'add' => 'Add',
+  'no_students_found' => 'No students found with this number',
+  'no_children_selected' => 'No children selected yet',
+  'home' => 'Home',
+  'about_us' => 'About Us',
+  'courses' => 'Courses',
+  'teachers' => 'Teachers',
+  'sale_points' => 'Sale Points',
+  'community' => 'Community',
+  'exams' => 'Exams',
+  'our_apps' => 'Our Apps',
+  'create_account' => 'Create Account',
+  'login' => 'Login',
+  'logout' => 'Logout',
+  'my_account' => 'My Account',
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
 );

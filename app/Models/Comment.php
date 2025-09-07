@@ -23,4 +23,16 @@ class Comment extends Model
     {
         return $this->belongsTo(Post::class);
     }
+
+     public function canBeDeletedBy($userId)
+    {
+        return $this->user_id == $userId;
+    }
+
+    // Add this accessor to include the flag in JSON responses
+    public function getCanDeleteAttribute()
+    {
+        $userId = auth()->id();
+        return $userId ? $this->canBeDeletedBy($userId) : false;
+    }
 }

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\Responses;
 
+
+
 class PostController extends Controller
 {
     use Responses;
@@ -17,7 +19,26 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::with(['user', 'comments'])->latest()->paginate(10);
+        $posts = Post::with(['user', 'comments.user'])
+            ->withCount(['likes', 'comments'])
+            ->latest()
+            ->paginate(10);
+        
+        // Add can_delete flag to each post
+        $posts->getCollection()->transform(function ($post) {
+            $post->can_delete = $post->canBeDeletedBy(auth('user-api')->id());
+            
+            // Transform comments to include can_delete flag
+            if ($post->relationLoaded('comments')) {
+                $post->comments->transform(function ($comment) {
+                    $comment->can_delete = $comment->canBeDeletedBy(auth('user-api')->id());
+                    return $comment;
+                });
+            }
+            
+            return $post;
+        });
+        
         return $this->success_response(__('Posts fetched successfully'), $posts);
     }
 
@@ -36,13 +57,11 @@ class PostController extends Controller
 
         $post = Post::create([
             'content' => $request->content,
-            'user_id' => auth()->id(), // logged-in user
+            'user_id' => auth('user-api')->id(), // Use the correct guard
         ]);
 
         return $this->success_response(__('Post created successfully'), $post);
     }
-
-  
 
     /**
      * Update post
@@ -55,7 +74,8 @@ class PostController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        if ($post->user_id !== auth()->id()) {
+        // Use the correct guard for authorization
+        if ($post->user_id !== auth('user-api')->id()) {
             return $this->error_response(__('Unauthorized'), null);
         }
 
@@ -84,7 +104,8 @@ class PostController extends Controller
             return $this->error_response(__('Post not found'), null);
         }
 
-        if ($post->user_id !== auth()->id()) {
+        // Use the correct guard for authorization
+        if ($post->user_id !== auth('user-api')->id()) {
             return $this->error_response(__('Unauthorized'), null);
         }
 

@@ -2,25 +2,30 @@
 <header class="header">
     <div class="container">
         <a href="{{ route('home') }}">
-        <div class="logo">
-            <img src="{{ asset('assets_front/images/logo.png') }}" alt="Logo">
-        </div>
+            <div class="logo">
+                <img src="{{ asset('assets_front/images/logo.png') }}" alt="Logo">
+            </div>
         </a>
         <nav class="nav" id="navMenu">
             <ul>
-                <li><a href="{{ route('home') }}" class="active">الرئيسية</a></li>
-                <li><a href="{{ route('contacts') }}">من نحن؟</a></li>
-                <li><a href="{{ route('courses') }}">دورات</a></li>
-                <li><a href="{{ route('teachers') }}">المعلمون</a></li>
-                <li><a href="{{ route('sale-point') }}">نقاط البيع</a></li>
+                <li><a href="{{ route('home') }}" class="active">{{ __('front.home') }}</a></li>
+                <li><a href="{{ route('contacts') }}">{{ __('front.about_us') }}</a></li>
+                <li><a href="{{ route('courses') }}">{{ __('front.courses') }}</a></li>
+                <li><a href="{{ route('teachers') }}">{{ __('front.teachers') }}</a></li>
+                <li><a href="{{ route('sale-point') }}">{{ __('front.sale_points') }}</a></li>
                 <li>
                     <a href="{{ route('community') }}" class="community-link">
-                        <span>مجتمع</span>
+                        <span>{{ __('front.community') }}</span>
                         <img src="{{ asset('assets_front/images/icons/community.png') }}" alt="Community Icon" class="icon">
                     </a>
                 </li>
+<<<<<<< HEAD
                 <li><a href="{{ route('exam.index') }}">امتحانات</a></li>
                 <li><a href="{{ route('download') }}">تطبيقاتنا</a></li>
+=======
+                <li><a href="{{ route('e-exam') }}">{{ __('front.exams') }}</a></li>
+                <li><a href="{{ route('download') }}">{{ __('front.our_apps') }}</a></li>
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
             </ul>
         </nav>
 
@@ -33,12 +38,12 @@
 
             <!-- Auth Buttons -->
             @if(!auth('user')?->user())
-              <a href="{{ route('user.register') }}" class="btn btn-primary">إنشاء حساب</a>
-              <a href="{{ route('user.login') }}" class="btn btn-outline">تسجيل دخول</a>
+              <a href="{{ route('user.register') }}" class="btn btn-primary">{{ __('front.create_account') }}</a>
+              <a href="{{ route('user.login') }}" class="btn btn-outline">{{ __('front.login') }}</a>
             @else
-              <a href="{{ route('student.account') }}" class="btn btn-outline">حسابي</a>
+              <a href="{{ route('student.account') }}" class="btn btn-outline">{{ __('front.my_account') }}</a>
               <form action="{{ route('user.logout') }}" method='post'>@csrf
-                <button style='border: 1px solid #0055D2;padding: 8px;' class="btn btn-primary">تسجيل خروج</button>
+                <button style='border: 1px solid #0055D2;padding: 8px;' class="btn btn-primary">{{ __('front.logout') }}</button>
               </form>
             @endif
 
@@ -46,8 +51,8 @@
             <div class="lang-dropdown">
                 <button class="lang-btn"><i class="fas fa-globe"></i></button>
                 <div class="lang-menu">
-                    <a href="#">العربية</a>
-                    <a href="#">English</a>
+                    <a href="{{ LaravelLocalization::getLocalizedURL('ar') }}">العربية</a>
+                    <a href="{{ LaravelLocalization::getLocalizedURL('en') }}">English</a>
                 </div>
             </div>
 

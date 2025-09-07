@@ -100,5 +100,10 @@ Route::group(['prefix' => 'v1/user'], function () {
         // bank questions
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
         Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
+
+
+        // notifications
+         Route::get('/notifications', [NotificationApiController::class, 'index']);
+         Route::post('/notifications/{id}/read', [NotificationApiController::class, 'read']);
     });
 });

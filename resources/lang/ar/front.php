@@ -166,6 +166,7 @@ return array (
   'whatsapp_visa_message' => 'مرحباً! أود طلب بطاقة :card_type والدفع بالفيزا/البطاقة. يرجى تزويدي بتفاصيل الدفع.',
   'ministerial_years_questions' => 'أسئلة سنوات وزارية',
   'ministerial_questions' => 'أسئلة وزارية',
+<<<<<<< HEAD
   'choose_program' => 'اختر البرنامج',
   'choose_subject' => 'اختر المادة',
   'search' => 'search',
@@ -175,6 +176,26 @@ return array (
   'downloads_count' => 'عدد مرات التحميل (:count)',
   'no_ministerial_questions_found' => 'لم يتم العثور على أسئلة وزارية',
   'file_not_available' => 'الملف غير متاح',
+=======
+
+  // Form labels - same as bank questions
+  'choose_program' => 'اختر البرنامج',
+  'choose_subject' => 'اختر المادة',
+  'search' => 'البحث',
+  'search_placeholder' => 'البحث...',
+
+  // Actions
+  'share' => 'المشاركة',
+  'download_file' => 'تحميل الملف',
+  'downloads_count' => 'عدد مرات التحميل (:count)',
+
+  // Messages
+  'no_ministerial_questions_found' => 'لم يتم العثور على أسئلة وزارية',
+  'loading' => 'جاري التحميل...',
+  'file_not_available' => 'الملف غير متاح',
+
+  // Categories and Subjects
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'all_programs' => 'جميع البرامج',
   'all_subjects' => 'جميع المواد',
   'select_program_first' => 'اختر البرنامج أولاً',
@@ -182,6 +203,7 @@ return array (
   'quick_links' => 'روابط سريعة',
   'contact_us' => 'تواصل معنا',
   'follow_us_social_media' => 'تابعنا على وسائل التواصل الاجتماعي',
+<<<<<<< HEAD
   'privacy_policy' => 'سياسة الخصوصية',
   'terms_conditions' => 'الشروط والأحكام',
   'basic_grades_program' => 'برنامج الصفوف الأساسية',
@@ -189,12 +211,36 @@ return array (
   'tawjihi_program' => 'برنامج التوجيهي والثانوي',
   'technical_support_email' => 'الدعم الفني',
   'careers_email' => 'الوظائف',
+=======
+
+  // Links
+  'privacy_policy' => 'سياسة الخصوصية',
+  'terms_conditions' => 'الشروط والأحكام',
+  'international_program' => 'البرنامج الدولي',
+  'basic_grades_program' => 'برنامج الصفوف الأساسية',
+  'universities_program' => 'برنامج الجامعات والكليات',
+  'tawjihi_program' => 'برنامج التوجيهي والثانوي',
+  'packages_offers' => 'الباقات والعروض',
+
+  // Contact information
+  'technical_support_email' => 'الدعم الفني',
+  'careers_email' => 'الوظائف',
+
+  // Social media
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'facebook' => 'فيسبوك',
   'instagram' => 'إنستغرام',
   'twitter' => 'تويتر',
   'youtube' => 'يوتيوب',
   'linkedin' => 'لينكد إن',
+<<<<<<< HEAD
   'statistics' => 'إحصائيات',
+=======
+
+  // Statistics
+  'statistics' => 'إحصائيات',
+  'courses' => 'دورة',
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
   'teachers' => 'معلم',
   'viewing_hours' => 'ساعة مشاهدة',
   'students' => 'طالب',
@@ -224,6 +270,7 @@ return array (
   'add_to_cart' => 'add_to_cart',
   'auth_failed' => 'auth_failed',
   'Digital skills' => 'Digital skills',
+<<<<<<< HEAD
   'e_exams' => 'e_exams',
   'all_courses' => 'all_courses',
   'all_statuses' => 'all_statuses',
@@ -288,4 +335,65 @@ return array (
   'best_results' => 'best_results',
   'my exam results' => 'my exam results',
   'courses progress' => 'courses progress',
+=======
+  'login' => 'تسجيل دخول',
+  'start_building_future' => 'ابدأ في بناء مستقبلك',
+  'learning_platform_desc' => 'منصة تعليمية تساعدك على التعلم والتطور من أي مكان وفي أي وقت',
+  'welcome_to' => 'مرحباً بك في',
+  'phone_number' => 'رقم الهاتف',
+  'password' => 'كلمة المرور',
+  'no_account' => 'ليس لديك حساب؟',
+  'create_account' => 'انشاء حساب',
+  'start_building_future' => 'ابدأ في بناء مستقبلك',
+  'learning_platform_desc' => 'منصة تعليمية تساعدك على التعلم والتطور من أي مكان وفي أي وقت',
+  'welcome_to' => 'مرحباً بك في',
+  'register_new_account' => 'تسجيل حساب جديد',
+  'student_account' => 'حساب طالب',
+  'parent_account' => 'حساب ولي أمر',
+  'full_name' => 'الاسم الكامل',
+  'phone_number' => 'رقم الهاتف',
+  'email' => 'إيميل',
+  'password' => 'كلمة المرور',
+  'select_grade' => 'اختر الصف',
+  'grade_1' => 'الصف الأول',
+  'grade_2' => 'الصف الثاني',
+  'grade_3' => 'الصف الثالث',
+  'grade_4' => 'الصف الرابع',
+  'grade_5' => 'الصف الخامس',
+  'grade_6' => 'الصف السادس',
+  'grade_7' => 'الصف السابع',
+  'grade_8' => 'الصف الثامن',
+  'grade_9' => 'الصف التاسع',
+  'add_children' => 'إضافة الأبناء',
+  'enter_child_phone' => 'أدخل رقم هاتف الطالب للبحث عنه وإضافته كطفل',
+  'child_phone' => 'رقم هاتف الطالب',
+  'search' => 'بحث',
+  'selected_children' => 'الأبناء المختارون:',
+  'create_account' => 'إنشاء حساب',
+  'have_account' => 'لديك حساب؟',
+  'login' => 'سجل دخول',
+  'enter_phone' => 'يرجى إدخال رقم الهاتف',
+  'searching' => 'جاري البحث...',
+  'search' => 'بحث',
+  'search_error' => 'حدث خطأ في البحث',
+  'phone_label' => 'الهاتف',
+  'grade_label' => 'الصف',
+  'not_specified' => 'غير محدد',
+  'already_added' => 'مضاف مسبقاً',
+  'add' => 'إضافة',
+  'no_students_found' => 'لم يتم العثور على طلاب بهذا الرقم',
+  'no_children_selected' => 'لم يتم اختيار أي أطفال بعد',
+  'home' => 'الرئيسية',
+  'about_us' => 'من نحن؟',
+  'courses' => 'دورات',
+  'teachers' => 'المعلمون',
+  'sale_points' => 'نقاط البيع',
+  'community' => 'مجتمع',
+  'exams' => 'امتحانات',
+  'our_apps' => 'تطبيقاتنا',
+  'create_account' => 'إنشاء حساب',
+  'login' => 'تسجيل دخول',
+  'logout' => 'تسجيل خروج',
+  'my_account' => 'حسابي',
+>>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
 );

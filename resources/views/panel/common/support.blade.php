@@ -1,18 +1,18 @@
 <div class="ud-panel" id="support">
   <div class="ud-title">{{ __('panel.technical_support') }}</div>
   <div class="ud-support">
-    <p>لأي مشاكل تقنية تواجهك يرجى مراسلتنا عبر الواتساب على الرقم التالي</p>
+    <p>{{ __('panel.support_text') }}</p>
     <a href="https://wa.me/962795123456" class="ud-wh"><i class="fa-brands fa-whatsapp"></i> +962 79 512 3456</a>
     
     <div class="ud-support-faq">
-      <h3>الأسئلة الشائعة</h3>
+      <h3>{{ __('panel.faq_title') }}</h3>
       <div class="ud-faq-item">
-        <h4>كيف أقوم بتغيير كلمة المرور؟</h4>
-        <p>يمكنك تغيير كلمة المرور من خلال إعدادات الحساب</p>
+        <h4>{{ __('panel.faq_change_password_question') }}</h4>
+        <p>{{ __('panel.faq_change_password_answer') }}</p>
       </div>
       <div class="ud-faq-item">
-        <h4>كيف أتواصل مع المعلم؟</h4>
-        <p>يمكنك إرسال رسالة من خلال نظام الرسائل في المنصة</p>
+        <h4>{{ __('panel.faq_contact_teacher_question') }}</h4>
+        <p>{{ __('panel.faq_contact_teacher_answer') }}</p>
       </div>
     </div>
   </div>
