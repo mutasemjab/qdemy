@@ -179,12 +179,18 @@
 
                                 <div class="accordion">
                                     @foreach($subSections as $subSection)
+
                                     <div class="accordion-item">
                                         <button class="accordion-header"> {{$subSection->title}}</button>
                                         <div class="accordion-body">
                                             @php $subSectionContents = $subSection->contents @endphp
                                             @if($subSectionContents && $subSectionContents->count())
                                                 @foreach($subSectionContents as $subSectioncontent)
+
+                                                @php
+                                                    $subContProgressPercent = $subSectioncontent->video_duration > 0 ? min(100, ($subSectioncontent->watched_time / $subSectioncontent->video_duration) * 100) : 0;
+                                                @endphp
+
                                                 <div class="lesson-item" data-content-id="{{$subSectioncontent->id}}">
                                                     @if($subSectioncontent->video_url)
 
@@ -196,7 +202,7 @@
                                                             @if($subSectioncontent->is_completed)
                                                                 <span class="completion-badge">✓</span>
                                                             @elseif($subSectioncontent->watched_time > 0)
-                                                                <span class="progress-badge">{{round($progressPercent)}}%</span>
+                                                                <span class="progress-badge">{{round($subContProgressPercent)}}%</span>
                                                             @endif
                                                         </div>
                                                         @if(!$is_enrolled) <span class='free'>free</span>@endif
@@ -224,7 +230,7 @@
                                                         <h4>{{$subSectioncontent->title}}</h4>
                                                         @if($subSectioncontent->content_type === 'video' && ($subSectioncontent->is_free === 1 || $is_enrolled))
                                                             <div class="video-progress-bar">
-                                                                <div class="progress-fill" style="width: {{$progressPercent}}%"></div>
+                                                                <div class="progress-fill" style="width: {{$subContProgressPercent}}%"></div>
                                                             </div>
                                                         @endif
                                                     </div>
@@ -273,9 +279,12 @@
                 @endphp
                 @if($unassignedContents->count())
                 <div class="accordion-item">
-                    <button class="accordion-header"> Unassigned Contents</button>
+                    <button class="accordion-header">{{translate_lang('Unassigned Contents')}} </button>
                     <div class="accordion-body">
                         @foreach($unassignedContents as $_content)
+                            @php
+                                $unasgndCntProgressPercent = $_content->video_duration > 0 ? min(100, ($_content->watched_time / $_content->video_duration) * 100) : 0;
+                            @endphp
                             <div class="lesson-item" data-content-id="{{$_content->id}}">
                                 @if($_content->video_url)
 
@@ -287,7 +296,7 @@
                                         @if($_content->is_completed)
                                             <span class="completion-badge">✓</span>
                                         @elseif($_content->watched_time > 0)
-                                            <span class="progress-badge">{{round($progressPercent)}}%</span>
+                                            <span class="progress-badge">{{round($unasgndCntProgressPercent)}}%</span>
                                         @endif
                                     </div>
                                     @if(!$is_enrolled) <span class='free'>free</span>@endif
@@ -315,7 +324,7 @@
                                     <h4>{{$_content->title}}</h4>
                                     @if($_content->content_type === 'video' && ($_content->is_free === 1 || $is_enrolled))
                                         <div class="video-progress-bar">
-                                            <div class="progress-fill" style="width: {{$progressPercent}}%"></div>
+                                            <div class="progress-fill" style="width: {{$unasgndCntProgressPercent}}%"></div>
                                         </div>
                                     @endif
                                 </div>
