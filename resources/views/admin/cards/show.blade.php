@@ -136,7 +136,7 @@
                                     <tbody>
                                         @foreach($card->cardNumbers->take(10) as $cardNumber)
                                             <tr>
-                                                <td>{{ $cardNumber->formatted_number }}</td>
+                                                <td>{{ $cardNumber->number }}</td>
                                                 <td>
                                                     @if($cardNumber->status == 1)
                                                         <span class="badge bg-danger">{{ __('messages.used') }}</span>
