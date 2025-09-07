@@ -14,7 +14,7 @@
     <div class="examx-filters">
         @include('web.alert-message')
 
-        <form action='{{ route("e-exam") }}' method='get' id="filterForm">
+        <form action='{{ route("exam.index") }}' method='get' id="filterForm">
             <div class="examx-row">
 
                 <div class="examx-dropdown">
@@ -50,6 +50,7 @@
                                     {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
                                 {{ $subject->localized_name }}
                                 @if($subject->semester) - {{ $subject->semester->localized_name }} @endif
+                                @if($subject->grade && $subject->grade->level == 'international-program-child') - {{ $subject->grade->localized_name }} @endif
                             </option>
                         @endforeach
                     </select>
@@ -85,19 +86,24 @@
                         <strong>{{ $exam->questions?->count() }} {{ translate_lang('question') }}</strong>
                     </div>
                 </div>
-                @if($exam->can_add_attempt())
-                <a href="{{ route('exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
-                    {{ translate_lang('start_exam') }}
-                </a>
-                @elseif($exam->current_user_attempt())
+                @if($exam->current_user_attempt())
                 <a href="{{ route('exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
                     {{ translate_lang('continue') }}
                 </a>
+                @elseif($exam->can_add_attempt())
+                <a href="{{ route('exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
+                    {{ translate_lang('start_exam') }}
+                </a>
                 @elseif($exam->result_attempt())
-                <a href="{{ route('exam.results',$exam->id) }}" class="examx-btn">
+                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="examx-btn">
                     {{ translate_lang('result') }}
                 </a>
+                @else($exam->last_submitted_attempt())
+                <a href="{{ route('review.attempt',['exam'=>$exam->id,'attempt'=>$exam->last_submitted_attempt()->id]) }}" class="examx-btn">
+                    {{ translate_lang('last attempt') }}
+                </a>
                 @endif
+                
             </div>
         </div>
         @empty

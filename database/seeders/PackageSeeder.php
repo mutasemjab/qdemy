@@ -27,9 +27,6 @@ class PackageSeeder extends Seeder
             // إنشاء باقات للمواد (type = subject)
             $this->createSubjectPackages();
             
-            // إنشاء باقات مختلطة (صفوف ومواد)
-            $this->createMixedPackages();
-            
             DB::commit();
             
             $this->command->info('Packages seeded successfully!');
@@ -55,7 +52,7 @@ class PackageSeeder extends Seeder
                 'price' => 450.000,
                 'description' => 'باقة شاملة للصفوف من الأول إلى الثالث الأساسي',
                 'status' => 'active',
-                'how_much_course_can_select' => 15,
+                'how_much_course_can_select' => rand(1,5rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/elementary-bundle.jpg'
             ]);
@@ -80,7 +77,7 @@ class PackageSeeder extends Seeder
                 'price' => 550.000,
                 'description' => 'باقة شاملة للصفوف من الرابع إلى السادس',
                 'status' => 'active',
-                'how_much_course_can_select' => 18,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/middle-bundle.jpg'
             ]);
@@ -105,7 +102,7 @@ class PackageSeeder extends Seeder
                 'price' => 750.000,
                 'description' => 'باقة شاملة للصفوف الثانوية والتوجيهي',
                 'status' => 'active',
-                'how_much_course_can_select' => 25,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/secondary-bundle.jpg'
             ]);
@@ -130,7 +127,7 @@ class PackageSeeder extends Seeder
                 'price' => 900.000,
                 'description' => 'باقة شاملة لطلاب الجامعات - السنوات التحضيرية',
                 'status' => 'active',
-                'how_much_course_can_select' => 30,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/university-bundle.jpg'
             ]);
@@ -155,7 +152,7 @@ class PackageSeeder extends Seeder
                 'price' => 1500.000,
                 'description' => 'باقة VIP تشمل جميع المراحل الدراسية',
                 'status' => 'active',
-                'how_much_course_can_select' => 50,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/vip-all-access.jpg'
             ]);
@@ -191,7 +188,7 @@ class PackageSeeder extends Seeder
                 'price' => 400.000,
                 'description' => 'باقة شاملة للرياضيات والفيزياء والكيمياء والأحياء',
                 'status' => 'active',
-                'how_much_course_can_select' => 12,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject',
                 'image' => 'packages/scientific-subjects.jpg'
             ]);
@@ -216,7 +213,7 @@ class PackageSeeder extends Seeder
                 'price' => 350.000,
                 'description' => 'باقة شاملة لتعلم اللغات - عربي، إنجليزي، فرنسي',
                 'status' => 'active',
-                'how_much_course_can_select' => 10,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject',
                 'image' => 'packages/languages-bundle.jpg'
             ]);
@@ -241,7 +238,7 @@ class PackageSeeder extends Seeder
                 'price' => 500.000,
                 'description' => 'باقة شاملة للبرمجة وقواعد البيانات والشبكات',
                 'status' => 'active',
-                'how_much_course_can_select' => 15,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject',
                 'image' => 'packages/tech-programming.jpg'
             ]);
@@ -266,7 +263,7 @@ class PackageSeeder extends Seeder
                 'price' => 300.000,
                 'description' => 'باقة شاملة للتاريخ والجغرافيا والفلسفة والأدب',
                 'status' => 'active',
-                'how_much_course_can_select' => 8,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject',
                 'image' => 'packages/humanities.jpg'
             ]);
@@ -291,7 +288,7 @@ class PackageSeeder extends Seeder
                 'price' => 99.999,
                 'description' => 'هذه باقة تجريبية قيد التطوير والاختبار',
                 'status' => 'inactive',
-                'how_much_course_can_select' => 2,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject',
                 'image' => null
             ]);
@@ -327,7 +324,7 @@ class PackageSeeder extends Seeder
                 'price' => 1200.000,
                 'description' => 'باقة متكاملة تشمل صفوف التوجيهي مع مواد التقوية الإضافية',
                 'status' => 'active',
-                'how_much_course_can_select' => 35,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class', // النوع الأساسي class
                 'image' => 'packages/golden-tawjihi.jpg'
             ]);
@@ -366,7 +363,7 @@ class PackageSeeder extends Seeder
                 'price' => 2000.000,
                 'description' => 'أقوى باقة تشمل جميع المراحل الدراسية مع جميع المواد الإضافية',
                 'status' => 'active',
-                'how_much_course_can_select' => 100,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'class',
                 'image' => 'packages/platinum-all.jpg'
             ]);
@@ -405,7 +402,7 @@ class PackageSeeder extends Seeder
                 'price' => 800.000,
                 'description' => 'باقة مصممة خصيصاً للطلاب المتفوقين - صفوف متقدمة ومواد إثرائية',
                 'status' => 'active',
-                'how_much_course_can_select' => 20,
+                'how_much_course_can_select' => rand(1,5),
                 'type' => 'subject', // النوع الأساسي subject
                 'image' => 'packages/excellent-student.jpg'
             ]);

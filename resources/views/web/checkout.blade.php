@@ -536,5 +536,4 @@ document.addEventListener('DOMContentLoaded', function () {
     new CartManager();
 });
 </script>
-
-@endsection
+@endpush

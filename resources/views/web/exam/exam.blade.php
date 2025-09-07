@@ -94,7 +94,7 @@
 
                 <div style="margin: 15px 0;">
                     <span>بدأ في: {{ $result->started_at->format('Y-m-d H:i') }}</span><br>
-                    <span>انتهى في: {{ $result->submitted_at->format('Y-m-d H:i') }}</span><br>
+                    <span>انتهى في: {{ $result->submitted_at?->format('Y-m-d H:i') }}</span><br>
                     <span>المدة المستغرقة: {{ $result->duration }} دقيقة</span>
                 </div>
 
@@ -149,7 +149,7 @@
                     <span>الدرجة: {{ $question->grade }}</span>
                 </div>
 
-                <form action="{{route('answer.question',['exam'=>$exam->id,'question'=>$question->id])}}" method='post'>
+                <form action="{{route('answer.question',['exam'=>$exam->id,'question'=>$question->id,'page'=>$question_nm])}}" method='post'>
                     @csrf
                     <input type="hidden" name="page" value="{{ $question_nm }}">
 
@@ -218,14 +218,14 @@
         @endif
 
         <!-- Exam History -->
-        @if($attempts->where('status', 'completed')->count() > 0)
+        @if($attempts->count() > 0)
             <article class="cmty-post cmty-post--outlined">
                 <header class="cmty-head">
                     تاريخ المحاولات السابقة
                 </header>
 
                 <div style="margin: 15px 0;">
-                    @foreach($attempts->where('status', 'completed') as $attempt)
+                    @foreach($attempts as $attempt)
                         <div style="padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
                             <div>
                                 <strong>
@@ -233,7 +233,7 @@
                                         محاولة
                                     </a>
                                 </strong> -
-                                <span>{{ $attempt->submitted_at->format('Y-m-d H:i') }}</span>
+                                <span>{{ $attempt->submitted_at?->format('Y-m-d H:i') }}</span>
                             </div>
                             <div>
                                 النتيجة: {{ $attempt->score }}/{{ $exam->total_grade }}
@@ -261,7 +261,7 @@
             </article>
         @endif
 
-        @if(!$exam->is_available())
+        <!-- @if(!$exam->is_available())
             <article class="cmty-post cmty-post--outlined" style="border-color: #ffc107;">
                 <div style="color: #856404; text-align: center; padding: 20px;">
                     <strong>الامتحان غير متاح حاليا</strong>
@@ -272,7 +272,8 @@
                     @endif
                 </div>
             </article>
-        @endif
+        @endif -->
+
     </div>
 </section>
 

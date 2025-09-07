@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', translate_lang('International Program'))
+@section('title', __('messages.International Program'))
 
 @section('content')
 <section class="gprograms-page">
     <!-- International -->
     <a href="#" class="gprogram-card gprogram-card-mixed gprogram-card-main">
-        <span>{{ translate_lang('International Program')}}</span>
+        <span>{{ __('messages.International Program')}}</span>
     </a>
 
     @if($programms && $programms->count())

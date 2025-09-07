@@ -9,6 +9,17 @@ class StudentAccountController extends Controller
 {
     public function index()
     {
-        return view('web.account');
+        $userExamsResults    = collect();
+        $userCourses         = collect();
+
+        $user    = auth_student();
+        if($user){
+           $userExamsResults    = $user->result_attempts();
+           $userCourses         = $user->courses;
+        }
+        return view('web.account',[
+            'userCourses'      => $userCourses,
+            'userExamsResults' => $userExamsResults,
+        ]);
     }
 }

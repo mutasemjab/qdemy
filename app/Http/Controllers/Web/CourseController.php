@@ -187,16 +187,11 @@ class CourseController extends Controller
     public function subject_courses($subject)
     {
         $subject   = Subject::FindOrFail($subject);
-        return redirect()->route('courses',"programm_id=".$subject->programm_id."&grade_id=".$subject->grade_id."&subject_id=".$subject->id);
-
-        return view('web.courses',[
-            'subject' => $subject,
-            'title'   => $subject->name_en,
-            'programms' => $programms,
-            'grades' => $grades,
-            'subjects' => $subjects,
-            'courses' => $courses,
-        ]);
+        $program   = $subject->program;
+        $gradeId   = $subject->grade_id;
+        if ($program->ctg_key == 'international-program') {
+            $gradeId   = null;
+        }
+        return redirect()->route('courses',"programm_id=".$subject->programm_id."&grade_id=".$gradeId."&subject_id=".$subject->id);
     }
-   // programms
 }

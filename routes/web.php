@@ -61,7 +61,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/course/{course}/{slug?}', [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
     Route::get('/universities-programm/{programm?}/{slug?}', [UniversityProgramController::class, 'index'])->name('universities-programm');
-    Route::get('/international-programm/{programm?}/{slug?}', [InternationalProgramController::class, 'index'])->name('international-programms');
+
+    Route::get('/international-programms', [InternationalProgramController::class, 'index'])->name('international-programms');
+    Route::get('/international-programm/{programm?}/{slug?}', [InternationalProgramController::class, 'programm'])->name('international-programm');
 
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
     Route::get('/teacher/{id}', [TeacherController::class, 'show'])->name('teacher');
@@ -125,9 +127,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     // enrollment routes
     // عرض قائمة الامتحانات
-    Route::get('exam/', [ExamController::class, 'e_exam'])->name('e-exam');
+    Route::get('exam/', [ExamController::class, 'index'])->name('exam.index');
     // عرض الامتحان
-    Route::get('exam/{exam}/{slug?}', [ExamController::class, 'exam'])->name('exam');
+    Route::get('exam/{exam}/{slug?}', [ExamController::class, 'show'])->name('exam');
 
     Route::middleware(['auth:user'])->prefix('exam')->group(function () {
 
@@ -139,9 +141,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // تسليم الامتحان
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
-
-        // عرض النتائج
-        Route::get('/{exam}/results', [ExamController::class, 'exam_results'])->name('exam.results');
 
         // مراجعة محاولة معينة
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');

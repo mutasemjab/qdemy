@@ -956,7 +956,7 @@ return [
     'correct_answer' => 'Correct Answer',
     'true' => 'True',
     'false' => 'False',
-    'essay_question_note' => 'Essay questions will be graded manually by instructors.',
+    'essay_question_note' => 'Essay questions will be completed manually by instructors.',
     'minimum_two_options_required' => 'At least two options are required for multiple choice questions.',
     'at_least_one_correct_answer_required' => 'At least one correct answer must be selected.',
     'please_select_correct_answer' => 'Please select the correct answer for true/false question.',

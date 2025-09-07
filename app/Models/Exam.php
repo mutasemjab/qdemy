@@ -80,15 +80,19 @@ class Exam extends Model
     // exam current attempt for current login student
     public function current_user_attempt()
     {
-        return $this->user_attempts()->where('status', 'in_progress')
-            ->where('submitted_at', null)?->first();
+        return $this->user_attempts()->where('status', 'in_progress')->where('submitted_at', null)?->first();
+    }
+
+    // exam last submited attempt for current login student
+    public function last_submitted_attempt()
+    {
+        return $this->user_attempts()->where('submitted_at','!=', null)?->first();
     }
 
     // exam attempts for current login student
     public function current_user_attempts()
     {
-        return $this->user_attempts()->where('status', 'in_progress')
-            ->where('submitted_at', null);
+        return $this->user_attempts()->where('status', 'in_progress')->where('submitted_at', null);
     }
 
     /**
@@ -144,7 +148,7 @@ class Exam extends Model
     // get exam attempts for current login student
     public function user_attempts($user_id = null)
     {
-        $user_id = $user_id ?? auth('user')?->id();
+        $user_id = $user_id ?? auth_student()?->id;
         return $this->attempts()
             ->where('user_id', $user_id)
             ->orderBy('created_at', 'desc')
@@ -171,7 +175,7 @@ class Exam extends Model
     // for current login student
     public function can_add_attempt()
     {
-        $attempts_allowed = $this->attempts_allowed; //99;
+        $attempts_allowed = $this->attempts_allowed;
         $user_id = $user_id ?? auth('user')->id();
         $attempts = $this->attempts()->where('user_id', $user_id);
         return ($attempts->count() < $attempts_allowed && !$attempts->where('submitted_at', null)->count());
@@ -181,16 +185,15 @@ class Exam extends Model
     public function result_attempt()
     {
         $user_id = $user_id ?? auth('user')->id();
-        return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->where('submitted_at', '!=', null)
-            ->orderBy('score', 'desc')->first();
+        return $this->attempts()->where('user_id', $user_id)
+        ->where('status', 'completed')->orderBy('score', 'desc')->first();
     }
 
     // return all completed attmept to exam for current login student
     public function result_attempts()
     {
         $user_id = $user_id ?? auth('user')->id();
-        return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->where('submitted_at', '!=', null)
-            ->orderBy('score', 'desc')->get();
+        return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->orderBy('score', 'desc')->get();
     }
 
     /**

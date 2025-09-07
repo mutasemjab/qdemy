@@ -41,6 +41,12 @@ class User extends Authenticatable
       return $this->hasOne(Teacher::class);
    }
 
+   public function courses()
+   {
+      return $this->belongsToMany(Course::class ,'course_users');
+   }
+
+
    public function teacherProfile()
    {
       return $this->hasOne(Teacher::class, 'user_id');
@@ -82,17 +88,40 @@ class User extends Authenticatable
    {
       return $this->hasMany(ParentStudent::class);
    }
-   public function examAttempts()
-    {
-        return $this->hasMany(ExamAttempt::class);
-    }
 
+   public function examAttempts()
+   {
+        return $this->hasMany(ExamAttempt::class);
+   }
+
+    public function result_attempts()
+    {
+        return ExamAttempt::query()
+            ->where('user_id', $this->id)
+            ->where('status', 'completed')
+            ->whereIn('id', function($query) {
+                $query->selectRaw('MAX(id)')
+                    ->from('exam_attempts as ea')
+                    ->where('ea.user_id', $this->id)
+                    ->where('ea.status', 'completed')
+                    ->whereRaw('ea.score = (
+                        SELECT MAX(score) 
+                        FROM exam_attempts 
+                        WHERE exam_id = ea.exam_id 
+                        AND user_id = ea.user_id 
+                        AND status = "completed"
+                    )')
+                    ->groupBy('ea.exam_id');
+            })
+            ->orderBy('score', 'desc')
+            ->get();
+    }
     /**
      * Get completed exam attempts for the user.
      */
     public function completedExamAttempts()
     {
-        return $this->hasMany(ExamAttempt::class)->where('status', 'completed');
+        return $this->examAttempts->where('status', 'completed');
     }
 
     /**

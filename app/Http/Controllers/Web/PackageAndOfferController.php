@@ -81,6 +81,10 @@ class PackageAndOfferController extends Controller
                             ->whereIn('programm_id',$classChilds)
                             ->orWhereIn('grade_id',$classChilds)
                             ->orWhereIn('semester_id',$classChilds)
+                            ->orWhereHas('categories',function ($query)use($clas) {
+                                $query->where('pivot_level','field');
+                                $query->where('category_id',$clas->id);
+                            })
                             ->get();
         }elseif(!$is_type_class){
             $subjects     = $package->subjects;

@@ -110,6 +110,7 @@
                                                     <span class="progress-badge">{{round($progressPercent)}}%</span>
                                                 @endif
                                             </div>
+                                            @if(!$is_enrolled) <span class='free'>free</span>@endif
                                             @else
                                             <div class="disabled-lesson-video"><img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video"></div>
                                             @endif
@@ -121,8 +122,10 @@
                                                 <a class='text-decoration-none' target='_blank' href="{{$content->file_path}}">
                                                     <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
                                                 </i>
-                                               </a>
+                                                </a>
+                                                @if(!$is_enrolled) <span class='free'>free</span>@endif
                                             </div>
+
                                             @else
                                                 <a class='text-decoration-none' href="javascrip:void(0)">
                                                     <i class="fa fa-file" style='color:lightgray;'></i>
@@ -141,13 +144,15 @@
                                         </div>
                                     </div>
 
+                                    @endforeach
+
                                     <!-- main sections Quizes -->
                                     @php $sectionsExams = $section->exams @endphp
                                     @if($is_enrolled && $sectionsExams && $sectionsExams->count())
                                         <span>{{translate_lang('section Quiz')}}</span>
                                         @foreach($sectionsExams as $sectionsExam)
                                             <div class="lesson-item exam">
-                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$sectionsExam->slug])}}">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$sectionsExam->id,'slug'=>$sectionsExam->slug])}}">
                                                 <div class="lesson-info">
                                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$sectionsExam->title}} </h4>
                                                     <div class="">
@@ -159,14 +164,12 @@
                                                             <i class="fa fa-times"></i>
                                                         @endif
                                                         {{$sectionsExam->result_attempt()?->percentage}}
-                                                        {{translate_lang('أفضل نتيجة')}} {{$sectionsExam->result_attempt()?->score}}
                                                     </div>
                                                 </div>
                                                 </a>
                                             </div>
                                         @endforeach
                                     @endif
-                                    @endforeach
 
 
                             @endif
@@ -196,6 +199,7 @@
                                                                 <span class="progress-badge">{{round($progressPercent)}}%</span>
                                                             @endif
                                                         </div>
+                                                        @if(!$is_enrolled) <span class='free'>free</span>@endif
                                                         @else
                                                         <div class="disabled-lesson-video"><img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video"></div>
                                                         @endif
@@ -207,6 +211,7 @@
                                                             <a class='text-decoration-none' target='_blank' href="{{$subSectioncontent->file_path}}">
                                                                 <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
                                                             </i></a>
+                                                            @if(!$is_enrolled) <span class='free'>free</span>@endif
                                                         </div>
                                                         @else
                                                             <a class='text-decoration-none' href="javascrip:void(0)">
@@ -228,13 +233,14 @@
                                             @endif
                                         </div>
                                     </div>
+
                                     <!-- sub sections Quizes -->
                                     @php $subSectionsExams = $subSection->exams @endphp
                                     @if($is_enrolled && $subSectionsExams && $subSectionsExams->count())
                                         <span>{{translate_lang('section Quiz')}}</span>
                                         @foreach($subSectionsExamss as $subSectionsExams)
                                             <div class="lesson-item exam">
-                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$subSectionsExams->slug])}}">
+                                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$subSectionsExams->id,'slug'=>$subSectionsExams->slug])}}">
                                                 <div class="lesson-info">
                                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$subSectionsExams->title}} </h4>
                                                     <div class="">
@@ -246,7 +252,6 @@
                                                             <i class="fa fa-times"></i>
                                                         @endif
                                                         {{$subSectionsExams->result_attempt()?->percentage}}
-                                                        {{translate_lang('أفضل نتيجة')}} {{$subSectionsExams->result_attempt()?->score}}
                                                     </div>
                                                 </div>
                                                 </a>
@@ -254,8 +259,6 @@
                                         @endforeach
                                     @endif
                                     @endforeach
-
-
 
                                 </div>
                             @endif
@@ -287,6 +290,7 @@
                                             <span class="progress-badge">{{round($progressPercent)}}%</span>
                                         @endif
                                     </div>
+                                    @if(!$is_enrolled) <span class='free'>free</span>@endif
                                     @else
                                     <div class="disabled-lesson-video"><img data-src="{{ asset('assets_front/images/video-thumb.png') }}" alt="Video"></div>
                                     @endif
@@ -298,6 +302,7 @@
                                         <a class='text-decoration-none' target='_blank' href="{{$_content->file_path}}">
                                             <i class="fa fa-file" style='color:rgba(0, 85, 210, 0.7);'>
                                         </i></a>
+                                        @if(!$is_enrolled) <span class='free'>free</span>@endif
                                     </div>
                                     @else
                                         <a class='text-decoration-none' href="javascrip:void(0)">
@@ -327,7 +332,7 @@
                     <div class="accordion-body">
                         @foreach($exams as $exam)
                             <div class="lesson-item exam">
-                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$course->id,'slug'=>$exam->slug])}}">
+                                <a class='text-decoration-none d-flex' target='_blank' href="{{route('exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}">
                                     <div class="lesson-info">
                                     <h4> <i class="fa fa-question" style='color:rgba(0, 85, 210, 0.7);'></i> {{$exam->title}} </h4>
                                     <div class="">
@@ -342,7 +347,6 @@
                                         @if($exam->result_attempt())
                                             {{translate_lang('best_results')}}
                                             {{$exam->result_attempt()?->percentage}}%
-                                            {{$exam->result_attempt()?->score}}
                                         @endif
                                     </div>
                                 </div>

@@ -16,7 +16,22 @@ use App\Http\Controllers\Controller;
 class ExamController extends Controller
 {
 
-        public function e_exam(Request $request)
+    // ملحوظة هامة تخص تسليم وتصحيح الامتحان
+    // يتم السماح بالتسليم سواء اجاب الطالب كل الاسئلة ام لا وعندها تصير submitted_at = now(),
+    // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
+    // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
+    // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
+    /**
+     * التحكم في السماح بتعديل الإجابات السابقة
+    */
+    protected $can_edit_answers = true;
+    
+    /**
+     * التحكم في التصحيح التلقائي عند وجود أسئلة مقالية
+    */
+    protected $auto_grade_with_essays = true;
+
+    public function index(Request $request)
     {
         // Get filter data
         $programms = CategoryRepository()->getMajors();
@@ -105,7 +120,7 @@ class ExamController extends Controller
 
         $exams = $query->paginate(PGN)->withQueryString();
 
-        return view('web.exam.e-exam', [
+        return view('web.exam.index', [
             'exams' => $exams,
             'programms' => $programms,
             'grades' => $grades,
@@ -113,47 +128,14 @@ class ExamController extends Controller
         ]);
     }
 
-    // public function e_exam(Request $request)
-    // {
-    //     $programms                   = CategoryRepository()->getMajors();
-    //     $programmsGrades             = CategoryRepository()->getProgrammsGrades();
-    //     $subjects                    = SubjectRepository()->getSubjectsForGrade();
-    //     // $query                       = Exam::Query()->where('is_active',1);
-    //     // $exams                       = $query->paginate(PGN);
-    //     $query = Exam::query()
-    //         ->where('is_active', 1)
-    //         ->where(function($q) {
-    //             $now = now();
-    //             $q->where(function($q) use ($now) {
-    //                 $q->whereNull('start_date')
-    //                 ->orWhere('start_date', '<=', $now);
-    //             })
-    //             ->where(function($q) use ($now) {
-    //                 $q->whereNull('end_date')
-    //                 ->orWhere('end_date', '>=', $now);
-    //             });
-    //         })
-    //         ->where('course_id',null);
-
-    //     $exams = $query->paginate(PGN);
-
-    //     return view('web.exam.e-exam',[
-    //         'exams'           => $exams,
-    //         'programms'       => $programms,
-    //         'subjects'        => $subjects,
-    //     ]);
-    // }
-
-    public function exam(Exam $exam, $slug = null, ExamAttempt $attempt = null)
+    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
         $user = auth_student();
 
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
-            return redirect()->route('e-exam')->with('error', 'الامتحان غير متاح حاليا');
+            return redirect()->route('exam.index')->with('error', 'الامتحان غير متاح حاليا');
         }
-
-        $_questions = $exam->questions();
 
         $attempts         = $exam->user_attempts();
         $result           = $exam->result_attempt($user?->id);
@@ -174,26 +156,41 @@ class ExamController extends Controller
             }
         }
 
-        $questions = null;
-        $question = null;
-        $question_nm = $_GET['page'] ?? 1;
+        $_questions   = $exam->questions();
+        $pgQquestions = null;
+        $questions    = null;
+        $question     = null;
+        $question_nm  = 1;
 
         if ($current_attempt) {
+
             // Get questions in the order stored for this attempt
             $question_order = $current_attempt->question_order;
             if ($question_order) {
                 $questions = Question::whereIn('id', $question_order)
-                    ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')')
-                    ->paginate(1);
+                    ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')');
             } else {
-                $questions = $_questions->paginate(1);
+                $questions = (clone $_questions);
             }
-            $question = $questions?->first();
+            $pgQquestions = (clone $questions)->paginate(1);
+
+            if($current_attempt->answers?->count() && !request()->get('page')){
+                $question    =  $current_attempt->answers()->orderBy('id','desc')->first()?->question;
+                // ابحث عن موقع السؤال الحالي
+                $index = (clone $questions)->paginate(1000)->search(function($q) use ($question) {
+                    return $q->id === $question?->id;
+                });
+                $question_nm = ($index + 2);
+                return redirect()->route('exam',['exam'=>$exam->id,'slug'=>$exam->slug,'page'=>$question_nm]);
+            }else{
+                $question_nm = request()->get('page');
+                $question    = $pgQquestions?->first();
+            }
         }
 
         return view('web.exam.exam',[
             'exam'            => $exam,
-            'questions'       => $questions,
+            'questions'       => $pgQquestions,
             'question'        => $question,
             'attempts'        => $attempts,
             'result'          => $result,
@@ -213,18 +210,15 @@ class ExamController extends Controller
         // Check if user can start new attempt
         if (!$exam->can_add_attempt($user?->id)) {
             return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', 'لقد استنفدت عدد المحاولات المسموحة');
+                ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
 
         // Check if there's already an active attempt
-        $active_attempt = ExamAttempt::where('user_id', $user?->id)
-            ->where('exam_id', $exam->id)
-            ->where('status', 'in_progress')
-            ->first();
+        $active_attempt = $exam->current_user_attempt();
 
         if ($active_attempt) {
             return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', 'لديك محاولة جارية بالفعل');
+                ->with('error', translate_lang('لديك محاولة جارية بالفعل'));
         }
 
         // Get questions and shuffle if needed
@@ -257,14 +251,10 @@ class ExamController extends Controller
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
-        //  ExamAttempt::where('user_id', $user?->id)
-        //     ->where('exam_id', $exam->id)
-        //     ->where('status', 'in_progress')
-        //     ->first();
 
         if (!$current_attempt) {
             return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', 'لا توجد محاولة جارية');
+                ->with('error', translate_lang('لا توجد محاولة جارية'));
         }
 
         // Check time limit
@@ -273,7 +263,7 @@ class ExamController extends Controller
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
                 return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                    ->with('error', 'تم انتهاء الوقت المحدد');
+                    ->with('error', translate_lang('تم انتهاء الوقت المحدد'));
             }
         }
 
@@ -293,6 +283,7 @@ class ExamController extends Controller
         // Find or create exam answer
         DB::beginTransaction();
         try {
+            
             $exam_answer = ExamAnswer::updateOrCreate(
                 [
                     'exam_attempt_id' => $current_attempt->id,
@@ -351,7 +342,7 @@ class ExamController extends Controller
                 $this->submit_exam($current_attempt);
                 DB::commit();
                 return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                    ->with('success', 'تم تسليم الامتحان بنجاح');
+                    ->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
             }else {
                 DB::commit();
             }
@@ -367,7 +358,10 @@ class ExamController extends Controller
     }
 
     // تسليم الامتحان
-    // وجعل submitted_at = now(), status =  completed
+    // وجعل submitted_at = now(),
+    // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
+    // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
+    // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
     public function submit_exam(ExamAttempt $attempt)
     {
         if ($attempt->status !== 'in_progress') {
@@ -384,13 +378,19 @@ class ExamController extends Controller
         $is_passed      = $percentage >= $exam->passing_grade;
 
         // Update attempt
-        $attempt->update([
-            'submitted_at' => now(),
-            'score' => $total_score,
-            'percentage' => round($percentage, 2),
-            'is_passed' => $is_passed,
-            'status' => 'completed',   // update here when add teacher role
-        ]);
+        if($exam->show_results_immediately == true){
+            $attempt->update([
+                'submitted_at' => now(),
+                'score'        => $total_score,
+                'percentage'   => round($percentage, 2),
+                'is_passed'    => $is_passed,
+                'status'       => 'completed',  
+            ]);
+        }else{
+            $attempt->update([
+                'submitted_at' => now(),
+            ]);
+        }
     }
 
     // تسليم الامتحان اجباريا حال انتهاء الوقت
@@ -437,18 +437,6 @@ class ExamController extends Controller
 
         return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
             ->with('success', 'تم تسليم الامتحان بنجاح');
-    }
-
-    // get exam completed attempts
-    public function exam_results(Exam $exam)
-    {
-        $user = auth_student();
-        $attempts = $exam->result_attempts();
-
-        return view('web.exam.results', [
-            'exam'     => $exam,
-            'attempts' => $attempts
-        ]);
     }
 
     // review attempts answers

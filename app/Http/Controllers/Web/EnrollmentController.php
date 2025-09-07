@@ -209,7 +209,7 @@ class EnrollmentController extends Controller
         $courseId = $course?->id;
 
         // التحققات
-        $enrollmentCheck = $this->checkEnrollmentEligibility($user?->id, $courses, $cardNumber);
+        $enrollmentCheck = $this->checkEnrollmentEligibility($user?->id, $course, $cardNumber);
         if (!$enrollmentCheck['valid']) {
             return response()->json([
                 'success' => false,
@@ -435,6 +435,7 @@ class EnrollmentController extends Controller
     private function checkEnrollmentEligibility($userId, $course, $cardNumber)
     {
         // التحقق من الاشتراك السابق
+
         if (CourseUser::where('user_id', $userId)->where('course_id', $course->id)->exists()) {
             return [
                 'valid' => false,

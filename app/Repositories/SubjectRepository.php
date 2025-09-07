@@ -36,13 +36,9 @@ class SubjectRepository
 
     // query for all subjects under international programm
     // subjects is directly under international programm
-    public function internationalProgramSubjects($programm = null)
+    public function internationalProgramSubjects($programm)
     {
-        $internationalProgramId = CategoryRepository()->getInternationalProgram()?->id;
-        if ($internationalProgramId) {
-            return $this->model->where('is_active', true)->where('programm_id', $internationalProgramId);
-        }
-        return [];
+        return $this->model->where('is_active', true)->where('grade_id', $programm->id);
     }
 
     // query->get() for all subjects under international programm

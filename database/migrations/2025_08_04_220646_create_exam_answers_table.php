@@ -20,7 +20,6 @@ return new class extends Migration
             $table->boolean('is_correct')->nullable(); // Auto-calculated for MC/TF, manual for essay
             $table->decimal('score', 5, 2)->default(0.00); // Score achieved for this question
             $table->datetime('answered_at')->nullable();
-
             // Foreign keys
             $table->unsignedBigInteger('exam_attempt_id');
             $table->foreign('exam_attempt_id')->references('id')->on('exam_attempts')->onDelete('cascade');
@@ -31,6 +30,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Unique constraint
+            
             $table->unique(['exam_attempt_id', 'question_id']);
         });
     }

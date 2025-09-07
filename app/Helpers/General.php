@@ -104,7 +104,9 @@ if (!function_exists('CartRepository')) {
 if (!function_exists('auth_student')) {
   function auth_student()
   {
-    return auth('user')->user();
+    $user = auth('user')->user();
+    if(!$user || $user->role_name != 'student') return null;
+    return $user;
   }
 }
 

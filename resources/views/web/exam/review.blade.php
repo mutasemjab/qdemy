@@ -29,6 +29,7 @@
                         <strong>المدة المستغرقة:</strong><br>
                         {{ $attempt->duration }} دقيقة
                     </div>
+                    @if($attempt->status == 'completed')
                     <div>
                         <strong>النتيجة:</strong><br>
                         {{ $attempt->score }}/{{ $exam->total_grade }}
@@ -37,6 +38,7 @@
                         <strong>النسبة المئوية:</strong><br>
                         {{ $attempt->percentage }}%
                     </div>
+                    @endif
                 </div>
             </div>
 
@@ -60,9 +62,9 @@
                         <div>
                             <h4>
                                 السؤال {{ $index + 1 }}: {{ $question->title }}
-                                @if($is_correct === 1)
+                                @if($is_correct === true)
                                     <span style="color: #4CAF50; font-size: 14px;">(صحيح - {{ $answer->score }}/{{ $question->grade }})</span>
-                                @elseif($is_correct === 0)
+                                @elseif($is_correct === false)
                                     <span style="color: #f44336; font-size: 14px;">(خطأ - {{ $answer->score }}/{{ $question->grade }})</span>
                                 @else
                                     <span style="color: #ff9800; font-size: 14px;">(قيد التصحيح - {{ $answer->score }}/{{ $question->grade }})</span>
@@ -199,9 +201,9 @@
 
             @php
                 $total_questions = (clone $answers)->count();
-                $correct_answers = (clone $answers)->where('is_correct','===', 1)->count();
-                $wrong_answers   = (clone $answers)->where('is_correct','===',0)->count();
-                $pending_answers = (clone $answers)->where('is_correct','===', null)->count();
+                $correct_answers = (clone $answers)->where('is_correct','===', true)->count();
+                $wrong_answers   = (clone $answers)->where('is_correct','===',false)->count();
+                $pending_answers = (clone $answers)->where('is_correct','===',null)->count();
             @endphp
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 15px 0;">
@@ -229,8 +231,11 @@
             </div>
 
             <div class="cmty-actions">
-                <a href="{{ route('exam.results', ['exam' => $exam->id]) }}" class="cmty-like">عرض جميع المحاولات</a>
+                @if($exam->result_attempts()?->count())
+                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">عرض جميع المحاولات</a>
+                @else
                 <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">العودة للامتحان</a>
+                @endif
             </div>
         </article>
     </div>

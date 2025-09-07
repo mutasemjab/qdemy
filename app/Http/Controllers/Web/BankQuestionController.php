@@ -20,7 +20,7 @@ class BankQuestionController extends Controller
 
         // Build query with relationships
         $query = BankQuestion::with(['category', 'subject'])
-            ->where('is_active', true)
+            ->where('bank_questions.is_active', true)
             ->orderBy('created_at', 'desc');
 
         // Apply filters

@@ -19,7 +19,7 @@
                         <img src="{{ asset('assets_front/images/icons/community.png') }}" alt="Community Icon" class="icon">
                     </a>
                 </li>
-                <li><a href="{{ route('e-exam') }}">امتحانات</a></li>
+                <li><a href="{{ route('exam.index') }}">امتحانات</a></li>
                 <li><a href="{{ route('download') }}">تطبيقاتنا</a></li>
             </ul>
         </nav>

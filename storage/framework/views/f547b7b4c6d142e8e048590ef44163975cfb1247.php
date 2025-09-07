@@ -1,44 +1,45 @@
-@extends('layouts.app')
-@section('title',$package?->name)
 
-@section('content')
+<?php $__env->startSection('title',$package?->name); ?>
+
+<?php $__env->startSection('content'); ?>
 <section class="pkgo-wrap">
 
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{$package?->name}}</h2> <br>
+            <h2><?php echo e($package?->name); ?></h2> <br>
         </div>
     </div>
 
-    @if($is_type_class && $categoriesTree && $categoriesTree->count())
+    <?php if($is_type_class && $categoriesTree && $categoriesTree->count()): ?>
     <div class="co-chooser">
         <button class="co-chooser-btn" id="coChooserBtn">
-            <span>{{ $clas?->localized_name ?? translate_lang('choose class') }}</span>
+            <span><?php echo e($clas?->localized_name ?? translate_lang('choose class')); ?></span>
             <i class="fa-solid fa-caret-down"></i>
         </button>
 
         <ul class="co-chooser-list" id="coChooserList">
             <li><a href="javascript:void(0)" class='text-decoration-none'>
-                {{translate_lang('choose classe')}}</a>
+                <?php echo e(translate_lang('choose classe')); ?></a>
             </li>
-            @foreach($categoriesTree as $categories)
-                @if($categories && count($categories))
-                    @foreach($categories as $class)
+            <?php $__currentLoopData = $categoriesTree; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $categories): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php if($categories && count($categories)): ?>
+                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $class): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <li>
                         <a class='text-decoration-none'
-                            href="{{route('package',['package'=>$package->id,'clas'=>$class['id']])}}">
-                            {{$class['name']}}
+                            href="<?php echo e(route('package',['package'=>$package->id,'clas'=>$class['id']])); ?>">
+                            <?php echo e($class['name']); ?>
+
                         </a>
                     </li>
-                    @endforeach
-                @endif
-            @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                <?php endif; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </ul>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div type="submit" class="pkgo-head">
-        {{ sprintf('%g', $package->price) }} <span>{{CURRENCY}}</span>
+        <?php echo e(sprintf('%g', $package->price)); ?> <span><?php echo e(CURRENCY); ?></span>
     </div>
 
     <!-- Cart Status Section -->
@@ -46,74 +47,76 @@
         <div class="alert alert-info">
             <h5>الكورسات المضافة حالياً</h5>
             <div id="selected-courses-list"></div>
-            <p>عدد الكورسات المطلوبة: <span id="required-count">{{$package->how_much_course_can_select}}</span></p>
+            <p>عدد الكورسات المطلوبة: <span id="required-count"><?php echo e($package->how_much_course_can_select); ?></span></p>
             <p>عدد الكورسات المختارة: <span id="selected-count">0</span></p>
         </div>
     </div>
 
-    @if($subjects && $subjects->count())
+    <?php if($subjects && $subjects->count()): ?>
     <div class="sp2-box">
-    @foreach ($subjects as $subject)
+    <?php $__currentLoopData = $subjects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $subject): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <div class="sp2-group">
         <button class="sp2-group-head">
             <i class="fa-solid fa-plus"></i>
-            <span>{{ $subject->localized_name }}</span>
+            <span><?php echo e($subject->localized_name); ?></span>
         </button>
         <div class="sp2-panel">
             <div class="sp2-content">
-            <h4 class="sp2-title">{{ $subject->localized_name }}</h4>
+            <h4 class="sp2-title"><?php echo e($subject->localized_name); ?></h4>
 
-            @if($subject->is_optional == 0)
-                @php $courses = CourseRepository()->getDirectCategoryCourses($subject->id); @endphp
-                @if($courses && $courses->count())
+            <?php if($subject->is_optional == 0): ?>
+                <?php $courses = CourseRepository()->getDirectCategoryCourses($subject->id); ?>
+                <?php if($courses && $courses->count()): ?>
                 <div class="courses-list">
-                    @foreach ($courses as $not_optional_subject_course)
-                    <div class="course-item" data-course-id="{{$not_optional_subject_course->id}}">
-                        <span class="course-name">{{ $not_optional_subject_course->title }}</span>
-                        <button class="btn-add-cart" data-course-id="{{$not_optional_subject_course->id}}">
-                            {{ translate_lang('add to cart') }}
+                    <?php $__currentLoopData = $courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $not_optional_subject_course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="course-item" data-course-id="<?php echo e($not_optional_subject_course->id); ?>">
+                        <span class="course-name"><?php echo e($not_optional_subject_course->title); ?></span>
+                        <button class="btn-add-cart" data-course-id="<?php echo e($not_optional_subject_course->id); ?>">
+                            <?php echo e(translate_lang('add to cart')); ?>
+
                         </button>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-                @endif
+                <?php endif; ?>
 
-            @else
-                @php $optionals = SubjectRepository()->getOptionalSubjectOptions($subject); @endphp
+            <?php else: ?>
+                <?php $optionals = SubjectRepository()->getOptionalSubjectOptions($subject); ?>
                 <div class="optional-subjects">
-                @foreach ($optionals as $optional_lesson)
+                <?php $__currentLoopData = $optionals; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $optional_lesson): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="sp2-group sp2-nested">
                     <button class="sp2-group-head sp2-sub-head">
                         <i class="fa-solid fa-plus"></i>
-                        <span>{{ $optional_lesson->localized_name }}</span>
+                        <span><?php echo e($optional_lesson->localized_name); ?></span>
                     </button>
                     <div class="sp2-panel">
                         <div class="sp2-content">
-                        @php $courses = CourseRepository()->getDirectCategoryCourses($optional_lesson->id); @endphp
-                        @if($courses && $courses->count())
+                        <?php $courses = CourseRepository()->getDirectCategoryCourses($optional_lesson->id); ?>
+                        <?php if($courses && $courses->count()): ?>
                             <div class="courses-list">
-                            @foreach ($courses as $optional_subject_course)
-                            <div class="course-item" data-course-id="{{$optional_subject_course->id}}">
-                                <span class="course-name">{{ $optional_subject_course->title }}</span>
-                                <button class="btn-add-cart" data-course-id="{{$optional_subject_course->id}}">
-                                    {{ translate_lang('add to cart') }}
+                            <?php $__currentLoopData = $courses; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $optional_subject_course): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="course-item" data-course-id="<?php echo e($optional_subject_course->id); ?>">
+                                <span class="course-name"><?php echo e($optional_subject_course->title); ?></span>
+                                <button class="btn-add-cart" data-course-id="<?php echo e($optional_subject_course->id); ?>">
+                                    <?php echo e(translate_lang('add to cart')); ?>
+
                                 </button>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
-                        @endif
+                        <?php endif; ?>
                         </div>
                     </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
-            @endif
+            <?php endif; ?>
             </div>
         </div>
         </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
     </div>
-    @endif
+    <?php endif; ?>
 
 </section>
 
@@ -135,9 +138,9 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* قسم الدروس الرئيسي */
     .sp2-box {
@@ -483,9 +486,9 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 /**
  * Package Cart Manager
@@ -493,9 +496,9 @@
  */
 class PackageCartManager {
     constructor() {
-        this.packageId = {{$package->id}};
-        this.packageName = "{{$package->name}}";
-        this.maxCourses = {{$package->how_much_course_can_select}};
+        this.packageId = <?php echo e($package->id); ?>;
+        this.packageName = "<?php echo e($package->name); ?>";
+        this.maxCourses = <?php echo e($package->how_much_course_can_select); ?>;
         this.cartCount = 0;
         this.updateBtnDisabled = 1;
         this.selectedCourses = new Map(); // Map to store course id and name
@@ -563,7 +566,7 @@ class PackageCartManager {
         this.selectedCourses.delete(courseId);
 
         // Update UI
-        button.textContent = '{{ translate_lang("add to cart") }}';
+        button.textContent = '<?php echo e(translate_lang("add to cart")); ?>';
         button.classList.remove('btn-remove-cart');
         button.classList.add('btn-add-cart');
         button.closest('.course-item').classList.remove('selected');
@@ -626,7 +629,7 @@ class PackageCartManager {
     async updateCart() {
 
         if(this.updateBtnDisabled == 1){
-            this.showModal('error', '!', "{{translate_lang('لا يوجد تعديلات لحفظها')}}");
+            this.showModal('error', '!', "<?php echo e(translate_lang('لا يوجد تعديلات لحفظها')); ?>");
             return;
         }
         const updateBtn = document.getElementById('update-cart-btn');
@@ -634,7 +637,7 @@ class PackageCartManager {
 
         try {
             const coursesArray = Array.from(this.selectedCourses.keys());
-            const response = await fetch('{{ route("cart.package.update") }}', {
+            const response = await fetch('<?php echo e(route("cart.package.update")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -668,17 +671,17 @@ class PackageCartManager {
                         {
                             id: 'go-to-checkout',
                             text: 'الذهاب للدفع',
-                            action: () => window.location.href = '{{ route("checkout") }}'
+                            action: () => window.location.href = '<?php echo e(route("checkout")); ?>'
                         }
                     ]
                 );
             } else {
-                this.showModal('error', 'خطأ', data.message || "{{translate_lang('فشل تحديث السلة')}}");
+                this.showModal('error', 'خطأ', data.message || "<?php echo e(translate_lang('فشل تحديث السلة')); ?>");
             }
             console.log(data);
         } catch (error) {
             console.log(error);
-            this.showModal('error', 'خطأ', "{{translate_lang('حدث خطأ أثناء تحديث السلة')}}");
+            this.showModal('error', 'خطأ', "<?php echo e(translate_lang('حدث خطأ أثناء تحديث السلة')); ?>");
         } finally {
             updateBtn?.classList.remove('loading');
         }
@@ -686,7 +689,7 @@ class PackageCartManager {
 
     async loadExistingCart() {
         try {
-            const response = await fetch('{{ route("cart.package.get") }}', {
+            const response = await fetch('<?php echo e(route("cart.package.get")); ?>', {
                 headers: {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': this.csrfToken
@@ -703,7 +706,7 @@ class PackageCartManager {
                         const courseName = courseItem.querySelector('.course-name').textContent;
                         this.selectedCourses.set(courseId.toString(), courseName);
 
-                        button.textContent = "{{translate_lang('إزالة من السلة')}}";
+                        button.textContent = "<?php echo e(translate_lang('إزالة من السلة')); ?>";
                         button.classList.remove('btn-add-cart');
                         button.classList.add('btn-remove-cart');
                         courseItem.classList.add('selected');
@@ -783,4 +786,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH J:\xampp-8.1.1\htdocs\qdemy-main\resources\views/web/package.blade.php ENDPATH**/ ?>

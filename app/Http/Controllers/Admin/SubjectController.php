@@ -24,7 +24,6 @@ class SubjectController extends Controller
         $this->categoryRepository = $categoryRepository;
     }
 
-    // في SubjectController.php، استبدل دالة index بهذه:
     public function index(Request $request)
     {
         $query = Subject::with(['program', 'grade', 'semester', 'fieldType', 'courses']);

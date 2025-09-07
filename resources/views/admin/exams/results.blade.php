@@ -51,7 +51,7 @@
                     <h2 class="mb-1">{{ __('messages.exam_results') }}</h2>
                     <p class="text-muted mb-0">
                         {{ app()->getLocale() == 'ar' ? $exam->title_ar : $exam->title_en }} - 
-                        {{ app()->getLocale() == 'ar' ? $exam->course->name_ar : $exam->course->name_en }}
+                        {{ app()->getLocale() == 'ar' ? $exam->course?->name_ar : $exam->course?->name_en }}
                     </p>
                 </div>
                 <div class="btn-group">

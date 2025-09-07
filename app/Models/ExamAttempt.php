@@ -68,6 +68,14 @@ class ExamAttempt extends Model
     /**
      * Check if attempt is completed
      */
+    public function isGraded()
+    {
+        return $this->status === 'completed';
+    }
+
+    /**
+     * Check if attempt is completed
+     */
     public function isCompleted()
     {
         return $this->status === 'completed';
@@ -84,14 +92,29 @@ class ExamAttempt extends Model
    // Methods
     public function passed()
     {
-        if ($this->is_passed === null) {
-            return '<span class="text-warning">قيد التصحيح</span>';
+        if ($this->status == 'in_progress' && $this->is_passed === null) {
+            return '<span class="text-warning">'.__('front.قيد').' التصحيح</span>';
+        }elseif ($this->status == 'abandoned') {
+            return '<span class="text-warning">'.__('front.متروك').'</span>';
+        }elseif($this->status = 'completed'){
+            return $this->is_passed
+                ? '<span class="text-success">'.__('front.نجح').'</span>'
+                : '<span class="text-danger">'.__('front.رسب').'</span>';
         }
-
-        return $this->is_passed
-            ? '<span class="text-success">نجح</span>'
-            : '<span class="text-danger">رسب</span>';
     }
+
+    // public function attempt_actions()
+    // {
+    //     if($this->status === 'in_progress' && !$this->submitted_at){
+    //         return "<a href='" . route('exam.show', ['exam' => $this->exam->id, 'slug' => $this->exam->slug]) 
+    //         . "class='btn btn-sm btn-primary'> " . translate_lang('continue') . "</a>";
+    //     }elseif($this->exam->show_results_immediately && in_array($this->status, ['completed'])){
+    //         return "<a href='" . route('review.attempt', ['exam' => $this->exam->id, 'attempt' => $this->id]) 
+    //         . "class='btn btn-sm btn-info'> " . translate_lang('review') . "</a>";
+    //     }else{
+    //         return  "-";
+    //     }
+    // }
 
     public function getDurationAttribute()
     {

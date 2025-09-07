@@ -51,6 +51,7 @@
                                     {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
                                 {{ $subject->localized_name }}
                                 @if($subject->semester) - {{ $subject->semester->localized_name }} @endif
+                                @if($subject->grade && $subject->grade->level == 'international-program-child') - {{ $subject->grade->localized_name }} @endif
                             </option>
                         @endforeach
                     </select>
@@ -85,6 +86,7 @@
             <div class="card-info">
                 <p class="course-date">{{ $course->created_at->locale(app()->getLocale())->translatedFormat('d F Y') }}</p>
                 <a class='text-decoration-none text-dark' href="{{route('course',['course'=>$course->id,'slug'=>$course->slug])}}">
+                    <span class="course-title">{{$course->subject?->localized_name}}</span>
                     <span class="course-title">{{$course->title}}</span>
                 </a>
                 <div class="instructor">

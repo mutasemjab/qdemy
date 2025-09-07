@@ -102,6 +102,13 @@ class CategoryRepository
             ->orWhere('ctg_key', 'international-program')->first();
     }
 
+    // get international programs - ctg::where level = 'international-program-child'
+    // return instance of Category
+    public function getInternationalPrograms()
+    {
+        return $this->model->where('is_active', true)->where('level', 'international-program-child')->get();
+    }
+
     // get major univirisity program
     // return instance of Category
     public function getUniversitiesProgram()

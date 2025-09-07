@@ -81,7 +81,7 @@
     <h2>{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
         <a href="{{ route('community') }}" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
-        <a href="{{ route('e-exam') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('exam.index') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
         <a href="{{ route('courses') }}" class="service-btn dark">{{ __('front.Courses') }}</a>
         <a href="{{ route('sale-point') }}" class="service-btn light">{{ __('front.Sale Points') }}</a>
         <a href="{{ route('ministerialQuestions.index') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
