@@ -88,12 +88,9 @@ trait CourseManagementTrait
             
             // Handle photo upload
             if ($request->hasFile('photo')) {
-                $photoUpload = $this->uploadPhoto($request->file('photo'));
-                if ($photoUpload['success']) {
-                    $courseData['photo'] = $photoUpload['file_path'];
-                } else {
-                    return $this->errorResponse($photoUpload['message']);
-                }
+                $photoUpload = uploadImage('assets/admin/uploads', $request->photo);
+                $courseData['photo'] =  $photoUpload;
+               
             }
 
             $course = Course::create($courseData);
@@ -165,12 +162,8 @@ trait CourseManagementTrait
                     BunnyHelper()->delete($course->photo);
                 }
                 
-                $photoUpload = $this->uploadPhoto($request->file('photo'));
-                if ($photoUpload['success']) {
-                    $courseData['photo'] = $photoUpload['file_path'];
-                } else {
-                    return $this->errorResponse($photoUpload['message']);
-                }
+                $photoUpload = uploadImage('assets/admin/uploads', $request->photo);
+                $courseData['photo'] = $photoUpload;
             }
 
             $course->update($courseData);
@@ -788,35 +781,6 @@ trait CourseManagementTrait
             return [
                 'success' => false,
                 'message' => __('messages.file_upload_error') . ': ' . $e->getMessage()
-            ];
-        }
-    }
-
-    /**
-     * Upload photo to Bunny CDN
-     */
-    protected function uploadPhoto($photoFile)
-    {
-        try {
-            $uploadResponse = BunnyHelper()->upload($photoFile, 'courses/photos');
-            $uploadResponseData = $uploadResponse->getData();
-            
-            if ($uploadResponseData->success && $uploadResponseData->file_path) {
-                return [
-                    'success' => true,
-                    'file_path' => $uploadResponseData->file_path
-                ];
-            }
-            
-            return [
-                'success' => false,
-                'message' => __('messages.photo_upload_failed')
-            ];
-            
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => __('messages.photo_upload_error') . ': ' . $e->getMessage()
             ];
         }
     }
