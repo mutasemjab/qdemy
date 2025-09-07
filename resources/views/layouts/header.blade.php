@@ -19,13 +19,8 @@
                         <img src="{{ asset('assets_front/images/icons/community.png') }}" alt="Community Icon" class="icon">
                     </a>
                 </li>
-<<<<<<< HEAD
                 <li><a href="{{ route('exam.index') }}">امتحانات</a></li>
                 <li><a href="{{ route('download') }}">تطبيقاتنا</a></li>
-=======
-                <li><a href="{{ route('e-exam') }}">{{ __('front.exams') }}</a></li>
-                <li><a href="{{ route('download') }}">{{ __('front.our_apps') }}</a></li>
->>>>>>> e2a0b01134aee9c05353609b6f03fe21f6375a8a
             </ul>
         </nav>
 

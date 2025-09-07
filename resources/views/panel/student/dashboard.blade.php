@@ -28,6 +28,8 @@
             <button class="ud-item" data-target="courses"><i
                     class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
+            <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول الزمني</span><i class="fa-solid fa-angle-left"></i></button>
+
             <button class="ud-item" data-target="results"><i
                     class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
@@ -122,8 +124,9 @@
             <!-- Include other panels (notifications, inbox, courses, schedule, results, offers, wallet, community, support) -->
             @include('panel.common.notifications')
             @include('panel.common.inbox')
-            @include('panel.student.courses')
-            @include('panel.student.results')
+            @include('panel.student.courses',['userCourses' => $userCourses])
+            @include('panel.student.results',['userCourses' => $userCourses])
+            @include('panel.student.schedule',['userExamsResults' => $userExamsResults])
             @include('panel.student.community')
             @include('panel.common.support')
 
@@ -131,7 +134,7 @@
     </section>
 @endsection
 
-@section('scripts')
+@push('scripts')
   <!-- JavaScript لمعاينة الصورة -->
  <script>
      document.getElementById('avatarInput').addEventListener('change', function(event) {
@@ -147,4 +150,4 @@
          }
      });
  </script>
-@endsection
+@endpush

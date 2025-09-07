@@ -20,13 +20,19 @@ class StudentController extends Controller
 
     public function dashboard()
     {
-        $user = Auth::user();
+        $user    = auth_student();
         $notifications = $this->getUserNotifications();
         
         // Get community posts for the dashboard
         $posts = $this->getCommunityPosts(20);
 
-        return view('panel.student.dashboard', compact('user', 'notifications', 'posts'));
+        $userExamsResults    = collect();
+        $userCourses         = collect();
+        if($user){
+           $userExamsResults    = $user->result_attempts();
+           $userCourses         = $user->courses;
+        }
+        return view('panel.student.dashboard', compact('userCourses','userExamsResults','user', 'notifications', 'posts'));
     }
 
     public function markAsRead($id)
