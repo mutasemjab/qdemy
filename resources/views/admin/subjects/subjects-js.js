@@ -182,7 +182,7 @@ class SubjectFormManager {
      * Check if program doesn't need grades
      */
     isProgramWithoutGrades(ctgKey) {
-        return !['tawjihi-and-secondary-program', 'elementary-grades-program'].includes(ctgKey);
+        return !['tawjihi-and-secondary-program', 'elementary-grades-program','international-program'].includes(ctgKey);
     }
 
     /**

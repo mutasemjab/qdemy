@@ -168,6 +168,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         Route::resource('courses', CourseController::class);
+        Route::get('/course/{parentId}/children', [CourseController::class, 'getChildCategories'])->name('courses.get-children');
+        Route::get('course/subjects-by-category', [CourseController::class, 'getSubjectsByCategory'])->name('courses.subjects-by-category');
+
         Route::prefix('courses/{course}')->name('courses.')->group(function () {
             // Section routes
             Route::get('sections', [CourseSectionController::class, 'index'])->name('sections.index');

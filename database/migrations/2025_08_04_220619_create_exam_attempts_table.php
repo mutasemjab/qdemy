@@ -20,9 +20,9 @@ return new class extends Migration
             $table->decimal('score', 8, 2)->nullable(); // Total score achieved
             $table->decimal('percentage', 5, 2)->nullable(); // Percentage score
             $table->boolean('is_passed')->nullable(); // Whether the attempt passed
-            $table->enum('status', ['in_progress','completed', 'completed' ,'abandoned'])
+            $table->enum('status', ['in_progress','completed', 'done' ,'abandoned'])
             ->default('in_progress')
-            ->comment('in_progress = جاري الاجابة & completed = تم الارسال & completed = تم التصحيح سواء يدوي او اليكتروني وظهرت النتيجة  & abandoned = تم تركه ولكن لا يبدو لها فائدة مؤكده اذ ان الامتحان المتروك يتم ارساله اوتوماتيك عند انتهاء الوقت');
+            ->comment('in_progress = جاري الاجابة & completed = تم الارسال & done = تم التصحيح سواء يدوي او اليكتروني وظهرت النتيجة  & abandoned = تم تركه ولكن لا يبدو لها فائدة مؤكده اذ ان الامتحان المتروك يتم ارساله اوتوماتيك عند انتهاء الوقت');
             $table->json('question_order')->nullable(); // Order of questions for this attempt
             // Foreign keys
             $table->unsignedBigInteger('exam_id');

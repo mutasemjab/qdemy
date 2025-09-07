@@ -75,12 +75,6 @@
                                         <option value="pdf" {{ old('content_type') == 'pdf' ? 'selected' : '' }}>
                                             {{ __('messages.pdf') }}
                                         </option>
-                                        <option value="quiz" {{ old('content_type') == 'quiz' ? 'selected' : '' }}>
-                                            {{ __('messages.quiz') }}
-                                        </option>
-                                        <option value="assignment" {{ old('content_type') == 'assignment' ? 'selected' : '' }}>
-                                            {{ __('messages.assignment') }}
-                                        </option>
                                     </select>
                                     @error('content_type')
                                         <div class="invalid-feedback">{{ $message }}</div>

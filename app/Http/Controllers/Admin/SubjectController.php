@@ -154,6 +154,7 @@ class SubjectController extends Controller
         $semesters = [];
         $fields = [];
         $grades = [];
+        $internationalTypes = [];
 
         if ($subject->grade_id) {
             $grade = Category::find($subject->grade_id);
@@ -169,6 +170,8 @@ class SubjectController extends Controller
             $grades = $this->categoryRepository->getElementryProgramGrades();
         }elseif($subject->program?->ctg_key == 'tawjihi-and-secondary-program'){
             $grades = $this->categoryRepository->getTawjihiProgrammGrades();
+        }elseif ($subject->program?->ctg_key == 'international-program') {
+            $grades = $this->categoryRepository->getInternationalPrograms();
         }
         // Get existing field relationships for Tawjihi last year
         $existingFields = $subject->categories()
@@ -185,6 +188,7 @@ class SubjectController extends Controller
             'semesters',
             'fields',
             'existingFields',
+            // 'internationalTypes',
         ));
     }
 
@@ -366,7 +370,7 @@ class SubjectController extends Controller
         // Conditional validation for grade_id
         $program = Category::find($request->programm_id);
         $grade   = null;
-        if ($program && in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
+        if ($program && $program->ctg_key != 'universities-and-colleges-program') {
             $rules['grade_id'] = 'required|exists:categories,id';
         } else {
             $rules['grade_id'] = 'nullable|exists:categories,id';
@@ -425,6 +429,17 @@ class SubjectController extends Controller
     {
         $program = Category::find($subject->programm_id);
 
+        // Case 0: International Program
+        if ($program->ctg_key == 'international-program') {
+            // Attach to the international program type (stored in grade_id)
+            $subject->categories()->attach($subject->grade_id, [
+                'pivot_level' => 'national_programm',
+                'is_optional' => false,
+                'is_ministry' => true,
+            ]);
+            return;
+        }
+
         // Case 1: Programs without grades (tawjihi-and-secondary-program or elementary-grades-program)
         if (!in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
             $subject->categories()->attach($subject->programm_id, [
@@ -478,6 +493,12 @@ class SubjectController extends Controller
 
         if (!$program) {
             return response()->json([]);
+        }
+
+        // Handle international program - return program types
+        if ($program->ctg_key == 'international-program') {
+            $internationalTypes = $this->categoryRepository->getInternationalPrograms();
+            return response()->json($internationalTypes);
         }
 
         // If program doesn't need grades
