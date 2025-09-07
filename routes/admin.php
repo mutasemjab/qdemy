@@ -172,15 +172,16 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('course/subjects-by-category', [CourseController::class, 'getSubjectsByCategory'])->name('courses.subjects-by-category');
 
         Route::prefix('courses/{course}')->name('courses.')->group(function () {
-            // Section routes
+            // Section routes - IMPORTANT: specific routes BEFORE parameterized ones
             Route::get('sections', [CourseSectionController::class, 'index'])->name('sections.index');
-            Route::get('sections/create', [CourseSectionController::class, 'create'])->name('sections.create');
+            Route::get('sections/create', [CourseSectionController::class, 'create'])->name('sections.create');  // MOVED UP
             Route::post('sections', [CourseSectionController::class, 'store'])->name('sections.store');
+            Route::get('sections/{section}', [CourseSectionController::class, 'show'])->name('sections.show');
             Route::get('sections/{section}/edit', [CourseSectionController::class, 'edit'])->name('sections.edit');
             Route::put('sections/{section}', [CourseSectionController::class, 'update'])->name('sections.update');
             Route::delete('sections/{section}', [CourseSectionController::class, 'destroy'])->name('sections.destroy');
 
-            // Content routes
+            // Content routes - IMPORTANT: specific routes BEFORE parameterized ones  
             Route::get('contents/create', [CourseSectionController::class, 'createContent'])->name('contents.create');
             Route::post('contents', [CourseSectionController::class, 'storeContent'])->name('contents.store');
             Route::get('contents/{content}/edit', [CourseSectionController::class, 'editContent'])->name('contents.edit');

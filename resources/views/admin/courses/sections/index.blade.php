@@ -33,13 +33,6 @@
                 </div>
 
                 <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
-
                     <!-- Course Sections with Hierarchical Structure -->
                     @php
                         $parentSections = $course->sections()->whereNull('parent_id')->get();
@@ -47,112 +40,352 @@
 
                     @if($parentSections->count() > 0)
                         <div class="mb-4">
-                            <h4>{{ __('messages.course_sections') }}</h4>
-                            <div class="accordion" id="sectionsAccordion">
-                                @foreach($parentSections as $index => $section)
-                                    @include('admin.courses.partials.section-item', [
-                                        'section' => $section,
-                                        'course' => $course,
-                                        'level' => 0,
-                                        'index' => $index,
-                                        'parentAccordion' => 'sectionsAccordion'
-                                    ])
-                                @endforeach
-                            </div>
+                            <h4 class="mb-3">
+                                <i class="fas fa-list-alt text-primary me-2"></i>
+                                {{ __('messages.course_sections') }}
+                            </h4>
+                            
+                            @foreach($parentSections as $index => $section)
+                                <div class="card section-card mb-3">
+                                    <div class="card-header section-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1 text-white">
+                                                <i class="fas fa-folder me-2"></i>
+                                                {{ $section->order }}. {{ $section->title_en }}
+                                            </h5>
+                                            <small class="text-white-50">{{ $section->title_ar }}</small>
+                                        </div>
+                                        <div class="section-actions">
+                                            <span class="badge bg-light text-dark me-2">
+                                                {{ $section->contents->count() }} {{ __('messages.contents') }}
+                                            </span>
+                                            @if($section->children->count() > 0)
+                                                <span class="badge bg-info text-white me-2">
+                                                    {{ $section->children->count() }} {{ __('messages.subsections') }}
+                                                </span>
+                                            @endif
+                                            
+                                            <div class="btn-group">
+                                                @can('course-add')
+                                                    <a href="{{ route('courses.contents.create', ['course' => $course, 'section_id' => $section->id]) }}" 
+                                                       class="btn btn-sm btn-light" title="{{ __('messages.add_content_to_section') }}">
+                                                        <i class="fas fa-plus"></i>
+                                                    </a>
+                                                @endcan
+                                                
+                                                @can('course-edit')
+                                                    <a href="{{ route('courses.sections.edit', [$course, $section]) }}" 
+                                                       class="btn btn-sm btn-warning" title="{{ __('messages.edit_section') }}">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                @endcan
+                                                
+                                                @can('course-delete')
+                                                    <form action="{{ route('courses.sections.destroy', [$course, $section]) }}"
+                                                          method="POST" class="d-inline"
+                                                          onsubmit="return confirm('{{ __('messages.confirm_delete_section') }}')">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                                title="{{ __('messages.delete_section') }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endcan
+                                                
+                                                <button class="btn btn-sm btn-light" data-bs-toggle="collapse" 
+                                                        data-bs-target="#section{{ $section->id }}Contents" 
+                                                        title="{{ __('messages.toggle_contents') }}">
+                                                    <i class="fas fa-chevron-down"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="collapse {{ $index === 0 ? 'show' : '' }}" id="section{{ $section->id }}Contents">
+                                        <!-- Section Contents -->
+                                        @foreach($section->contents->sortBy('order') as $content)
+                                            <div class="content-item p-3 border-bottom">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-4">
+                                                        <strong>{{ $content->title_en }}</strong><br>
+                                                        <small class="text-muted">{{ $content->title_ar }}</small>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <span class="badge bg-{{ $content->content_type === 'video' ? 'primary' : 'secondary' }} badge-type">
+                                                            {{ ucfirst($content->content_type) }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        @if($content->is_free == 1)
+                                                            <span class="badge bg-success badge-type">{{ __('messages.free') }}</span>
+                                                        @else
+                                                            <span class="badge bg-warning badge-type">{{ __('messages.paid') }}</span>
+                                                        @endif
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <small>
+                                                            @if($content->content_type === 'video')
+                                                                <strong>{{ __('messages.duration') }}:</strong> 
+                                                                {{ $content->video_duration ? gmdate('H:i:s', $content->video_duration) : 'N/A' }}<br>
+                                                            @else
+                                                                <strong>{{ __('messages.type') }}:</strong> {{ ucfirst($content->pdf_type ?? 'N/A') }}<br>
+                                                            @endif
+                                                            <strong>{{ __('messages.order') }}:</strong> {{ $content->order }}
+                                                        </small>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="btn-group">
+                                                            @if($content->content_type === 'video' && $content->video_url)
+                                                                <a href="{{ $content->video_url }}" target="_blank" 
+                                                                   class="btn btn-sm btn-outline-primary" title="{{ __('messages.view_video') }}">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                            @elseif($content->content_type !== 'video' && $content->file_path)
+                                                                <a href="{{ $content->file_url }}" target="_blank" 
+                                                                   class="btn btn-sm btn-outline-primary" title="{{ __('messages.download_pdf') }}">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
+                                                            @endif
+                                                            
+                                                            @can('course-edit')
+                                                                <a href="{{ route('courses.contents.edit', [$course, $content]) }}" 
+                                                                   class="btn btn-sm btn-warning" title="{{ __('messages.edit_content') }}">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            @endcan
+                                                            
+                                                            @can('course-delete')
+                                                                <form action="{{ route('courses.contents.destroy', [$course, $content]) }}"
+                                                                      method="POST" class="d-inline"
+                                                                      onsubmit="return confirm('{{ __('messages.confirm_delete_content') }}')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                                                            title="{{ __('messages.delete_content') }}">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endcan
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                        <!-- Subsections -->
+                                        @foreach($section->children->sortBy('order') as $subsection)
+                                            <div class="subsection-card ms-4 mt-3">
+                                                <div class="card-header section-header d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 class="mb-1 text-white">
+                                                            <i class="fas fa-folder-open me-2"></i>
+                                                            {{ $section->order }}.{{ $subsection->order }} {{ $subsection->title_en }}
+                                                        </h6>
+                                                        <small class="text-white-50">{{ $subsection->title_ar }}</small>
+                                                    </div>
+                                                    <div class="section-actions">
+                                                        <span class="badge bg-light text-dark me-2">
+                                                            {{ $subsection->contents->count() }} {{ __('messages.contents') }}
+                                                        </span>
+                                                        
+                                                        <div class="btn-group">
+                                                            <a href="{{ route('courses.sections.show', [$course, $subsection]) }}" 
+                                                               class="btn btn-sm btn-info" title="{{ __('messages.view_section_contents') }}">
+                                                                <i class="fas fa-list"></i>
+                                                            </a>
+                                                            
+                                                            @can('course-add')
+                                                                <a href="{{ route('courses.contents.create', ['course' => $course, 'section_id' => $subsection->id]) }}" 
+                                                                   class="btn btn-sm btn-light" title="{{ __('messages.add_content_to_section') }}">
+                                                                    <i class="fas fa-plus"></i>
+                                                                </a>
+                                                            @endcan
+                                                            
+                                                            @can('course-edit')
+                                                                <a href="{{ route('courses.sections.edit', [$course, $subsection]) }}" 
+                                                                   class="btn btn-sm btn-warning" title="{{ __('messages.edit_section') }}">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            @endcan
+                                                            
+                                                            @can('course-delete')
+                                                                <form action="{{ route('courses.sections.destroy', [$course, $subsection]) }}"
+                                                                      method="POST" class="d-inline"
+                                                                      onsubmit="return confirm('{{ __('messages.confirm_delete_section') }}')">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                                                            title="{{ __('messages.delete_section') }}">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            @endcan
+                                                            
+                                                            <button class="btn btn-sm btn-light" data-bs-toggle="collapse" 
+                                                                    data-bs-target="#subsection{{ $subsection->id }}Contents" 
+                                                                    title="{{ __('messages.toggle_contents') }}">
+                                                                <i class="fas fa-chevron-down"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="collapse" id="subsection{{ $subsection->id }}Contents">
+                                                    @foreach($subsection->contents->sortBy('order') as $content)
+                                                        <div class="content-item p-3 border-bottom">
+                                                            <div class="row align-items-center">
+                                                                <div class="col-md-4">
+                                                                    <strong>{{ $content->title_en }}</strong><br>
+                                                                    <small class="text-muted">{{ $content->title_ar }}</small>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <span class="badge bg-{{ $content->content_type === 'video' ? 'primary' : 'secondary' }} badge-type">
+                                                                        {{ ucfirst($content->content_type) }}
+                                                                    </span>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    @if($content->is_free == 1)
+                                                                        <span class="badge bg-success badge-type">{{ __('messages.free') }}</span>
+                                                                    @else
+                                                                        <span class="badge bg-warning badge-type">{{ __('messages.paid') }}</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <small>
+                                                                        @if($content->content_type === 'video')
+                                                                            <strong>{{ __('messages.duration') }}:</strong> 
+                                                                            {{ $content->video_duration ? gmdate('H:i:s', $content->video_duration) : 'N/A' }}<br>
+                                                                        @else
+                                                                            <strong>{{ __('messages.type') }}:</strong> {{ ucfirst($content->pdf_type ?? 'N/A') }}<br>
+                                                                        @endif
+                                                                        <strong>{{ __('messages.order') }}:</strong> {{ $content->order }}
+                                                                    </small>
+                                                                </div>
+                                                                <div class="col-md-2">
+                                                                    <div class="btn-group">
+                                                                        @if($content->content_type === 'video' && $content->video_url)
+                                                                            <a href="{{ $content->video_url }}" target="_blank" 
+                                                                               class="btn btn-sm btn-outline-primary" title="{{ __('messages.view_video') }}">
+                                                                                <i class="fas fa-eye"></i>
+                                                                            </a>
+                                                                        @elseif($content->content_type !== 'video' && $content->file_path)
+                                                                            <a href="{{ $content->file_url }}" target="_blank" 
+                                                                               class="btn btn-sm btn-outline-primary" title="{{ __('messages.download_pdf') }}">
+                                                                                <i class="fas fa-download"></i>
+                                                                            </a>
+                                                                        @endif
+                                                                        
+                                                                        @can('course-edit')
+                                                                            <a href="{{ route('courses.contents.edit', [$course, $content]) }}" 
+                                                                               class="btn btn-sm btn-warning" title="{{ __('messages.edit_content') }}">
+                                                                                <i class="fas fa-edit"></i>
+                                                                            </a>
+                                                                        @endcan
+                                                                        
+                                                                        @can('course-delete')
+                                                                            <form action="{{ route('courses.contents.destroy', [$course, $content]) }}"
+                                                                                  method="POST" class="d-inline"
+                                                                                  onsubmit="return confirm('{{ __('messages.confirm_delete_content') }}')">
+                                                                                @csrf
+                                                                                @method('DELETE')
+                                                                                <button type="submit" class="btn btn-sm btn-danger" 
+                                                                                        title="{{ __('messages.delete_content') }}">
+                                                                                    <i class="fas fa-trash"></i>
+                                                                                </button>
+                                                                            </form>
+                                                                        @endcan
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
 
                     <!-- Direct Contents (without sections) -->
                     @if($directContents->count() > 0)
                         <div class="mb-4">
-                            <h4>{{ __('messages.direct_contents') }}</h4>
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th width="5%">#</th>
-                                            <th width="25%">{{ __('messages.title') }}</th>
-                                            <th width="10%">{{ __('messages.type') }}</th>
-                                            <th width="10%">{{ __('messages.access') }}</th>
-                                            <th width="8%">{{ __('messages.order') }}</th>
-                                            <th width="20%">{{ __('messages.details') }}</th>
-                                            <th width="22%">{{ __('messages.actions') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($directContents as $content)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>
-                                                    <strong>{{ $content->title_en }}</strong><br>
-                                                    <small class="text-muted">{{ $content->title_ar }}</small>
-                                                </td>
-                                                <td>
-                                                    <span class="badge bg-secondary">
-                                                        {{ ucfirst($content->content_type) }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    @if($content->is_free == 1)
-                                                        <span class="badge bg-success">{{ __('messages.free') }}</span>
-                                                    @else
-                                                        <span class="badge bg-warning">{{ __('messages.paid') }}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $content->order }}</td>
-                                                <td>
+                            <h4 class="mb-3">
+                                <i class="fas fa-file-alt text-success me-2"></i>
+                                {{ __('messages.direct_contents') }}
+                            </h4>
+                            
+                            <div class="card">
+                                @foreach($directContents as $content)
+                                    <div class="content-item p-3 {{ !$loop->last ? 'border-bottom' : '' }}">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-4">
+                                                <strong>{{ $content->title_en }}</strong><br>
+                                                <small class="text-muted">{{ $content->title_ar }}</small>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <span class="badge bg-{{ $content->content_type === 'video' ? 'primary' : 'secondary' }} badge-type">
+                                                    {{ ucfirst($content->content_type) }}
+                                                </span>
+                                            </div>
+                                            <div class="col-md-2">
+                                                @if($content->is_free == 1)
+                                                    <span class="badge bg-success badge-type">{{ __('messages.free') }}</span>
+                                                @else
+                                                    <span class="badge bg-warning badge-type">{{ __('messages.paid') }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-2">
+                                                <small>
                                                     @if($content->content_type === 'video')
-                                                        <small>
-                                                            <strong>{{ __('messages.type') }}:</strong> {{ ucfirst($content->video_type ?? 'N/A') }}<br>
-                                                            <strong>{{ __('messages.duration') }}:</strong> {{ $content->video_duration ? gmdate('H:i:s', $content->video_duration) : 'N/A' }}<br>
-                                                            @if($content->video_url)
-                                                                <a href="{{ $content->video_url }}" target="_blank" class="text-primary">
-                                                                    <i class="fas fa-external-link-alt"></i> {{ __('messages.view_video') }}
-                                                                </a>
-                                                            @endif
-                                                        </small>
-                                                    @elseif($content->content_type !== 'video')
-                                                        <small>
-                                                            <strong>{{ __('messages.pdf_type') }}:</strong> {{ ucfirst($content->pdf_type ?? 'N/A') }}<br>
-                                                            @if($content->file_path)
-                                                                <a href="{{ $content->file_url }}" target="_blank" class="text-primary">
-                                                                    <i class="fas fa-download"></i> {{ __('messages.download_pdf') }}
-                                                                </a>
-                                                            @endif
-                                                        </small>
+                                                        <strong>{{ __('messages.duration') }}:</strong> 
+                                                        {{ $content->video_duration ? gmdate('H:i:s', $content->video_duration) : 'N/A' }}<br>
                                                     @else
-                                                        <span class="text-muted">{{ __('messages.no_additional_details') }}</span>
+                                                        <strong>{{ __('messages.type') }}:</strong> {{ ucfirst($content->pdf_type ?? 'N/A') }}<br>
                                                     @endif
-                                                </td>
-                                                <td>
-                                                    <div class="btn-group" role="group">
-                                                        @can('course-edit')
-                                                            <a href="{{ route('courses.contents.edit', [$course, $content]) }}"
-                                                               class="btn btn-sm btn-warning"
-                                                               title="{{ __('messages.edit_content') }}">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                        @endcan
-                                                        @can('course-delete')
-                                                            <form action="{{ route('courses.contents.destroy', [$course, $content]) }}"
-                                                                  method="POST"
-                                                                  class="d-inline"
-                                                                  onsubmit="return confirm('{{ __('messages.confirm_delete_content') }}')">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit"
-                                                                        class="btn btn-sm btn-danger"
-                                                                        title="{{ __('messages.delete_content') }}">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
-                                                        @endcan
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                                    <strong>{{ __('messages.order') }}:</strong> {{ $content->order }}
+                                                </small>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="btn-group">
+                                                    @if($content->content_type === 'video' && $content->video_url)
+                                                        <a href="{{ $content->video_url }}" target="_blank" 
+                                                           class="btn btn-sm btn-outline-primary" title="{{ __('messages.view_video') }}">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @elseif($content->content_type !== 'video' && $content->file_path)
+                                                        <a href="{{ $content->file_url }}" target="_blank" 
+                                                           class="btn btn-sm btn-outline-primary" title="{{ __('messages.download_pdf') }}">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                    @endif
+                                                    
+                                                    @can('course-edit')
+                                                        <a href="{{ route('courses.contents.edit', [$course, $content]) }}" 
+                                                           class="btn btn-sm btn-warning" title="{{ __('messages.edit_content') }}">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endcan
+                                                    
+                                                    @can('course-delete')
+                                                        <form action="{{ route('courses.contents.destroy', [$course, $content]) }}"
+                                                              method="POST" class="d-inline"
+                                                              onsubmit="return confirm('{{ __('messages.confirm_delete_content') }}')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-sm btn-danger" 
+                                                                    title="{{ __('messages.delete_content') }}">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    @endcan
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
                     @endif
@@ -182,21 +415,72 @@
     </div>
 </div>
 
-<script>
-// Keep only the first accordion item open by default
-document.addEventListener('DOMContentLoaded', function() {
-    const accordionItems = document.querySelectorAll('.accordion-collapse');
-    accordionItems.forEach((item, index) => {
-        if (index > 0) {
-            item.classList.remove('show');
-        }
-    });
+<style>
+.section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
 
-    const accordionButtons = document.querySelectorAll('.accordion-button');
-    accordionButtons.forEach((button, index) => {
-        if (index > 0) {
-            button.classList.add('collapsed');
-            button.setAttribute('aria-expanded', 'false');
+.section-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+.subsection-card {
+    border-left: 4px solid #6c757d;
+    background-color: #f8f9fa;
+}
+
+.subsection-card .section-header {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+.content-item {
+    transition: background-color 0.2s;
+}
+
+.content-item:hover {
+    background-color: #f8f9fa;
+}
+
+.badge-type {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+.section-actions {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle collapse button icon rotation
+    const toggleButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    
+    toggleButtons.forEach(button => {
+        const target = document.querySelector(button.getAttribute('data-bs-target'));
+        
+        if (target) {
+            target.addEventListener('show.bs.collapse', function() {
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            });
+            
+            target.addEventListener('hide.bs.collapse', function() {
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                }
+            });
         }
     });
 });

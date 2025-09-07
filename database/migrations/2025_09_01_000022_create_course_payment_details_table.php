@@ -25,7 +25,7 @@ return new class extends Migration
 
           $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
           $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null');
-          $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('set null');
+          $table->foreign('teacher_id')->references('id')->on('users')->onDelete('set null');
 
           $table->index('user_id');
           $table->index('course_id');
