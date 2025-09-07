@@ -10,13 +10,14 @@ use App\Models\Category;
 use App\Models\Subject;
 use App\Models\User;
 use App\Traits\CourseManagementTrait;
+use App\Traits\SubjectCategoryTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CourseController extends Controller 
 {
-    use CourseManagementTrait;
+    use CourseManagementTrait,SubjectCategoryTrait;
 
     public function __construct()
     {
@@ -48,13 +49,16 @@ class CourseController extends Controller
             ->select('id', 'name', 'email')
             ->get();
             
-        // Get subjects instead of categories
-        $subjects = Subject::active()
-            ->with(['grade:id,name_ar,name_en', 'program:id,name_ar,name_en'])
+       $parentCategories = Category::roots()
+            ->active()
             ->ordered()
             ->get();
             
-        return view('admin.courses.create', compact('teachers', 'subjects'));
+        $subjects = Subject::active()
+            ->ordered()
+            ->get();
+            
+        return view('admin.courses.create', compact('teachers', 'subjects','parentCategories'));
     }
 
     /**
@@ -83,14 +87,14 @@ class CourseController extends Controller
             ->select('id', 'name', 'email')
             ->get();
             
-        // Get subjects
-        $subjects = Subject::active()
-            ->with(['grade:id,name_ar,name_en', 'program:id,name_ar,name_en'])
+        // Get parent categories
+        $parentCategories = Category::roots()
+            ->active()
             ->ordered()
             ->get();
             
-        return view('admin.courses.edit', compact('course', 'teachers', 'subjects'));
-    }
+        return view('admin.courses.edit', compact('course', 'teachers', 'parentCategories'));
+}
 
     /**
      * Store a newly created resource in storage
@@ -116,4 +120,41 @@ class CourseController extends Controller
         // Use the trait's delete method which handles Bunny CDN cleanup
         return $this->deleteCourse($course);
     }
+
+      public function getChildCategories($parentId)
+    {
+        $categories = Category::where('parent_id', $parentId)
+            ->active()
+            ->ordered()
+            ->get(['id', 'name_ar', 'name_en']);
+
+        return response()->json($categories);
+    }
+
+     /**
+     * Get subjects by category ID (AJAX)
+     */
+    public function getSubjectsByCategory(Request $request)
+    {
+        $categoryId = $request->get('category_id');
+        
+        if (!$categoryId) {
+            return response()->json([]);
+        }
+
+        try {
+            // Call the trait method that returns formatted data for API
+            $subjects = $this->getSubjectsByCategoryForApi($categoryId);
+            
+            return response()->json($subjects->toArray());
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in getSubjectsByCategory controller: ' . $e->getMessage());
+            \Log::error('Category ID: ' . $categoryId);
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([]);
+        }
+    }
+
 }

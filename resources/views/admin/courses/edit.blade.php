@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('title', __('messages.edit_course'))
@@ -138,45 +137,100 @@
                                 </div>
                             </div>
 
-                            <!-- Category -->
-                            <div class="col-md-4">
+                            <!-- Parent Category -->
+                            <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="category_id" class="form-label">{{ __('messages.Subject') }}</label>
-                                    <select class="form-control @error('subject_id') is-invalid @enderror"
-                                            id="subject_id"
-                                            name="subject_id">
-                                        <option value="">{{ __('messages.select_subject') }}</option>
-                                        @foreach($subjects as $subject)
-                                            <option value="{{ $subject->id }}"
-                                                    {{ old('subject_id', $course->subject_id) == $subject->id ? 'selected' : '' }}>
-                                                {{ $subject->localized_name }}
+                                    <label for="parent_category" class="form-label">
+                                        {{ __('messages.parent_category') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('parent_category') is-invalid @enderror"
+                                            id="parent_category" name="parent_category">
+                                        <option value="">{{ __('messages.select_parent_category') }}</option>
+                                        @foreach($parentCategories as $category)
+                                            <option value="{{ $category->id }}" 
+                                                {{ old('parent_category', $course->category ? $course->category->parent_id ?? $course->category_id : '') == $category->id ? 'selected' : '' }}>
+                                                @if($category->icon)
+                                                    <i class="{{ $category->icon }}"></i>
+                                                @endif
+                                                {{ $category->localized_name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('subject_id')
+                                    @error('parent_category')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                             </div>
 
-                            <!-- Current Photo -->
-                            <div class="col-12">
+                            <!-- Child Category -->
+                            <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label class="form-label">{{ __('messages.current_photo') }}</label>
-                                    <div class="mb-2">
-                                        <img src="{{ $course->photo_url }}"
-                                             alt="{{ $course->title }}"
-                                             class="img-thumbnail"
-                                             style="width: 150px; height: 150px; object-fit: cover;">
-                                    </div>
+                                    <label for="category_id" class="form-label">
+                                        {{ __('messages.child_category') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('category_id') is-invalid @enderror"
+                                            id="category_id" name="category_id">
+                                        <option value="">{{ __('messages.select_child_category') }}</option>
+                                        @if($course->category)
+                                            <option value="{{ $course->category_id }}" selected>
+                                                {{ $course->category->localized_name }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    @error('category_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.select_parent_first') }}
+                                    </small>
                                 </div>
                             </div>
+
+                            <!-- Subject -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="subject_id" class="form-label">
+                                        {{ __('messages.subject') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('subject_id') is-invalid @enderror"
+                                            id="subject_id" name="subject_id">
+                                        <option value="">{{ __('messages.select_subject') }}</option>
+                                        @if($course->subject)
+                                            <option value="{{ $course->subject_id }}" selected>
+                                                {{ $course->subject->localized_name }}
+                                            </option>
+                                        @endif
+                                    </select>
+                                    @error('subject_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">
+                                        {{ __('messages.select_category_first') }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Current Photo -->
+                            @if($course->photo)
+                                <div class="col-12">
+                                    <div class="form-group mb-3">
+                                        <label class="form-label">{{ __('messages.current_photo') }}</label>
+                                        <div class="mb-2">
+                                            <img src="{{ $course->photo_url }}"
+                                                 alt="{{ $course->title }}"
+                                                 class="img-thumbnail"
+                                                 style="width: 150px; height: 150px; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
 
                             <!-- New Photo -->
                             <div class="col-12">
                                 <div class="form-group mb-3">
                                     <label for="photo" class="form-label">
-                                        {{ __('messages.new_photo') }}
+                                        {{ $course->photo ? __('messages.new_photo') : __('messages.course_photo') }}
+                                        @if(!$course->photo) <span class="text-danger">*</span> @endif
                                     </label>
                                     <input type="file"
                                            class="form-control @error('photo') is-invalid @enderror"
@@ -209,17 +263,138 @@
         </div>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
-document.getElementById('photo').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // You can add image preview here if needed
-        };
-        reader.readAsDataURL(file);
+$(document).ready(function() {
+    // Store initial values
+    const initialParentCategory = '{{ old('parent_category', $course->category ? $course->category->parent_id ?? $course->category_id : '') }}';
+    const initialCategoryId = '{{ old('category_id', $course->category_id) }}';
+    const initialSubjectId = '{{ old('subject_id', $course->subject_id) }}';
+
+    // Handle parent category change
+    $('#parent_category').change(function() {
+        var parentId = $(this).val();
+        var childSelect = $('#category_id');
+        var subjectSelect = $('#subject_id');
+        
+        // Reset child category and subject
+        childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+        childSelect.prop('disabled', true);
+        subjectSelect.prop('disabled', true);
+        
+        if (parentId) {
+            // Show loading state
+            childSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
+            
+            // Fetch child categories
+            $.ajax({
+                 url: '{{ route('courses.get-children', ':id') }}'.replace(':id', parentId),
+                type: 'GET',
+                success: function(data) {
+                    // Reset the select with default option
+                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+                    
+                    // Add option to use parent category itself
+                    childSelect.append('<option value="' + parentId + '">{{ __('messages.use_parent_category') }}</option>');
+                    
+                    // Add child categories if any exist
+                    if (data.length > 0) {
+                        $.each(data, function(key, category) {
+                            var isSelected = category.id == initialCategoryId ? 'selected' : '';
+                            childSelect.append('<option value="' + category.id + '" ' + isSelected + '>' + 
+                                (category.name_ar || category.name_en) + '</option>');
+                        });
+                    }
+                    
+                    // Enable the child select
+                    childSelect.prop('disabled', false);
+                    
+                    // If there's a selected child category, trigger its change event
+                    if (initialCategoryId) {
+                        childSelect.val(initialCategoryId).trigger('change');
+                    }
+                },
+                error: function() {
+                    alert('{{ __('messages.error_loading_categories') }}');
+                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
+                    childSelect.prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Handle child category change - this is where we load subjects
+    $('#category_id').change(function() {
+        var categoryId = $(this).val();
+        var subjectSelect = $('#subject_id');
+        
+        // Reset subjects
+        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+        subjectSelect.prop('disabled', true);
+        
+        if (categoryId) {
+            loadSubjects(categoryId);
+        }
+    });
+
+    // Function to load subjects based on selected category
+    function loadSubjects(categoryId) {
+        var subjectSelect = $('#subject_id');
+        
+        // Show loading state
+        subjectSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
+        subjectSelect.prop('disabled', true);
+        
+        $.ajax({
+            url: '{{ route('courses.subjects-by-category') }}',
+            type: 'GET',
+            data: { category_id: categoryId },
+            success: function(data) {
+                // Reset with default option
+                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+                
+                if (data.length > 0) {
+                    $.each(data, function(key, subject) {
+                        var isSelected = subject.id == initialSubjectId ? 'selected' : '';
+                        subjectSelect.append('<option value="' + subject.id + '" ' + isSelected + '>' + 
+                            subject.name + '</option>');
+                    });
+                    subjectSelect.prop('disabled', false);
+                } else {
+                    subjectSelect.append('<option value="" disabled>{{ __('messages.no_subjects_found') }}</option>');
+                    subjectSelect.prop('disabled', true);
+                }
+            },
+            error: function() {
+                alert('{{ __('messages.error_loading_subjects') }}');
+                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
+                subjectSelect.prop('disabled', false);
+            }
+        });
+    }
+
+    // Handle photo preview
+    $('#photo').change(function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // You can add image preview here if needed
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Initialize the form with existing values
+    if (initialParentCategory) {
+        $('#parent_category').val(initialParentCategory).trigger('change');
+    } else if (initialCategoryId) {
+        // If there's a category but no parent, load subjects directly
+        loadSubjects(initialCategoryId);
     }
 });
 </script>
-@endsection
+@endpush

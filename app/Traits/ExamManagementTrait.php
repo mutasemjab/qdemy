@@ -307,44 +307,41 @@ trait ExamManagementTrait
      * Validate exam request
      */
     protected function validateExamRequest(Request $request, $isAdmin = false, $examId = null)
-    {
-        $rules = [
-            'title_en' => 'required|string|max:255',
-            'title_ar' => 'required|string|max:255',
-            'description_en' => 'nullable|string',
-            'description_ar' => 'nullable|string',
-            'subject_id' => 'required|exists:subjects,id',
-            'course_id' => 'nullable|exists:courses,id',
-            'section_id' => 'nullable|exists:course_sections,id',
-            'duration_minutes' => 'nullable|integer|min:1',
-            'attempts_allowed' => 'required|integer|min:1|max:10',
-            'passing_grade' => 'required|numeric|min:0|max:100',
-            'start_date' => 'nullable|date|after_or_equal:today',
-            'end_date' => 'nullable|date|after:start_date',
-            'shuffle_questions' => 'boolean',
-            'shuffle_options' => 'boolean',
-            'show_results_immediately' => 'boolean',
-            'is_active' => 'boolean',
-        ];
+{
+    // Debug: Log the incoming request data
+    \Log::info('Exam validation request data:', $request->all());
+    
+    $rules = [
+        'title_en' => 'required|string|max:255',
+        'title_ar' => 'required|string|max:255',
+        'description_en' => 'nullable|string',
+        'description_ar' => 'nullable|string',
+        'subject_id' => 'required|exists:subjects,id',
+        'course_id' => 'nullable|exists:courses,id',
+        'section_id' => 'nullable|exists:course_sections,id',
+        'duration_minutes' => 'nullable|integer|min:1',
+        'attempts_allowed' => 'required|integer|min:1|max:10',
+        'passing_grade' => 'required|numeric|min:0|max:100',
+        'start_date' => 'nullable|date|after_or_equal:today',
+        'end_date' => 'nullable|date|after:start_date',
+        'shuffle_questions' => 'boolean',
+        'shuffle_options' => 'boolean',
+        'show_results_immediately' => 'boolean',
+        'is_active' => 'boolean',
+    ];
 
-        // Validate section belongs to course if both provided
-        if ($request->course_id && $request->section_id) {
-            $rules['section_id'] = [
-                'nullable',
-                'exists:course_sections,id',
-                function ($attribute, $value, $fail) use ($request) {
-                    if ($value) {
-                        $section = CourseSection::find($value);
-                        if (!$section || $section->course_id != $request->course_id) {
-                            $fail(__('validation.section_must_belong_to_course'));
-                        }
-                    }
-                }
-            ];
-        }
-
-        return Validator::make($request->all(), $rules);
+    $validator = Validator::make($request->all(), $rules);
+    
+    // Debug: Log validation errors if any
+    if ($validator->fails()) {
+        \Log::error('Exam validation failed:', [
+            'errors' => $validator->errors()->toArray(),
+            'failed_rules' => $validator->failed()
+        ]);
     }
+    
+    return $validator;
+}
 
     /**
      * Validate question request
