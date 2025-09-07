@@ -33,7 +33,7 @@
             <button class="ud-item" data-target="results"><i
                     class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
-    
+
             <button class="ud-item" data-target="community"><i
                     class="fa-solid fa-magnifying-glass"></i><span>{{ __('panel.q_community') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
@@ -119,7 +119,7 @@
             </div>
 
 
-            
+
 
             <!-- Include other panels (notifications, inbox, courses, schedule, results, offers, wallet, community, support) -->
             @include('panel.common.notifications')

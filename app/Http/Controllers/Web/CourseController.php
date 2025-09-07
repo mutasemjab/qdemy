@@ -106,6 +106,7 @@ class CourseController extends Controller
     {
         $user = auth_student();
         $contents = $course->contents;
+        // $progressPercentage = 0;
         $mainSections = $course->sections?->where('parent_id',null);
         $freeContents = $contents?->where('is_free',1)->first();
         $user_courses = session()->get('courses', []);
@@ -117,7 +118,6 @@ class CourseController extends Controller
             $inProgressVideos   = ContentUserProgress::where('user_id', $user->id)->where('completed', false)->count();
             $totalVideos        = CourseContent::where('content_type', 'video')->count();
             $exams              = $course->exams;
-            $progressPercentage = $totalVideos > 0 ? ($completedVideos / $totalVideos) * 100 : 0;
             $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
         }
         return view('web.course',[
@@ -133,7 +133,6 @@ class CourseController extends Controller
 
             'completedVideos'     => $completedVideos ?? 0,
             'inProgressVideos'    => $inProgressVideos ?? 0,
-            'progressPercentage'  => round($progressPercentage ?? 0, 2) ?? 0,
 
             'course_progress'     => $calculateCourseProgress['course_progress'] ?? 0,
             'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,
