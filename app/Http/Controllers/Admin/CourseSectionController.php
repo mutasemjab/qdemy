@@ -75,7 +75,7 @@ class CourseSectionController extends Controller
         
         $data = $response->getData();
         if ($data->success) {
-            return redirect()->route('admin.courses.sections.index', $course)
+            return redirect()->route('courses.sections.index', $course)
                 ->with('success', $data->message);
         }
         
@@ -108,7 +108,7 @@ class CourseSectionController extends Controller
         
         $data = $response->getData();
         if ($data->success) {
-            return redirect()->route('admin.courses.sections.index', $course)
+            return redirect()->route('courses.sections.index', $course)
                 ->with('success', $data->message);
         }
         
@@ -128,7 +128,7 @@ class CourseSectionController extends Controller
         
         $data = $response->getData();
         if ($data->success) {
-            return redirect()->route('admin.courses.sections.index', $course)
+            return redirect()->route('courses.sections.index', $course)
                 ->with('success', $data->message);
         }
         
@@ -190,7 +190,7 @@ class CourseSectionController extends Controller
         $course = $content->course;
         
         if ($data->success) {
-            return redirect()->route('admin.courses.sections.index', $course)
+            return redirect()->route('courses.sections.index', $course)
                 ->with('success', $data->message);
         }
         

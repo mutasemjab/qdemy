@@ -13,8 +13,59 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 
+
 trait CourseManagementTrait
 {
+    use Responses;
+
+    /**
+     * Check if request is from API
+     */
+    protected function isApiRequest()
+    {
+        return request()->is('api/*') || request()->expectsJson();
+    }
+
+    /**
+     * Return appropriate response based on request type
+     */
+    protected function successResponse($message, $data = null, $statusCode = 200)
+    {
+        if ($this->isApiRequest()) {
+            return $this->success_response($message, $data)->setStatusCode($statusCode);
+        }
+        
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Return appropriate error response based on request type
+     */
+    protected function errorResponse($message, $data = null, $statusCode = 400)
+    {
+        if ($this->isApiRequest()) {
+            return $this->error_response($message, $data)->setStatusCode($statusCode);
+        }
+        
+        return redirect()->back()->with('error', $message)->withInput();
+    }
+
+    /**
+     * Return validation error response
+     */
+    protected function validationErrorResponse($message, $errors, $statusCode = 422)
+    {
+        if ($this->isApiRequest()) {
+            return response()->json([
+                'status' => false,
+                'message' => $message,
+                'data' => $errors
+            ], $statusCode);
+        }
+        
+        return redirect()->back()->withErrors($errors)->withInput();
+    }
+
     /**
      * Store a new course
      */
@@ -24,11 +75,10 @@ trait CourseManagementTrait
         $validator = $this->validateCourseRequest($request, $isAdmin);
         
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
         }
 
         DB::beginTransaction();
@@ -42,10 +92,7 @@ trait CourseManagementTrait
                 if ($photoUpload['success']) {
                     $courseData['photo'] = $photoUpload['file_path'];
                 } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $photoUpload['message']
-                    ], 400);
+                    return $this->errorResponse($photoUpload['message']);
                 }
             }
 
@@ -63,20 +110,22 @@ trait CourseManagementTrait
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.course_created_successfully'),
-                'data' => $course->load(['teacher', 'subject', 'sections', 'contents'])
-            ], 201);
+            $courseData = $course->load(['teacher', 'subject', 'sections', 'contents']);
+            
+            return $this->successResponse(
+                __('messages.course_created_successfully'),
+                $courseData,
+                201
+            );
 
         } catch (\Exception $e) {
             DB::rollback();
             
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.course_creation_failed'),
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->errorResponse(
+                __('messages.course_creation_failed'),
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -87,21 +136,21 @@ trait CourseManagementTrait
     {
         // Check permissions
         if (!$isAdmin && $course->teacher_id !== auth()->user()->teacher->id) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
         }
 
         // Validate the request
         $validator = $this->validateCourseRequest($request, $isAdmin, $course->id);
         
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
         }
 
         DB::beginTransaction();
@@ -120,10 +169,7 @@ trait CourseManagementTrait
                 if ($photoUpload['success']) {
                     $courseData['photo'] = $photoUpload['file_path'];
                 } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $photoUpload['message']
-                    ], 400);
+                    return $this->errorResponse($photoUpload['message']);
                 }
             }
 
@@ -141,20 +187,21 @@ trait CourseManagementTrait
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.course_updated_successfully'),
-                'data' => $course->fresh()->load(['teacher', 'subject', 'sections', 'contents'])
-            ]);
+            $courseData = $course->fresh()->load(['teacher', 'subject', 'sections', 'contents']);
+            
+            return $this->successResponse(
+                __('messages.course_updated_successfully'),
+                $courseData
+            );
 
         } catch (\Exception $e) {
             DB::rollback();
             
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.course_update_failed'),
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->errorResponse(
+                __('messages.course_update_failed'),
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -165,20 +212,20 @@ trait CourseManagementTrait
     {
         // Check permissions
         if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
         }
 
         $validator = $this->validateContentRequest($request);
         
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
         }
 
         DB::beginTransaction();
@@ -196,10 +243,7 @@ trait CourseManagementTrait
             $uploadResult = $this->handleContentFileUpload($request, $course);
             
             if (!$uploadResult['success']) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $uploadResult['message']
-                ], 400);
+                return $this->errorResponse($uploadResult['message']);
             }
 
             $contentData = array_merge($contentData, $uploadResult['data']);
@@ -208,20 +252,20 @@ trait CourseManagementTrait
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.content_created_successfully'),
-                'data' => $content
-            ], 201);
+            return $this->successResponse(
+                __('messages.content_created_successfully'),
+                $content,
+                201
+            );
 
         } catch (\Exception $e) {
             DB::rollback();
             
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.content_creation_failed'),
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->errorResponse(
+                __('messages.content_creation_failed'),
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -232,20 +276,20 @@ trait CourseManagementTrait
     {
         // Check permissions
         if (!$this->canManageCourse($content->course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
         }
 
         $validator = $this->validateContentRequest($request, $content->id);
         
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
         }
 
         DB::beginTransaction();
@@ -265,10 +309,7 @@ trait CourseManagementTrait
                 $uploadResult = $this->handleContentFileUpload($request, $content->course);
                 
                 if (!$uploadResult['success']) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $uploadResult['message']
-                    ], 400);
+                    return $this->errorResponse($uploadResult['message']);
                 }
 
                 $contentData = array_merge($contentData, $uploadResult['data']);
@@ -278,20 +319,283 @@ trait CourseManagementTrait
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.content_updated_successfully'),
-                'data' => $content->fresh()
-            ]);
+            return $this->successResponse(
+                __('messages.content_updated_successfully'),
+                $content->fresh()
+            );
 
         } catch (\Exception $e) {
             DB::rollback();
             
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.content_update_failed'),
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->errorResponse(
+                __('messages.content_update_failed'),
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    /**
+     * Store a new course section
+     */
+    public function storeCourseSection(Request $request, Course $course)
+    {
+        // Check permissions
+        if (!$this->canManageCourse($course)) {
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
+        }
+
+        $validator = $this->validateSectionRequest($request, $course);
+        
+        if ($validator->fails()) {
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            $section = $course->sections()->create([
+                'title_en' => $request->title_en,
+                'title_ar' => $request->title_ar,
+                'parent_id' => $request->parent_id,
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse(
+                __('messages.section_created_successfully'),
+                $section,
+                201
+            );
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return $this->errorResponse(
+                __('messages.section_creation_failed'),
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    /**
+     * Update a course section
+     */
+    public function updateCourseSection(Request $request, Course $course, CourseSection $section)
+    {
+        // Check permissions
+        if (!$this->canManageCourse($course)) {
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
+        }
+
+        // Ensure section belongs to this course
+        if ($section->course_id !== $course->id) {
+            return $this->errorResponse(
+                __('messages.section_not_found'),
+                null,
+                404
+            );
+        }
+
+        $validator = $this->validateSectionRequest($request, $course, $section->id);
+        
+        if ($validator->fails()) {
+            return $this->validationErrorResponse(
+                __('messages.validation_error'),
+                $validator->errors()
+            );
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            $section->update([
+                'title_en' => $request->title_en,
+                'title_ar' => $request->title_ar,
+                'parent_id' => $request->parent_id,
+            ]);
+
+            DB::commit();
+
+            return $this->successResponse(
+                __('messages.section_updated_successfully'),
+                $section->fresh()
+            );
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return $this->errorResponse(
+                __('messages.section_update_failed'),
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    /**
+     * Delete a course section
+     */
+    public function deleteCourseSection(Course $course, CourseSection $section)
+    {
+        // Check permissions
+        if (!$this->canManageCourse($course)) {
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
+        }
+
+        // Ensure section belongs to this course
+        if ($section->course_id !== $course->id) {
+            return $this->errorResponse(
+                __('messages.section_not_found'),
+                null,
+                404
+            );
+        }
+
+        // Check if section has contents
+        if ($section->contents()->count() > 0) {
+            return $this->errorResponse(
+                __('messages.section_has_contents_cannot_delete'),
+                null,
+                422
+            );
+        }
+
+        // Check if section has child sections
+        if ($section->children()->count() > 0) {
+            return $this->errorResponse(
+                __('messages.section_has_children_cannot_delete'),
+                null,
+                422
+            );
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            $section->delete();
+
+            DB::commit();
+
+            return $this->successResponse(
+                __('messages.section_deleted_successfully')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return $this->errorResponse(
+                __('messages.section_deletion_failed'),
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    /**
+     * Delete course content
+     */
+    public function deleteCourseContent(CourseContent $content)
+    {
+        $course = $content->course;
+
+        // Check permissions
+        if (!$this->canManageCourse($course)) {
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            // Delete files from Bunny CDN
+            $this->deleteContentFiles($content);
+            
+            // Delete the content record
+            $content->delete();
+
+            DB::commit();
+
+            return $this->successResponse(
+                __('messages.content_deleted_successfully')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return $this->errorResponse(
+                __('messages.content_deletion_failed'),
+                $e->getMessage(),
+                500
+            );
+        }
+    }
+
+    /**
+     * Delete course and all related files
+     */
+    public function deleteCourse(Course $course)
+    {
+        if (!$this->canManageCourse($course)) {
+            return $this->errorResponse(
+                __('messages.unauthorized_action'),
+                null,
+                403
+            );
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            // Delete course photo
+            if ($course->photo) {
+                BunnyHelper()->delete($course->photo);
+            }
+
+            // Delete all course content files
+            foreach ($course->contents as $content) {
+                $this->deleteContentFiles($content);
+            }
+
+            // Delete entire course folder from Bunny CDN
+            BunnyHelper()->deleteFiles(CourseContent::BUNNY_PATH . '/' . $course->id);
+
+            // Delete course (cascade will handle related records)
+            $course->delete();
+
+            DB::commit();
+
+            return $this->successResponse(
+                __('messages.course_deleted_successfully')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            
+            return $this->errorResponse(
+                __('messages.course_deletion_failed'),
+                $e->getMessage(),
+                500
+            );
         }
     }
 
@@ -356,6 +660,37 @@ trait CourseManagementTrait
             $rules['pdf_type'] = 'required|in:homework,worksheet,notes,other';
             $rules['file_path'] = $contentId ? 'sometimes|file|mimes:pdf|max:10240' : 'required|file|mimes:pdf|max:10240';
         }
+
+        return Validator::make($request->all(), $rules);
+    }
+
+    /**
+     * Validate section request
+     */
+    protected function validateSectionRequest(Request $request, Course $course, $sectionId = null)
+    {
+        $rules = [
+            'title_en' => 'required|string|max:255',
+            'title_ar' => 'required|string|max:255',
+            'parent_id' => [
+                'nullable',
+                'exists:course_sections,id',
+                function ($attribute, $value, $fail) use ($course, $sectionId) {
+                    if ($value) {
+                        // Check parent belongs to same course
+                        $parentSection = CourseSection::find($value);
+                        if (!$parentSection || $parentSection->course_id !== $course->id) {
+                            $fail(__('validation.invalid_parent_section'));
+                        }
+                        
+                        // Check not setting as own parent (for updates)
+                        if ($sectionId && $value == $sectionId) {
+                            $fail(__('validation.section_cannot_be_parent_of_itself'));
+                        }
+                    }
+                }
+            ]
+        ];
 
         return Validator::make($request->all(), $rules);
     }
@@ -574,297 +909,5 @@ trait CourseManagementTrait
         }
         
         return false;
-    }
-
-    /**
-     * Store a new course section
-     */
-    public function storeCourseSection(Request $request, Course $course)
-    {
-        // Check permissions
-        if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-
-        $validator = $this->validateSectionRequest($request, $course);
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        DB::beginTransaction();
-        
-        try {
-            $section = $course->sections()->create([
-                'title_en' => $request->title_en,
-                'title_ar' => $request->title_ar,
-                'parent_id' => $request->parent_id,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.section_created_successfully'),
-                'data' => $section
-            ], 201);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_creation_failed'),
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Update a course section
-     */
-    public function updateCourseSection(Request $request, Course $course, CourseSection $section)
-    {
-        // Check permissions
-        if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-
-        // Ensure section belongs to this course
-        if ($section->course_id !== $course->id) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_not_found')
-            ], 404);
-        }
-
-        $validator = $this->validateSectionRequest($request, $course, $section->id);
-        
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        DB::beginTransaction();
-        
-        try {
-            $section->update([
-                'title_en' => $request->title_en,
-                'title_ar' => $request->title_ar,
-                'parent_id' => $request->parent_id,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.section_updated_successfully'),
-                'data' => $section->fresh()
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_update_failed'),
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Delete a course section
-     */
-    public function deleteCourseSection(Course $course, CourseSection $section)
-    {
-        // Check permissions
-        if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-
-        // Ensure section belongs to this course
-        if ($section->course_id !== $course->id) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_not_found')
-            ], 404);
-        }
-
-        // Check if section has contents
-        if ($section->contents()->count() > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_has_contents_cannot_delete')
-            ], 422);
-        }
-
-        // Check if section has child sections
-        if ($section->children()->count() > 0) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_has_children_cannot_delete')
-            ], 422);
-        }
-
-        DB::beginTransaction();
-        
-        try {
-            $section->delete();
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.section_deleted_successfully')
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.section_deletion_failed'),
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Delete course content
-     */
-    public function deleteCourseContent(CourseContent $content)
-    {
-        $course = $content->course;
-
-        // Check permissions
-        if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-
-        DB::beginTransaction();
-        
-        try {
-            // Delete files from Bunny CDN
-            $this->deleteContentFiles($content);
-            
-            // Delete the content record
-            $content->delete();
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.content_deleted_successfully')
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.content_deletion_failed'),
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Validate section request
-     */
-    protected function validateSectionRequest(Request $request, Course $course, $sectionId = null)
-    {
-        $rules = [
-            'title_en' => 'required|string|max:255',
-            'title_ar' => 'required|string|max:255',
-            'parent_id' => [
-                'nullable',
-                'exists:course_sections,id',
-                function ($attribute, $value, $fail) use ($course, $sectionId) {
-                    if ($value) {
-                        // Check parent belongs to same course
-                        $parentSection = CourseSection::find($value);
-                        if (!$parentSection || $parentSection->course_id !== $course->id) {
-                            $fail(__('validation.invalid_parent_section'));
-                        }
-                        
-                        // Check not setting as own parent (for updates)
-                        if ($sectionId && $value == $sectionId) {
-                            $fail(__('validation.section_cannot_be_parent_of_itself'));
-                        }
-                    }
-                }
-            ]
-        ];
-
-        return Validator::make($request->all(), $rules);
-    }
-
-    /**
-     * Delete course and all related files
-     */
-    public function deleteCourse(Course $course)
-    {
-        if (!$this->canManageCourse($course)) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-
-        DB::beginTransaction();
-        
-        try {
-            // Delete course photo
-            if ($course->photo) {
-                BunnyHelper()->delete($course->photo);
-            }
-
-            // Delete all course content files
-            foreach ($course->contents as $content) {
-                $this->deleteContentFiles($content);
-            }
-
-            // Delete entire course folder from Bunny CDN
-            BunnyHelper()->deleteFiles(CourseContent::BUNNY_PATH . '/' . $course->id);
-
-            // Delete course (cascade will handle related records)
-            $course->delete();
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.course_deleted_successfully')
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.course_deletion_failed'),
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
 }
