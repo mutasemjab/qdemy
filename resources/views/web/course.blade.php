@@ -242,7 +242,7 @@
 
                                     <!-- sub sections Quizes -->
                                     @php $subSectionsExamss = $subSection->exams @endphp
-                                    @if($is_enrolled && $subSectionsExams && $subSectionsExams->count())
+                                    @if($is_enrolled && $subSectionsExamss && $subSectionsExamss->count())
                                         <span>{{translate_lang('section Quiz')}}</span>
                                         @foreach($subSectionsExamss as $subSectionsExams)
                                             <div class="lesson-item exam">
