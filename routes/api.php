@@ -113,12 +113,8 @@ Route::group(['prefix' => 'v1/user'], function () {
 
         // Package cart management
         Route::put('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
-        Route::get('/cart/package', [EnrollmentController::class, 'getPackageCart']);
-        Route::delete('/cart/package/remove', [EnrollmentController::class, 'removeCartFromAnyPackage']);
-        Route::delete('/cart/package/remove-course', [EnrollmentController::class, 'removeCourseFromPackage']);
 
         // Payment methods
-        Route::post('/activate-card', [EnrollmentController::class, 'activateCard']);
         Route::post('/payment/course/card', [EnrollmentController::class, 'paymentForCourseWithCard']);
         Route::post('/payment/package/card', [EnrollmentController::class, 'paymentForPackageWithCard']);
 
