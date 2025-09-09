@@ -212,7 +212,7 @@ class CategoryController extends Controller
     public function getInternationalProgram()
     {
         try {
-            $program = $this->categoryRepo->getInternationalProgram();
+            $program = $this->categoryRepo->getInternationalPrograms();
             
             if (!$program) {
                 return $this->error_response('International program not found', null);
