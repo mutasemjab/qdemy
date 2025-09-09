@@ -122,7 +122,6 @@ class SubjectRepository
     public function getTawjihiFinalGradesFieldSchoolSubjects($field)
     {
         $subjects = collect();
-        // dd(CategorySubject::where('category_id', $field->id)->get());
         $CategorySubjects = CategorySubject::where('category_id', $field->id)
             ->where('pivot_level', 'field')
             ->where('is_ministry', false)
@@ -148,6 +147,9 @@ class SubjectRepository
         return $this->model->where('is_active', true)
             ->where( function ($q) use ($subject, $field) {
                 if($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
+            })
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'final_year');
             })
             ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
                 $q->where('category_id', $field->id);
