@@ -125,17 +125,6 @@ Route::group(['prefix' => 'v1/user'], function () {
 
             // Public routes (no authentication required)
             Route::get('/', [PackageAndOfferController::class, 'index']);
-            Route::get('/programme/{programm?}', [PackageAndOfferController::class, 'index']);
-            Route::get('/{package}', [PackageAndOfferController::class, 'show']);
-            Route::get('/{package}/class/{clas?}', [PackageAndOfferController::class, 'show']);
-
-            // Additional package routes
-            Route::get('/category/filter', [PackageAndOfferController::class, 'getByCategory']);
-            Route::get('/{package}/subjects', [PackageAndOfferController::class, 'getPackageSubjects']);
-            Route::get('/search/packages', [PackageAndOfferController::class, 'search']);
-            Route::get('/data/programmes', [PackageAndOfferController::class, 'getProgrammes']);
-            Route::get('/{package}/stats', [PackageAndOfferController::class, 'getPackageStats']);
-            Route::get('/featured/list', [PackageAndOfferController::class, 'getFeatured']);
         });
     });
 });
