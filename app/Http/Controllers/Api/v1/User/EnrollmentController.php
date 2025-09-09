@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
+
 class EnrollmentController extends Controller
 {
     use Responses;
@@ -131,13 +132,117 @@ class EnrollmentController extends Controller
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
-        $result = CartRepository()->removeItem($request->course_id);
-        
-        if ($result && isset($result->original) && $result->original['success']) {
-            return $this->success_response($result->original['message'], $result->original);
+        try {
+            $result = CartRepository()->removeItem($request->course_id);
+            
+            // Get updated cart data
+            $cartData = CartRepository()->getCartCoursesWithStatus();
+            
+            if ($result && isset($result->original) && $result->original['success']) {
+                return $this->success_response($result->original['message'], [
+                    'success' => true,
+                    'message' => $result->original['message'],
+                    'courses_count' => $cartData['courses']->count(),
+                    'cart_data' => [
+                        'courses' => $cartData['courses'],
+                        'is_package' => $cartData['is_package'],
+                        'package_info' => $cartData['package_info']
+                    ]
+                ]);
+            }
+
+            return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة', null);
+            
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * مسح السلة بالكامل
+     */
+    public function clearCart()
+    {
+        $user = auth('user-api')->user();
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
-        return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة', null);
+        try {
+            CartRepository()->clearCart();
+            
+            return $this->success_response('تم مسح السلة بنجاح', [
+                'success' => true,
+                'message' => 'تم مسح السلة بنجاح',
+                'courses_count' => 0
+            ]);
+            
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ أثناء مسح السلة: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * Debug cart session - for testing purposes
+     */
+    public function debugCart()
+    {
+        $user = auth('user-api')->user();
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
+        }
+
+        try {
+            $sessionKey = 'cart_' . $user->id;
+            $packageSessionKey = 'package_cart_' . $user->id;
+            
+            $debugData = [
+                'user_id' => $user->id,
+                'session_id' => session()->getId(),
+                'cart_session_key' => $sessionKey,
+                'package_session_key' => $packageSessionKey,
+                'cart_session_data' => session($sessionKey, []),
+                'package_session_data' => session($packageSessionKey, []),
+                'all_session_data' => session()->all(),
+                'course_cart' => CartRepository()->getCourseCart(),
+                'package_cart' => CartRepository()->getPackageCart(),
+            ];
+
+            return $this->success_response('بيانات تشخيص السلة', $debugData);
+            
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ أثناء تشخيص السلة: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * Get cart summary
+     */
+    public function getCartSummary()
+    {
+        $user = auth('user-api')->user();
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
+        }
+
+        try {
+            $cartData = CartRepository()->getCartCoursesWithStatus();
+            
+            $summary = [
+                'courses_count' => $cartData['courses']->count(),
+                'total_amount' => $cartData['courses']->sum('selling_price'),
+                'original_amount' => $cartData['courses']->sum('price'),
+                'discount_amount' => $cartData['courses']->sum('price') - $cartData['courses']->sum('selling_price'),
+                'is_package' => $cartData['is_package'],
+                'can_checkout' => $cartData['courses']->count() > 0,
+                'package_info' => $cartData['package_info']
+            ];
+
+            return $this->success_response('ملخص السلة', $summary);
+            
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ أثناء جلب ملخص السلة: ' . $e->getMessage(), null);
+        }
     }
 
     /**
