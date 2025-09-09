@@ -77,7 +77,7 @@ Route::group(['prefix' => 'v1/user'], function () {
     // Auth Route
     Route::group(['middleware' => ['auth:user-api']], function () {
 
-         Route::get('/exams/{exam}/link', [ExamController::class, 'getExamLink']);
+        Route::get('/exams/{exam}/link', [ExamController::class, 'getExamLink']);
         Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);
@@ -103,7 +103,43 @@ Route::group(['prefix' => 'v1/user'], function () {
 
 
         // notifications
-         Route::get('/notifications', [NotificationApiController::class, 'index']);
-         Route::post('/notifications/{id}/read', [NotificationApiController::class, 'read']);
+        Route::get('/notifications', [NotificationApiController::class, 'index']);
+        Route::post('/notifications/{id}/read', [NotificationApiController::class, 'read']);
+
+        // Cart management
+        Route::get('/cart', [EnrollmentController::class, 'index']);
+        Route::post('/cart/add', [EnrollmentController::class, 'addToSession']);
+        Route::delete('/cart/remove-course', [EnrollmentController::class, 'removeCourseFromCart']);
+
+        // Package cart management
+        Route::put('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
+        Route::get('/cart/package', [EnrollmentController::class, 'getPackageCart']);
+        Route::delete('/cart/package/remove', [EnrollmentController::class, 'removeCartFromAnyPackage']);
+        Route::delete('/cart/package/remove-course', [EnrollmentController::class, 'removeCourseFromPackage']);
+
+        // Payment methods
+        Route::post('/activate-card', [EnrollmentController::class, 'activateCard']);
+        Route::post('/payment/course/card', [EnrollmentController::class, 'paymentForCourseWithCard']);
+        Route::post('/payment/package/card', [EnrollmentController::class, 'paymentForPackageWithCard']);
+
+
+
+        // Packages API Routes
+        Route::group(['prefix' => 'packages'], function () {
+
+            // Public routes (no authentication required)
+            Route::get('/', [PackageAndOfferController::class, 'index']);
+            Route::get('/programme/{programm?}', [PackageAndOfferController::class, 'index']);
+            Route::get('/{package}', [PackageAndOfferController::class, 'show']);
+            Route::get('/{package}/class/{clas?}', [PackageAndOfferController::class, 'show']);
+
+            // Additional package routes
+            Route::get('/category/filter', [PackageAndOfferController::class, 'getByCategory']);
+            Route::get('/{package}/subjects', [PackageAndOfferController::class, 'getPackageSubjects']);
+            Route::get('/search/packages', [PackageAndOfferController::class, 'search']);
+            Route::get('/data/programmes', [PackageAndOfferController::class, 'getProgrammes']);
+            Route::get('/{package}/stats', [PackageAndOfferController::class, 'getPackageStats']);
+            Route::get('/featured/list', [PackageAndOfferController::class, 'getFeatured']);
+        });
     });
 });
