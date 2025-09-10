@@ -107,7 +107,8 @@ class SubjectRepository
                 // });
         })
         ->get();
-
+        // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
+        // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
             $subject = Subject::find($CategorySubject->subject_id);
             $subjects->push($subject);
@@ -129,8 +130,11 @@ class SubjectRepository
                 $q->where('is_active', true);
         })
         ->get();
+        // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
+        // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
-            $subject = Subject::find($CategorySubject->subject_id);
+            $subject = Subject::where('id',$CategorySubject->subject_id)->where('is_active',true)->first();
+            if(!$subject) continue;
             $subjects->push($subject);
         }
 
@@ -150,6 +154,9 @@ class SubjectRepository
             })
             ->whereHas('grade', function ($q) {
                 $q->where('ctg_key', 'final_year');
+            })
+            ->whereHas('category_subjects', function ($q) {
+                $q->where('is_optional', false);
             })
             ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
                 $q->where('category_id', $field->id);
