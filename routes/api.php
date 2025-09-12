@@ -107,6 +107,7 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('posts/{post}/likes', [LikeController::class, 'index']);
 
         Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
+
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
         Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
 
@@ -121,11 +122,22 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::put('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
         Route::post('/payment/course/card', [EnrollmentController::class, 'paymentForCourseWithCard']);
         Route::post('/payment/package/card', [EnrollmentController::class, 'paymentForPackageWithCard']);
+        Route::get('/enrolled-courses', [EnrollmentController::class, 'getUserEnrolledCourses']);
 
         // Packages
         Route::group(['prefix' => 'packages'], function () {
             Route::get('/', [PackageAndOfferController::class, 'index']);
         });
+
+
+        Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationController::class, 'index']);
+            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
+            Route::post('/{notification}/read', [NotificationController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+        });
+
+
     });
 });
 

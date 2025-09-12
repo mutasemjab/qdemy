@@ -613,4 +613,132 @@ class EnrollmentController extends Controller
 
         return $payment;
     }
+
+    public function getUserEnrolledCourses(Request $request)
+    {
+        try {
+            $user = $request->user(); // authenticated user from token
+            
+            if (!$user) {
+                return $this->error_response('User not authenticated', null);
+            }
+
+            $perPage = $request->get('per_page', 10);
+            $search = $request->get('search');
+            $sortBy = $request->get('sort_by', 'latest'); // latest, progress, name
+
+            // Get enrolled courses through the pivot table
+            $query = Course::whereHas('enrollments', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program']);
+
+            // Apply search filter
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title_ar', 'like', "%{$search}%")
+                    ->orWhere('title_en', 'like', "%{$search}%")
+                    ->orWhere('description_ar', 'like', "%{$search}%")
+                    ->orWhere('description_en', 'like', "%{$search}%");
+                });
+            }
+
+            // Apply sorting
+            switch ($sortBy) {
+                case 'name':
+                    $query->orderBy('title_ar', 'asc');
+                    break;
+                case 'progress':
+                    // This will be handled after getting the results
+                    break;
+                default:
+                    $query->latest();
+            }
+
+            $courses = $query->paginate($perPage);
+
+            $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
+                // Calculate progress for each course
+                $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
+                
+                // Get enrollment date
+                $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
+
+                return [
+                    'id' => $course->id,
+                    'title_en' => $course->title_en,
+                    'title_ar' => $course->title_ar,
+                    'description_en' => $course->description_en,
+                    'description_ar' => $course->description_ar,
+                    'selling_price' => $course->selling_price,
+                    'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                    'enrollment_date' => $enrollment ? $enrollment->created_at : null,
+                    'teacher' => $course->teacher ? [
+                        'id' => $course->teacher->id,
+                        'name' => $course->teacher->name,
+                        'name_of_lesson' => $course->teacher->name_of_lesson,
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null,
+                    ] : null,
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon,
+                        'grade_info' => $course->subject->grade ? [
+                            'id' => $course->subject->grade->id,
+                            'name_ar' => $course->subject->grade->name_ar,
+                            'name_en' => $course->subject->grade->name_en,
+                            'level' => $course->subject->grade->level
+                        ] : null,
+                        'semester_info' => $course->subject->semester ? [
+                            'id' => $course->subject->semester->id,
+                            'name_ar' => $course->subject->semester->name_ar,
+                            'name_en' => $course->subject->semester->name_en
+                        ] : null,
+                        'program_info' => $course->subject->program ? [
+                            'id' => $course->subject->program->id,
+                            'name_ar' => $course->subject->program->name_ar,
+                            'name_en' => $course->subject->program->name_en
+                        ] : null
+                    ] : null,
+                    'user_progress' => [
+                        'course_progress' => $calculateCourseProgress['course_progress'],
+                        'completed_videos' => $calculateCourseProgress['completed_videos'],
+                        'watching_videos' => $calculateCourseProgress['watching_videos'],
+                        'total_videos' => $calculateCourseProgress['total_videos']
+                    ],
+                    'created_at' => $course->created_at,
+                    'updated_at' => $course->updated_at
+                ];
+            });
+
+            // Sort by progress if requested
+            if ($sortBy === 'progress') {
+                $coursesData = $coursesData->sortByDesc('user_progress.course_progress')->values();
+            }
+
+            $responseData = [
+                'enrolled_courses' => $coursesData,
+                'filters' => [
+                    'search' => $search,
+                    'sort_by' => $sortBy
+                ],
+                'pagination' => [
+                    'current_page' => $courses->currentPage(),
+                    'last_page' => $courses->lastPage(),
+                    'per_page' => $courses->perPage(),
+                    'total' => $courses->total(),
+                    'from' => $courses->firstItem(),
+                    'to' => $courses->lastItem(),
+                    'has_more_pages' => $courses->hasMorePages()
+                ]
+            ];
+
+            return $this->success_response('User enrolled courses retrieved successfully', $responseData);
+
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve enrolled courses: ' . $e->getMessage(), null);
+        }
+    }
+    
 }
