@@ -132,7 +132,7 @@ trait CourseManagementTrait
     public function updateCourse(Request $request, Course $course, $isAdmin = false)
     {
         // Check permissions
-        if (!$isAdmin && $course->teacher_id !== auth()->user()->teacher->id) {
+        if (!$isAdmin && $course->teacher_id !== auth()->user()->id) {
             return $this->errorResponse(
                 __('messages.unauthorized_action'),
                 null,

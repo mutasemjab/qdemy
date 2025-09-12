@@ -33,7 +33,10 @@ use App\Http\Controllers\Api\v1\Parent\PaymentParentController;
 use App\Http\Controllers\Api\v1\Parent\ReportParentController;
 use App\Http\Controllers\Api\v1\Parent\CommunicationParentController;
 use App\Http\Controllers\Api\v1\Parent\NotificationParentController;
+use App\Http\Controllers\Api\v1\Parent\ParentChildAcademicController;
 use App\Http\Controllers\Api\v1\Parent\SettingParentController;
+use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
+use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -151,27 +154,71 @@ Route::group(['prefix' => 'v1/teacher'], function () {
 
         // Dashboard
         Route::get('/dashboard', [DashboardTeacherController::class, 'index']);
-        Route::get('/statistics', [DashboardTeacherController::class, 'getStatistics']);
 
         // Course Management
-       
-        // Student Management
+         Route::prefix('courses')->group(function () {
+            Route::get('/', [CourseTeacherController::class, 'index']);
+            Route::post('/', [CourseTeacherController::class, 'store']);
+            Route::get('/{course}', [CourseTeacherController::class, 'show']);
+            Route::post('/{course}', [CourseTeacherController::class, 'update']);
+            Route::delete('/{course}', [CourseTeacherController::class, 'destroy']);
+            
+            // Course enrollment
+            Route::get('/{course}/students', [CourseTeacherController::class, 'getEnrolledStudents']);
+
+            // Course Sections & Contents Management
+            Route::get('/{course}/sections', [CourseSectionTeacherController::class, 'index']);
+            Route::post('/{course}/sections', [CourseSectionTeacherController::class, 'store']);
+            Route::get('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'show']);
+            Route::put('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'update']);
+            Route::delete('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'destroy']);
+            
+            // Content Management
+            Route::post('/{course}/contents', [CourseSectionTeacherController::class, 'storeContent']);
+            Route::get('/{course}/contents', [CourseSectionTeacherController::class, 'getContents']);
+            Route::get('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'showContent']);
+            Route::put('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'updateContent']);
+            Route::delete('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'destroyContent']);
+            
+            
+            // Statistics
+            Route::get('/{course}/statistics', [CourseSectionTeacherController::class, 'getCourseStatistics']);
+        });
         
 
         // Exam Management
-       
+        Route::prefix('exams')->group(function () {
+            Route::get('/', [ExamTeacherController::class, 'index']);
+            Route::post('/', [ExamTeacherController::class, 'store']);
+            Route::get('/{exam}', [ExamTeacherController::class, 'show']);
+            Route::put('/{exam}', [ExamTeacherController::class, 'update']);
+            Route::delete('/{exam}', [ExamTeacherController::class, 'destroy']);
+            
+            // Exam Results & Analytics
+            Route::get('/{exam}/results', [ExamTeacherController::class, 'getResults']);
+            Route::get('/{exam}/attempts/{attempt}', [ExamTeacherController::class, 'viewAttempt']);
+            
+            // Exam Questions Management
+            Route::get('/{exam}/questions', [ExamQuestionsTeacherController::class, 'index']);
+            Route::post('/{exam}/questions', [ExamQuestionsTeacherController::class, 'store']);
+            Route::put('/{exam}/questions/update-order', [ExamQuestionsTeacherController::class, 'updateQuestions']);
+            Route::get('/{exam}/questions/{question}', [ExamQuestionsTeacherController::class, 'show']);
+            Route::put('/{exam}/questions/{question}', [ExamQuestionsTeacherController::class, 'update']);
+            Route::delete('/{exam}/questions/{question}/remove', [ExamQuestionsTeacherController::class, 'removeQuestion']);
+        });
      
 
-      
-
-       
         // Notifications
-        Route::prefix('notifications')->group(function () {
+         Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationTeacherController::class, 'index']);
+            Route::get('/unread-count', [NotificationTeacherController::class, 'getUnreadCount']);
             Route::post('/{notification}/read', [NotificationTeacherController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationTeacherController::class, 'markAllAsRead']);
         });
     });
 });
+
+
 
 // ================================
 // PARENT ROUTES
@@ -202,26 +249,23 @@ Route::group(['prefix' => 'v1/parent'], function () {
 
         // Dashboard
         Route::get('/dashboard', [DashboardParentController::class, 'index']);
-        Route::get('/overview', [DashboardParentController::class, 'getOverview']);
+        Route::get('/statistics', [DashboardParentController::class, 'getStatistics']);
+
 
       
-      
-
-        // Progress Tracking
-        
-
-        // Payment Management
-        
-      
-
-        // Reports
+        Route::get('/children/academic-summary', [ParentChildAcademicController::class, 'getAllChildrenAcademicSummary']);
+        Route::get('/child/{childId}/courses', [ParentChildAcademicController::class, 'getChildCourses']);
+        Route::get('/child/{childId}/exam-results', [ParentChildAcademicController::class, 'getChildExamResults']);
+        Route::get('/child/{childId}/academic-overview', [ParentChildAcademicController::class, 'getChildAcademicOverview']);
+    
      
 
         // Notifications
-        Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationParentController::class, 'index']);
-            Route::post('/{notification}/read', [NotificationParentController::class, 'markAsRead']);
-
+         Route::prefix('notifications')->group(function () {
+            Route::get('/', [NotificationTeacherController::class, 'index']);
+            Route::get('/unread-count', [NotificationTeacherController::class, 'getUnreadCount']);
+            Route::post('/{notification}/read', [NotificationTeacherController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationTeacherController::class, 'markAllAsRead']);
         });
 
       
