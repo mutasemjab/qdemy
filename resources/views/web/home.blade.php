@@ -12,26 +12,25 @@
         <div class="hero-buttons-wrapper">
 
             <!-- العمود اليمين -->
-            <div class="hero-column right-column">
-                <a href="{{route('courses')}}" class="blob-btn blob-btn-1" style="background-image: url('{{ asset('images/blob2.png') }}');">
-                    <i class="fas fa-graduation-cap"></i>
-                    <span>دورات</span>
-                </a>
+          <div class="hero-column right-column">
+            <a href="{{route('courses')}}" class="blob-btn blob-btn-1" style="background-image: url('{{ asset('images/blob2.png') }}');">
+                <i class="fas fa-graduation-cap"></i>
+                <span>{{ __('front.courses') }}</span>
+            </a>
 
-                <a href="{{route('user.register')}}" class="blob-btn blob-btn-2" style="background-image: url('{{ asset('images/blob3.png') }}');">
-                    <i class="fas fa-user-plus"></i>
-                    <span>تسجيل حساب</span>
-                </a>
-            </div>
+            <a href="{{route('user.register')}}" class="blob-btn blob-btn-2" style="background-image: url('{{ asset('images/blob3.png') }}');">
+                <i class="fas fa-user-plus"></i>
+                <span>{{ __('front.register_account') }}</span>
+            </a>
+        </div>
 
-            <!-- العمود الشمال -->
-            <div class="hero-column center-column">
-                <a href="{{route('card-order')}}" class="blob-btn blob-btn-3" style="background-image: url('{{ asset('images/blob1.png') }}');">
-                    <i class="fas fa-id-card"></i>
-                    <span>لطلب بطاقة<br>من هنا</span>
-                </a>
-            </div>
-
+        <!-- العمود الشمال -->
+        <div class="hero-column center-column">
+            <a href="{{route('card-order')}}" class="blob-btn blob-btn-3" style="background-image: url('{{ asset('images/blob1.png') }}');">
+                <i class="fas fa-id-card"></i>
+                <span>{!! __('front.order_card') !!}</span>
+            </a>
+        </div>
         </div>
 
 
@@ -46,20 +45,20 @@
     </div>
 
     <!-- Bottom Cards -->
-    <div class="hero-cards">
-        <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card1.png') }}');">
-            <p class="card-t" >برنامج التوجيهي والثانوي</p>
-        </a>
-        <a href="{{ route('grades_basic-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card2.png') }}');">
-            <p class="card-t" >برنامج الصفوف الأساسية</p>
-        </a>
-        <a href="{{ route('universities-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card3.png') }}');">
-            <p class="card-t" >برنامج الجامعات والكليات</p>
-        </a>
-        <a href="{{ route('international-programms') }}" class="hero-card" style="background-image: url('{{ asset('images/card4.png') }}');">
-            <p class="card-t" >برنامج دولي</p>
-        </a>
-    </div>
+  <div class="hero-cards">
+    <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card1.png') }}');">
+        <p class="card-t">{{ __('front.tawjihi_secondary_program') }}</p>
+    </a>
+    <a href="{{ route('grades_basic-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card2.png') }}');">
+        <p class="card-t">{{ __('front.basic_grades_program') }}</p>
+    </a>
+    <a href="{{ route('universities-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card3.png') }}');">
+        <p class="card-t">{{ __('front.universities_colleges_program') }}</p>
+    </a>
+    <a href="{{ route('international-programms') }}" class="hero-card" style="background-image: url('{{ asset('images/card4.png') }}');">
+        <p class="card-t">{{ __('front.international_program') }}</p>
+    </a>
+</div>
 
 </section>
 
@@ -82,7 +81,7 @@
     <div class="services-box">
         <a href="{{ route('community') }}" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
         <a href="{{ route('exam.index') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
-        <a href="{{ route('courses') }}" class="service-btn dark">{{ __('front.Courses') }}</a>
+        <a href="{{ route('packages-offers') }}" class="service-btn dark">{{ __('front.packages_offers') }}</a>
         <a href="{{ route('sale-point') }}" class="service-btn light">{{ __('front.Sale Points') }}</a>
         <a href="{{ route('ministerialQuestions.index') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
         <a href="{{ route('bankQuestions.index') }}" class="service-btn light">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>

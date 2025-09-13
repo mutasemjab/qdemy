@@ -5,24 +5,24 @@
 <section class="checkout-wrapper">
     <!-- Cart Section -->
     <div class="checkout-box">
-        <h2 class="checkout-heading">{{ translate_lang('cart') }}</h2>
+        <h2 class="checkout-heading">{{ __('front.cart') }}</h2>
 
         @if($is_package)
             <div class="package-info-box">
                 <h3>{{ $package_info['package_name'] }}</h3>
-                <p>عدد الكورسات المطلوبة: {{ $package_info['max_courses'] }}</p>
-                <p>عدد الكورسات المختارة: <span id="selected-courses-count">{{ count($package_info['courses']) }}</span></p>
-                <p>السعر الإجمالي للباكدج: {{ $package_info['package_price'] }} {{ CURRENCY }}</p>
+                <p>{{ __('front.required_courses_count') }}: {{ $package_info['max_courses'] }}</p>
+                <p>{{ __('front.selected_courses_count') }}: <span id="selected-courses-count">{{ count($package_info['courses']) }}</span></p>
+                <p>{{ __('front.package_total_price') }}: {{ $package_info['package_price'] }} {{ CURRENCY }}</p>
             </div>
         @endif
 
         <div class="checkout-row header">
-            <span class="checkout-col">{{ translate_lang('course') }}</span>
+            <span class="checkout-col">{{ __('front.course') }}</span>
             @if(!$is_package)
-                <span class="checkout-col">{{ translate_lang('price') }}</span>
+                <span class="checkout-col">{{ __('front.price') }}</span>
             @endif
-            <span class="checkout-col">{{ translate_lang('status') }}</span>
-            <span class="checkout-col">{{ translate_lang('actions') }}</span>
+            <span class="checkout-col">{{ __('front.status') }}</span>
+            <span class="checkout-col">{{ __('front.actions') }}</span>
         </div>
     </div>
 
@@ -69,11 +69,11 @@
 
                     <span class="course-status">
                         @if($course->is_enrolled)
-                            <span class="badge badge-warning">مشترك مسبقاً</span>
+                            <span class="badge badge-warning">{{ __('front.already_enrolled') }}</span>
                         @elseif(!$course->is_active)
-                            <span class="badge badge-danger">غير متاح</span>
+                            <span class="badge badge-danger">{{ __('front.not_available') }}</span>
                         @else
-                            <span class="badge badge-success">متاح للشراء</span>
+                            <span class="badge badge-success">{{ __('front.available_for_purchase') }}</span>
                         @endif
                     </span>
 
@@ -82,15 +82,15 @@
                                 data-course-id="{{ $course->id }}"
                                 data-package-id="{{ $package_info['package_id'] ?? null }}"
                                 data-is-package="{{ $is_package ? '1' : '0' }}">
-                            {{ translate_lang('delete') }}
+                            {{ __('front.delete') }}
                         </button>
 
                         @if(!$canPurchase)
                             <p class="text-danger small mt-1">
                                 @if($course->is_enrolled)
-                                    يجب حذف هذا الكورس (مشترك مسبقاً)
+                                    {{ __('front.must_delete_enrolled') }}
                                 @else
-                                    يجب حذف هذا الكورس (غير متاح)
+                                    {{ __('front.must_delete_unavailable') }}
                                 @endif
                             </p>
                         @endif
@@ -99,8 +99,8 @@
             @endforeach
         @else
             <div class="empty-cart">
-                <p>{{ translate_lang('cart_is_empty') }}</p>
-                <a href="{{ route('courses') }}" class="btn btn-primary">تصفح الكورسات</a>
+                <p>{{ __('front.cart_is_empty') }}</p>
+                <a href="{{ route('courses') }}" class="btn btn-primary">{{ __('front.browse_courses') }}</a>
             </div>
         @endif
 
@@ -108,14 +108,13 @@
             <div class="package-actions mt-3">
                 <button class="btn btn-danger delete-package"
                         data-package-id="{{ $package_info['package_id'] ?? null}}">
-                    {{ translate_lang('delete_package') }}
+                    {{ __('front.delete_package') }}
                 </button>
 
                 @if($validCoursesCount != $package_info['max_courses'])
                     <div class="alert alert-warning mt-2">
                         <i class="fa fa-exclamation-triangle"></i>
-                        تحذير: يجب أن يكون لديك {{ $package_info['max_courses'] }} كورسات صالحة للشراء.
-                        حالياً لديك {{ $validCoursesCount }} كورسات صالحة.
+                        {{ __('front.warning_required_courses', ['max' => $package_info['max_courses'], 'current' => $validCoursesCount]) }}
                     </div>
                 @endif
             </div>
@@ -125,20 +124,20 @@
     <!-- Total Section -->
     @if($courses && $courses->count() && $validCoursesCount > 0)
         <div class="checkout-total-box">
-            <h2 class="checkout-heading">{{ translate_lang('final_cost') }}</h2>
+            <h2 class="checkout-heading">{{ __('front.final_cost') }}</h2>
 
             @if($is_package)
                 <div class="total-line">
-                    <span>سعر الباكدج</span>
+                    <span>{{ __('front.package_price') }}</span>
                     <span id='package_total'>{{ $package_info['package_price'] }} {{ CURRENCY }}</span>
                 </div>
             @else
                 <div class="total-line">
-                    <span>{{ translate_lang('sub_total') }}</span>
+                    <span>{{ __('front.sub_total') }}</span>
                     <span id='courses_sub_total'>{{ $total }} {{ CURRENCY }}</span>
                 </div>
                 <div class="total-line">
-                    <span>{{ translate_lang('total') }}</span>
+                    <span>{{ __('front.total') }}</span>
                     <span id='courses_total'>{{ $total }} {{ CURRENCY }}</span>
                 </div>
             @endif
@@ -147,22 +146,22 @@
         <!-- Card Activation Section -->
         <div class="checkout-total-box">
             <div class="lesson-card-activation">
-                <h3>{{ translate_lang('card_qdemy') }}</h3>
-                <p>{{ translate_lang('enter_card_qdemy') }}</p>
+                <h3>{{ __('front.card_qdemy') }}</h3>
+                <p>{{ __('front.enter_card_qdemy') }}</p>
                 <input class="lesson-card-activation input"
                        type="text"
                        id="card-number-input"
-                       placeholder="{{ translate_lang('enter_card_here') }}">
+                       placeholder="{{ __('front.enter_card_here') }}">
                 <button class="lesson-card-activation button"
                         id="activate-card-btn"
                         data-payment-type="{{ $is_package ? 'package' : 'courses' }}"
                         @if($is_package && $validCoursesCount != $package_info['max_courses']) disabled @endif>
-                    {{ translate_lang('activate_card') }}
+                    {{ __('front.activate_card') }}
                 </button>
 
                 @if($is_package && $validCoursesCount != $package_info['max_courses'])
                     <p class="text-danger small mt-2">
-                        يجب أن يكون لديك {{ $package_info['max_courses'] }} كورسات صالحة للشراء لتتمكن من الدفع
+                        {{ __('front.valid_courses_payment_required', ['max' => $package_info['max_courses']]) }}
                     </p>
                 @endif
             </div>
@@ -170,7 +169,7 @@
 
         <!-- Payment Section -->
         <div class="checkout-payment-box">
-            <h2 class="checkout-heading">طرق الدفع</h2>
+            <h2 class="checkout-heading">{{ __('front.payment_methods') }}</h2>
             <div class="payment-options">
                 <button class="payment-option active">VISA</button>
                 <button class="payment-option">Cash</button>
@@ -178,16 +177,16 @@
 
             <form class="payment-form" id="payment-form">
                 <div class="payment-field">
-                    <label>Cardholder's Name</label>
-                    <input type="text" name="cardholder_name" placeholder="Seen on your card">
+                    <label>{{ __('front.cardholder_name') }}</label>
+                    <input type="text" name="cardholder_name" placeholder="{{ __('front.seen_on_card') }}">
                 </div>
                 <div class="payment-field">
-                    <label>Card Number</label>
-                    <input type="text" name="card_number" placeholder="Seen on your card">
+                    <label>{{ __('front.card_number') }}</label>
+                    <input type="text" name="card_number" placeholder="{{ __('front.seen_on_card') }}">
                 </div>
                 <div class="payment-double">
                     <div class="payment-field">
-                        <label>Expiry</label>
+                        <label>{{ __('front.expiry') }}</label>
                         <input type="text" name="expiry" placeholder="MM/YY">
                     </div>
                     <div class="payment-field">
@@ -195,7 +194,7 @@
                         <input type="text" name="cvc" placeholder="***">
                     </div>
                 </div>
-                <button type="submit" class="payment-submit">الدفع</button>
+                <button type="submit" class="payment-submit">{{ __('front.pay') }}</button>
             </form>
         </div>
     @endif
@@ -205,7 +204,7 @@
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3><i class="fa fa-check"></i></h3>
-            <h3 id="success-message">{{ translate_lang('تم تفعيل البطاقة بنجاح وإضافتك للكورسات!') }}</h3>
+            <h3 id="success-message">{{ __('front.card_activated_success') }}</h3>
         </div>
     </div>
 
@@ -214,7 +213,7 @@
         <div class="modal-content">
             <span class="delete-course-modal-close">&times;</span>
             <h3><i class="fa fa-check"></i></h3>
-            <h3>{{ translate_lang('تم حذف الكورس من عربة التسوق!') }}</h3>
+            <h3>{{ __('front.course_deleted_success') }}</h3>
         </div>
     </div>
 
@@ -277,6 +276,24 @@
 document.addEventListener('DOMContentLoaded', function () {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    // Translation strings
+    const translations = {
+        enterCardNumber: @json(__('front.enter_card_number')),
+        activating: @json(__('front.activating')),
+        operationSuccess: @json(__('front.operation_success')),
+        errorOccurred: @json(__('front.error_occurred')),
+        serverConnectionError: @json(__('front.server_connection_error')),
+        activateCard: @json(__('front.activate_card')),
+        deleting: @json(__('front.deleting')),
+        delete: @json(__('front.delete')),
+        confirmDeletePackage: @json(__('front.confirm_delete_package')),
+        packageDeletedSuccess: @json(__('front.package_deleted_success')),
+        deletePackage: @json(__('front.delete_package')),
+        requiredValidCourses: @json(__('front.required_valid_courses')),
+        updateInfo: @json(__('front.update_info')),
+        visaPaymentDevelopment: @json(__('front.visa_payment_development'))
+    };
+
     // Class for managing cart operations
     class CartManager {
         constructor() {
@@ -285,30 +302,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         initializeEventListeners() {
-            // تفعيل البطاقة
+            // {{ __('front.card_activation') }}
             const activateBtn = document.getElementById('activate-card-btn');
             if (activateBtn) {
                 activateBtn.addEventListener('click', (e) => this.handleCardActivation(e));
             }
 
-            // حذف الكورسات
+            // {{ __('front.delete_courses') }}
             document.querySelectorAll('.delete-course').forEach(button => {
                 button.addEventListener('click', (e) => this.handleCourseDelete(e));
             });
 
-            // حذف الباكدج
+            // {{ __('front.delete_package') }}
             const deletePackageBtn = document.querySelector('.delete-package');
             if (deletePackageBtn) {
                 deletePackageBtn.addEventListener('click', (e) => this.handlePackageDelete(e));
             }
 
-            // نموذج الدفع
+            // {{ __('front.payment_form') }}
             const paymentForm = document.getElementById('payment-form');
             if (paymentForm) {
                 paymentForm.addEventListener('submit', (e) => this.handlePaymentSubmit(e));
             }
 
-            // إغلاق النوافذ المنبثقة
+            // {{ __('front.close_modals') }}
             this.setupModalClosers();
         }
 
@@ -335,12 +352,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const paymentType = button.getAttribute('data-payment-type');
 
             if (!cardNumber) {
-                this.showError('من فضلك أدخل رقم البطاقة');
+                this.showError(translations.enterCardNumber);
                 return;
             }
 
             button.disabled = true;
-            button.textContent = 'جاري التفعيل...';
+            button.textContent = translations.activating;
 
             try {
                 const endpoint = paymentType === 'package'
@@ -360,16 +377,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    this.showSuccess(data.message || 'تمت العملية بنجاح');
+                    this.showSuccess(data.message || translations.operationSuccess);
                     setTimeout(() => location.reload(), 1500);
                 } else {
-                    this.showError(data.message || 'حدث خطأ');
+                    this.showError(data.message || translations.errorOccurred);
                 }
             } catch (error) {
-                this.showError('حدث خطأ أثناء الاتصال بالخادم');
+                this.showError(translations.serverConnectionError);
             } finally {
                 button.disabled = false;
-                button.textContent = 'تفعيل البطاقة';
+                button.textContent = translations.activateCard;
             }
         }
 
@@ -381,7 +398,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const parentRow = document.getElementById('cart_row_' + courseId);
 
             button.disabled = true;
-            button.textContent = 'جاري الحذف...';
+            button.textContent = translations.deleting;
 
             let handleCourseDeleteData;
             let handleCourseDeleteRoute;
@@ -409,21 +426,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     parentRow.remove();
                     this.showDeleteSuccess();
 
-                    // تحديث المعلومات
+                    // {{ __('front.update_info') }}
                     if (isPackage && data.remaining_count !== undefined) {
                         this.updatePackageInfo(data.remaining_count, data.required_count);
                     } else {
                         this.recalculateTotal();
                     }
                 } else {
-                    this.showError(data.message || 'حدث خطأ');
+                    this.showError(data.message || translations.errorOccurred);
                 }
                 console.log(data);
             } catch (error) {
-                this.showError('حدث خطأ أثناء الاتصال بالخادم');
+                this.showError(translations.serverConnectionError);
             } finally {
                 button.disabled = false;
-                button.textContent = 'حذف';
+                button.textContent = translations.delete;
             }
         }
 
@@ -431,12 +448,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const button = e.target;
             const packageId = button.getAttribute('data-package-id');
 
-            if (!confirm('هل أنت متأكد من حذف الباكدج بالكامل؟')) {
+            if (!confirm(translations.confirmDeletePackage)) {
                 return;
             }
 
             button.disabled = true;
-            button.textContent = 'جاري الحذف...';
+            button.textContent = translations.deleting;
 
             try {
                 const response = await fetch('{{ route("remove.package") }}', {
@@ -452,23 +469,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (data.success) {
-                    this.showSuccess('تم حذف الباكدج بنجاح');
+                    this.showSuccess(translations.packageDeletedSuccess);
                     setTimeout(() => location.reload(), 1500);
                 } else {
-                    this.showError(data.message || 'حدث خطأ');
+                    this.showError(data.message || translations.errorOccurred);
                 }
             } catch (error) {
-                this.showError('حدث خطأ أثناء الاتصال بالخادم');
+                this.showError(translations.serverConnectionError);
             } finally {
                 button.disabled = false;
-                button.textContent = 'حذف الباكدج';
+                button.textContent = translations.deletePackage;
             }
         }
 
         async handlePaymentSubmit(e) {
             e.preventDefault();
-            // يمكن إضافة منطق معالجة الدفع بالفيزا هنا
-            // this.showError('خدمة الدفع بالفيزا قيد التطوير');
+            // {{ __('front.can_add_visa_payment_logic_here') }}
+            // this.showError(translations.visaPaymentDevelopment);
         }
 
         recalculateTotal() {
@@ -495,12 +512,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 countElement.textContent = currentCount;
             }
 
-            // تحديث حالة زر الدفع
+            // {{ __('front.update_payment_button_status') }}
             const activateBtn = document.getElementById('activate-card-btn');
             if (activateBtn) {
                 if (currentCount !== requiredCount) {
                     activateBtn.disabled = true;
-                    this.showError(`يجب أن يكون لديك ${requiredCount} كورسات صالحة للدفع`);
+                    this.showError(translations.requiredValidCourses.replace(':count', requiredCount));
                 } else {
                     activateBtn.disabled = false;
                 }
@@ -508,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         updateUI() {
-            // تحديث واجهة المستخدم بناءً على الحالة الحالية
+            // {{ __('front.update_ui_based_on_current_state') }}
             this.recalculateTotal();
         }
 

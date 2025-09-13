@@ -19,8 +19,8 @@
                         <img src="{{ asset('assets_front/images/icons/community.png') }}" alt="Community Icon" class="icon">
                     </a>
                 </li>
-                <li><a href="{{ route('exam.index') }}">امتحانات</a></li>
-                <li><a href="{{ route('download') }}">تطبيقاتنا</a></li>
+                <li><a href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
+                <li><a href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
             </ul>
         </nav>
 

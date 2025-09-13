@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\WalletTransactionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\ExamQuestionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -212,6 +213,17 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         // Add this route for question details
         Route::get('questions/{question}/details', [ExamController::class, 'getQuestionDetails'])->name('questions.details');
+
+        // when i want to create question direct to exam
+         Route::prefix('exams/{exam}/exam-questions')->name('exams.exam_questions.')->group(function () {
+            Route::get('/', [ExamQuestionsController::class, 'index'])->name('index');
+            Route::get('/create', [ExamQuestionsController::class, 'create'])->name('create');
+            Route::post('/', [ExamQuestionsController::class, 'store'])->name('store');
+            Route::get('/{question}', [ExamQuestionsController::class, 'show'])->name('show');
+            Route::get('/{question}/edit', [ExamQuestionsController::class, 'edit'])->name('edit');
+            Route::put('/{question}', [ExamQuestionsController::class, 'update'])->name('update');
+            Route::delete('/{question}', [ExamQuestionsController::class, 'destroy'])->name('destroy');
+        });
 
 
         Route::prefix('community')->name('admin.community.')->group(function () {

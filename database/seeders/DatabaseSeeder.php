@@ -32,13 +32,15 @@ class DatabaseSeeder extends Seeder
         DB::statement("SET foreign_key_checks=1");
 
         $this->call(PermissionSeeder::class);
-        $this->call(UserSeeder::class);
+        //$this->call(UserSeeder::class);
         $this->call(CategoriesSeeder::class);
-        $this->call(TeachersSeeder::class);
-        $this->call(CoursesSeeder::class);
-        $this->call(QuestionSeeder::class);
-        $this->call(ExamSeeder::class);
+        $this->call(AdminSeeder::class);
+        
+       // $this->call(TeachersSeeder::class);
+       // $this->call(CoursesSeeder::class);
+       // $this->call(QuestionSeeder::class);
+       // $this->call(ExamSeeder::class);
         $this->call(SpecialQdemySeeder::class);
-        $this->call(PackageSeeder::class);
+        //$this->call(PackageSeeder::class);
     }
 }

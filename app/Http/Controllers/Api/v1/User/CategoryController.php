@@ -209,37 +209,39 @@ class CategoryController extends Controller
      * Get international program
      * GET /api/categories/international-program
      */
-    public function getInternationalProgram()
+    public function getInternationalPrograms() // Note: changed method name to plural
     {
         try {
-            $program = $this->categoryRepo->getInternationalProgram();
+            $programs = $this->categoryRepo->getInternationalPrograms();
             
-            if (!$program) {
-                return $this->error_response('International program not found', null);
+            if ($programs->isEmpty()) {
+                return $this->error_response('International programs not found', null);
             }
 
-            $data = [
-                'id' => $program->id,
-                'name_ar' => $program->name_ar,
-                'name_en' => $program->name_en,
-                'description_ar' => $program->description_ar,
-                'description_en' => $program->description_en,
-                'ctg_key' => $program->ctg_key,
-                'subjects' => $this->subjectRepo->getinternationalProgramSubjects($program)->map(function ($subject) {
-                    return [
-                        'id' => $subject->id,
-                        'name_ar' => $subject->name_ar,
-                        'name_en' => $subject->name_en,
-                        'icon' => $subject->icon,
-                        'color' => $subject->color,
-                        'sort_order' => $subject->sort_order
-                    ];
-                })
-            ];
+            $data = $programs->map(function ($program) {
+                return [
+                    'id' => $program->id,
+                    'name_ar' => $program->name_ar,
+                    'name_en' => $program->name_en,
+                    'description_ar' => $program->description_ar,
+                    'description_en' => $program->description_en,
+                    'ctg_key' => $program->ctg_key,
+                    'subjects' => $this->subjectRepo->getinternationalProgramSubjects($program)->map(function ($subject) {
+                        return [
+                            'id' => $subject->id,
+                            'name_ar' => $subject->name_ar,
+                            'name_en' => $subject->name_en,
+                            'icon' => $subject->icon,
+                            'color' => $subject->color,
+                            'sort_order' => $subject->sort_order
+                        ];
+                    })
+                ];
+            });
 
-            return $this->success_response('International program retrieved successfully', $data);
+            return $this->success_response('International programs retrieved successfully', $data);
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve international program', $e->getMessage());
+            return $this->error_response('Failed to retrieve international programs', $e->getMessage());
         }
     }
 

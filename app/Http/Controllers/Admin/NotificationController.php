@@ -89,7 +89,7 @@ class NotificationController extends Controller
         ]);
 
         DB::beginTransaction();
-        try {
+      //  try {
             $recipients = $this->getRecipients($request);
             $sentCount = 0;
             $failedCount = 0;
@@ -133,10 +133,10 @@ class NotificationController extends Controller
 
             return redirect()->route('notifications.index')->with('success', $message);
 
-        } catch (\Exception $e) {
+      //  } catch (\Exception $e) {
             DB::rollback();
-            return back()->with('error', __('messages.notification_send_failed'))->withInput();
-        }
+          //  return back()->with('error', __('messages.notification_send_failed'))->withInput();
+      //  }
     }
 
     /**

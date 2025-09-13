@@ -705,15 +705,15 @@ return [
    'error_updating_status' => 'خطأ في تحديث الحالة',
    'error_updating_activate' => 'خطأ في تحديث حالة التفعيل',
    'error_bulk_update' => 'خطأ في التحديث المجمع',
-   'courses' => 'الدورات التدريبية',
-   'course' => 'دورة تدريبية',
-   'add_course' => 'إضافة دورة تدريبية',
-   'edit_course' => 'تعديل الدورة التدريبية',
-   'course_details' => 'تفاصيل الدورة التدريبية',
-   'no_courses_found' => 'لم يتم العثور على دورات تدريبية',
-   'course_created_successfully' => 'تم إنشاء الدورة التدريبية بنجاح',
-   'course_updated_successfully' => 'تم تحديث الدورة التدريبية بنجاح',
-   'course_deleted_successfully' => 'تم حذف الدورة التدريبية بنجاح',
+   'courses' => 'الدورات التعليمية',
+   'course' => 'دورة تعليمية',
+   'add_course' => 'إضافة دورة تعليمية',
+   'edit_course' => 'تعديل الدورة التعليمية',
+   'course_details' => 'تفاصيل الدورة التعليمية',
+   'no_courses_found' => 'لم يتم العثور على دورات تعليمية',
+   'course_created_successfully' => 'تم إنشاء الدورة التعليمية بنجاح',
+   'course_updated_successfully' => 'تم تحديث الدورة التعليمية بنجاح',
+   'course_deleted_successfully' => 'تم حذف الدورة التعليمية بنجاح',
 
    // Form Fields
    'title' => 'العنوان',
@@ -725,7 +725,7 @@ return [
    'selling_price' => 'سعر البيع',
    'price' => 'السعر',
    'photo' => 'الصورة',
-   'course_photo' => 'صورة الدورة التدريبية',
+   'course_photo' => 'صورة الدورة التعليمية',
    'current_photo' => 'الصورة الحالية',
    'new_photo' => 'صورة جديدة',
    'teacher' => 'المدرس',
@@ -748,7 +748,7 @@ return [
    'edit' => 'تعديل',
    'delete' => 'حذف',
    'view' => 'عرض',
-   'confirm_delete' => 'هل أنت متأكد من حذف هذه الدورة التدريبية؟',
+   'confirm_delete' => 'هل أنت متأكد من حذف هذه الدورة التعليمية؟',
 
    // Status
    'created_at' => 'تاريخ الإنشاء',
@@ -760,7 +760,7 @@ return [
    'photo_requirements' => 'الصيغ المقبولة: JPEG, PNG, JPG, GIF. الحد الأقصى للحجم: 2 ميجابايت',
 
    // Course Content
-   'course_sections' => 'أقسام الدورة التدريبية',
+   'course_sections' => 'أقسام الدورة التعليمية',
    'direct_contents' => 'المحتويات المباشرة',
    'contents' => 'المحتويات',
    'content_type' => 'نوع المحتوى',
@@ -774,7 +774,7 @@ return [
    'pdf_type' => 'نوع ملف PDF',
    'no_contents_in_section' => 'لا توجد محتويات في هذا القسم',
    'no_content_yet' => 'لم يتم إضافة محتوى بعد',
-   'add_sections_and_contents' => 'ابدأ بإضافة أقسام ومحتويات لهذه الدورة التدريبية',
+   'add_sections_and_contents' => 'ابدأ بإضافة أقسام ومحتويات لهذه الدورة التعليمية',
 
    // WhatsApp (from your example)
    'whataspp' => 'واتساب',

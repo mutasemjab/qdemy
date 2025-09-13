@@ -70,6 +70,11 @@ class Course extends Model
         return $this->hasOne(CourseUser::class)->where('user_id',$user_id);
     }
 
+
+    public function enrollments()
+    {
+        return $this->hasMany(CourseUser::class, 'course_id');
+    }
     
     // Get user progress for this course
     public function calculateCourseProgress($userId = null)

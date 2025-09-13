@@ -27,7 +27,7 @@ class ContactUsController extends Controller
             'message.required' => __('front.Message is required'),
         ]);
 
-        try {
+      //  try {
             // Create contact record
             ContactUs::create([
                 'name' => $request->name,
@@ -38,8 +38,8 @@ class ContactUsController extends Controller
 
             // Redirect back with success message
             return redirect()->back()->with('success', __('front.Your message has been sent successfully'));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', __('front.Something went wrong, please try again'))->withInput();
-        }
+       // } catch (\Exception $e) {
+          //  return redirect()->back()->with('error', __('front.Something went wrong, please try again'))->withInput();
+       // }
     }
 }

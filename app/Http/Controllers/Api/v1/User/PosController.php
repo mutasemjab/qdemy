@@ -14,9 +14,17 @@ class PosController extends Controller
 
     public function index()
     {
-        $pos = POS::get()->groupBy('country_name');
+        $pos = POS::get()
+            ->groupBy('country_name')
+            ->map(function ($items, $countryName) {
+                return [
+                    'country_name' => $countryName,
+                    'items' => $items->values()
+                ];
+            })
+            ->values();
+        
         return $this->success_response(__('pos fetched successfully'), $pos);
     }
-
     
 }
