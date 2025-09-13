@@ -107,7 +107,8 @@ class SubjectRepository
                 // });
         })
         ->get();
-
+        // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
+        // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
             $subject = Subject::find($CategorySubject->subject_id);
             $subjects->push($subject);
@@ -122,7 +123,6 @@ class SubjectRepository
     public function getTawjihiFinalGradesFieldSchoolSubjects($field)
     {
         $subjects = collect();
-        // dd(CategorySubject::where('category_id', $field->id)->get());
         $CategorySubjects = CategorySubject::where('category_id', $field->id)
             ->where('pivot_level', 'field')
             ->where('is_ministry', false)
@@ -130,8 +130,11 @@ class SubjectRepository
                 $q->where('is_active', true);
         })
         ->get();
+        // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
+        // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
-            $subject = Subject::find($CategorySubject->subject_id);
+            $subject = Subject::where('id',$CategorySubject->subject_id)->where('is_active',true)->first();
+            if(!$subject) continue;
             $subjects->push($subject);
         }
 
@@ -148,6 +151,12 @@ class SubjectRepository
         return $this->model->where('is_active', true)
             ->where( function ($q) use ($subject, $field) {
                 if($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
+            })
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'final_year');
+            })
+            ->whereHas('category_subjects', function ($q) {
+                $q->where('is_optional', false);
             })
             ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
                 $q->where('category_id', $field->id);
