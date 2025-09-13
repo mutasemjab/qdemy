@@ -19,7 +19,7 @@
                         </a>
                         @endcan
                         @can('question-delete')
-                        <form action="{{ route('questions.destroy', $question) }}" method="POST" class="d-inline" 
+                        <form action="{{ route('questions.destroy', $question) }}" method="POST" class="d-inline"
                               onsubmit="return confirm('{{ __('messages.confirm_delete_question') }}')">
                             @csrf
                             @method('DELETE')
@@ -39,12 +39,12 @@
                                 <div class="card-body">
                                     <h5 class="text-primary">{{ __('messages.question_title_en') }}</h5>
                                     <p class="h6">{{ $question->title_en }}</p>
-                                    
+
                                     <h5 class="text-primary mt-3">{{ __('messages.question_text_en') }}</h5>
                                     <div class="border p-3 bg-light rounded">
                                         {{ $question->question_en }}
                                     </div>
-                                    
+
                                     @if($question->explanation_en)
                                     <h5 class="text-primary mt-3">{{ __('messages.explanation_en') }}</h5>
                                     <div class="border p-3 bg-info text-white rounded">
@@ -54,18 +54,18 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="card border-left-success h-100">
                                 <div class="card-body">
                                     <h5 class="text-success">{{ __('messages.question_title_ar') }}</h5>
                                     <p class="h6" dir="rtl">{{ $question->title_ar }}</p>
-                                    
+
                                     <h5 class="text-success mt-3">{{ __('messages.question_text_ar') }}</h5>
                                     <div class="border p-3 bg-light rounded" dir="rtl">
                                         {{ $question->question_ar }}
                                     </div>
-                                    
+
                                     @if($question->explanation_ar)
                                     <h5 class="text-success mt-3">{{ __('messages.explanation_ar') }}</h5>
                                     <div class="border p-3 bg-info text-white rounded" dir="rtl">
@@ -85,7 +85,7 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <strong>{{ __('messages.course') }}:</strong><br>
-                                            <span class="badge bg-primary">{{ $question->course->title_en }}</span>
+                                            <span class="badge bg-primary">{{ $question->course?->title_en }}</span>
                                         </div>
                                         <div class="col-md-3">
                                             <strong>{{ __('messages.question_type') }}:</strong><br>
@@ -150,7 +150,7 @@
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        
+
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <strong>{{ __('messages.english') }}:</strong>
@@ -301,7 +301,7 @@
                         <div class="question-text mb-3">
                             <p><strong>{{ $question->question_en }}</strong></p>
                         </div>
-                        
+
                         @if($question->type === 'multiple_choice')
                             <div class="options">
                                 @foreach($question->options->sortBy('order') as $index => $option)
@@ -336,7 +336,7 @@
                                 <textarea class="form-control mt-2" rows="4" disabled placeholder="{{ __('messages.student_will_type_answer_here') }}"></textarea>
                             </div>
                         @endif
-                        
+
                         @if($question->explanation_en)
                         <div class="mt-3">
                             <div class="alert alert-info">

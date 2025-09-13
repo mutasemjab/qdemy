@@ -25,7 +25,7 @@ class ExamController extends Controller
      * التحكم في السماح بتعديل الإجابات السابقة
     */
     protected $can_edit_answers = true;
-    
+
     /**
      * التحكم في التصحيح التلقائي عند وجود أسئلة مقالية
     */
@@ -283,7 +283,7 @@ class ExamController extends Controller
         // Find or create exam answer
         DB::beginTransaction();
         try {
-            
+
             $exam_answer = ExamAnswer::updateOrCreate(
                 [
                     'exam_attempt_id' => $current_attempt->id,
@@ -352,7 +352,8 @@ class ExamController extends Controller
             $message_status = 'error';
         }
         // Redirect to next question
-        $next_page = $request->get('page', 1) + 1;
+        $page      = $request->get('page', 1) ?? 1;
+        $next_page = $page + 1;
         return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $next_page])
               ->with($error ?? '',$message_status ?? '');
     }
@@ -372,11 +373,10 @@ class ExamController extends Controller
         $answers = $attempt->answers;
 
         // Calculate total score
-        $total_score    = $answers->sum('score');
-        $total_possible = $exam->total_grade;
-        $percentage     = $total_possible > 0 ? ($total_score / $total_possible) * 100 : 0;
+        $total_score    = (int)$answers->sum('score');
+        $total_possible = (int)$exam->total_grade ? (int)$exam->total_grade : (int)$exam->questions_sum_grade;
+        $percentage     = $total_possible > 0 ? (($total_score / $total_possible) * 100) : 0;
         $is_passed      = $percentage >= $exam->passing_grade;
-
         // Update attempt
         if($exam->show_results_immediately == true){
             $attempt->update([
@@ -384,7 +384,7 @@ class ExamController extends Controller
                 'score'        => $total_score,
                 'percentage'   => round($percentage, 2),
                 'is_passed'    => $is_passed,
-                'status'       => 'completed',  
+                'status'       => 'completed',
             ]);
         }else{
             $attempt->update([

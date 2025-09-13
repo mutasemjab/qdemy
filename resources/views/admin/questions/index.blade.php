@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="card-body">
-                
+
 
                     <!-- Filters -->
                     <form method="GET" class="mb-4">
@@ -26,7 +26,7 @@
                                 <select name="course_id" class="form-control">
                                     <option value="">{{ __('messages.all_courses') }}</option>
                                     @foreach($courses as $course)
-                                        <option value="{{ $course->id }}" 
+                                        <option value="{{ $course->id }}"
                                                 {{ request('course_id') == $course->id ? 'selected' : '' }}>
                                             {{ $course->title_en }}
                                         </option>
@@ -48,8 +48,8 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <input type="text" name="search" class="form-control" 
-                                       placeholder="{{ __('messages.search_questions') }}" 
+                                <input type="text" name="search" class="form-control"
+                                       placeholder="{{ __('messages.search_questions') }}"
                                        value="{{ request('search') }}">
                             </div>
                             <div class="col-md-2">
@@ -84,7 +84,7 @@
                                             <small class="text-muted">{{ $question->title_ar }}</small>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $question->course->title_en }}</span>
+                                            <span class="badge bg-info">{{ $question->course?->title_en }}</span>
                                         </td>
                                         <td>
                                             @if($question->type === 'multiple_choice')
@@ -115,29 +115,29 @@
                                         <td>
                                             <div class="btn-group" role="group">
                                                 @can('question-table')
-                                                    <a href="{{ route('questions.show', $question) }}" 
+                                                    <a href="{{ route('questions.show', $question) }}"
                                                        class="btn btn-sm btn-info"
                                                        title="{{ __('messages.view') }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 @endcan
-                                                
+
                                                 @can('question-edit')
-                                                    <a href="{{ route('questions.edit', $question) }}" 
+                                                    <a href="{{ route('questions.edit', $question) }}"
                                                        class="btn btn-sm btn-warning"
                                                        title="{{ __('messages.edit') }}">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 @endcan
-                                                
+
                                                 @can('question-delete')
-                                                    <form action="{{ route('questions.destroy', $question) }}" 
-                                                          method="POST" 
+                                                    <form action="{{ route('questions.destroy', $question) }}"
+                                                          method="POST"
                                                           class="d-inline"
                                                           onsubmit="return confirm('{{ __('messages.confirm_delete_question') }}')">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" 
+                                                        <button type="submit"
                                                                 class="btn btn-sm btn-danger"
                                                                 title="{{ __('messages.delete') }}">
                                                             <i class="fas fa-trash"></i>

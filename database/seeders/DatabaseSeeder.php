@@ -22,9 +22,9 @@ class DatabaseSeeder extends Seeder
             $name = $table->TABLE_NAME;
             // if you don't want to truncate migrations
             DB::table($name)->truncate();
-            // if ($name == 'users' || $name == 'content_user_progress' || $name == 'teachers' || $name == 'categories' || $name == 'courses' || $name == 'questions' || $name == 'exams') {
-            //    DB::table($name)->truncate();
-            // }
+            if ($name == 'users' || $name == 'content_user_progress' || $name == 'teachers' || $name == 'categories' || $name == 'courses' || $name == 'questions' || $name == 'exams') {
+               DB::table($name)->truncate();
+            }
             // if ($name == 'categories' || $name == 'subjects' || $name == 'category_subjects' ||  $name == 'content_user_progress' ||  $name == 'course_user') {
             //    DB::table($name)->truncate();
             // }
@@ -32,15 +32,17 @@ class DatabaseSeeder extends Seeder
         DB::statement("SET foreign_key_checks=1");
 
         $this->call(PermissionSeeder::class);
-        //$this->call(UserSeeder::class);
+        $this->call(ClasSeeder::class);
+        $this->call(UserSeeder::class);
         $this->call(CategoriesSeeder::class);
         $this->call(AdminSeeder::class);
-        
-       // $this->call(TeachersSeeder::class);
-       // $this->call(CoursesSeeder::class);
-       // $this->call(QuestionSeeder::class);
-       // $this->call(ExamSeeder::class);
-        $this->call(SpecialQdemySeeder::class);
-        //$this->call(PackageSeeder::class);
+
+       $this->call(TeachersSeeder::class);
+       $this->call(CoursesSeeder::class);
+       $this->call(CoursesSeeder::class);
+       $this->call(QuestionSeeder::class);
+       $this->call(ExamSeeder::class);
+       $this->call(SpecialQdemySeeder::class);
+       $this->call(PackageSeeder::class);
     }
 }

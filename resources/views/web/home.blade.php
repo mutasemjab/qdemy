@@ -64,7 +64,7 @@
 
 <section class="features">
     <h2>{{ __('front.What Makes QDEMY Special') }}</h2>
-    
+
     <div class="features-wrapper">
         <div class="features-box">
             @foreach($specialQdemies as $special)
@@ -103,11 +103,11 @@
                 </div>
                 @php $videoIndex++; @endphp
             @endif
-            
+
             <div class="media-image">
                 <img data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
             </div>
-            
+
             @if($videoIndex < $socialMediaVideos->count())
                 <div class="media-video" data-video="{{ $socialMediaVideos[$videoIndex]->video }}">
                     <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
@@ -143,7 +143,7 @@
             @foreach($teachers as $teacher)
                 <div class="carousel-slide">
                     <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
-                
+
                 </div>
             @endforeach
         </div>

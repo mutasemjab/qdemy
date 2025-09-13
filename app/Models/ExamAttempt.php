@@ -103,19 +103,6 @@ class ExamAttempt extends Model
         }
     }
 
-    // public function attempt_actions()
-    // {
-    //     if($this->status === 'in_progress' && !$this->submitted_at){
-    //         return "<a href='" . route('exam.show', ['exam' => $this->exam->id, 'slug' => $this->exam->slug]) 
-    //         . "class='btn btn-sm btn-primary'> " . translate_lang('continue') . "</a>";
-    //     }elseif($this->exam->show_results_immediately && in_array($this->status, ['completed'])){
-    //         return "<a href='" . route('review.attempt', ['exam' => $this->exam->id, 'attempt' => $this->id]) 
-    //         . "class='btn btn-sm btn-info'> " . translate_lang('review') . "</a>";
-    //     }else{
-    //         return  "-";
-    //     }
-    // }
-
     public function getDurationAttribute()
     {
         if (!$this->started_at || !$this->submitted_at) {

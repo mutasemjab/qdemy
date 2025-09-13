@@ -21,7 +21,7 @@ trait ExamManagementTrait
     {
         // Validate the request
         $validator = $this->validateExamRequest($request, $isAdmin);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -31,10 +31,10 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $examData = $this->prepareExamData($request, $isAdmin);
-            
+
             $exam = Exam::create($examData);
 
             DB::commit();
@@ -47,7 +47,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.exam_creation_failed'),
@@ -71,7 +71,7 @@ trait ExamManagementTrait
 
         // Validate the request
         $validator = $this->validateExamRequest($request, $isAdmin, $exam->id);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -81,10 +81,10 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $examData = $this->prepareExamData($request, $isAdmin, $exam);
-            
+
             $exam->update($examData);
 
             DB::commit();
@@ -97,7 +97,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.exam_update_failed'),
@@ -113,7 +113,7 @@ trait ExamManagementTrait
     {
         // Validate the request
         $validator = $this->validateQuestionRequest($request, $isAdmin);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -123,10 +123,10 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $questionData = $this->prepareQuestionData($request, $isAdmin);
-            
+
             $question = Question::create($questionData);
 
             // Handle options based on question type
@@ -146,7 +146,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_creation_failed'),
@@ -170,7 +170,7 @@ trait ExamManagementTrait
 
         // Validate the request
         $validator = $this->validateQuestionRequest($request, $isAdmin, $question->id);
-        
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -180,10 +180,10 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $questionData = $this->prepareQuestionData($request, $isAdmin, $question);
-            
+
             $question->update($questionData);
 
             // Delete existing options and create new ones
@@ -206,7 +206,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_update_failed'),
@@ -236,7 +236,7 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             // Delete exam (cascade will handle related records)
             $exam->delete();
@@ -250,7 +250,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.exam_deletion_failed'),
@@ -280,7 +280,7 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             // Delete question (cascade will handle options)
             $question->delete();
@@ -294,7 +294,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_deletion_failed'),
@@ -310,7 +310,7 @@ trait ExamManagementTrait
     {
         // Debug: Log the incoming request data
         \Log::info('Exam validation request data:', $request->all());
-        
+
         $rules = [
             'title_en' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
@@ -331,7 +331,7 @@ trait ExamManagementTrait
         ];
 
         $validator = Validator::make($request->all(), $rules);
-        
+
         // Debug: Log validation errors if any
         if ($validator->fails()) {
             \Log::error('Exam validation failed:', [
@@ -339,7 +339,7 @@ trait ExamManagementTrait
                 'failed_rules' => $validator->failed()
             ]);
         }
-        
+
         return $validator;
     }
 
@@ -435,7 +435,7 @@ trait ExamManagementTrait
 
         foreach ($options as $index => $optionData) {
             $isCorrect = isset($optionData['is_correct']) && $optionData['is_correct'];
-            
+
             if ($isCorrect) {
                 $hasCorrectAnswer = true;
             }
@@ -496,7 +496,7 @@ trait ExamManagementTrait
                 return $exam->created_by === $user->id;
             }
         }
-        
+
         return false;
     }
 
@@ -517,7 +517,7 @@ trait ExamManagementTrait
                 return $question->created_by === $user->id;
             }
         }
-        
+
         return false;
     }
 
@@ -537,7 +537,7 @@ trait ExamManagementTrait
 
         // Handle both JSON and form data formats
         $questionsData = [];
-        
+
         if ($request->has('questions') && is_string($request->questions)) {
             // JSON format from AJAX
             $questionsData = json_decode($request->questions, true);
@@ -595,7 +595,7 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $maxOrder = $exam->questions()->max('exam_questions.order') ?? 0;
             $addedCount = 0;
@@ -645,7 +645,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.questions_addition_failed'),
@@ -668,7 +668,7 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $exam->questions()->detach($question->id);
 
@@ -686,7 +686,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_removal_failed'),
@@ -724,7 +724,7 @@ trait ExamManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             foreach ($request->questions as $questionData) {
                 $exam->questions()->updateExistingPivot($questionData['id'], [
@@ -749,7 +749,7 @@ trait ExamManagementTrait
 
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('messages.questions_update_failed'),
