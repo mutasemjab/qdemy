@@ -25,12 +25,14 @@
             <button class="ud-item" data-target="inbox"><i
                     class="fa-regular fa-comments"></i><span>{{ __('panel.messages') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
-            <button class="ud-item" data-target="courses"><i
+
+            <a href="{{route('teacher.courses.index')}}"><button class="ud-item" data-target="courses"><i
                     class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
-            <button class="ud-item" data-target="results"><i
-                    class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fa-solid fa-angle-left"></i></button></a>
+
+             <a href="{{route('teacher.exams.index')}}"> <button class="ud-item" data-target="results"><i
+                    class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.exams') }}</span><i
+                    class="fa-solid fa-angle-left"></i></button></a>
     
             <button class="ud-item" data-target="community"><i
                     class="fa-solid fa-magnifying-glass"></i><span>{{ __('panel.q_community') }}</span><i
