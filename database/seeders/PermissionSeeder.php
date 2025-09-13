@@ -15,6 +15,11 @@ class PermissionSeeder extends Seeder
     public function run()
     {
 
+        if (Permission::count() != 0) {
+            $this->command->error('there is permissions found.');
+            return;
+        }
+
         $permissions_admin = [
 
             'role-table',
@@ -31,12 +36,12 @@ class PermissionSeeder extends Seeder
             'user-add',
             'user-edit',
             'user-delete',
-            
+
             'banner-table',
             'banner-add',
             'banner-edit',
             'banner-delete',
-       
+
             'onboarding-table',
             'onboarding-add',
             'onboarding-edit',
@@ -66,7 +71,7 @@ class PermissionSeeder extends Seeder
             'parent-add',
             'parent-edit',
             'parent-delete',
-           
+
             'questionWebsite-table',
             'questionWebsite-add',
             'questionWebsite-edit',
@@ -91,38 +96,38 @@ class PermissionSeeder extends Seeder
             'question-add',
             'question-edit',
             'question-delete',
-          
+
             'exam-table',
             'exam-add',
             'exam-edit',
             'exam-delete',
-          
+
             'community-table',
             'community-add',
             'community-edit',
             'community-delete',
-       
+
             'blog-table',
             'blog-add',
             'blog-edit',
             'blog-delete',
-           
+
             'bank-question-table',
             'bank-question-add',
             'bank-question-edit',
             'bank-question-delete',
-          
-          
+
+
             'ministerial-question-table',
             'ministerial-question-add',
             'ministerial-question-edit',
             'ministerial-question-delete',
-         
+
             'package-table',
             'package-add',
             'package-edit',
             'package-delete',
-          
+
             'wallet-transaction-table',
             'wallet-transaction-add',
             'wallet-transaction-edit',

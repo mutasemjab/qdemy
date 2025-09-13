@@ -1,24 +1,20 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace Database\Seeders;
 
-return new class extends Migration
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\Clas;
+
+class ClasSeeder extends Seeder
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
+    public function run()
     {
-        Schema::create('clas', function (Blueprint $table) {
-            $table->id();
-            $table->string('name_ar');
-            $table->string('name_en');
-            $table->timestamps();
-        });
+        // Ensure there are classes available
+        if (Clas::count() != 0) {
+            $this->command->error('there is classes found.');
+            return;
+        }
         DB::table('clas')->insert([
             ['name_ar' => 'الصف الأول', 'name_en' => 'First Grade', 'created_at' => now(), 'updated_at' => now()],
             ['name_ar' => 'الصف الثاني', 'name_en' => 'Second Grade', 'created_at' => now(), 'updated_at' => now()],
@@ -34,17 +30,7 @@ return new class extends Migration
             ['name_ar' => 'الصف الثاني عشر (التوجيهي)', 'name_en' => 'Twelfth Grade (Tawjihi)', 'created_at' => now(), 'updated_at' => now()],
             ['name_ar' => 'جامعة', 'name_en' => 'University', 'created_at' => now(), 'updated_at' => now()],
         ]);
-
-
+        $this->command->info('Successfully seeded 30 users with connected data!');
     }
 
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists('clas');
-    }
-};
+}

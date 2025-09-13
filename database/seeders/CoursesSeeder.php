@@ -144,7 +144,7 @@ class CoursesSeeder extends Seeder
             'description_ar' => "معسكر شامل يغطي كل ما تحتاجه لتصبح مطور ويب محترف. تعلم HTML وCSS وJavaScript، وتطوير الباك اند، وقواعد البيانات، وإدارة الإصدارات، وطبق كل ذلك في مشاريع عملية واقعية خطوة بخطوة. مناسب للمبتدئين والمتوسطين.",
             'selling_price' => 499,
             'photo' => 'course-image.jpg',
-            'teacher_id' => $teacher->id,
+            'teacher_id' => $teacher?->id,
             'subject_id' => $Subject->id,
         ]);
 

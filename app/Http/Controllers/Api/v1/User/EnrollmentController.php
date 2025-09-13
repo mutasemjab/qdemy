@@ -59,7 +59,7 @@ class EnrollmentController extends Controller
         }
 
         $result = CartRepository()->put($request->course_id);
-        
+
         if ($result && isset($result->original) && $result->original['success']) {
             return $this->success_response($result->original['message'], $result->original);
         }
@@ -132,10 +132,10 @@ class EnrollmentController extends Controller
 
         try {
             $result = CartRepository()->removeItem($request->course_id);
-            
+
             // Get updated cart data
             $cartData = CartRepository()->getCartCoursesWithStatus();
-            
+
             if ($result && isset($result->original) && $result->original['success']) {
                 return $this->success_response($result->original['message'], [
                     'success' => true,
@@ -150,7 +150,7 @@ class EnrollmentController extends Controller
             }
 
             return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة', null);
-            
+
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة: ' . $e->getMessage(), null);
         }
@@ -168,13 +168,13 @@ class EnrollmentController extends Controller
 
         try {
             CartRepository()->clearCart();
-            
+
             return $this->success_response('تم مسح السلة بنجاح', [
                 'success' => true,
                 'message' => 'تم مسح السلة بنجاح',
                 'courses_count' => 0
             ]);
-            
+
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء مسح السلة: ' . $e->getMessage(), null);
         }
@@ -193,7 +193,7 @@ class EnrollmentController extends Controller
         try {
             $sessionKey = 'cart_' . $user->id;
             $packageSessionKey = 'package_cart_' . $user->id;
-            
+
             $debugData = [
                 'user_id' => $user->id,
                 'session_id' => session()->getId(),
@@ -207,7 +207,7 @@ class EnrollmentController extends Controller
             ];
 
             return $this->success_response('بيانات تشخيص السلة', $debugData);
-            
+
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء تشخيص السلة: ' . $e->getMessage(), null);
         }
@@ -225,7 +225,7 @@ class EnrollmentController extends Controller
 
         try {
             $cartData = CartRepository()->getCartCoursesWithStatus();
-            
+
             $summary = [
                 'courses_count' => $cartData['courses']->count(),
                 'total_amount' => $cartData['courses']->sum('selling_price'),
@@ -237,7 +237,7 @@ class EnrollmentController extends Controller
             ];
 
             return $this->success_response('ملخص السلة', $summary);
-            
+
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء جلب ملخص السلة: ' . $e->getMessage(), null);
         }
@@ -254,7 +254,7 @@ class EnrollmentController extends Controller
         }
 
         $result = CartRepository()->removeAnyPackageFromCart();
-        
+
         if ($result && isset($result->original) && $result->original['success']) {
             return $this->success_response($result->original['message'], $result->original);
         }
@@ -277,7 +277,7 @@ class EnrollmentController extends Controller
         }
 
         $result = CartRepository()->removeCourseFromPackage($request->package_id, $request->course_id);
-        
+
         if ($result && isset($result->original) && $result->original['success']) {
             return $this->success_response($result->original['message'], $result->original);
         }
@@ -618,7 +618,7 @@ class EnrollmentController extends Controller
     {
         try {
             $user = $request->user(); // authenticated user from token
-            
+
             if (!$user) {
                 return $this->error_response('User not authenticated', null);
             }
@@ -659,7 +659,7 @@ class EnrollmentController extends Controller
             $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
                 // Calculate progress for each course
                 $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
-                
+
                 // Get enrollment date
                 $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
 
@@ -740,5 +740,5 @@ class EnrollmentController extends Controller
             return $this->error_response('Failed to retrieve enrolled courses: ' . $e->getMessage(), null);
         }
     }
-    
+
 }

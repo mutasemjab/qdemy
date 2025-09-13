@@ -22,4 +22,7 @@ yarn-error.log
 json/byanki-befdf7627767.json
 json/byanki-befdf7627767.json
 json/byanki-befdf7627767.json
-
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*

@@ -70,6 +70,14 @@ class Exam extends Model
     }
 
     /**
+     * Get the total questions correct options grade.
+     */
+    public function getQuestionsSumGradeAttribute()
+    {
+        return $this->questions->sum('grade');
+    }
+
+    /**
      * Get exam attempts.
      */
     public function attempts()
