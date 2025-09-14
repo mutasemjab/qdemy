@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\CourseSection;
+use App\Models\CourseUser;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
@@ -24,6 +25,7 @@ class TeacherController extends Controller
 {
     use HasNotifications, HasCommunity, CourseManagementTrait, SubjectCategoryTrait,ExamManagementTrait;
 
+
     public function dashboard()
     {
         $user = Auth::user();
@@ -32,17 +34,52 @@ class TeacherController extends Controller
         // Get teacher's courses count
         $coursesCount = Course::where('teacher_id', $user->id)->count();
         
-        // Get recent courses
+        // Get recent courses with student count
         $recentCourses = Course::where('teacher_id', $user->id)
             ->with(['subject:id,name_ar,name_en'])
+            ->withCount('students') // Add student count
             ->latest()
+            ->take(5)
+            ->get();
+
+        // Get total enrolled students across all teacher's courses
+        $totalStudents = Course::where('teacher_id', $user->id)
+            ->withCount('students')
+            ->get()
+            ->sum('students_count');
+
+        // Get recent enrollments (last 10)
+        $recentEnrollments = CourseUser::whereIn('course_id', function($query) use ($user) {
+                $query->select('id')
+                    ->from('courses')
+                    ->where('teacher_id', $user->id);
+            })
+            ->with(['course:id,title_ar,title_en', 'user:id,name,email,photo'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Get courses with their enrolled students for detailed view
+        $coursesWithStudents = Course::where('teacher_id', $user->id)
+            ->with(['subject:id,name_ar,name_en', 'students:id,name,email,photo,created_at'])
+            ->withCount('students')
+            ->orderBy('students_count', 'desc')
             ->take(5)
             ->get();
 
         // Get community posts for the dashboard
         $posts = $this->getCommunityPosts(20);
 
-        return view('panel.teacher.dashboard', compact('user', 'notifications', 'posts', 'coursesCount', 'recentCourses'));
+        return view('panel.teacher.dashboard', compact(
+            'user', 
+            'notifications', 
+            'posts', 
+            'coursesCount', 
+            'recentCourses',
+            'totalStudents',
+            'recentEnrollments',
+            'coursesWithStudents'
+        ));
     }
 
     /**
@@ -404,7 +441,7 @@ class TeacherController extends Controller
         }
     }
     
-       public function markAsRead($id)
+    public function markAsRead($id)
     {
         return $this->markNotificationAsRead($id);
     }

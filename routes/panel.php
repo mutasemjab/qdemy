@@ -36,23 +36,36 @@ Route::group([
     
     // Parent Panel Routes
     Route::group([
-        'prefix' => 'parent',
-        'middleware' => 'role:parent',
-        'as' => 'parent.'
+    'prefix' => 'parent',
+    'middleware' => 'role:parent',
+    'as' => 'parent.'
     ], function () {
         Route::get('/dashboard', [App\Http\Controllers\Panel\Parent\ParentController::class, 'dashboard'])->name('dashboard');
         Route::get('/profile', [App\Http\Controllers\Panel\Parent\ParentController::class, 'profile'])->name('profile');
-        Route::get('/children', [App\Http\Controllers\Panel\Parent\ParentController::class, 'children'])->name('children');
-        Route::get('/child-reports', [App\Http\Controllers\Panel\Parent\ParentController::class, 'childReports'])->name('child-reports');
-        Route::get('/payment-history', [App\Http\Controllers\Panel\Parent\ParentController::class, 'paymentHistory'])->name('payment-history');
-        Route::get('/add-child', [App\Http\Controllers\Panel\Parent\ParentController::class, 'addChild'])->name('add-child');
         
+        // Children management routes
+        Route::get('/children', [App\Http\Controllers\Panel\Parent\ParentController::class, 'children'])->name('children');
+        Route::get('/children/{childId}', [App\Http\Controllers\Panel\Parent\ParentController::class, 'childDetail'])->name('children.detail');
+        Route::get('/children/{childId}/courses', [App\Http\Controllers\Panel\Parent\ParentController::class, 'childCourses'])->name('children.courses');
+        Route::get('/children/{childId}/exams', [App\Http\Controllers\Panel\Parent\ParentController::class, 'childExams'])->name('children.exams');
+        
+        Route::get('/child-reports', [App\Http\Controllers\Panel\Parent\ParentController::class, 'childReports'])->name('child-reports');
+        Route::get('/add-child', [App\Http\Controllers\Panel\Parent\ParentController::class, 'addChild'])->name('add-child');
+        Route::post('/update-account', [App\Http\Controllers\Panel\Parent\ParentController::class, 'updateAccount'])->name('update.account');
+        Route::post('/notifications/{id}/read', [App\Http\Controllers\Panel\Parent\ParentController::class, 'markAsRead'])->name('notifications.read');
+
         // AJAX routes for child management
         Route::post('/add-child-submit', [App\Http\Controllers\Panel\Parent\ParentController::class, 'addChildSubmit'])->name('add-child-submit');
         Route::delete('/remove-child', [App\Http\Controllers\Panel\Parent\ParentController::class, 'removeChild'])->name('remove-child');
         Route::get('/search-students', [App\Http\Controllers\Panel\Parent\ParentController::class, 'searchStudents'])->name('search-students');
     });
     
+
+
+
+
+
+
     // Teacher Panel Routes
     Route::group([
         'prefix' => 'teacher',
@@ -147,6 +160,6 @@ Route::group([
     
     // General panel route that redirects based on role
     Route::get('/', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('panel.index');
-
+    Route::get('/logout', [App\Http\Controllers\Panel\PanelController::class, 'logout'])->name('user.logout');
  
 });

@@ -24,11 +24,6 @@
             content: " *";
             color: #dc3545;
         }
-        
-        .question-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
     </style>
 @endsection
 
@@ -148,12 +143,14 @@
                         <select name="section_id" id="section_id"
                             class="form-select @error('section_id') is-invalid @enderror">
                             <option value="">{{ __('panel.select_section') }}</option>
-                            @foreach ($sections as $section)
-                                <option value="{{ $section->id }}"
-                                    {{ old('section_id', $exam->section_id) == $section->id ? 'selected' : '' }}>
-                                    {{ $section->title }}
-                                </option>
-                            @endforeach
+                            @if(isset($sections))
+                                @foreach ($sections as $section)
+                                    <option value="{{ $section->id }}"
+                                        {{ old('section_id', $exam->section_id) == $section->id ? 'selected' : '' }}>
+                                        {{ $section->title }}
+                                    </option>
+                                @endforeach
+                            @endif
                         </select>
                         @error('section_id')
                             <div class="invalid-feedback">{{ $message }}</div>
@@ -206,7 +203,7 @@
                         <label class="form-label">{{ __('panel.start_date') }}</label>
                         <input type="datetime-local" name="start_date"
                             class="form-control @error('start_date') is-invalid @enderror"
-                            value="{{ old('start_date', $exam->start_date ? $exam->start_date->format('Y-m-d\TH:i') : '') }}">
+                            value="{{ old('start_date', $exam->start_date ? \Carbon\Carbon::parse($exam->start_date)->format('Y-m-d\TH:i') : '') }}">
                         @error('start_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -218,7 +215,7 @@
                         <label class="form-label">{{ __('panel.end_date') }}</label>
                         <input type="datetime-local" name="end_date"
                             class="form-control @error('end_date') is-invalid @enderror" 
-                            value="{{ old('end_date', $exam->end_date ? $exam->end_date->format('Y-m-d\TH:i') : '') }}">
+                            value="{{ old('end_date', $exam->end_date ? \Carbon\Carbon::parse($exam->end_date)->format('Y-m-d\TH:i') : '') }}">
                         @error('end_date')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
@@ -234,11 +231,11 @@
                     <div class="col-md-3 mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" 
-                                type="checkbox" 
-                                name="shuffle_questions"
-                                id="shuffle_questions" 
-                                value="1"
-                                {{ old('shuffle_questions', $exam->shuffle_questions) ? 'checked' : '' }}>
+                                   type="checkbox" 
+                                   name="shuffle_questions"
+                                   id="shuffle_questions" 
+                                   value="1"
+                                   {{ old('shuffle_questions', $exam->shuffle_questions) ? 'checked' : '' }}>
                             <label class="form-check-label" for="shuffle_questions">
                                 <strong>{{ __('panel.shuffle_questions') }}</strong><br>
                                 <small class="text-muted">{{ __('panel.shuffle_questions_desc') }}</small>
@@ -249,11 +246,11 @@
                     <div class="col-md-3 mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" 
-                                type="checkbox" 
-                                name="shuffle_options" 
-                                id="shuffle_options"
-                                value="1"
-                                {{ old('shuffle_options', $exam->shuffle_options) ? 'checked' : '' }}>
+                                   type="checkbox" 
+                                   name="shuffle_options" 
+                                   id="shuffle_options"
+                                   value="1"
+                                   {{ old('shuffle_options', $exam->shuffle_options) ? 'checked' : '' }}>
                             <label class="form-check-label" for="shuffle_options">
                                 <strong>{{ __('panel.shuffle_options') }}</strong><br>
                                 <small class="text-muted">{{ __('panel.shuffle_options_desc') }}</small>
@@ -264,11 +261,11 @@
                     <div class="col-md-3 mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" 
-                                type="checkbox" 
-                                name="show_results_immediately"
-                                id="show_results_immediately" 
-                                value="1"
-                                {{ old('show_results_immediately', $exam->show_results_immediately) ? 'checked' : '' }}>
+                                   type="checkbox" 
+                                   name="show_results_immediately"
+                                   id="show_results_immediately" 
+                                   value="1"
+                                   {{ old('show_results_immediately', $exam->show_results_immediately) ? 'checked' : '' }}>
                             <label class="form-check-label" for="show_results_immediately">
                                 <strong>{{ __('panel.show_results_immediately') }}</strong><br>
                                 <small class="text-muted">{{ __('panel.show_results_immediately_desc') }}</small>
@@ -279,59 +276,17 @@
                     <div class="col-md-3 mb-3">
                         <div class="form-check form-switch">
                             <input class="form-check-input" 
-                                type="checkbox" 
-                                name="is_active" 
-                                id="is_active"
-                                value="1"
-                                {{ old('is_active', $exam->is_active) ? 'checked' : '' }}>
+                                   type="checkbox" 
+                                   name="is_active" 
+                                   id="is_active"
+                                   value="1"
+                                   {{ old('is_active', $exam->is_active) ? 'checked' : '' }}>
                             <label class="form-check-label" for="is_active">
                                 <strong>{{ __('panel.active') }}</strong><br>
                                 <small class="text-muted">{{ __('panel.exam_active_desc') }}</small>
                             </label>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Questions Section -->
-            <div class="form-section">
-                <h5><i class="fas fa-question-circle me-2"></i>{{ __('panel.exam_questions') }}</h5>
-                
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle me-2"></i>
-                    {{ __('panel.exam_questions_note') }}
-                </div>
-                
-                @if($exam->questions->count() > 0)
-                <div class="question-list mt-3">
-                    <h6>{{ __('panel.assigned_questions') }} ({{ $exam->questions->count() }})</h6>
-                    
-                    <div class="list-group">
-                        @foreach($exam->questions as $question)
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="badge bg-primary me-2">#{{ $loop->iteration }}</span>
-                                {{ Str::limit(app()->getLocale() === 'ar' ? $question->text_ar : $question->text_en, 100) }}
-                            </div>
-                            <div>
-                                <span class="badge bg-secondary me-2">{{ $question->type }}</span>
-                                <span class="badge bg-info">{{ $question->points }} pts</span>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @else
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    {{ __('panel.no_questions_assigned') }}
-                </div>
-                @endif
-                
-                <div class="mt-3">
-                    <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="btn btn-outline-primary">
-                        <i class="fas fa-cog me-2"></i>{{ __('panel.manage_questions') }}
-                    </a>
                 </div>
             </div>
 
@@ -350,6 +305,7 @@
 
 @push('scripts')
 <script>
+// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Check if jQuery is loaded, if not, use vanilla JavaScript
     if (typeof $ !== 'undefined') {
@@ -361,6 +317,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function initializeWithJQuery() {
     $(document).ready(function() {
+        // Initialize the form with current values
+        initializeFormState();
+
         // Handle subject change to filter courses
         $('#subject_id').on('change', function() {
             const subjectId = $(this).val();
@@ -382,13 +341,9 @@ function initializeWithJQuery() {
                         courseSelect.html('<option value="">{{ __('panel.select_course') }}</option>');
                         courses.forEach(course => {
                             const title = '{{ app()->getLocale() }}' === 'ar' ? course.title_ar : course.title_en;
-                            courseSelect.append(`<option value="${course.id}">${title}</option>`);
+                            const selected = course.id == '{{ old('course_id', $exam->course_id ?? '') }}' ? 'selected' : '';
+                            courseSelect.append(`<option value="${course.id}" ${selected}>${title}</option>`);
                         });
-                        
-                        // Select the previously selected course if it exists
-                        @if(old('course_id', $exam->course_id))
-                            courseSelect.val('{{ old('course_id', $exam->course_id) }}').trigger('change');
-                        @endif
                     })
                     .fail(function() {
                         console.warn('AJAX course loading failed, using static options');
@@ -410,13 +365,9 @@ function initializeWithJQuery() {
                 $.get(sectionsUrl)
                     .done(function(sections) {
                         sections.forEach(section => {
-                            sectionSelect.append(`<option value="${section.id}">${section.title}</option>`);
+                            const selected = section.id == '{{ old('section_id', $exam->section_id ?? '') }}' ? 'selected' : '';
+                            sectionSelect.append(`<option value="${section.id}" ${selected}>${section.title}</option>`);
                         });
-                        
-                        // Select the previously selected section if it exists
-                        @if(old('section_id', $exam->section_id))
-                            sectionSelect.val('{{ old('section_id', $exam->section_id) }}');
-                        @endif
                     })
                     .fail(function() {
                         console.warn('AJAX section loading failed');
@@ -484,15 +435,26 @@ function initializeWithJQuery() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
-        
-        // Trigger subject change on page load to filter courses
-        @if(old('subject_id', $exam->subject_id))
-            $('#subject_id').val('{{ old('subject_id', $exam->subject_id) }}').trigger('change');
-        @endif
+
+        // Trigger subject change to initialize course filtering
+        $('#subject_id').trigger('change');
     });
+
+    function initializeFormState() {
+        // Filter courses based on the currently selected subject
+        const selectedSubjectId = $('#subject_id').val();
+        if (selectedSubjectId) {
+            const courseSelect = $('#course_id');
+            courseSelect.find('option:not(:first)').hide();
+            courseSelect.find(`option[data-subject="${selectedSubjectId}"]`).show();
+        }
+    }
 }
 
 function initializeWithVanillaJS() {
+    // Initialize the form with current values
+    initializeFormStateVanilla();
+
     // Subject change handler
     const subjectSelect = document.getElementById('subject_id');
     if (subjectSelect) {
@@ -519,12 +481,9 @@ function initializeWithVanillaJS() {
                 });
             }
         });
-        
-        // Set initial subject value if exists
-        @if(old('subject_id', $exam->subject_id))
-            subjectSelect.value = '{{ old('subject_id', $exam->subject_id) }}';
-            subjectSelect.dispatchEvent(new Event('change'));
-        @endif
+
+        // Trigger change to initialize
+        subjectSelect.dispatchEvent(new Event('change'));
     }
 
     // Course change handler
@@ -544,25 +503,18 @@ function initializeWithVanillaJS() {
                             const option = document.createElement('option');
                             option.value = section.id;
                             option.textContent = section.title;
+                            // Check if this section should be selected
+                            if (section.id == '{{ old('section_id', $exam->section_id ?? '') }}') {
+                                option.selected = true;
+                            }
                             sectionSelect.appendChild(option);
                         });
-                        
-                        // Select the previously selected section if it exists
-                        @if(old('section_id', $exam->section_id))
-                            sectionSelect.value = '{{ old('section_id', $exam->section_id) }}';
-                        @endif
                     })
                     .catch(error => {
                         console.warn('Failed to load sections:', error);
                     });
             }
         });
-        
-        // Set initial course value if exists
-        @if(old('course_id', $exam->course_id))
-            courseSelect.value = '{{ old('course_id', $exam->course_id) }}';
-            courseSelect.dispatchEvent(new Event('change'));
-        @endif
     }
 
     // Form validation
@@ -624,11 +576,25 @@ function initializeWithVanillaJS() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
         });
-        
-        // Initialize height on page load
-        this.style.height = 'auto';
-        this.style.height = (this.scrollHeight) + 'px';
     });
+
+    function initializeFormStateVanilla() {
+        // Filter courses based on the currently selected subject
+        const subjectSelect = document.getElementById('subject_id');
+        const courseSelect = document.getElementById('course_id');
+        
+        if (subjectSelect && courseSelect) {
+            const selectedSubjectId = subjectSelect.value;
+            if (selectedSubjectId) {
+                const courseOptions = courseSelect.querySelectorAll('option[data-subject]');
+                courseOptions.forEach(option => {
+                    if (option.getAttribute('data-subject') !== selectedSubjectId) {
+                        option.style.display = 'none';
+                    }
+                });
+            }
+        }
+    }
 }
 </script>
 @endpush

@@ -66,4 +66,5 @@ class ParentStudent extends Model
                   ->with('parent.user')
                   ->get();
     }
+
 }
