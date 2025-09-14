@@ -31,9 +31,7 @@
             <button class="ud-item" data-target="child-reports"><i
                     class="fa-solid fa-chart-line"></i><span>{{ __('panel.children_reports') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
-            <button class="ud-item" data-target="payment-history"><i
-                    class="fa-solid fa-credit-card"></i><span>{{ __('panel.payment_history') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+     
             <button class="ud-item" data-target="add-child"><i
                     class="fa-solid fa-user-plus"></i><span>{{ __('panel.add_child') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
