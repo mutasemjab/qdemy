@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\CardNumber;
 use App\Models\CardUsage;
+use App\Models\ContentUserProgress;
+use App\Models\CourseContent;
 use App\Models\CoursePayment;
 use App\Models\CoursePaymentDetail;
 use App\Traits\Responses;
@@ -658,8 +660,7 @@ class EnrollmentController extends Controller
 
             $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
                 // Calculate progress for each course
-                $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
-
+                $calculateCourseProgress = $this->getCourseProgressData($user->id, $course->id);
                 // Get enrollment date
                 $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
 
@@ -739,6 +740,34 @@ class EnrollmentController extends Controller
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve enrolled courses: ' . $e->getMessage(), null);
         }
+    }
+
+
+    private function getCourseProgressData($userId, $courseId)
+    {
+        $course = Course::find($courseId);
+        $progressPercentage = $course->calculateCourseProgress($userId);
+        
+        // Get the detailed data that your controller expects
+        $totalVideos = CourseContent::where('course_id', $courseId)
+            ->where('content_type', 'video')
+            ->count();
+        
+        $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
+            ->where('content_user_progress.user_id', $userId)
+            ->where('course_contents.course_id', $courseId)
+            ->where('course_contents.content_type', 'video')
+            ->where('content_user_progress.completed', true)
+            ->count();
+        
+        $watchingVideos = 0; // or implement your logic
+        
+        return [
+            'course_progress' => $progressPercentage,
+            'completed_videos' => $completedVideos,
+            'watching_videos' => $watchingVideos,
+            'total_videos' => $totalVideos
+        ];
     }
 
 }
