@@ -15,20 +15,132 @@ use App\Models\POS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+
 class CardNumberController extends Controller
 {
-     public function toggleStatus(CardNumber $cardNumber)
+    /**
+     * Show form to assign card number to user
+     */
+    public function showAssignForm(CardNumber $cardNumber)
+    {
+        // Only allow assignment if card is available
+        if (!$cardNumber->isAvailable()) {
+            return redirect()->back()->with('error', __('messages.card_number_not_available'));
+        }
+
+        $users = User::orderBy('name')->get();
+        return view('admin.card-numbers.assign', compact('cardNumber', 'users'));
+    }
+
+    /**
+     * Assign card number to a user
+     */
+    public function assignToUser(Request $request, CardNumber $cardNumber)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        try {
+            if (!$cardNumber->isAvailable()) {
+                return redirect()->back()->with('error', __('messages.card_number_not_available'));
+            }
+
+            $cardNumber->assignToUser($request->user_id);
+            $user = User::find($request->user_id);
+
+            return redirect()->back()->with('success', 
+                __('messages.card_number_assigned_successfully', [
+                    'number' => $cardNumber->number,
+                    'user' => $user->name
+                ])
+            );
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('messages.error_assigning_card') . ': ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Mark card number as used
+     */
+    public function markAsUsed(CardNumber $cardNumber, Request $request)
     {
         try {
-            $newStatus = $cardNumber->status == CardNumber::STATUS_USED 
-                ? CardNumber::STATUS_NOT_USED 
-                : CardNumber::STATUS_USED;
+            $userId = $request->user_id ?? $cardNumber->assigned_user_id;
             
-            $cardNumber->update(['status' => $newStatus]);
-            
-            $message = $newStatus == CardNumber::STATUS_USED 
-                ? __('messages.card_number_marked_used')
-                : __('messages.card_number_marked_unused');
+            if (!$userId) {
+                return redirect()->back()->with('error', __('messages.user_required_for_usage'));
+            }
+
+            $cardNumber->markAsUsed($userId);
+
+            return redirect()->back()->with('success', __('messages.card_number_marked_used_successfully'));
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('messages.error_marking_used') . ': ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove user assignment (make card available again)
+     */
+    public function removeAssignment(CardNumber $cardNumber)
+    {
+        try {
+            // Only allow if card is assigned but not used
+            if (!$cardNumber->isAssignedButNotUsed()) {
+                return redirect()->back()->with('error', __('messages.cannot_remove_assignment'));
+            }
+
+            $cardNumber->update(['assigned_user_id' => null]);
+
+            return redirect()->back()->with('success', __('messages.assignment_removed_successfully'));
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('messages.error_removing_assignment') . ': ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Search for users (AJAX endpoint)
+     */
+    public function searchUsers(Request $request)
+    {
+        $query = $request->get('q');
+        
+        $users = User::where('role_name','student')->where('name', 'LIKE', "%{$query}%")
+                    ->orWhere('email', 'LIKE', "%{$query}%")
+                    ->orWhere('phone', 'LIKE', "%{$query}%")
+                    ->limit(10)
+                    ->get(['id', 'name', 'email', 'phone']);
+
+        return response()->json($users);
+    }
+
+    /**
+     * Toggle the status of a card number (used/not used)
+     */
+    public function toggleStatus(CardNumber $cardNumber)
+    {
+        try {
+            // If marking as used, ensure user is assigned
+            if ($cardNumber->status == CardNumber::STATUS_NOT_USED) {
+                if (!$cardNumber->assigned_user_id) {
+                    return redirect()->back()->with('error', __('messages.assign_user_before_marking_used'));
+                }
+                
+                // Mark as used and create usage record
+                $cardNumber->markAsUsed();
+                $message = __('messages.card_number_marked_used');
+            } else {
+                // Mark as not used and remove usage records
+                DB::transaction(function () use ($cardNumber) {
+                    $cardNumber->update(['status' => CardNumber::STATUS_NOT_USED]);
+                    $cardNumber->cardUsages()->delete();
+                });
+                $message = __('messages.card_number_marked_unused');
+            }
             
             return redirect()->back()->with('success', $message);
             
@@ -57,6 +169,37 @@ class CardNumberController extends Controller
             
         } catch (\Exception $e) {
             return redirect()->back()->with('error', __('messages.error_updating_activate') . ': ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk assign multiple card numbers to users
+     */
+    public function bulkAssign(Request $request)
+    {
+        $request->validate([
+            'card_numbers' => 'required|array',
+            'card_numbers.*' => 'exists:card_numbers,id',
+            'assignments' => 'required|array',
+            'assignments.*' => 'exists:users,id'
+        ]);
+
+        try {
+            DB::transaction(function () use ($request) {
+                foreach ($request->card_numbers as $index => $cardNumberId) {
+                    $cardNumber = CardNumber::find($cardNumberId);
+                    $userId = $request->assignments[$index];
+                    
+                    if ($cardNumber && $cardNumber->isAvailable() && $userId) {
+                        $cardNumber->assignToUser($userId);
+                    }
+                }
+            });
+
+            return redirect()->back()->with('success', __('messages.bulk_assignment_successful'));
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('messages.error_bulk_assignment') . ': ' . $e->getMessage());
         }
     }
 }

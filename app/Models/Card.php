@@ -90,4 +90,60 @@ class Card extends Model
         
         return implode('', $groups);
     }
+
+     public function cardUsages()
+    {
+        return $this->hasManyThrough(CardUsage::class, CardNumber::class);
+    }
+
+    // Accessor for available card numbers count
+    public function getAvailableCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->whereNull('assigned_user_id')
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->where('activate', CardNumber::ACTIVATE_ACTIVE)
+                   ->count();
+    }
+
+    // Accessor for assigned but not used card numbers count
+    public function getAssignedNotUsedCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->whereNotNull('assigned_user_id')
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->count();
+    }
+
+    // Accessor for used card numbers count
+    public function getUsedCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('status', CardNumber::STATUS_USED)
+                   ->count();
+    }
+
+    // Accessor for inactive card numbers count
+    public function getInactiveCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('activate', CardNumber::ACTIVATE_INACTIVE)
+                   ->count();
+    }
+
+    // Accessor for active card numbers count (for backward compatibility)
+    public function getActiveCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('activate', CardNumber::ACTIVATE_ACTIVE)
+                   ->count();
+    }
+
+    // Accessor for unused card numbers count (for backward compatibility)
+    public function getUnusedCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->count();
+    }
 }

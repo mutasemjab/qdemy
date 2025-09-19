@@ -10,11 +10,13 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Card;
+use App\Models\CardNumber;
 use App\Models\Category;
 use App\Models\POS;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
 
 class CardController extends Controller
 {
@@ -36,9 +38,9 @@ class CardController extends Controller
     public function create()
     {
         $posRecords = POS::orderBy('name')->get();
-        $categories = Category::where('parent_id',null)->get();
+        $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.create', compact('posRecords','categories','teachers'));
+        return view('admin.cards.create', compact('posRecords', 'categories', 'teachers'));
     }
 
     /**
@@ -82,7 +84,7 @@ class CardController extends Controller
      */
     public function show(Card $card)
     {
-        $card->load(['pos', 'cardNumbers','category','teacher']);
+        $card->load(['pos', 'cardNumbers', 'category', 'teacher']);
         return view('admin.cards.show', compact('card'));
     }
 
@@ -92,9 +94,9 @@ class CardController extends Controller
     public function edit(Card $card)
     {
         $posRecords = POS::orderBy('name')->get();
-        $categories = Category::where('parent_id',null)->get();
+        $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.edit', compact('card', 'posRecords','categories','teachers'));
+        return view('admin.cards.edit', compact('card', 'posRecords', 'categories', 'teachers'));
     }
 
     /**
@@ -179,14 +181,50 @@ class CardController extends Controller
     }
 
     /**
-     * Show card numbers for a specific card
+     * Show card numbers for a specific card with enhanced filtering
      */
-    public function showNumbers(Card $card)
+    public function showNumbers(Request $request, Card $card)
     {
-        $cardNumbers = $card->cardNumbers()->latest()->paginate(20);
+        $query = $card->cardNumbers()->with(['assignedUser']);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            switch ($request->status) {
+                case 'available':
+                    $query->whereNull('assigned_user_id')
+                          ->where('status', CardNumber::STATUS_NOT_USED)
+                          ->where('activate', CardNumber::ACTIVATE_ACTIVE);
+                    break;
+                case 'assigned':
+                    $query->whereNotNull('assigned_user_id')
+                          ->where('status', CardNumber::STATUS_NOT_USED);
+                    break;
+                case 'used':
+                    $query->where('status', CardNumber::STATUS_USED);
+                    break;
+            }
+        }
+
+        // Filter by activate status
+        if ($request->filled('activate')) {
+            $query->where('activate', $request->activate);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'LIKE', "%{$search}%")
+                  ->orWhereHas('assignedUser', function ($userQuery) use ($search) {
+                      $userQuery->where('name', 'LIKE', "%{$search}%")
+                               ->orWhere('email', 'LIKE', "%{$search}%")
+                               ->orWhere('phone', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $cardNumbers = $query->latest()->paginate(20);
+
         return view('admin.cards.card-numbers', compact('card', 'cardNumbers'));
     }
-
-
-
 }
