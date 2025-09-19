@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('number')->unique();
             $table->tinyInteger('activate')->default(1); // 1 active // 2 dis active
             $table->tinyInteger('status')->default(2); // 1 used // 2 not used
+            $table->tinyInteger('sell')->default(2); // 1 sell // 2 not sell yet
             $table->timestamps();
         });
     }

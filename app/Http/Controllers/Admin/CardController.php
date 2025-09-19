@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 
+
 class CardController extends Controller
 {
     /**
@@ -191,12 +192,18 @@ class CardController extends Controller
         if ($request->filled('status')) {
             switch ($request->status) {
                 case 'available':
-                    $query->whereNull('assigned_user_id')
+                    $query->where('sell', CardNumber::SELL_NOT_SOLD)
+                          ->whereNull('assigned_user_id')
                           ->where('status', CardNumber::STATUS_NOT_USED)
                           ->where('activate', CardNumber::ACTIVATE_ACTIVE);
                     break;
-                case 'assigned':
-                    $query->whereNotNull('assigned_user_id')
+                case 'sold_not_assigned':
+                    $query->where('sell', CardNumber::SELL_SOLD)
+                          ->whereNull('assigned_user_id');
+                    break;
+                case 'sold_assigned':
+                    $query->where('sell', CardNumber::SELL_SOLD)
+                          ->whereNotNull('assigned_user_id')
                           ->where('status', CardNumber::STATUS_NOT_USED);
                     break;
                 case 'used':

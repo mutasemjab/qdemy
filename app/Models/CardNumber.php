@@ -12,9 +12,10 @@ class CardNumber extends Model
   protected $guarded = [];
 
 
-    protected $casts = [
+     protected $casts = [
         'activate' => 'integer',
-        'status'   => 'integer',
+        'status' => 'integer',
+        'sell' => 'integer',
     ];
 
     // Constants for activate field
@@ -25,6 +26,8 @@ class CardNumber extends Model
     const STATUS_USED = 1;
     const STATUS_NOT_USED = 2;
 
+    const SELL_SOLD = 1;
+    const SELL_NOT_SOLD = 2;
     /**
      * Get the card that owns the card number
      */
@@ -71,6 +74,30 @@ class CardNumber extends Model
     }
 
     // Check if card number is available for assignment
+     public function isAvailableForSale()
+    {
+        return $this->sell === self::SELL_NOT_SOLD && 
+               $this->activate === self::ACTIVATE_ACTIVE && 
+               $this->status === self::STATUS_NOT_USED &&
+               $this->assigned_user_id === null;
+    }
+    
+    // Check if card number is sold but not assigned to user yet
+    public function isSoldNotAssigned()
+    {
+        return $this->sell === self::SELL_SOLD &&
+               $this->assigned_user_id === null;
+    }
+    
+    // Check if card number is sold and assigned but not used
+    public function isSoldAndAssigned()
+    {
+        return $this->sell === self::SELL_SOLD &&
+               $this->assigned_user_id !== null &&
+               $this->status === self::STATUS_NOT_USED;
+    }
+
+    // Check if card number is available for assignment (old method updated)
     public function isAvailable()
     {
         return $this->assigned_user_id === null && 
@@ -78,7 +105,7 @@ class CardNumber extends Model
                $this->activate === self::ACTIVATE_ACTIVE;
     }
 
-    // Check if card number is assigned but not used
+    // Check if card number is assigned but not used (updated)
     public function isAssignedButNotUsed()
     {
         return $this->assigned_user_id !== null && 
@@ -91,11 +118,29 @@ class CardNumber extends Model
         return $this->status === self::STATUS_USED;
     }
 
-    // Assign card to user
+    // Mark card as sold
+    public function markAsSold()
+    {
+        $this->update([
+            'sell' => self::SELL_SOLD
+        ]);
+    }
+    
+    // Mark card as not sold (reset to available)
+    public function markAsNotSold()
+    {
+        $this->update([
+            'sell' => self::SELL_NOT_SOLD,
+            'assigned_user_id' => null
+        ]);
+    }
+
+    // Assign card to user (updated to handle sell status)
     public function assignToUser($userId)
     {
         $this->update([
-            'assigned_user_id' => $userId
+            'assigned_user_id' => $userId,
+            'sell' => self::SELL_SOLD // Automatically mark as sold when assigned
         ]);
     }
 
@@ -124,27 +169,35 @@ class CardNumber extends Model
         });
     }
 
-     // Get status badge class for display
+    // Get status badge class for display (updated)
     public function getStatusBadgeClass()
     {
         if ($this->isUsed()) {
             return 'bg-danger';
-        } elseif ($this->isAssignedButNotUsed()) {
+        } elseif ($this->isSoldAndAssigned()) {
             return 'bg-warning';
-        } else {
+        } elseif ($this->isSoldNotAssigned()) {
+            return 'bg-info';
+        } elseif ($this->isAvailableForSale()) {
             return 'bg-success';
+        } else {
+            return 'bg-secondary';
         }
     }
 
-    // Get status text for display
+    // Get status text for display (updated)
     public function getStatusText()
     {
         if ($this->isUsed()) {
             return __('messages.used');
-        } elseif ($this->isAssignedButNotUsed()) {
-            return __('messages.assigned_not_used');
+        } elseif ($this->isSoldAndAssigned()) {
+            return __('messages.sold_assigned');
+        } elseif ($this->isSoldNotAssigned()) {
+            return __('messages.sold_not_assigned');
+        } elseif ($this->isAvailableForSale()) {
+            return __('messages.available_for_sale');
         } else {
-            return __('messages.available');
+            return __('messages.unavailable');
         }
     }
 }

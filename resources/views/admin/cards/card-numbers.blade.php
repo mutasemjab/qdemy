@@ -37,20 +37,20 @@
                                             <span class="badge bg-primary">{{ $cardNumbers->total() }}</span>
                                         </div>
                                         <div class="col-md-2">
-                                            <h6>{{ __('messages.available') }}</h6>
-                                            <span class="badge bg-success">{{ $card->cardNumbers()->whereNull('assigned_user_id')->where('status', 2)->where('activate', 1)->count() }}</span>
+                                            <h6>{{ __('messages.available_for_sale') }}</h6>
+                                            <span class="badge bg-success">{{ $card->available_for_sale_count }}</span>
                                         </div>
                                         <div class="col-md-2">
-                                            <h6>{{ __('messages.assigned_not_used') }}</h6>
-                                            <span class="badge bg-warning">{{ $card->cardNumbers()->whereNotNull('assigned_user_id')->where('status', 2)->count() }}</span>
+                                            <h6>{{ __('messages.sold_not_assigned') }}</h6>
+                                            <span class="badge bg-info">{{ $card->sold_not_assigned_count }}</span>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <h6>{{ __('messages.sold_assigned') }}</h6>
+                                            <span class="badge bg-warning">{{ $card->sold_and_assigned_count }}</span>
                                         </div>
                                         <div class="col-md-2">
                                             <h6>{{ __('messages.used_numbers') }}</h6>
-                                            <span class="badge bg-danger">{{ $card->cardNumbers()->where('status', 1)->count() }}</span>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <h6>{{ __('messages.inactive') }}</h6>
-                                            <span class="badge bg-secondary">{{ $card->cardNumbers()->where('activate', 2)->count() }}</span>
+                                            <span class="badge bg-danger">{{ $card->used_card_numbers_count }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -64,8 +64,9 @@
                             <form method="GET" action="{{ route('cards.card-numbers', $card) }}" class="d-flex">
                                 <select name="status" class="form-select me-2" onchange="this.form.submit()">
                                     <option value="">{{ __('messages.all_status') }}</option>
-                                    <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>{{ __('messages.available') }}</option>
-                                    <option value="assigned" {{ request('status') == 'assigned' ? 'selected' : '' }}>{{ __('messages.assigned_not_used') }}</option>
+                                    <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>{{ __('messages.available_for_sale') }}</option>
+                                    <option value="sold_not_assigned" {{ request('status') == 'sold_not_assigned' ? 'selected' : '' }}>{{ __('messages.sold_not_assigned') }}</option>
+                                    <option value="sold_assigned" {{ request('status') == 'sold_assigned' ? 'selected' : '' }}>{{ __('messages.sold_assigned') }}</option>
                                     <option value="used" {{ request('status') == 'used' ? 'selected' : '' }}>{{ __('messages.used') }}</option>
                                 </select>
                                 <select name="activate" class="form-select me-2" onchange="this.form.submit()">
@@ -78,7 +79,6 @@
                             </form>
                         </div>
                         <div class="col-md-4 text-end">
-                        
                             <form action="{{ route('cards.regenerate-numbers', $card) }}" 
                                   method="POST" 
                                   style="display: inline-block;"
@@ -101,6 +101,7 @@
                                         <th>{{ __('messages.card_number') }}</th>
                                         <th>{{ __('messages.assigned_user') }}</th>
                                         <th>{{ __('messages.status') }}</th>
+                                        <th>{{ __('messages.sell_status') }}</th>
                                         <th>{{ __('messages.activate_status') }}</th>
                                         <th>{{ __('messages.created_at') }}</th>
                                         <th>{{ __('messages.actions') }}</th>
@@ -132,6 +133,13 @@
                                                 </span>
                                             </td>
                                             <td>
+                                                @if($cardNumber->sell == 1)
+                                                    <span class="badge bg-info">{{ __('messages.sold') }}</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ __('messages.not_sold') }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
                                                 @if($cardNumber->activate == 1)
                                                     <span class="badge bg-success">{{ __('messages.active') }}</span>
                                                 @else
@@ -141,13 +149,38 @@
                                             <td>{{ $cardNumber->created_at->format('Y-m-d H:i') }}</td>
                                             <td>
                                                 <div class="btn-group-vertical" role="group">
-                                                    @if($cardNumber->isAvailable())
+                                                    @if($cardNumber->isAvailableForSale())
+                                                        <!-- Mark as Sold Button -->
+                                                        <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
+                                                              method="POST" 
+                                                              style="display: inline-block;"
+                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_sold') }}')">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-info btn-sm mb-1">
+                                                                {{ __('messages.mark_as_sold') }}
+                                                            </button>
+                                                        </form>
+                                                        
+                                                    @elseif($cardNumber->isSoldNotAssigned())
                                                         <!-- Assign to User Button -->
                                                         <button type="button" class="btn btn-primary btn-sm mb-1" 
                                                                 onclick="showAssignModal({{ $cardNumber->id }}, '{{ $cardNumber->number }}')">
                                                             {{ __('messages.assign_to_user') }}
                                                         </button>
-                                                    @elseif($cardNumber->isAssignedButNotUsed())
+                                                        <!-- Mark as Not Sold Button -->
+                                                        <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
+                                                              method="POST" 
+                                                              style="display: inline-block;"
+                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_not_sold') }}')">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <button type="submit" class="btn btn-outline-secondary btn-sm mb-1">
+                                                                {{ __('messages.mark_as_not_sold') }}
+                                                            </button>
+                                                        </form>
+                                                        
+                                                    @elseif($cardNumber->isSoldAndAssigned())
                                                         <!-- Mark as Used Button -->
                                                         <form action="{{ route('card-numbers.mark-used', $cardNumber) }}" 
                                                               method="POST" 
@@ -170,6 +203,7 @@
                                                                 {{ __('messages.remove_assignment') }}
                                                             </button>
                                                         </form>
+                                                        
                                                     @elseif($cardNumber->isUsed())
                                                         <!-- Mark as Not Used Button -->
                                                         <form action="{{ route('card-numbers.toggle-status', $cardNumber) }}" 
@@ -264,34 +298,31 @@
         </div>
     </div>
 </div>
+
 <script>
 function showAssignModal(cardNumberId, cardNumber) {
     document.getElementById('modalCardNumber').value = cardNumber;
-
-    // ✅ Use Laravel named route with placeholder replacement
-    document.getElementById('assignUserForm').action =
-        "{{ route('card-numbers.assign-form', ':id') }}".replace(':id', cardNumberId);
-
+    document.getElementById('assignUserForm').action = `/admin/card-numbers/${cardNumberId}/assign`;
     document.getElementById('userSearch').value = '';
     document.getElementById('selectedUserId').value = '';
     document.getElementById('selectedUserInfo').style.display = 'none';
     document.getElementById('userSearchResults').innerHTML = '';
     document.getElementById('assignBtn').disabled = true;
-
+    
     new bootstrap.Modal(document.getElementById('assignUserModal')).show();
 }
 
-// ✅ User search functionality
+// User search functionality
 document.getElementById('userSearch').addEventListener('input', function() {
     const query = this.value;
     if (query.length < 2) {
         document.getElementById('userSearchResults').innerHTML = '';
         return;
     }
-
+    
     fetch(`{{ route('admin.users.search') }}?q=${encodeURIComponent(query)}`, {
         headers: {
-            "X-Requested-With": "XMLHttpRequest", // ✅ ensure Laravel knows it's AJAX
+            "X-Requested-With": "XMLHttpRequest",
             "Accept": "application/json"
         }
     })
@@ -326,7 +357,7 @@ function selectUser(userId, name, email, phone) {
     document.getElementById('selectedUserId').value = userId;
     document.getElementById('userSearch').value = name;
     document.getElementById('userSearchResults').innerHTML = '';
-
+    
     const phoneInfo = phone ? `<br><strong>{{ __('messages.phone') }}:</strong> ${phone}` : '';
     document.getElementById('selectedUserInfo').innerHTML = `
         <strong>{{ __('messages.selected_user') }}:</strong><br>

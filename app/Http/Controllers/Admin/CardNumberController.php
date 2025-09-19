@@ -19,13 +19,36 @@ use Illuminate\Support\Facades\DB;
 class CardNumberController extends Controller
 {
     /**
-     * Show form to assign card number to user
+     * Toggle the sell status of a card number
+     */
+    public function toggleSell(CardNumber $cardNumber)
+    {
+        try {
+            if ($cardNumber->sell == CardNumber::SELL_NOT_SOLD) {
+                // Mark as sold
+                $cardNumber->markAsSold();
+                $message = __('messages.card_number_marked_sold');
+            } else {
+                // Mark as not sold (reset to available)
+                $cardNumber->markAsNotSold();
+                $message = __('messages.card_number_marked_not_sold');
+            }
+            
+            return redirect()->back()->with('success', $message);
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', __('messages.error_updating_sell_status') . ': ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show form to assign card number to user (updated)
      */
     public function showAssignForm(CardNumber $cardNumber)
     {
-        // Only allow assignment if card is available
-        if (!$cardNumber->isAvailable()) {
-            return redirect()->back()->with('error', __('messages.card_number_not_available'));
+        // Allow assignment if card is sold (regardless of current assignment)
+        if ($cardNumber->sell != CardNumber::SELL_SOLD) {
+            return redirect()->back()->with('error', __('messages.card_must_be_sold_first'));
         }
 
         $users = User::orderBy('name')->get();
@@ -33,7 +56,7 @@ class CardNumberController extends Controller
     }
 
     /**
-     * Assign card number to a user
+     * Assign card number to a user (updated)
      */
     public function assignToUser(Request $request, CardNumber $cardNumber)
     {
@@ -42,8 +65,9 @@ class CardNumberController extends Controller
         ]);
 
         try {
-            if (!$cardNumber->isAvailable()) {
-                return redirect()->back()->with('error', __('messages.card_number_not_available'));
+            // Allow assignment if card is sold
+            if ($cardNumber->sell != CardNumber::SELL_SOLD) {
+                return redirect()->back()->with('error', __('messages.card_must_be_sold_first'));
             }
 
             $cardNumber->assignToUser($request->user_id);
@@ -109,7 +133,7 @@ class CardNumberController extends Controller
     {
         $query = $request->get('q');
         
-        $users = User::where('role_name','student')->where('name', 'LIKE', "%{$query}%")
+        $users = User::where('name', 'LIKE', "%{$query}%")
                     ->orWhere('email', 'LIKE', "%{$query}%")
                     ->orWhere('phone', 'LIKE', "%{$query}%")
                     ->limit(10)

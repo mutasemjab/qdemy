@@ -167,7 +167,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
          Route::prefix('card-numbers')->group(function () {
             Route::patch('/{cardNumber}/toggle-status', [CardNumberController::class, 'toggleStatus'])->name('card-numbers.toggle-status');
             Route::patch('/{cardNumber}/toggle-activate', [CardNumberController::class, 'toggleActivate'])->name('card-numbers.toggle-activate');
-            
+            Route::patch('/{cardNumber}/toggle-sell', [CardNumberController::class, 'toggleSell'])->name('card-numbers.toggle-sell');
+
             // New routes for user assignment
             Route::get('/{cardNumber}/assign', [CardNumberController::class, 'showAssignForm'])->name('card-numbers.assign-form');
             Route::patch('/{cardNumber}/assign', [CardNumberController::class, 'assignToUser'])->name('card-numbers.assign');
