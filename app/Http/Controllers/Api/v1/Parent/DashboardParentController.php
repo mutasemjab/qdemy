@@ -150,8 +150,6 @@ class DashboardParentController extends Controller
                 ];
             })->values();
 
-            // Get recent activities (exam completions and course enrollments)
-            $recentActivities = $this->getRecentActivities($childrenIds, 10);
 
             // Get unread notifications count
             $unreadNotifications = $this->getUnreadNotificationsCount();
@@ -162,7 +160,6 @@ class DashboardParentController extends Controller
                 'total_exams' => $totalExamAttempts,
                 'unread_notifications' => $unreadNotifications,
                 'children' => $childrenSummary,
-                'recent_activities' => $recentActivities,
                 'statistics' => [
                     'average_progress' => round($averageProgress, 2),
                     'average_exam_score' => round($averageExamScore, 2),
