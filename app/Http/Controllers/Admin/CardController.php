@@ -49,20 +49,26 @@ class CardController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
+        
+
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
+            }
             // Create the card
-            $card = Card::create($request->all());
+            $card = Card::create($validated);
 
             // Generate card numbers
             $generatedNumbers = $card->generateCardNumbers();
@@ -105,13 +111,15 @@ class CardController extends Controller
      */
     public function update(Request $request, Card $card)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
         DB::beginTransaction();
@@ -119,8 +127,19 @@ class CardController extends Controller
         try {
             $oldNumberOfCards = $card->number_of_cards;
 
+            
+            if ($request->hasFile('photo')) {
+            if ($card->photo) {
+                    $filePath = base_path('assets/admin/uploads/' . $card->photo);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+                $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
+            }
+
             // Update the card
-            $card->update($request->all());
+            $card->update($validated);
 
             // If number of cards changed, regenerate card numbers
             if ($oldNumberOfCards != $request->number_of_cards) {

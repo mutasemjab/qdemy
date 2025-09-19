@@ -15,6 +15,11 @@ class Card extends Model
         'number_of_cards' => 'integer',
     ];
 
+     public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : null;
+    }
+    
     /**
      * Get the POS that owns the card
      */
