@@ -99,6 +99,12 @@ if (!function_exists('CartRepository')) {
   }
 }
 
+if (!function_exists('MobileCartRepository')) {
+    function MobileCartRepository() {
+        return new \App\Repositories\MobileCartRepository();
+    }
+}
+
 // return auth user
 // type sudent but now return any user
 if (!function_exists('auth_student')) {
