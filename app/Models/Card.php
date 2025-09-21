@@ -15,6 +15,11 @@ class Card extends Model
         'number_of_cards' => 'integer',
     ];
 
+     public function getPhotoUrlAttribute()
+    {
+        return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : null;
+    }
+    
     /**
      * Get the POS that owns the card
      */
@@ -89,5 +94,84 @@ class Card extends Model
         }
         
         return implode('', $groups);
+    }
+
+     public function cardUsages()
+    {
+        return $this->hasManyThrough(CardUsage::class, CardNumber::class);
+    }
+
+    // Accessor for available card numbers count
+  public function getAvailableForSaleCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('sell', CardNumber::SELL_NOT_SOLD)
+                   ->where('activate', CardNumber::ACTIVATE_ACTIVE)
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->whereNull('assigned_user_id')
+                   ->count();
+    }
+
+    // Accessor for sold but not assigned card numbers count
+    public function getSoldNotAssignedCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('sell', CardNumber::SELL_SOLD)
+                   ->whereNull('assigned_user_id')
+                   ->count();
+    }
+
+    // Accessor for sold and assigned card numbers count
+    public function getSoldAndAssignedCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('sell', CardNumber::SELL_SOLD)
+                   ->whereNotNull('assigned_user_id')
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->count();
+    }
+
+    // Accessor for available card numbers count (updated for backward compatibility)
+    public function getAvailableCardNumbersCountAttribute()
+    {
+        return $this->available_for_sale_count;
+    }
+
+    // Accessor for assigned but not used card numbers count (updated)
+    public function getAssignedNotUsedCardNumbersCountAttribute()
+    {
+        return $this->sold_and_assigned_count;
+    }
+
+    // Accessor for used card numbers count
+    public function getUsedCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('status', CardNumber::STATUS_USED)
+                   ->count();
+    }
+
+    // Accessor for inactive card numbers count
+    public function getInactiveCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('activate', CardNumber::ACTIVATE_INACTIVE)
+                   ->count();
+    }
+
+    // Accessor for active card numbers count (for backward compatibility)
+    public function getActiveCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('activate', CardNumber::ACTIVATE_ACTIVE)
+                   ->count();
+    }
+
+    // Accessor for unused card numbers count (for backward compatibility)
+    public function getUnusedCardNumbersCountAttribute()
+    {
+        return $this->cardNumbers()
+                   ->where('status', CardNumber::STATUS_NOT_USED)
+                   ->count();
     }
 }

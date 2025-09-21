@@ -20,7 +20,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('cards.store') }}" method="POST">
+                    <form action="{{ route('cards.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-3">
@@ -122,6 +122,16 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <div class="form-text">{{ __('messages.number_of_cards_help') }}</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">{{ __('messages.photo') }} <span class="text-danger">*</span></label>
+                            <input type="file" class="form-control @error('photo') is-invalid @enderror" 
+                                   id="photo" name="photo" accept="image/*" required>
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">{{ __('messages.photo_requirements') }}</div>
                         </div>
 
                         <div class="alert alert-info">

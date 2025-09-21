@@ -89,38 +89,76 @@ class CourseController extends Controller
                 'updated_at' => $course->updated_at
             ];
 
-            // Add sections and contents
-            $courseData['main_sections'] = $mainSections ? $mainSections->map(function ($section) {
-                return [
-                    'id' => $section->id,
-                    'title_ar' => $section->title_ar,
-                    'title_en' => $section->title_en,
-                    'children' => $section->children ? $section->children->map(function ($child) {
-                        return [
-                            'id' => $child->id,
-                            'title_ar' => $child->title_ar,
-                            'title_en' => $child->title_en,
-                        ];
-                    }) : []
-                ];
-            }) : [];
+            // Build structured sections with nested contents
+            $courseData['sections'] = [];
+            
+            if ($mainSections) {
+                foreach ($mainSections as $section) {
+                    $sectionData = [
+                        'id' => $section->id,
+                        'title_ar' => $section->title_ar,
+                        'title_en' => $section->title_en,
+                        'subsections' => []
+                    ];
 
-            $courseData['contents'] = $contents ? $contents->map(function ($content) {
-                return [
-                    'id' => $content->id,
-                    'title_ar' => $content->title_ar,
-                    'title_en' => $content->title_en,
-                    'content_type' => $content->content_type,
-                    'is_free' => $content->is_free,
-                    'order' => $content->order,
-                    'video_duration' => $content->video_duration,
-                    'video_type' => $content->video_type,
-                    'video_url' => $content->video_url,
-                    'file_path' => $content->file_path,
-                    'pdf_type' => $content->pdf_type,
-                    'section_id' => $content->section_id
-                ];
-            }) : [];
+                    // Get subsections (children)
+                    if ($section->children) {
+                        foreach ($section->children as $child) {
+                            $childData = [
+                                'id' => $child->id,
+                                'title_ar' => $child->title_ar,
+                                'title_en' => $child->title_en,
+                                'contents' => []
+                            ];
+
+                            // Get contents for this subsection
+                            $sectionContents = $contents?->where('section_id', $child->id);
+                            if ($sectionContents) {
+                                foreach ($sectionContents as $content) {
+                                    $childData['contents'][] = [
+                                        'id' => $content->id,
+                                        'title_ar' => $content->title_ar,
+                                        'title_en' => $content->title_en,
+                                        'content_type' => $content->content_type,
+                                        'is_free' => $content->is_free,
+                                        'order' => $content->order,
+                                        'video_duration' => $content->video_duration,
+                                        'video_type' => $content->video_type,
+                                        'video_url' => $content->video_url,
+                                        'file_path' => $content->file_path,
+                                        'pdf_type' => $content->pdf_type
+                                    ];
+                                }
+                            }
+
+                            $sectionData['subsections'][] = $childData;
+                        }
+                    }
+
+                    // Also check for direct contents in main section (if any)
+                    $directContents = $contents?->where('section_id', $section->id);
+                    if ($directContents && $directContents->isNotEmpty()) {
+                        $sectionData['contents'] = [];
+                        foreach ($directContents as $content) {
+                            $sectionData['contents'][] = [
+                                'id' => $content->id,
+                                'title_ar' => $content->title_ar,
+                                'title_en' => $content->title_en,
+                                'content_type' => $content->content_type,
+                                'is_free' => $content->is_free,
+                                'order' => $content->order,
+                                'video_duration' => $content->video_duration,
+                                'video_type' => $content->video_type,
+                                'video_url' => $content->video_url,
+                                'file_path' => $content->file_path,
+                                'pdf_type' => $content->pdf_type
+                            ];
+                        }
+                    }
+
+                    $courseData['sections'][] = $sectionData;
+                }
+            }
 
             $courseData['free_content'] = $freeContents ? [
                 'id' => $freeContents->id,
@@ -145,17 +183,20 @@ class CourseController extends Controller
 
                 // Add exams if available
                 $exams = $course->exams;
-                $courseData['exams'] = $exams ? $exams->map(function ($exam) {
-                    return [
-                        'id' => $exam->id,
-                        'title' => $exam->title,
-                        'description' => $exam->description,
-                        'duration' => $exam->duration,
-                        'total_marks' => $exam->total_marks,
-                        'passing_marks' => $exam->passing_marks,
-                        'is_active' => $exam->is_active
-                    ];
-                }) : [];
+                $courseData['exams'] = [];
+                if ($exams) {
+                    foreach ($exams as $exam) {
+                        $courseData['exams'][] = [
+                            'id' => $exam->id,
+                            'title' => $exam->title,
+                            'description' => $exam->description,
+                            'duration' => $exam->duration,
+                            'total_marks' => $exam->total_marks,
+                            'passing_marks' => $exam->passing_marks,
+                            'is_active' => $exam->is_active
+                        ];
+                    }
+                }
             } else {
                 $courseData['user_progress'] = null;
                 $courseData['exams'] = null;

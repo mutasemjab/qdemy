@@ -10,11 +10,14 @@ use App\Models\Order;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Card;
+use App\Models\CardNumber;
 use App\Models\Category;
 use App\Models\POS;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+
+
 
 class CardController extends Controller
 {
@@ -36,9 +39,9 @@ class CardController extends Controller
     public function create()
     {
         $posRecords = POS::orderBy('name')->get();
-        $categories = Category::where('parent_id',null)->get();
+        $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.create', compact('posRecords','categories','teachers'));
+        return view('admin.cards.create', compact('posRecords', 'categories', 'teachers'));
     }
 
     /**
@@ -46,20 +49,26 @@ class CardController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         DB::beginTransaction();
 
         try {
+        
+
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
+            }
             // Create the card
-            $card = Card::create($request->all());
+            $card = Card::create($validated);
 
             // Generate card numbers
             $generatedNumbers = $card->generateCardNumbers();
@@ -82,7 +91,7 @@ class CardController extends Controller
      */
     public function show(Card $card)
     {
-        $card->load(['pos', 'cardNumbers','category','teacher']);
+        $card->load(['pos', 'cardNumbers', 'category', 'teacher']);
         return view('admin.cards.show', compact('card'));
     }
 
@@ -92,9 +101,9 @@ class CardController extends Controller
     public function edit(Card $card)
     {
         $posRecords = POS::orderBy('name')->get();
-        $categories = Category::where('parent_id',null)->get();
+        $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.edit', compact('card', 'posRecords','categories','teachers'));
+        return view('admin.cards.edit', compact('card', 'posRecords', 'categories', 'teachers'));
     }
 
     /**
@@ -102,13 +111,15 @@ class CardController extends Controller
      */
     public function update(Request $request, Card $card)
     {
-        $request->validate([
+        $validated = $request->validate([
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
         DB::beginTransaction();
@@ -116,8 +127,19 @@ class CardController extends Controller
         try {
             $oldNumberOfCards = $card->number_of_cards;
 
+            
+            if ($request->hasFile('photo')) {
+            if ($card->photo) {
+                    $filePath = base_path('assets/admin/uploads/' . $card->photo);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+                $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
+            }
+
             // Update the card
-            $card->update($request->all());
+            $card->update($validated);
 
             // If number of cards changed, regenerate card numbers
             if ($oldNumberOfCards != $request->number_of_cards) {
@@ -179,14 +201,56 @@ class CardController extends Controller
     }
 
     /**
-     * Show card numbers for a specific card
+     * Show card numbers for a specific card with enhanced filtering
      */
-    public function showNumbers(Card $card)
+    public function showNumbers(Request $request, Card $card)
     {
-        $cardNumbers = $card->cardNumbers()->latest()->paginate(20);
+        $query = $card->cardNumbers()->with(['assignedUser']);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            switch ($request->status) {
+                case 'available':
+                    $query->where('sell', CardNumber::SELL_NOT_SOLD)
+                          ->whereNull('assigned_user_id')
+                          ->where('status', CardNumber::STATUS_NOT_USED)
+                          ->where('activate', CardNumber::ACTIVATE_ACTIVE);
+                    break;
+                case 'sold_not_assigned':
+                    $query->where('sell', CardNumber::SELL_SOLD)
+                          ->whereNull('assigned_user_id');
+                    break;
+                case 'sold_assigned':
+                    $query->where('sell', CardNumber::SELL_SOLD)
+                          ->whereNotNull('assigned_user_id')
+                          ->where('status', CardNumber::STATUS_NOT_USED);
+                    break;
+                case 'used':
+                    $query->where('status', CardNumber::STATUS_USED);
+                    break;
+            }
+        }
+
+        // Filter by activate status
+        if ($request->filled('activate')) {
+            $query->where('activate', $request->activate);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('number', 'LIKE', "%{$search}%")
+                  ->orWhereHas('assignedUser', function ($userQuery) use ($search) {
+                      $userQuery->where('name', 'LIKE', "%{$search}%")
+                               ->orWhere('email', 'LIKE', "%{$search}%")
+                               ->orWhere('phone', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $cardNumbers = $query->latest()->paginate(20);
+
         return view('admin.cards.card-numbers', compact('card', 'cardNumbers'));
     }
-
-
-
 }

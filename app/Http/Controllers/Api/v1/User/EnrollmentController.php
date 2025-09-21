@@ -6,32 +6,52 @@ use App\Models\Course;
 use App\Models\CourseUser;
 use App\Models\CardNumber;
 use App\Models\CardUsage;
+use App\Models\ContentUserProgress;
+use App\Models\CourseContent;
 use App\Models\CoursePayment;
 use App\Models\CoursePaymentDetail;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Repositories\CartRepository;
+
 
 class EnrollmentController extends Controller
 {
     use Responses;
 
     /**
+     * Get the appropriate cart repository based on request type
+     */
+    private function getCartRepository()
+    {
+        // Check if request is from API (mobile)
+        if (request()->is('api/*') || auth()->guard('user-api')->check()) {
+            return new \App\Repositories\MobileCartRepository();
+        }
+        
+        // Default to web cart repository
+        return new \App\Repositories\CartRepository();
+    }
+
+    /**
      * عرض محتويات السلة
      */
     public function index()
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
+        $cartRepository = $this->getCartRepository();
+
         // تنظيف السلة عند البداية
-        CartRepository()->initializeCart();
+        $cartRepository->initializeCart();
 
         // الحصول على البيانات من السلة
-        $cartData = CartRepository()->getCartCoursesWithStatus();
+        $cartData = $cartRepository->getCartCoursesWithStatus();
 
         return $this->success_response('تم جلب محتويات السلة بنجاح', [
             'courses' => $cartData['courses'],
@@ -43,29 +63,40 @@ class EnrollmentController extends Controller
     /**
      * إضافة كورس للسلة
      */
-    public function addToSession(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'course_id' => 'required|exists:courses,id'
-        ]);
+ public function addToSession(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'course_id' => 'required|exists:courses,id'
+    ]);
 
-        $user = auth_student();
-        if ($validator->fails()) {
-            return $this->error_response($validator->errors()->first(), null);
-        }
+    $user = auth('user-api')->user();
+    if ($validator->fails()) {
+        return $this->error_response($validator->errors()->first(), null);
+    }
 
-        if (!$user) {
-            return $this->error_response('يجب تسجيل الدخول أولاً', null);
-        }
+    if (!$user) {
+        return $this->error_response('يجب تسجيل الدخول أولاً', null);
+    }
 
-        $result = CartRepository()->put($request->course_id);
+    try {
+        $cartRepository = $this->getCartRepository();
+        $result = $cartRepository->put($request->course_id);
 
-        if ($result && isset($result->original) && $result->original['success']) {
-            return $this->success_response($result->original['message'], $result->original);
+        if ($result && isset($result->original)) {
+            if ($result->original['success']) {
+                return $this->success_response($result->original['message'], $result->original);
+            } else {
+                // Handle specific failure cases with the actual message
+                return $this->error_response($result->original['message'], null);
+            }
         }
 
         return $this->error_response('حدث خطأ أثناء إضافة الكورس للسلة', null);
+
+    } catch (\Exception $e) {
+        return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
     }
+}
 
     /**
      * تحديث سلة الباكدج
@@ -83,12 +114,14 @@ class EnrollmentController extends Controller
         }
 
         try {
+            $cartRepository = $this->getCartRepository();
+            
             // التحقق من الصلاحية
-            if (!CartRepository()->validCartContent($request->package_id)) {
-                CartRepository()->clearCart(); // مسح السلة بالكامل للبدء من جديد
+            if (!$cartRepository->validCartContent($request->package_id)) {
+                $cartRepository->clearCart(); // مسح السلة بالكامل للبدء من جديد
             }
 
-            $cart = CartRepository()->setPackageCart($request->package_id, $request->courses);
+            $cart = $cartRepository->setPackageCart($request->package_id, $request->courses);
 
             return $this->success_response('تم تحديث السلة بنجاح', $cart);
 
@@ -103,7 +136,8 @@ class EnrollmentController extends Controller
     public function getPackageCart(Request $request)
     {
         try {
-            $cart = CartRepository()->getPackageCart();
+            $cartRepository = $this->getCartRepository();
+            $cart = $cartRepository->getPackageCart();
 
             return $this->success_response('تم جلب محتويات السلة بنجاح', $cart);
 
@@ -121,7 +155,7 @@ class EnrollmentController extends Controller
             'course_id' => 'required|exists:courses,id'
         ]);
 
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if ($validator->fails()) {
             return $this->error_response($validator->errors()->first(), null);
         }
@@ -131,10 +165,11 @@ class EnrollmentController extends Controller
         }
 
         try {
-            $result = CartRepository()->removeItem($request->course_id);
+            $cartRepository = $this->getCartRepository();
+            $result = $cartRepository->removeItem($request->course_id);
 
             // Get updated cart data
-            $cartData = CartRepository()->getCartCoursesWithStatus();
+            $cartData = $cartRepository->getCartCoursesWithStatus();
 
             if ($result && isset($result->original) && $result->original['success']) {
                 return $this->success_response($result->original['message'], [
@@ -161,13 +196,14 @@ class EnrollmentController extends Controller
     */
     public function clearCart()
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
         try {
-            CartRepository()->clearCart();
+            $cartRepository = $this->getCartRepository();
+            $cartRepository->clearCart();
 
             return $this->success_response('تم مسح السلة بنجاح', [
                 'success' => true,
@@ -185,26 +221,42 @@ class EnrollmentController extends Controller
     */
     public function debugCart()
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
         try {
-            $sessionKey = 'cart_' . $user->id;
-            $packageSessionKey = 'package_cart_' . $user->id;
-
+            $cartRepository = $this->getCartRepository();
+            $isApiRequest = request()->is('api/*') || auth()->guard('user-api')->check();
+            
             $debugData = [
                 'user_id' => $user->id,
-                'session_id' => session()->getId(),
-                'cart_session_key' => $sessionKey,
-                'package_session_key' => $packageSessionKey,
-                'cart_session_data' => session($sessionKey, []),
-                'package_session_data' => session($packageSessionKey, []),
-                'all_session_data' => session()->all(),
-                'course_cart' => CartRepository()->getCourseCart(),
-                'package_cart' => CartRepository()->getPackageCart(),
+                'request_type' => $isApiRequest ? 'API (Mobile)' : 'Web',
+                'repository_type' => get_class($cartRepository),
+                'course_cart' => $cartRepository->getCourseCart(),
+                'package_cart' => $cartRepository->getPackageCart(),
             ];
+
+            // Add session data only for web requests
+            if (!$isApiRequest) {
+                $sessionKey = 'cart_' . $user->id;
+                $packageSessionKey = 'package_cart_' . $user->id;
+                
+                $debugData = array_merge($debugData, [
+                    'session_id' => session()->getId(),
+                    'cart_session_key' => $sessionKey,
+                    'package_session_key' => $packageSessionKey,
+                    'cart_session_data' => session($sessionKey, []),
+                    'package_session_data' => session($packageSessionKey, []),
+                    'all_session_data' => session()->all(),
+                ]);
+            } else {
+                $debugData['cache_keys'] = [
+                    'courses' => "mobile_cart_courses_{$user->id}",
+                    'package' => "mobile_cart_package_{$user->id}"
+                ];
+            }
 
             return $this->success_response('بيانات تشخيص السلة', $debugData);
 
@@ -218,13 +270,14 @@ class EnrollmentController extends Controller
      */
     public function getCartSummary()
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
         try {
-            $cartData = CartRepository()->getCartCoursesWithStatus();
+            $cartRepository = $this->getCartRepository();
+            $cartData = $cartRepository->getCartCoursesWithStatus();
 
             $summary = [
                 'courses_count' => $cartData['courses']->count(),
@@ -248,12 +301,13 @@ class EnrollmentController extends Controller
      */
     public function removeCartFromAnyPackage(Request $request)
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
-        $result = CartRepository()->removeAnyPackageFromCart();
+        $cartRepository = $this->getCartRepository();
+        $result = $cartRepository->removeAnyPackageFromCart();
 
         if ($result && isset($result->original) && $result->original['success']) {
             return $this->success_response($result->original['message'], $result->original);
@@ -267,7 +321,7 @@ class EnrollmentController extends Controller
      */
     public function removeCourseFromPackage(Request $request)
     {
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if (!$user) {
             return $this->error_response(__('messages.login first'), null);
         }
@@ -276,7 +330,8 @@ class EnrollmentController extends Controller
             return $this->error_response(__('messages.unexpected_error'), null);
         }
 
-        $result = CartRepository()->removeCourseFromPackage($request->package_id, $request->course_id);
+        $cartRepository = $this->getCartRepository();
+        $result = $cartRepository->removeCourseFromPackage($request->package_id, $request->course_id);
 
         if ($result && isset($result->original) && $result->original['success']) {
             return $this->success_response($result->original['message'], $result->original);
@@ -295,7 +350,7 @@ class EnrollmentController extends Controller
             'course_id' => 'required|exists:courses,id'
         ]);
 
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if ($validator->fails()) {
             return $this->error_response($validator->errors()->first(), null);
         }
@@ -329,7 +384,8 @@ class EnrollmentController extends Controller
             $this->markCardAsUsed($cardNumber, $user?->id);
             $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
 
-            CartRepository()->removeItem($courseId);
+            $cartRepository = $this->getCartRepository();
+            $cartRepository->removeItem($courseId);
 
             DB::commit();
 
@@ -353,7 +409,7 @@ class EnrollmentController extends Controller
             'card_number' => 'required|string'
         ]);
 
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if ($validator->fails()) {
             return $this->error_response($validator->errors()->first(), null);
         }
@@ -393,7 +449,8 @@ class EnrollmentController extends Controller
             $this->markCardAsUsed($cardNumber, $user?->id);
             $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'courses');
 
-            CartRepository()->clearCart();
+            $cartRepository = $this->getCartRepository();
+            $cartRepository->clearCart();
 
             DB::commit();
 
@@ -418,7 +475,7 @@ class EnrollmentController extends Controller
             'card_number' => 'required|string'
         ]);
 
-        $user = auth_student();
+        $user = auth('user-api')->user();
         if ($validator->fails()) {
             return $this->error_response($validator->errors()->first(), null);
         }
@@ -434,7 +491,8 @@ class EnrollmentController extends Controller
         }
 
         $cardNumber = $cardValidation['card'];
-        $packageCart = CartRepository()->getPackageCart();
+        $cartRepository = $this->getCartRepository();
+        $packageCart = $cartRepository->getPackageCart();
 
         if (!$packageCart || empty($packageCart['courses'])) {
             return $this->error_response('لا توجد باكدج في السلة', null);
@@ -466,7 +524,7 @@ class EnrollmentController extends Controller
             $this->markCardAsUsed($cardNumber, $user?->id);
             $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'package', $packageCart['package_id']);
 
-            CartRepository()->clearCart();
+            $cartRepository->clearCart();
 
             DB::commit();
 
@@ -540,7 +598,8 @@ class EnrollmentController extends Controller
 
     private function getValidCoursesForPurchase($userId)
     {
-        $courseIds = CartRepository()->getCourseCart();
+        $cartRepository = $this->getCartRepository();
+        $courseIds = $cartRepository->getCourseCart();
 
         return Course::active()
                     ->whereIn('id', $courseIds)
@@ -658,8 +717,7 @@ class EnrollmentController extends Controller
 
             $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
                 // Calculate progress for each course
-                $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
-
+                $calculateCourseProgress = $this->getCourseProgressData($user->id, $course->id);
                 // Get enrollment date
                 $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
 
@@ -739,6 +797,33 @@ class EnrollmentController extends Controller
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve enrolled courses: ' . $e->getMessage(), null);
         }
+    }
+
+    private function getCourseProgressData($userId, $courseId)
+    {
+        $course = Course::find($courseId);
+        $progressPercentage = $course->calculateCourseProgress($userId);
+        
+        // Get the detailed data that your controller expects
+        $totalVideos = CourseContent::where('course_id', $courseId)
+            ->where('content_type', 'video')
+            ->count();
+        
+        $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
+            ->where('content_user_progress.user_id', $userId)
+            ->where('course_contents.course_id', $courseId)
+            ->where('course_contents.content_type', 'video')
+            ->where('content_user_progress.completed', true)
+            ->count();
+        
+        $watchingVideos = 0; // or implement your logic
+        
+        return [
+            'course_progress' => $progressPercentage,
+            'completed_videos' => $completedVideos,
+            'watching_videos' => $watchingVideos,
+            'total_videos' => $totalVideos
+        ];
     }
 
 }

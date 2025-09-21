@@ -132,7 +132,7 @@ class AuthParentController extends Controller
             // Find user by email or phone and ensure they are a parent
             $user = User::where($fieldType, $loginField)
                        ->where('role_name', 'parent')
-                       ->with(['parentt', 'parentt.students.user'])
+                       ->with(['parentt', 'parentt.students'])
                        ->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
@@ -158,17 +158,17 @@ class AuthParentController extends Controller
             // Get children list
             $children = [];
             if ($user->parentt && $user->parentt->students) {
-                $children = $user->parentt->students->map(function ($parentStudent) {
+              $children = $user->parentt->students->map(function ($student) {
                     return [
-                        'id' => $parentStudent->user->id,
-                        'name' => $parentStudent->user->name,
-                        'email' => $parentStudent->user->email,
-                        'phone' => $parentStudent->user->phone,
-                        'photo' => $parentStudent->user->photo ? asset('assets/admin/uploads/' . $parentStudent->user->photo) : null,
-                        'class_id' => $parentStudent->user->clas_id,
-                        'balance' => $parentStudent->user->balance,
-                        'activate' => $parentStudent->user->activate,
-                        'added_at' => $parentStudent->created_at
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'email' => $student->email,
+                        'phone' => $student->phone,
+                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                        'class_id' => $student->clas_id,
+                        'balance' => $student->balance,
+                        'activate' => $student->activate,
+                        'added_at' => $student->pivot->created_at ?? null, // from pivot
                     ];
                 });
             }

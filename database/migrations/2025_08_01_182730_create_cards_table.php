@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('name');
             $table->double('price');
             $table->double('number_of_cards');
+            $table->string('photo');
             $table->timestamps();
         });
     }

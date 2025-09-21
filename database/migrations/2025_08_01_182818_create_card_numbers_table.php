@@ -17,9 +17,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('card_id')->nullable();
             $table->foreign('card_id')->references('id')->on('cards')->onDelete('cascade');
+            $table->unsignedBigInteger('assigned_user_id')->nullable();
+            $table->foreign('assigned_user_id')->references('id')->on('users')->onDelete('set null');
             $table->string('number')->unique();
             $table->tinyInteger('activate')->default(1); // 1 active // 2 dis active
-            $table->tinyInteger('status')->default(1); // 1 used // 2 not used
+            $table->tinyInteger('status')->default(2); // 1 used // 2 not used
+            $table->tinyInteger('sell')->default(2); // 1 sell // 2 not sell yet
             $table->timestamps();
         });
     }

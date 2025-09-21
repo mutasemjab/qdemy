@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Card;
 use App\Models\Page;
 use App\Models\POS;
 
@@ -39,10 +40,7 @@ class PagesController extends Controller
         return view('web.sale-point', compact('posGrouped'));
     }
 
-    public function cards_order()
-    {
-        return view('web.cards-order');
-    }
+   
 
       public function privacyPolicy()
     {

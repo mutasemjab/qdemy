@@ -58,6 +58,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // ================================
 Route::group(['prefix' => 'v1/user'], function () {
 
+    Route::get('/getSubjectsFromCategory', [CategoryController::class, 'getSubjectsFromCategory']); // api to get the subject from all categories
+
     // Public routes
     Route::get('/classes', [AuthController::class, 'getClasses']);
     Route::post('/login', [AuthController::class, 'login']);
@@ -66,6 +68,7 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::get('/onboardings', [OnBoardingController::class, 'index']);
     Route::get('/teachers', [TeacherController::class, 'index']);
+
     Route::post('/check-phone-reset', [ForgotPasswordController::class, 'checkPhoneForReset']);
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 
@@ -91,6 +94,10 @@ Route::group(['prefix' => 'v1/user'], function () {
 
     // Protected routes (all users use the same auth middleware)
     Route::group(['middleware' => ['auth:user-api']], function () {
+
+        Route::post('/follow/toggle', [FollowController::class, 'toggleFollow']);
+        Route::get('/teachers/{teacherId}', [TeacherController::class, 'show']);
+
         Route::get('/exams/{exam}/link', [ExamController::class, 'getExamLink']);
         Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
@@ -165,7 +172,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
         Route::delete('/delete-account', [AuthTeacherController::class, 'deleteAccount']);
 
         // Dashboard
-        Route::get('/dashboard', [DashboardTeacherController::class, 'index']);
+        Route::get('/Teacherdashboard', [DashboardTeacherController::class, 'index']);
 
         // Course Management
          Route::prefix('courses')->group(function () {

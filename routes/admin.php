@@ -164,9 +164,21 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('cards/{card}/card-numbers', [CardController::class, 'showNumbers'])->name('cards.card-numbers');
 
         // Card Numbers Routes
-        Route::patch('card-numbers/{cardNumber}/toggle-status', [CardNumberController::class, 'toggleStatus'])->name('card-numbers.toggle-status');
-        Route::patch('card-numbers/{cardNumber}/toggle-activate', [CardNumberController::class, 'toggleActivate'])->name('card-numbers.toggle-activate');
+         Route::prefix('card-numbers')->group(function () {
+            Route::patch('/{cardNumber}/toggle-status', [CardNumberController::class, 'toggleStatus'])->name('card-numbers.toggle-status');
+            Route::patch('/{cardNumber}/toggle-activate', [CardNumberController::class, 'toggleActivate'])->name('card-numbers.toggle-activate');
+            Route::patch('/{cardNumber}/toggle-sell', [CardNumberController::class, 'toggleSell'])->name('card-numbers.toggle-sell');
 
+            // New routes for user assignment
+            Route::get('/{cardNumber}/assign', [CardNumberController::class, 'showAssignForm'])->name('card-numbers.assign-form');
+            Route::patch('/{cardNumber}/assign', [CardNumberController::class, 'assignToUser'])->name('card-numbers.assign');
+            Route::patch('/{cardNumber}/mark-used', [CardNumberController::class, 'markAsUsed'])->name('card-numbers.mark-used');
+            Route::patch('/{cardNumber}/remove-assignment', [CardNumberController::class, 'removeAssignment'])->name('card-numbers.remove-assignment');
+            
+            // Bulk operations
+            Route::post('/bulk-assign', [CardNumberController::class, 'bulkAssign'])->name('card-numbers.bulk-assign');
+        });
+  
 
         Route::resource('courses', CourseController::class);
         Route::get('/course/{parentId}/children', [CourseController::class, 'getChildCategories'])->name('courses.get-children');
@@ -277,6 +289,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         Route::get('admin/courses/{course}/sections', [ExamController::class, 'getCourseSections'])
             ->name('admin.courses.sections');
+        Route::get('admin/users/search', [CardNumberController::class, 'searchUsers'])->name('admin.users.search');
+
     });
 });
 

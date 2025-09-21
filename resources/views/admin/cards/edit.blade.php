@@ -20,7 +20,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('cards.update', $card) }}" method="POST">
+                    <form action="{{ route('cards.update', $card) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -105,6 +105,23 @@
                             @error('price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="photo" class="form-label">{{ __('messages.photo') }}</label>
+                            @if($card->photo)
+                                <div class="mb-2">
+                                    <img src="{{ $card->photo_url }}" alt="{{ $card->title }}" 
+                                         class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
+                                    <p class="form-text">{{ __('messages.current_photo') }}</p>
+                                </div>
+                            @endif
+                            <input type="file" class="form-control @error('photo') is-invalid @enderror" 
+                                   id="photo" name="photo" accept="image/*">
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">{{ __('messages.photo_requirements') }}</div>
                         </div>
 
                         <div class="mb-3">
