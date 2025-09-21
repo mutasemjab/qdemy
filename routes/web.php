@@ -153,9 +153,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::group(['middleware' => 'auth:user'], function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('user.logout');
-        Route::get('/profile', [ProfileController::class, 'profile'])->name('profile');
-        Route::get('/profile/edit', [ProfileController::class, 'editProfile'])->name('profile.edit');
-        Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+
 
 
         Route::post('/community', [CommunityController::class, 'store'])->name('community.store');

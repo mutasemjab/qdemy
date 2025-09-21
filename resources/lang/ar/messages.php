@@ -344,6 +344,7 @@ return [
    // Search and Filters
    'Search parents...' => 'البحث في أولياء الأمور...',
    'and :count more' => 'و :count أكثر',
+   'count' => 'العدد',
 
    "parents" => "أولياء الأمور",
    "teachers" => "المعلمين",

@@ -340,6 +340,7 @@ return [
     // Search and Filters
     'Search parents...' => 'Search parents...',
     'and :count more' => 'and :count more',
+    'count' => 'count',
 
     "parents" => "Parents",
     "teachers" => "Teachers",

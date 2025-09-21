@@ -16,7 +16,7 @@ class SubjectFormManager {
             gradeRequired: document.querySelector('.grade-required'),
             semesterSelect: document.getElementById('semester_id'),
             semesterSection: document.getElementById('semesterSection'),
-            fieldTypeSelect: document.getElementById('field_type_select'),
+            fieldTypeSelect: document.getElementById('field_type_id'),
             fieldsSelectionSection: document.getElementById('fieldsSelectionSection'),
             fieldsTableBody: document.getElementById('fieldsTableBody'),
             tawjihiFirstYearSection: document.getElementById('tawjihiFirstYearSection'),
@@ -39,7 +39,7 @@ class SubjectFormManager {
         this.attachEventListeners();
 
         // For edit mode, load data sequentially
-        if (this.config.isEditMode && this.elements.programSelect.value) {
+        if ((this.config.isEditMode && this.elements.programSelect.value) || this.elements.programSelect.value) {
             await this.loadInitialData();
         }
     }
@@ -51,7 +51,6 @@ class SubjectFormManager {
         const programId = this.elements.programSelect.value;
         const selectedOption = this.elements.programSelect.selectedOptions[0];
         const programCtgKey = selectedOption.dataset.ctgKey;
-
         // Load grades if needed
         if (!this.isProgramWithoutGrades(programCtgKey)) {
             this.elements.gradeSection.style.display = 'block';
@@ -174,7 +173,13 @@ class SubjectFormManager {
         // Check for Tawjihi last year
         else if (programCtgKey === 'tawjihi-and-secondary-program' && gradeCtgKey === 'final_year') {
             await this.loadFieldsForSelection();
+            this.elements.fieldTypeSelect.setAttribute('required', 'required');
         }
+
+        if (gradeCtgKey !== 'final_year') {
+            this.elements.fieldTypeSelect.removeAttribute('required');
+        }
+
         // First year or other grades - no additional selection needed
     }
 
@@ -294,13 +299,27 @@ class SubjectFormManager {
      */
     displayFieldsTable(fields) {
         this.elements.fieldsTableBody.innerHTML = '';
-
         fields.forEach(field => {
+            if(!field) return ;
             const row = document.createElement('tr');
+            row.id    = `field_${field.key}`;
 
             // Field name cell
-            const nameCell = document.createElement('td');
-            nameCell.textContent = this.getLocalizedName(field);
+            const nameCell             = document.createElement('td');
+            nameCell.textContent       = this.getLocalizedName(field);
+
+            const nameCellBtn          = document.createElement('button');
+            nameCellBtn.className      = 'add_field form-input btn btn-info border px-2 py-1 mx-2';
+            nameCellBtn.id             = `add_field_${field.key}`;
+            nameCellBtn.dataset.rowId  = `field_${field.key}`;
+            nameCellBtn.setAttribute('type','button');
+
+            const nameCellPlusIcon = document.createElement('i');
+            nameCellPlusIcon.className  = 'fa fa-plus';
+
+            nameCell.prepend(nameCellBtn);
+            nameCellBtn.appendChild(nameCellPlusIcon);
+            // nameCellBtn.insertBefore('nameCellBtn');
             row.appendChild(nameCell);
 
             // Add to field checkbox cell
@@ -308,9 +327,8 @@ class SubjectFormManager {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.className = 'form-check-input field-checkbox';
-            checkbox.name = 'category_id[]';
+            checkbox.name = `category_id[][${field.id}]`;
             checkbox.value = field.id;
-            checkbox.id = `field_${field.id}`;
 
             // Check if field was previously selected
             if (field.checked) {
@@ -326,39 +344,70 @@ class SubjectFormManager {
             // Is Optional select cell
             const optionalCell = document.createElement('td');
             const optionalSelect = this.createYesNoSelect(
-                `is_optional[${field.id}]`,
-                `is_optional_${field.id}`,
+                `is_optional[][${field.id}]`,
                 field.is_optional || false
             );
-            optionalSelect.disabled = !field.checked;
+
+            // optionalSelect.disabled = !field.checked;
             optionalCell.appendChild(optionalSelect);
             row.appendChild(optionalCell);
 
             // Is Ministry select cell
             const ministryCell = document.createElement('td');
             const ministrySelect = this.createYesNoSelect(
-                `is_ministry[${field.id}]`,
-                `is_ministry_${field.id}`,
+                `is_ministry[][${field.id}]`,
                 field.is_ministry !== undefined ? field.is_ministry : true
             );
-            ministrySelect.disabled = !field.checked;
+            // ministrySelect.disabled = !field.checked;
             ministryCell.appendChild(ministrySelect);
             row.appendChild(ministryCell);
 
             // Enable/disable selects based on checkbox
-            checkbox.addEventListener('change', (e) => {
-                optionalSelect.disabled = !e.target.checked;
-                ministrySelect.disabled = !e.target.checked;
-            });
+            // checkbox.addEventListener('change', (e) => {
+            //     optionalSelect.disabled = !e.target.checked;
+            //     ministrySelect.disabled = !e.target.checked;
+            // });
 
             this.elements.fieldsTableBody.appendChild(row);
+        });
+        this.addNewFieldRow();
+    }
+
+    /**
+     * add new field row
+     */
+    addNewFieldRow() {
+        document.querySelectorAll('.add_field').forEach(button => {
+            button.addEventListener('click', function() {
+                const rowId = this.dataset.rowId;
+                const row = document.getElementById(rowId);
+
+                // نسخ السطر
+                let newRow = row.cloneNode(true);
+                // إزالة الـ id من السطر المنسوخ لتجنب التكرار
+                newRow.removeAttribute('id');
+                // حذف زر الإضافة من السطر المنسوخ
+                const addButtonInNewRow = newRow.querySelector('.add_field');
+                if (addButtonInNewRow) {
+                    addButtonInNewRow.remove();
+                }
+
+                // إدراج السطر المنسوخ بعد السطر الأصلي مباشرة
+                row.insertAdjacentElement('afterend', newRow);
+                // إضافة event listener للأزرار الجديدة إذا كانت موجودة
+                const newAddButtons = newRow.querySelectorAll('.add_field');
+                newAddButtons.forEach(newButton => {
+                    newButton.addEventListener('click', arguments.callee);
+                });
+
+            });
         });
     }
 
     /**
      * Create a checkbox element
      */
-    createCheckbox(name, value, id, className = '') {
+    createCheckbox(name, value, className = '') {
         const wrapper = document.createElement('div');
         wrapper.className = 'form-check';
 
@@ -367,7 +416,6 @@ class SubjectFormManager {
         checkbox.className = `form-check-input ${className}`.trim();
         checkbox.name = name;
         checkbox.value = value;
-        checkbox.id = id;
 
         wrapper.appendChild(checkbox);
         return wrapper;
@@ -376,12 +424,10 @@ class SubjectFormManager {
     /**
      * Create a Yes/No select element
      */
-    createYesNoSelect(name, id, defaultValue = false) {
+    createYesNoSelect(name, defaultValue = false) {
         const select = document.createElement('select');
         select.className = 'form-control form-control-sm';
         select.name = name;
-        select.id = id;
-
         const optionNo = document.createElement('option');
         optionNo.value = '0';
         optionNo.textContent = this.config.translations.no;

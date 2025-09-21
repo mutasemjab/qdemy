@@ -84,6 +84,13 @@ class Category extends Model
         return $ancestors;
     }
 
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'category_subjects')
+            ->withPivot(['pivot_level', 'is_optional', 'is_ministry'])
+            ->withTimestamps();
+    }
+
     /**
      * Get the full breadcrumb path
      */
@@ -236,10 +243,10 @@ class Category extends Model
     {
         return $this->hasMany(BankQuestion::class);
     }
-    
+
     public function ministerialYearsQuestions()
     {
         return $this->hasMany(MinisterialYearsQuestion::class);
     }
-    
+
 }

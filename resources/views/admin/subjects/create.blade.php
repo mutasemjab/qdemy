@@ -15,7 +15,6 @@
                         </a>
                     </div>
                 </div>
-
                 <form action="{{ route('subjects.store') }}" method="POST" id="subjectForm">
                     @csrf
                     <div class="card-body">
@@ -190,7 +189,8 @@
                                     <select class="form-control @error('grade_id') is-invalid @enderror"
                                             id="grade_id"
                                             name="grade_id">
-                                        <option value="">{{ __('messages.select_grade') }}</option>
+                                        <option {{ old('programm_id') == $program->id ? 'selected' : '' }}
+                                            value="">{{ __('messages.select_grade') }}</option>
                                     </select>
                                     @error('grade_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -351,6 +351,12 @@
                 selectField: '{{ __("messages.select_field") }}',
                 yes: '{{ __("messages.yes") }}',
                 no: '{{ __("messages.no") }}'
+            },
+            isEditMode: false,
+            existingData: {
+                programId:  "{{ old('programm_id')  }}",
+                gradeId:    "{{ old('grade_id')  }}",
+                semesterId: "{{ old('semester_id')  }}",
             }
         });
     });

@@ -414,4 +414,6 @@ return array (
   'الحالة' => 'الحالة',
   'مراجعة الإجابات' => 'مراجعة الإجابات',
   'محاولة جديدة' => 'محاولة جديدة',
+  'Unassigned Contents' => 'Unassigned Contents',
+  'go_to_app_to_watch_course' => 'go_to_app_to_watch_course',
 );

@@ -74,7 +74,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         });
 
 
-  
+
 
 
 
@@ -182,7 +182,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::put('sections/{section}', [CourseSectionController::class, 'update'])->name('sections.update');
             Route::delete('sections/{section}', [CourseSectionController::class, 'destroy'])->name('sections.destroy');
 
-            // Content routes - IMPORTANT: specific routes BEFORE parameterized ones  
+            // Content routes - IMPORTANT: specific routes BEFORE parameterized ones
             Route::get('contents/create', [CourseSectionController::class, 'createContent'])->name('contents.create');
             Route::post('contents', [CourseSectionController::class, 'storeContent'])->name('contents.store');
             Route::get('contents/{content}/edit', [CourseSectionController::class, 'editContent'])->name('contents.edit');

@@ -76,9 +76,10 @@
             <h2 class="lesson-title">{{$course->title}}</h2>
             <p class="lesson-desc">{{$course->description}}</p>
 
-            <h3 class="lesson-subtitle">{{ translate_lang('course_content') }}</h3>
 
-            @if($mainSections && $mainSections->count())
+            @if($is_enrolled && $user)
+            <h3 class="lesson-subtitle">{{ translate_lang('go_to_app_to_watch_course') }}</h3>
+            @elseif($mainSections && $mainSections->count())
             <div class="accordion">
                 @foreach($mainSections as $section)
                 <div class="accordion-item">
@@ -378,9 +379,9 @@
 <div class="video-popup">
     <div class="video-popup-content">
         <span class="close-popup">&times;</span>
-        <div class="video-controls">
+        <!-- <div class="video-controls">
             <button style="@if(!$user?->id)display:none;@endif" id="mark-complete-btn" class="mark-complete-btn">تسجيل كمكتمل</button>
-        </div>
+        </div> -->
         <iframe src="" frameborder="0" allowfullscreen></iframe>
     </div>
 </div>
@@ -400,6 +401,7 @@
 </div>
 @endsection
 
+@if(!$is_enrolled || !$user)
 @push('scripts')
 <script>
     let user = "{{$user?->id}}";
@@ -581,7 +583,6 @@
     });
 </script>
 <!-- save user progress -->
-
 <script>
     let currentVideoId = null;
     let videoStartTime = 0;
@@ -813,6 +814,8 @@
         }
     }
 </script>
+@endpush
+@endif
 
 @push('styles')
 <style>

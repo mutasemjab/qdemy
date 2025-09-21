@@ -55,14 +55,17 @@ class User extends Authenticatable
    {
       return $this->hasOne(Parentt::class);
    }
-
+   public function parent()
+   {
+      return $this->parentt();
+   }
    public function getAvailableStudentsToAdd($search = null)
     {
         if ($this->role_name !== 'parent') {
             return collect();
         }
 
-        $parentRecord = $this->parentRecord;
+        $parentRecord = $this->parent;
         if (!$parentRecord) {
             return collect();
         }
