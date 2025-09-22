@@ -66,7 +66,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('role', 'App\Http\Controllers\Admin\RoleController@index')->name('admin.role.index');
         Route::get('role/create', 'App\Http\Controllers\Admin\RoleController@create')->name('admin.role.create');
         Route::get('role/{id}/edit', 'App\Http\Controllers\Admin\RoleController@edit')->name('admin.role.edit');
-        Route::patch('role/{id}', 'App\Http\Controllers\Admin\RoleController@update')->name('admin.role.update');
+        Route::put('role/{id}', 'App\Http\Controllers\Admin\RoleController@update')->name('admin.role.update');
         Route::post('role', 'App\Http\Controllers\Admin\RoleController@store')->name('admin.role.store');
         Route::post('admin/role/delete', 'App\Http\Controllers\Admin\RoleController@delete')->name('admin.role.delete');
 
