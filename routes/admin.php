@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\OnBoardingController;
 use App\Http\Controllers\Admin\BankQuestionController;
 use App\Http\Controllers\Admin\SpecialQdemyController;
 use App\Http\Controllers\Admin\CourseSectionController;
+use App\Http\Controllers\Admin\CourseUserController;
 use App\Http\Controllers\Admin\OpinionStudentController;
 use App\Http\Controllers\Admin\QuestionWebsiteController;
 use App\Http\Controllers\Admin\WalletTransactionController;
@@ -290,6 +291,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('admin/courses/{course}/sections', [ExamController::class, 'getCourseSections'])
             ->name('admin.courses.sections');
         Route::get('admin/users/search', [CardNumberController::class, 'searchUsers'])->name('admin.users.search');
+
+        Route::name('admin.')->group(function () {
+            Route::resource('course-users',CourseUserController::class);
+        });
 
     });
 });

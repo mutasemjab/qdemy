@@ -132,6 +132,11 @@ class PermissionSeeder extends Seeder
             'wallet-transaction-add',
             'wallet-transaction-edit',
             'wallet-transaction-delete',
+      
+            'courseUser-table',
+            'courseUser-add',
+            'courseUser-edit',
+            'courseUser-delete',
 
         ];
 

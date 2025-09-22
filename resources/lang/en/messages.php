@@ -1841,5 +1841,60 @@ return [
     'card_number_marked_sold' => 'Card number marked as sold successfully.',
     'card_number_marked_not_sold' => 'Card number marked as not sold successfully.',
     'error_updating_sell_status' => 'Error updating sell status',
+      'Price' => 'Price',
+    'Amount' => 'Amount',
+    'Status' => 'Status',
+    'Notes' => 'Notes',
+    'Payment Notes' => 'Payment Notes',
+    'Optional notes' => 'Optional notes',
+    'N/A' => 'N/A',
+    'No data found' => 'No data found',
+    'Something went wrong' => 'Something went wrong',
+    
+    // Course Enrollments
+    'Course Enrollments' => 'Course Enrollments',
+    'Course Enrollment Details' => 'Course Enrollment Details',
+    'New Course Enrollment' => 'New Course Enrollment',
+    'Edit Course Enrollment' => 'Edit Course Enrollment',
+    'Course enrolled successfully' => 'Course enrolled successfully',
+    'Course enrollment updated successfully' => 'Course enrollment updated successfully',
+    'Course enrollment deleted successfully' => 'Course enrollment deleted successfully',
+    'User already enrolled in this course' => 'User already enrolled in this course',
+    
+    // Students and Courses
+    'Student' => 'Student',
+    'Students' => 'Students',
+    'Course' => 'Course',
+    'Courses' => 'Courses',
+    'Select Student' => 'Select Student',
+    'Select Course' => 'Select Course',
+    'Student Information' => 'Student Information',
+    'Course Information' => 'Course Information',
+    'User ID' => 'User ID',
+    'Course ID' => 'Course ID',
+    
+    // Enrollment
+    'Enrollment Date' => 'Enrollment Date',
+    'Enrollment Information' => 'Enrollment Information',
+    'Last Updated' => 'Last Updated',
+    'Duration' => 'Duration',
+    
+    // Payment
+    'Payment Method' => 'Payment Method',
+    'Payment Information' => 'Payment Information',
+    'Select Payment Method' => 'Select Payment Method',
+    'Card' => 'Card',
+    'Visa' => 'Visa',
+    'Cash' => 'Cash',
+    'Transaction Reference' => 'Transaction Reference',
+    'Receipt Number' => 'Receipt Number',
+    'No payment information found' => 'No payment information found',
+    'Leave blank to use course price' => 'Leave blank to use course price',
+    'Leave blank to use the default course price' => 'Leave blank to use the default course price',
+    
+    // Confirmation
+    'Confirm Delete' => 'Confirm Delete',
+    'Are you sure you want to delete this course enrollment?' => 'Are you sure you want to delete this course enrollment?',
+
 
 ];
