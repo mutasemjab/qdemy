@@ -62,20 +62,20 @@ class SubjectRepository
     public function tawjihiFirstGradeSubjects()
     {
         return $this->model->where('is_active', true)
-        ->whereHas('grade',function ($q) {
-            $q->where('ctg_key','first_year');
-            $q->where('is_active', true);
-        });
+            ->whereHas('grade', function ($q) {
+                $q->where('ctg_key', 'first_year');
+                $q->where('is_active', true);
+            });
     }
 
     public function getTawjihiFirstGradesMinistrySubjects()
     {
         return $this->tawjihiFirstGradeSubjects()
-        ->whereHas('category_subjects',function ($q) {
-            $q->where('is_ministry', true);
-            $q->where('pivot_level', 'grade');
-        })
-        ->get();
+            ->whereHas('category_subjects', function ($q) {
+                $q->where('is_ministry', true);
+                $q->where('pivot_level', 'grade');
+            })
+            ->get();
     }
 
     // get all school subjects for first tawjihi grade
@@ -83,11 +83,11 @@ class SubjectRepository
     public function getTawjihiFirstGradesSchoolSubjects()
     {
         return $this->tawjihiFirstGradeSubjects()
-        ->whereHas('category_subjects',function ($q) {
-            $q->where('is_ministry', false);
-            $q->where('pivot_level', 'grade');
-        })
-        ->get();
+            ->whereHas('category_subjects', function ($q) {
+                $q->where('is_ministry', false);
+                $q->where('pivot_level', 'grade');
+            })
+            ->get();
     }
 
     // get all ministry subjects for final tawjihi grade
@@ -105,8 +105,8 @@ class SubjectRepository
                 // $q->whereHas('grade', function ($q) {
                 //     $q->where('ctg_key', 'final_year');
                 // });
-        })
-        ->get();
+            })
+            ->get();
         // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
         // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
@@ -128,13 +128,13 @@ class SubjectRepository
             ->where('is_ministry', false)
             ->whereHas('subject', function ($q) {
                 $q->where('is_active', true);
-        })
-        ->get();
+            })
+            ->get();
         // عمل foreach هنا بدل من استخدام whereIn مقصود لان تلك الطريقة تسمح بالحصول علي المواد المكررة (قد يكون للحقل اكثر من مادة اختيارية)
         // ممنوع التعديل
         foreach ($CategorySubjects as $key => $CategorySubject) {
-            $subject = Subject::where('id',$CategorySubject->subject_id)->where('is_active',true)->first();
-            if(!$subject) continue;
+            $subject = Subject::where('id', $CategorySubject->subject_id)->where('is_active', true)->first();
+            if (!$subject) continue;
             $subjects->push($subject);
         }
 
@@ -149,8 +149,8 @@ class SubjectRepository
     public function getOptionalSubjectOptions($field, $subject)
     {
         return $this->model->where('is_active', true)
-            ->where( function ($q) use ($subject, $field) {
-                if($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
+            ->where(function ($q) use ($subject, $field) {
+                if ($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
             })
             ->whereHas('grade', function ($q) {
                 $q->where('ctg_key', 'final_year');

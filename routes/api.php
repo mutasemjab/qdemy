@@ -125,15 +125,20 @@ Route::group(['prefix' => 'v1/user'], function () {
         // Cart & Payment
         Route::get('/cart', [EnrollmentController::class, 'index']);
         Route::post('/cart/add', [EnrollmentController::class, 'addToSession']);
+        Route::post('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
         Route::delete('/cart/remove-course', [EnrollmentController::class, 'removeCourseFromCart']);
-        Route::put('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
+        Route::delete('/cart/clear', [EnrollmentController::class, 'clearCart']);
+
+        // Payment & Enrollment
         Route::post('/payment/course/card', [EnrollmentController::class, 'paymentForCourseWithCard']);
         Route::post('/payment/package/card', [EnrollmentController::class, 'paymentForPackageWithCard']);
         Route::get('/enrolled-courses', [EnrollmentController::class, 'getUserEnrolledCourses']);
 
+        
         // Packages
-        Route::group(['prefix' => 'packages'], function () {
-            Route::get('/', [PackageAndOfferController::class, 'index']);
+        Route::prefix('packages')->group(function () {
+           Route::get('/', [PackageAndOfferController::class, 'index'])->name('api.packages.index');
+           Route::get('/{package}/details', [PackageAndOfferController::class, 'show'])->name('api.packages.show');
         });
 
 

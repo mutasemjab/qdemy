@@ -532,15 +532,15 @@
         })();
     </script>
 
-<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
-<script>
-AOS.init({
-  duration: 600,
-  easing: 'ease-out-cubic',
-  offset: 80,
-  once: true
-});
-</script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+    AOS.init({
+    duration: 600,
+    easing: 'ease-out-cubic',
+    offset: 80,
+    once: true
+    });
+    </script>
 
 
     @stack('scripts')
