@@ -16,10 +16,11 @@ class Teacher extends Model
         return $this->belongsTo(User::class);
     }
 
-       public function courses()
+   public function courses()
     {
-        return $this->hasMany(Course::class);
+        return $this->hasMany(Course::class, 'teacher_id', 'user_id');
     }
+
     
     public function getPhotoUrlAttribute()
     {
