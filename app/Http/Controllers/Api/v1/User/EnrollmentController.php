@@ -148,7 +148,7 @@ class EnrollmentController extends Controller
 
     /**
      * حذف كورس من السلة
-     */
+    */
     public function removeCourseFromCart(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -193,7 +193,7 @@ class EnrollmentController extends Controller
 
     /**
      * مسح السلة بالكامل
-     */
+    */
     public function clearCart()
     {
         $user = auth('user-api')->user();
@@ -218,7 +218,7 @@ class EnrollmentController extends Controller
 
     /**
      * Debug cart session - for testing purposes
-     */
+    */
     public function debugCart()
     {
         $user = auth('user-api')->user();

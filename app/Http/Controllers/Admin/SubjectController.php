@@ -6,6 +6,7 @@ use App\Models\Subject;
 use App\Models\Category;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
+use App\Models\CategorySubject;
 use App\Models\SubjectCategory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -197,7 +198,6 @@ class SubjectController extends Controller
         $validated = $this->validateSubject($request, $subject->id);
 
         DB::beginTransaction();
-
         try {
 
             $subject->update($validated);
@@ -387,11 +387,11 @@ class SubjectController extends Controller
 
                 $rules['field_type_id'] = 'required|exists:categories,id';
                 $rules['category_id']   = 'required|array';
-                $rules['category_id.*'] = 'exists:categories,id';
+                $rules['category_id.*.*'] = 'exists:categories,id';
                 $rules['is_optional']   = 'required|array';
-                $rules['is_optional.*'] = 'boolean';
+                $rules['is_optional.*.*'] = 'boolean';
                 $rules['is_ministry']   = 'required|array';
-                $rules['is_ministry.*'] = 'boolean';
+                $rules['is_ministry.*.*'] = 'boolean';
 
             }elseif ($grade && $grade->ctg_key == 'first_year') { // Validation for Tawjihi first year
 
@@ -473,12 +473,14 @@ class SubjectController extends Controller
             // Case 4: Tawjihi last year with fields
             elseif ($program->ctg_key == 'tawjihi-and-secondary-program' && $grade->ctg_key == 'final_year') {
                 if ($request->has('category_id')) {
-                    foreach ($request->category_id as $fieldId) {
-                        $subject->categories()->attach($fieldId, [
-                            'pivot_level' => 'field',
-                            'is_optional' => $request->is_optional[$fieldId] ?? false,
-                            'is_ministry' => $request->is_ministry[$fieldId] ?? true
-                        ]);
+                    foreach ($request->category_id as $key => $value) {
+                        foreach ($value as $fieldId) {
+                            $subject->categories()->attach($fieldId, [
+                                'pivot_level' => 'field',
+                                'is_optional' => $request->is_optional[$key][$fieldId] ?? false,
+                                'is_ministry' => $request->is_ministry[$key][$fieldId] ?? true
+                            ]);
+                        }
                     }
                 }
             }
@@ -523,28 +525,50 @@ class SubjectController extends Controller
         return response()->json($semesters);
     }
 
-    public function getFields(Request $request)
+    public function getFields(Request $request,$subject = null)
     {
         $fields = $this->categoryRepository->getTawjihiLastGradeFieldes();
 
         // Check if we're in edit mode
-        if ($request->has('subject_id') && $request->subject_id) {
-            $subject = Subject::find($request->subject_id);
+        if ($request->has('subject_id') && $request->subject_id || $subject) {
+            $subject = Subject::find($request->subject_id ?? $subject);
 
             if ($subject) {
+
                 // Get existing category relationships for fields
-                $existingRelations = $subject->categories()
-                    ->wherePivot('pivot_level', 'field')
+                $existingRelations = CategorySubject::where('subject_id',$subject->id)
+                    ->where('pivot_level', 'field')
                     ->get()
                     ->keyBy('id');
 
+                // get array for current category_id relations
+                $existingRelationsFields = $existingRelations->pluck('category_id')?->toArray() ?? [];
+
                 // Add relationship data to each field
-                $fields = $fields->map(function($field) use ($existingRelations) {
-                    $field->checked = $existingRelations->has($field->id);
-                    $field->is_optional = $field->checked ? $existingRelations->get($field->id)->pivot->is_optional : false;
-                    $field->is_ministry = $field->checked ? $existingRelations->get($field->id)->pivot->is_ministry : true;
-                    return $field;
+                $fields = $fields->map(function($field) use ($existingRelations,$existingRelationsFields) {
+                    $field->key         = $field->id;
+                    $field->checked     = false;
+                    $field->is_optional = false;
+                    $field->is_ministry = true;
+                    if(!in_array($field->id,$existingRelationsFields)){
+                       return $field;
+                    }
                 });
+
+                if($existingRelationsFields){
+                    foreach ($existingRelations as $key => $existingRelation) {
+                        $ctgField = new Category;
+                        $ctgField->key         = $existingRelation->category_id .'_'.$existingRelation->subject_id;
+                        $ctgField->id          = $existingRelation->category_id;
+                        $ctgField->checked     = true;
+                        $ctgField->name_ar     = $existingRelation->category->name_ar;
+                        $ctgField->name_en     = $existingRelation->category->name_en;
+                        $ctgField->is_optional = $existingRelation->is_optional;
+                        $ctgField->is_ministry = $existingRelation->is_ministry;
+                        $fields = $fields->push($ctgField);
+                    }
+                }
+
             }
         }
 
