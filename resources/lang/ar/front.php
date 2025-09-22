@@ -417,6 +417,6 @@ return array (
   'بدء الامتحان' => 'بدء الامتحان',
   'ملاحظة' => 'ملاحظة',
   'لقد استنفدت عدد المحاولات المسموحة' => 'لقد استنفدت عدد المحاولات المسموحة',
-  'Unassigned Contents' => 'Unassigned Contents',
-  'go_to_app_to_watch_course' => 'go_to_app_to_watch_course',
+  'Unassigned Contents' => 'المحتويات غير المخصصة',
+  'go_to_app_to_watch_course' => 'اذهب للتطبيق لمشاهدة دورتك',
 );

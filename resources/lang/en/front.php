@@ -419,5 +419,5 @@ return array (
   'ملاحظة' => 'ملاحظة',
   'لقد استنفدت عدد المحاولات المسموحة' => 'لقد استنفدت عدد المحاولات المسموحة',
   'Unassigned Contents' => 'Unassigned Contents',
-  'go_to_app_to_watch_course' => 'go_to_app_to_watch_course',
+  'go_to_app_to_watch_course' => 'Go to app to watch your course',
 );
