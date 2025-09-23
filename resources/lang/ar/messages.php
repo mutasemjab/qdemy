@@ -2,7 +2,6 @@
 
 return [
 
-<<<<<<< HEAD
    "Home" => "الصفحة الرئيسية",
    "Logout" => "تسجيل الخروج",
    'users' => 'المستخدمين',
@@ -1771,7 +1770,6 @@ return [
    'are_you_sure_delete_page' => 'هل أنت متأكد من أنك تريد حذف هذه الصفحة؟',
    'confirm_deletion' => 'تأكيد الحذف',
    'this_action_cannot_be_undone' => 'لا يمكن التراجع عن هذا الإجراء.',
-=======
     "Home" => "الصفحة الرئيسية",
     "Logout" => "تسجيل الخروج",
     'users' => 'المستخدمين',
@@ -3607,5 +3605,4 @@ return [
     'card_number_marked_sold' => 'تم تعيين رقم البطاقة كمباعة بنجاح.',
     'card_number_marked_not_sold' => 'تم تعيين رقم البطاقة كغير مباعة بنجاح.',
     'error_updating_sell_status' => 'خطأ في تحديث حالة البيع',
->>>>>>> 5b8324ceb5c344c68b00ad9414a12b552d589010
 ];

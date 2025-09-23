@@ -21,15 +21,11 @@ class ExamController extends Controller
     // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
     // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
     // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
-    /**
-     * التحكم في السماح بتعديل الإجابات السابقة
-    */
-    protected $can_edit_answers = true;
 
-    /**
-     * التحكم في التصحيح التلقائي عند وجود أسئلة مقالية
-    */
-    protected $auto_grade_with_essays = true;
+    public function __construct(Request $request)
+    {
+        dd($request);
+    }
 
     public function index(Request $request)
     {
