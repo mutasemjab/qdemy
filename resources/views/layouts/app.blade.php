@@ -11,12 +11,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat+Arabic:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') }}?v=2">
 
     @stack('styles')
     @yield('styles')
@@ -25,7 +27,9 @@
 
 <body>
 
-    @include('layouts.header')
+    @if (!isset($hideHeader))
+        @include('layouts.header')
+    @endif
 
     <main>
         <!-- @include('admin.includes.alerts.success')
@@ -529,6 +533,17 @@
             layout();
         })();
     </script>
+
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+    AOS.init({
+    duration: 600,
+    easing: 'ease-out-cubic',
+    offset: 80,
+    once: true
+    });
+    </script>
+
 
     @stack('scripts')
     @yield('scripts')

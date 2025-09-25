@@ -31,12 +31,15 @@
     margin-left: 15px;
     }
 </style>
-  @error('*')
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      {{ $message }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @enderror
+
+@if(isset($errors))
+@error('*')
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    {{ $message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+@enderror
+@endif
 @if(session('error'))
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     {{ session('error') }}

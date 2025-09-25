@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\URL;
 class ExamController extends Controller
 {
     use Responses;
-    
+
       public function index()
     {
         $exams = Exam::with(['subject', 'course', 'section', 'questions'])->latest()->paginate(10);
@@ -41,5 +41,5 @@ class ExamController extends Controller
       ]);
   }
 
-    
+
 }

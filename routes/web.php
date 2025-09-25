@@ -128,7 +128,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'show'])->name('package');
     });
 
-    // enrollment routes
+    // exam routes starts
     // عرض قائمة الامتحانات
     Route::get('exam/', [ExamController::class, 'index'])->name('exam.index');
     // عرض الامتحان
@@ -148,6 +148,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         // مراجعة محاولة معينة
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
+    // exam routes ends
 
     Route::prefix('page')->name('page.')->group(function () {
         Route::get('/privacy-policy', [PagesController::class, 'privacyPolicy'])->name('privacy-policy');

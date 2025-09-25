@@ -1,3 +1,8 @@
+@if($isApi)
+@php $hideFooter = true; @endphp
+@php $hideHeader = true; @endphp
+@endif
+
 @extends('layouts.app')
 
 @section('title','E-Exam')
@@ -14,7 +19,7 @@
     <div class="examx-filters">
         @include('web.alert-message')
 
-        <form action='{{ route("exam.index") }}' method='get' id="filterForm">
+        <form action='{{ route($apiRoutePrefix."exam.index") }}' method='get' id="filterForm">
             <div class="examx-row">
 
                 <div class="examx-dropdown">
@@ -87,23 +92,23 @@
                     </div>
                 </div>
                 @if($exam->current_user_attempt())
-                <a href="{{ route('exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
+                <a href="{{ route($apiRoutePrefix.'exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
                     {{ translate_lang('continue') }}
                 </a>
                 @elseif($exam->can_add_attempt())
-                <a href="{{ route('exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
+                <a href="{{ route($apiRoutePrefix.'exam',['exam'=>$exam->id,'slug'=>$exam->slug]) }}" class="examx-btn">
                     {{ translate_lang('start_exam') }}
                 </a>
                 @elseif($exam->result_attempt())
-                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="examx-btn">
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="examx-btn">
                     {{ translate_lang('result') }}
                 </a>
                 @else($exam->last_submitted_attempt())
-                <a href="{{ route('review.attempt',['exam'=>$exam->id,'attempt'=>$exam->last_submitted_attempt()->id]) }}" class="examx-btn">
+                <a href="{{ route($apiRoutePrefix.'review.attempt',['exam'=>$exam->id,'attempt'=>$exam->last_submitted_attempt()->id]) }}" class="examx-btn">
                     {{ translate_lang('last attempt') }}
                 </a>
                 @endif
-                
+
             </div>
         </div>
         @empty

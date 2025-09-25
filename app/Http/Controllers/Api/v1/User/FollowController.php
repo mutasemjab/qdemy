@@ -68,12 +68,5 @@ class FollowController extends Controller
             return $this->error_response('Failed to toggle follow status: ' . $e->getMessage(), null);
         }
     }
-
- 
-
- 
-
-  
-
   
 }

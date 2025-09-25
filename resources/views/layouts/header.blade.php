@@ -44,7 +44,7 @@
 
             <!-- Language Dropdown -->
             <div class="lang-dropdown">
-                <button class="lang-btn"><i class="fas fa-globe"></i></button>
+                <button class="lang-btn" type="button"><i class="fas fa-globe"></i></button>
                 <div class="lang-menu">
                     <a href="{{ LaravelLocalization::getLocalizedURL('ar') }}">العربية</a>
                     <a href="{{ LaravelLocalization::getLocalizedURL('en') }}">English</a>
@@ -57,4 +57,23 @@
             </button>
         </div>
     </div>
+
 </header>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function(){
+  const langDropdown = document.querySelector(".lang-dropdown");
+  const langBtn = document.querySelector(".lang-btn");
+
+  langBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    langDropdown.classList.toggle("open");
+  });
+
+  document.addEventListener("click", function(e){
+    if(!langDropdown.contains(e.target)){
+      langDropdown.classList.remove("open");
+    }
+  });
+});
+</script>

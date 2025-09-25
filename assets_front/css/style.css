@@ -19,12 +19,162 @@ body {
     direction: rtl;
 }
 
+:root{
+  --ease: cubic-bezier(.22,.61,.36,1);
+  --dur-1: .2s;
+  --dur-2: .35s;
+  --shadow-1: 0 6px 18px rgba(0,0,0,.12);
+  --shadow-2: 0 12px 30px rgba(0,0,0,.18);
+}
+
+:root{--anim-dur:1s;--anim-ease:cubic-bezier(.22,.61,.36,1);--anim-iter:infinite;--anim-delay:0s}
+
+.anim{animation-duration:var(--anim-dur);animation-timing-function:var(--anim-ease);animation-iteration-count:var(--anim-iter);animation-delay:var(--anim-delay);animation-fill-mode:both}
+.anim-once{--anim-iter:1}
+.anim-fast{--anim-dur:.6s}
+.anim-slow{--anim-dur:2.2s}
+.anim-delay-100{--anim-delay:.1s}
+.anim-delay-300{--anim-delay:.3s}
+.anim-reverse{animation-direction:reverse}
+.anim-pause-on-hover:hover{animation-play-state:paused}
+
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+.animate-pulse{animation-name:pulse}
+
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.12)}28%{transform:scale(.96)}42%{transform:scale(1.08)}}
+.animate-heartbeat{animation-name:heartbeat}
+
+@keyframes float-y{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.animate-float-y{animation-name:float-y}
+
+@keyframes float-x{0%,100%{transform:translateX(0)}50%{transform:translateX(12px)}}
+.animate-float-x{animation-name:float-x}
+
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(2.2deg)}75%{transform:rotate(-2.2deg)}}
+.animate-wiggle{animation-name:wiggle}
+
+@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-6px)}20%,40%,60%,80%{transform:translateX(6px)}}
+.animate-shake{animation-name:shake}
+
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+.animate-bounce{animation-name:bounce}
+
+@keyframes jelly{0%,100%{transform:scale(1,1)}30%{transform:scale(1.12,.88)}40%{transform:scale(.9,1.1)}50%{transform:scale(1.05,.95)}65%{transform:scale(.98,1.02)}}
+.animate-jelly{animation-name:jelly}
+
+@keyframes swing{20%{transform:rotate(12deg)}40%{transform:rotate(-9deg)}60%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+.animate-swing{transform-origin:top center;animation-name:swing}
+
+@keyframes tada{0%{transform:scale(1)}10%,20%{transform:scale(.95) rotate(-3deg)}30%,50%,70%,90%{transform:scale(1.05) rotate(3deg)}40%,60%,80%{transform:scale(1.05) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+.animate-tada{animation-name:tada}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+.animate-spin-slow{--anim-dur:12s;animation-name:spin;animation-timing-function:linear}
+.animate-spin{--anim-dur:2.4s;animation-name:spin;animation-timing-function:linear}
+
+@keyframes flip-x{0%{transform:perspective(800px) rotateX(0)}50%{transform:perspective(800px) rotateX(180deg)}100%{transform:perspective(800px) rotateX(360deg)}}
+.animate-flip-x{animation-name:flip-x}
+
+@keyframes flip-y{0%{transform:perspective(800px) rotateY(0)}50%{transform:perspective(800px) rotateY(180deg)}100%{transform:perspective(800px) rotateY(360deg)}}
+.animate-flip-y{animation-name:flip-y}
+
+@keyframes tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(4deg)}}
+.animate-tilt{animation-name:tilt}
+
+@keyframes skew{0%,100%{transform:skewX(0)}50%{transform:skewX(6deg)}}
+.animate-skew{animation-name:skew}
+
+@keyframes slide-horizontal{0%,100%{transform:translateX(0)}25%{transform:translateX(10px)}75%{transform:translateX(-10px)}}
+.animate-slide-horizontal{animation-name:slide-horizontal}
+
+@keyframes slide-vertical{0%,100%{transform:translateY(0)}25%{transform:translateY(-10px)}75%{transform:translateY(10px)}}
+.animate-slide-vertical{animation-name:slide-vertical}
+
+@keyframes blink{0%,49%,100%{opacity:1}50%,99%{opacity:0}}
+.animate-blink{animation-name:blink}
+
+@keyframes breathe{0%,100%{letter-spacing:0;transform:scale(1)}50%{letter-spacing:.5px;transform:scale(1.02)}}
+.animate-breathe{animation-name:breathe}
+
+@keyframes ripple{0%{box-shadow:0 0 0 0 rgba(0,85,210,.35)}70%{box-shadow:0 0 0 10px rgba(0,85,210,0)}100%{box-shadow:0 0 0 0 rgba(0,85,210,0)}}
+.animate-ripple{animation-name:ripple}
+
+@keyframes glow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+.animate-glow{animation-name:glow}
+
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+.animate-pop{animation-name:pop}
+
+@keyframes hover-lift{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.animate-hover-lift{animation-name:hover-lift}
+
+@keyframes hover-pop{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.animate-hover-pop{animation-name:hover-pop}
+
+@media (prefers-reduced-motion:reduce){
+  .anim,.animate-pulse,.animate-heartbeat,.animate-float-y,.animate-float-x,.animate-wiggle,.animate-shake,.animate-bounce,.animate-jelly,.animate-swing,.animate-tada,.animate-spin-slow,.animate-spin,.animate-flip-x,.animate-flip-y,.animate-tilt,.animate-skew,.animate-slide-horizontal,.animate-slide-vertical,.animate-blink,.animate-breathe,.animate-ripple,.animate-glow,.animate-pop,.animate-hover-lift,.animate-hover-pop{animation:none!important}
+}
+
+
+*,
+*:before,
+*:after { box-sizing: border-box; }
+
+a,
+button,
+.btn,
+.service-btn,
+.hero-card,
+.blob-btn,
+.grade-card,
+.university-card,
+.subject-card,
+.tawjihi-card,
+.gprogram-card,
+.examx-card {
+  transition: transform var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease), background-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease), opacity var(--dur-1) var(--ease);
+  will-change: transform, box-shadow;
+}
+
+.hover-lift { transform: translateY(0) scale(1); }
+.hover-lift:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-1); }
+
+.hover-pop { transform: translateZ(0) scale(1); }
+.hover-pop:hover { transform: scale(1.05); box-shadow: var(--shadow-2); }
+
+.hover-underline { position: relative; }
+.hover-underline:after { content:""; position:absolute; inset:auto 0  -2px 0; height:2px; background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform var(--dur-2) var(--ease); }
+.hover-underline:hover:after { transform: scaleX(1); }
+
+.btn-primary:hover { filter: brightness(1.05); box-shadow: var(--shadow-1); transform: translateY(-2px); }
+.btn-outline:hover { background: var(--main-color); color:#fff; box-shadow: var(--shadow-1); transform: translateY(-2px); }
+
+.service-btn:hover,
+.grade-card:hover,
+.subject-card:hover,
+.university-card:hover,
+.gprogram-card:hover,
+.tawjihi-card:hover { box-shadow: var(--shadow-1); }
+
+.link-fade { opacity:.9; }
+.link-fade:hover { opacity:1; }
+
+.focus-ring:focus-visible { outline: 2px solid var(--main-color); outline-offset: 3px; border-radius: 8px; }
+
+@media (hover:hover){
+  .hover-glow:hover { box-shadow: 0 0 0 6px rgba(0,85,210,.08), var(--shadow-1); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
 .header {
     background: #fff;
     border-bottom: 1px solid #ddd;
     padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
 }
 
@@ -33,6 +183,7 @@ body {
     justify-content: space-between;
     width: 100%;
     align-items: center;
+    max-width: 1300px;
 }
 
 .nav ul {
@@ -387,7 +538,7 @@ body {
 .hero-cards {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 25px;
     margin-top: -21px;
     z-index: 9999;
     position: relative;
@@ -395,8 +546,8 @@ body {
 }
 
 .hero-card {
-    width: 276px;
-    height: 262px;
+    width: 307px !important;
+    height: 285px;
     background-size: cover;
     background-position: center;
     border-radius: 15px;
@@ -518,7 +669,7 @@ a.hero-card {
     content: "";
     position: absolute;
     top: 52%;
-    width: 91%;
+    width: 87%!important;
     height: 84px;
     background: url('../images/wave.png') repeat-x center;
     background-size: contain;
@@ -583,7 +734,7 @@ background-color: #E7E7E780;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    max-width: 1250px;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
@@ -4224,3 +4375,27 @@ header.tj2009__head {
     .messages.modal {
         animation: fadeIn 0.3s;
     }
+
+.lang-dropdown{ position: relative; }
+
+.lang-menu{
+  position: absolute;
+  right: 0;
+  top: 110%;
+  min-width: 160px;
+  background: #fff;
+  border-radius: 8px;
+  transform-origin: top right;
+  transform: scale(.95) translateY(-6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .3s var(--ease, cubic-bezier(.22,.61,.36,1)), opacity .3s var(--ease, cubic-bezier(.22,.61,.36,1));
+  z-index: 1001;
+}
+
+.lang-dropdown.open .lang-menu{
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+

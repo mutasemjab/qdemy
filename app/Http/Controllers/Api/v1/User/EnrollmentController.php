@@ -98,53 +98,8 @@ class EnrollmentController extends Controller
     }
 }
 
-    /**
-     * تحديث سلة الباكدج
-     */
-    public function updatePackageCart(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'package_id' => 'required|exists:packages,id',
-            'courses' => 'required|array',
-            'courses.*' => 'exists:courses,id'
-        ]);
+  
 
-        if ($validator->fails()) {
-            return $this->error_response($validator->errors()->first(), null);
-        }
-
-        try {
-            $cartRepository = $this->getCartRepository();
-            
-            // التحقق من الصلاحية
-            if (!$cartRepository->validCartContent($request->package_id)) {
-                $cartRepository->clearCart(); // مسح السلة بالكامل للبدء من جديد
-            }
-
-            $cart = $cartRepository->setPackageCart($request->package_id, $request->courses);
-
-            return $this->success_response('تم تحديث السلة بنجاح', $cart);
-
-        } catch (\Exception $e) {
-            return $this->error_response($e->getMessage(), null);
-        }
-    }
-
-    /**
-     * الحصول على محتويات سلة الباكدج
-     */
-    public function getPackageCart(Request $request)
-    {
-        try {
-            $cartRepository = $this->getCartRepository();
-            $cart = $cartRepository->getPackageCart();
-
-            return $this->success_response('تم جلب محتويات السلة بنجاح', $cart);
-
-        } catch (\Exception $e) {
-            return $this->error_response('حدث خطأ أثناء جلب محتويات السلة', null);
-        }
-    }
 
     /**
      * حذف كورس من السلة
@@ -316,89 +271,6 @@ class EnrollmentController extends Controller
         return $this->error_response('حدث خطأ أثناء حذف الباكدج من السلة', null);
     }
 
-    /**
-     * حذف كورس من الباكدج
-     */
-    public function removeCourseFromPackage(Request $request)
-    {
-        $user = auth('user-api')->user();
-        if (!$user) {
-            return $this->error_response(__('messages.login first'), null);
-        }
-
-        if (!$request->package_id || !$request->course_id) {
-            return $this->error_response(__('messages.unexpected_error'), null);
-        }
-
-        $cartRepository = $this->getCartRepository();
-        $result = $cartRepository->removeCourseFromPackage($request->package_id, $request->course_id);
-
-        if ($result && isset($result->original) && $result->original['success']) {
-            return $this->success_response($result->original['message'], $result->original);
-        }
-
-        return $this->error_response('حدث خطأ أثناء حذف الكورس من الباكدج', null);
-    }
-
-    /**
-     * تفعيل البطاقة لكورس واحد
-     */
-    public function activateCard(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'card_number' => 'required|string',
-            'course_id' => 'required|exists:courses,id'
-        ]);
-
-        $user = auth('user-api')->user();
-        if ($validator->fails()) {
-            return $this->error_response($validator->errors()->first(), null);
-        }
-
-        if (!$user) {
-            return $this->error_response('يجب تسجيل الدخول أولاً', null);
-        }
-
-        // التحقق من البطاقة
-        $cardValidation = $this->validateCard($request->card_number);
-        if (!$cardValidation['valid']) {
-            return $this->error_response($cardValidation['message'], null);
-        }
-
-        $cardNumber = $cardValidation['card'];
-        // get course as collection to use same functions
-        $courses = Course::where('id', $request->course_id)->get();
-        $course = (clone $courses)->first();
-        $courseId = $course?->id;
-
-        // التحققات
-        $enrollmentCheck = $this->checkEnrollmentEligibility($user?->id, $course, $cardNumber);
-        if (!$enrollmentCheck['valid']) {
-            return $this->error_response($enrollmentCheck['message'], null);
-        }
-
-        // تنفيذ عملية التسجيل
-        DB::beginTransaction();
-        try {
-            $this->enrollUserInCourse($user?->id, $course);
-            $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
-
-            $cartRepository = $this->getCartRepository();
-            $cartRepository->removeItem($courseId);
-
-            DB::commit();
-
-            return $this->success_response('تم تفعيل البطاقة وإضافتك للكورس بنجاح', [
-                'course_id' => $courseId,
-                'enrollment_status' => 'active'
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
-        }
-    }
 
     /**
      * الدفع بالبطاقة للكورسات العادية
@@ -466,80 +338,7 @@ class EnrollmentController extends Controller
         }
     }
 
-    /**
-     * الدفع بالبطاقة للباكدج
-     */
-    public function paymentForPackageWithCard(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'card_number' => 'required|string'
-        ]);
-
-        $user = auth('user-api')->user();
-        if ($validator->fails()) {
-            return $this->error_response($validator->errors()->first(), null);
-        }
-
-        if (!$user) {
-            return $this->error_response('يجب تسجيل الدخول أولاً', null);
-        }
-
-        // التحقق من البطاقة
-        $cardValidation = $this->validateCard($request->card_number);
-        if (!$cardValidation['valid']) {
-            return $this->error_response($cardValidation['message'], null);
-        }
-
-        $cardNumber = $cardValidation['card'];
-        $cartRepository = $this->getCartRepository();
-        $packageCart = $cartRepository->getPackageCart();
-
-        if (!$packageCart || empty($packageCart['courses'])) {
-            return $this->error_response('لا توجد باكدج في السلة', null);
-        }
-
-        // الحصول على الكورسات الصالحة للشراء من الباكدج
-        $validCourses = $this->getValidPackageCoursesForPurchase($user?->id, $packageCart);
-        if ($validCourses->isEmpty()) {
-            return $this->error_response(translate_lang('cart_is_empty'), null);
-        }
-
-        // التحقق من عدد الكورسات
-        if ($validCourses->count() != $packageCart['max_courses']) {
-            return $this->error_response('يجب أن تحتوي السلة على ' . $packageCart['max_courses'] . ' كورسات صالحة وغير مشترك فيها', null);
-        }
-
-        // التحقق من قيمة البطاقة
-        if ($cardNumber->card->price != $packageCart['package_price']) {
-            return $this->error_response('يجب أن تساوي قيمة البطاقة سعر الباكدج', null);
-        }
-
-        // تنفيذ عملية الشراء
-        DB::beginTransaction();
-        try {
-            foreach ($validCourses as $course) {
-                $this->enrollUserInCourse($user?->id, $course);
-            }
-
-            $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'package', $packageCart['package_id']);
-
-            $cartRepository->clearCart();
-
-            DB::commit();
-
-            return $this->success_response(translate_lang('card_activated'), [
-                'enrolled_courses' => $validCourses->pluck('id'),
-                'package_id' => $packageCart['package_id'],
-                'package_price' => $packageCart['package_price'],
-                'courses_count' => $validCourses->count()
-            ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
-        }
-    }
+    
 
     /**
      * Helper Methods
@@ -824,6 +623,123 @@ class EnrollmentController extends Controller
             'watching_videos' => $watchingVideos,
             'total_videos' => $totalVideos
         ];
+    }
+
+
+    /**
+     * تحديث سلة الباكدج
+     */
+    public function updatePackageCart(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'package_id' => 'required|exists:packages,id',
+            'courses' => 'required|array',
+            'courses.*' => 'exists:courses,id'
+        ]);
+
+        $user = auth('user-api')->user();
+        if ($validator->fails()) {
+            return $this->error_response($validator->errors()->first(), null);
+        }
+
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
+        }
+
+        try {
+            $cartRepository = $this->getCartRepository();
+            
+            // التحقق من الصلاحية
+            if (!$cartRepository->validCartContent($request->package_id)) {
+                $cartRepository->clearCart(); // مسح السلة بالكامل للبدء من جديد
+            }
+
+            $cart = $cartRepository->setPackageCart($request->package_id, $request->courses);
+
+            return $this->success_response('تم تحديث السلة بنجاح', [
+                'success' => true,
+                'cart' => $cart,
+                'message' => 'تم تحديث السلة بنجاح'
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->error_response($e->getMessage(), null);
+        }
+    }
+
+    /**
+     * الدفع بالبطاقة للباكدج
+     */
+    public function paymentForPackageWithCard(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'card_number' => 'required|string'
+        ]);
+
+        $user = auth('user-api')->user();
+        if ($validator->fails()) {
+            return $this->error_response($validator->errors()->first(), null);
+        }
+
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
+        }
+
+        // التحقق من البطاقة
+        $cardValidation = $this->validateCard($request->card_number);
+        if (!$cardValidation['valid']) {
+            return $this->error_response($cardValidation['message'], null);
+        }
+
+        $cardNumber = $cardValidation['card'];
+        $cartRepository = $this->getCartRepository();
+        $packageCart = $cartRepository->getPackageCart();
+
+        if (!$packageCart || empty($packageCart['courses'])) {
+            return $this->error_response('لا توجد باكدج في السلة', null);
+        }
+
+        // الحصول على الكورسات الصالحة للشراء من الباكدج
+        $validCourses = $this->getValidPackageCoursesForPurchase($user->id, $packageCart);
+        if ($validCourses->isEmpty()) {
+            return $this->error_response(translate_lang('cart_is_empty'), null);
+        }
+
+        // التحقق من عدد الكورسات
+        if ($validCourses->count() != $packageCart['max_courses']) {
+            return $this->error_response('يجب أن تحتوي السلة على ' . $packageCart['max_courses'] . ' كورسات صالحة وغير مشترك فيها', null);
+        }
+
+        // التحقق من قيمة البطاقة
+        if ($cardNumber->card->price != $packageCart['package_price']) {
+            return $this->error_response('يجب أن تساوي قيمة البطاقة سعر الباكدج', null);
+        }
+
+        // تنفيذ عملية الشراء
+        DB::beginTransaction();
+        try {
+            foreach ($validCourses as $course) {
+                $this->enrollUserInCourse($user->id, $course);
+            }
+
+            $this->markCardAsUsed($cardNumber, $user->id);
+            $this->createPaymentRecord($user->id, $validCourses, $cardNumber, 'package', $packageCart['package_id']);
+
+            $cartRepository->clearCart();
+
+            DB::commit();
+
+            return $this->success_response(translate_lang('card_activated'), [
+                'enrolled_courses' => $validCourses->pluck('id'),
+                'total_amount' => $packageCart['package_price'],
+                'courses_count' => $validCourses->count(),
+                'package_id' => $packageCart['package_id']
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
+        }
     }
 
 }

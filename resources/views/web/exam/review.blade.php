@@ -1,3 +1,8 @@
+@if($isApi)
+@php $hideFooter = true; @endphp
+@php $hideHeader = true; @endphp
+@endif
+
 @extends('layouts.app')
 
 @section('title', translate_lang('مراجعة الامتحان') . ' - ' . $exam->title)
@@ -43,7 +48,7 @@
             </div>
 
             <div class="cmty-actions">
-                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
             </div>
         </article>
 
@@ -232,9 +237,9 @@
 
             <div class="cmty-actions">
                 @if($exam->result_attempts()?->count())
-                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('عرض جميع المحاولات') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('عرض جميع المحاولات') }}</a>
                 @else
-                <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
                 @endif
             </div>
         </article>

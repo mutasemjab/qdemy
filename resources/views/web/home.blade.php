@@ -13,12 +13,12 @@
 
             <!-- العمود اليمين -->
           <div class="hero-column right-column">
-            <a href="{{route('courses')}}" class="blob-btn blob-btn-1" style="background-image: url('{{ asset('images/blob2.png') }}');">
+            <a href="{{route('courses')}}" class="blob-btn blob-btn-1" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('images/blob2.png') }}');">
                 <i class="fas fa-graduation-cap"></i>
                 <span>{{ __('front.courses') }}</span>
             </a>
 
-            <a href="{{route('user.register')}}" class="blob-btn blob-btn-2" style="background-image: url('{{ asset('images/blob3.png') }}');">
+            <a href="{{route('user.register')}}" class="blob-btn blob-btn-2" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="350" style="background-image: url('{{ asset('images/blob3.png') }}');">
                 <i class="fas fa-user-plus"></i>
                 <span>{{ __('front.register_account') }}</span>
             </a>
@@ -26,7 +26,7 @@
 
         <!-- العمود الشمال -->
         <div class="hero-column center-column">
-            <a href="{{route('card-order')}}" class="blob-btn blob-btn-3" style="background-image: url('{{ asset('images/blob1.png') }}');">
+            <a href="{{route('card-order')}}" class="blob-btn blob-btn-3  anim animate-pulse" data-aos="fade" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('images/blob1.png') }}');">
                 <i class="fas fa-id-card"></i>
                 <span>{!! __('front.order_card') !!}</span>
             </a>
@@ -38,14 +38,14 @@
         <!-- Left Side: Person Image + Background Shape -->
         <div class="hero-left">
             <div class="hero-person">
-                <img data-src="{{ asset('assets_front/images/home/person.png') }}" alt="Person" class="person-img">
-                <img data-src="{{ asset('assets_front/images/home/blue-wave.png') }}" alt="Background Shape" class="bg-wave">
+                <img data-src="{{ asset('assets_front/images/home/person.png') }}" alt="Person" class="person-img anim animate-tilt" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="800">
+                <img data-src="{{ asset('assets_front/images/home/blue-wave.png') }}" alt="Background Shape" class="bg-wave anim animate-glow" data-aos="fade" data-aos-duration="1000" data-aos-delay="600">
             </div>
         </div>
     </div>
 
     <!-- Bottom Cards -->
-  <div class="hero-cards">
+  <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="hero-cards">
     <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card1.png') }}');">
         <p class="card-t">{{ __('front.tawjihi_secondary_program') }}</p>
     </a>
@@ -62,11 +62,11 @@
 
 </section>
 
-<section class="features">
-    <h2>{{ __('front.What Makes QDEMY Special') }}</h2>
+<section class="features" >
+    <h2 data-aos="zoom-in-up" >{{ __('front.What Makes QDEMY Special') }}</h2>
 
-    <div class="features-wrapper">
-        <div class="features-box">
+    <div class="features-wrapper" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300" >
+        <div class="features-box anim animate-glow">
             @foreach($specialQdemies as $special)
                 <div class="feature-item">
                     {{ app()->getLocale() == 'ar' ? $special->title_ar : $special->title_en }}
@@ -77,19 +77,19 @@
 </section>
 
 <section class="services">
-    <h2>{{ __('front.QDEMY Services') }}</h2>
+    <h2 data-aos="zoom-in-up">{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
         <a href="{{ route('community') }}" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
-        <a href="{{ route('exam.index') }}" class="service-btn light">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('exam.index') }}" class="service-btn light anim animate-glow">{{ __('front.Electronic Exams') }}</a>
         <a href="{{ route('packages-offers') }}" class="service-btn dark">{{ __('front.packages_offers') }}</a>
-        <a href="{{ route('sale-point') }}" class="service-btn light">{{ __('front.Sale Points') }}</a>
+        <a href="{{ route('sale-point') }}" class="service-btn light anim animate-glow">{{ __('front.Sale Points') }}</a>
         <a href="{{ route('ministerialQuestions.index') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
-        <a href="{{ route('bankQuestions.index') }}" class="service-btn light">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
+        <a href="{{ route('bankQuestions.index') }}" class="service-btn light anim animate-glow">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
 <section class="social-media">
-    <h2>{{ __('front.Social Media') }}</h2>
+    <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
 
     @php $videoIndex = 0; @endphp
     @for($i = 0; $i < min(2, ceil($socialMediaVideos->count() / 2)); $i++)
@@ -136,7 +136,7 @@
 </section>
 
 <section class="teachers-carousel">
-    <h2>{{ __('front.Teachers') }}</h2>
+    <h2 data-aos="zoom-in-up">{{ __('front.Teachers') }}</h2>
     <div class="carousel-container">
         <button class="carousel-btn prev">&#10094;</button>
         <div class="carousel-track">
@@ -176,7 +176,7 @@
 </section>
 
 <section class="faq-section">
-    <h2>{{ __('front.Most Frequently Asked Questions') }}</h2>
+    <h2 data-aos="zoom-in-up">{{ __('front.Most Frequently Asked Questions') }}</h2>
     <div class="faq-section-link">
         <a href="#">{{ __('front.See More') }} ←</a>
     </div>
@@ -272,3 +272,5 @@
     <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
 </section>
 @endsection
+
+

@@ -184,7 +184,7 @@ class Exam extends Model
     public function can_add_attempt()
     {
         $attempts_allowed = $this->attempts_allowed;
-        $user_id = $user_id ?? auth('user')->id();
+        $user_id = auth_student()?->id;
         $attempts = $this->attempts()->where('user_id', $user_id);
         return ($attempts->count() < $attempts_allowed && !$attempts->where('submitted_at', null)->count());
     }
@@ -192,7 +192,7 @@ class Exam extends Model
     // return last completed attmept to exam for current login student
     public function result_attempt()
     {
-        $user_id = $user_id ?? auth('user')->id();
+        $user_id = auth_student()?->id;
         return $this->attempts()->where('user_id', $user_id)
         ->where('status', 'completed')->orderBy('score', 'desc')->first();
     }
@@ -200,7 +200,7 @@ class Exam extends Model
     // return all completed attmept to exam for current login student
     public function result_attempts()
     {
-        $user_id = $user_id ?? auth('user')->id();
+        $user_id = auth_student()?->id;
         return $this->attempts()->where('user_id', $user_id)->where('status', 'completed')->orderBy('score', 'desc')->get();
     }
 

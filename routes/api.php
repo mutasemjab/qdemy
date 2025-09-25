@@ -38,6 +38,8 @@ use App\Http\Controllers\Api\v1\Parent\SettingParentController;
 use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 
+use App\Http\Controllers\Web\ExamController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -89,7 +91,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/universities-program', [CategoryController::class, 'getUniversitiesProgram']);
     });
 
-    Route::get('/exams', [ExamController::class, 'index']);
     Route::get('/pos', [PosController::class, 'index']);
 
     // Protected routes (all users use the same auth middleware)
@@ -125,15 +126,20 @@ Route::group(['prefix' => 'v1/user'], function () {
         // Cart & Payment
         Route::get('/cart', [EnrollmentController::class, 'index']);
         Route::post('/cart/add', [EnrollmentController::class, 'addToSession']);
+        Route::post('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
         Route::delete('/cart/remove-course', [EnrollmentController::class, 'removeCourseFromCart']);
-        Route::put('/cart/package/update', [EnrollmentController::class, 'updatePackageCart']);
+        Route::delete('/cart/clear', [EnrollmentController::class, 'clearCart']);
+
+        // Payment & Enrollment
         Route::post('/payment/course/card', [EnrollmentController::class, 'paymentForCourseWithCard']);
         Route::post('/payment/package/card', [EnrollmentController::class, 'paymentForPackageWithCard']);
         Route::get('/enrolled-courses', [EnrollmentController::class, 'getUserEnrolledCourses']);
 
+
         // Packages
-        Route::group(['prefix' => 'packages'], function () {
-            Route::get('/', [PackageAndOfferController::class, 'index']);
+        Route::prefix('packages')->group(function () {
+           Route::get('/', [PackageAndOfferController::class, 'index'])->name('api.packages.index');
+           Route::get('/{package}/details', [PackageAndOfferController::class, 'show'])->name('api.packages.show');
         });
 
 
@@ -181,7 +187,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
             Route::get('/{course}', [CourseTeacherController::class, 'show']);
             Route::post('/{course}', [CourseTeacherController::class, 'update']);
             Route::delete('/{course}', [CourseTeacherController::class, 'destroy']);
-            
+
             // Course enrollment
             Route::get('/{course}/students', [CourseTeacherController::class, 'getEnrolledStudents']);
 
@@ -191,19 +197,19 @@ Route::group(['prefix' => 'v1/teacher'], function () {
             Route::get('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'show']);
             Route::put('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'update']);
             Route::delete('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'destroy']);
-            
+
             // Content Management
             Route::post('/{course}/contents', [CourseSectionTeacherController::class, 'storeContent']);
             Route::get('/{course}/contents', [CourseSectionTeacherController::class, 'getContents']);
             Route::get('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'showContent']);
             Route::put('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'updateContent']);
             Route::delete('/{course}/contents/{content}', [CourseSectionTeacherController::class, 'destroyContent']);
-            
-            
+
+
             // Statistics
             Route::get('/{course}/statistics', [CourseSectionTeacherController::class, 'getCourseStatistics']);
         });
-        
+
 
         // Exam Management
         Route::prefix('exams')->group(function () {
@@ -212,11 +218,11 @@ Route::group(['prefix' => 'v1/teacher'], function () {
             Route::get('/{exam}', [ExamTeacherController::class, 'show']);
             Route::put('/{exam}', [ExamTeacherController::class, 'update']);
             Route::delete('/{exam}', [ExamTeacherController::class, 'destroy']);
-            
+
             // Exam Results & Analytics
             Route::get('/{exam}/results', [ExamTeacherController::class, 'getResults']);
             Route::get('/{exam}/attempts/{attempt}', [ExamTeacherController::class, 'viewAttempt']);
-            
+
             // Exam Questions Management
             Route::get('/{exam}/questions', [ExamQuestionsTeacherController::class, 'index']);
             Route::post('/{exam}/questions', [ExamQuestionsTeacherController::class, 'store']);
@@ -225,7 +231,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
             Route::put('/{exam}/questions/{question}', [ExamQuestionsTeacherController::class, 'update']);
             Route::delete('/{exam}/questions/{question}/remove', [ExamQuestionsTeacherController::class, 'removeQuestion']);
         });
-     
+
 
         // Notifications
          Route::prefix('notifications')->group(function () {
@@ -236,7 +242,6 @@ Route::group(['prefix' => 'v1/teacher'], function () {
         });
     });
 });
-
 
 
 // ================================
@@ -271,13 +276,13 @@ Route::group(['prefix' => 'v1/parent'], function () {
         Route::get('/statistics', [DashboardParentController::class, 'getStatistics']);
 
 
-      
+
         Route::get('/children/academic-summary', [ParentChildAcademicController::class, 'getAllChildrenAcademicSummary']);
         Route::get('/child/{childId}/courses', [ParentChildAcademicController::class, 'getChildCourses']);
         Route::get('/child/{childId}/exam-results', [ParentChildAcademicController::class, 'getChildExamResults']);
         Route::get('/child/{childId}/academic-overview', [ParentChildAcademicController::class, 'getChildAcademicOverview']);
-    
-     
+
+
 
         // Notifications
          Route::prefix('notifications')->group(function () {
@@ -287,6 +292,30 @@ Route::group(['prefix' => 'v1/parent'], function () {
             Route::post('/mark-all-read', [NotificationTeacherController::class, 'markAllAsRead']);
         });
 
-      
+
     });
 });
+
+
+// exam routes starts
+// عرض قائمة الامتحانات
+Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX.'exam.index');
+// عرض الامتحان
+Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX.'exam');
+
+// middleware(['auth:user-api'])->
+Route::prefix('v1/exam')->name(API_ROUTE_PREFIX)->group(function () {
+
+    // بدء الامتحان
+    Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
+
+    // الإجابة على سؤال
+    Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
+
+    // تسليم الامتحان
+    Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
+
+    // مراجعة محاولة معينة
+    Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
+});
+// exam routes ends
