@@ -23,7 +23,7 @@ class FCMController extends BaseController
             return false;
         }
 
-        $credentialsFilePath = base_path('json/taxiu-app-ec56abss60a76b.json');
+        $credentialsFilePath = base_path('json/qudemy-d9ceb-600c65778be6.json');
 
         try {
             $client = new GoogleClient();
@@ -61,7 +61,7 @@ class FCMController extends BaseController
             $payload = json_encode($data);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/taxiu-app/messages:send');
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/v1/projects/qudemy-d9ceb/messages:send');
             curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
