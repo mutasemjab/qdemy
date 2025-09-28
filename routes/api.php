@@ -37,6 +37,7 @@ use App\Http\Controllers\Api\v1\Parent\ParentChildAcademicController;
 use App\Http\Controllers\Api\v1\Parent\SettingParentController;
 use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
+use App\Http\Controllers\Api\v1\NotificationController;
 
 use App\Http\Controllers\Web\ExamController;
 
@@ -59,6 +60,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // STUDENT/USER ROUTES
 // ================================
 Route::group(['prefix' => 'v1/user'], function () {
+
 
     Route::get('/getSubjectsFromCategory', [CategoryController::class, 'getSubjectsFromCategory']); // api to get the subject from all categories
 
@@ -95,6 +97,12 @@ Route::group(['prefix' => 'v1/user'], function () {
 
     // Protected routes (all users use the same auth middleware)
     Route::group(['middleware' => ['auth:user-api']], function () {
+
+        Route::prefix('notifications')->group(function () {
+            // Send notification to a single user
+            Route::post('/send-to-user', [NotificationController::class, 'sendToUser']);
+
+        });
 
         Route::post('/follow/toggle', [FollowController::class, 'toggleFollow']);
         Route::get('/teachers/{teacherId}', [TeacherController::class, 'show']);
