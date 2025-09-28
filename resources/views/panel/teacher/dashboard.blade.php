@@ -22,9 +22,13 @@
             <button class="ud-item" data-target="notifications"><i
                     class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
-            <button class="ud-item" data-target="inbox"><i
-                    class="fa-regular fa-comments"></i><span>{{ __('panel.messages') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+        <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" 
+                href="{{ route('chat.index') }}">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>{{ __('panel.messages') }}</span>
+                    {{-- Unread messages badge (optional - you can implement this later) --}}
+                    <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
+                </a>
 
             <a href="{{route('teacher.courses.index')}}"><button class="ud-item" data-target="courses"><i
                     class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
@@ -269,7 +273,6 @@
 
             <!-- Include other panels -->
             @include('panel.common.notifications')
-            @include('panel.common.inbox')
             @include('panel.teacher.community')
             @include('panel.common.support')
 

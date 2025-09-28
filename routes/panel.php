@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Panel\ChatController;
 use App\Http\Controllers\Panel\Teacher\TeacherController;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -157,9 +158,23 @@ Route::group([
         
         
     });
+
+     Route::prefix('chat')->name('chat.')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/{chatId}', [ChatController::class, 'show'])->name('show');
+        
+        // AJAX chat API routes
+        Route::post('/start', [ChatController::class, 'startChat'])->name('start');
+        Route::post('/send-message', [ChatController::class, 'sendMessage'])->name('send');
+        Route::get('/{chatId}/messages', [ChatController::class, 'getMessages'])->name('messages');
+        Route::get('/list', [ChatController::class, 'getChats'])->name('list');
+        Route::post('/{chatId}/mark-read', [ChatController::class, 'markAsRead'])->name('mark-read');
+        Route::get('/search/users', [ChatController::class, 'searchUsers'])->name('search');
+    });
     
     // General panel route that redirects based on role
     Route::get('/', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('panel.index');
     Route::get('/logout', [App\Http\Controllers\Panel\PanelController::class, 'logout'])->name('user.logout');
- 
+
+    
 });

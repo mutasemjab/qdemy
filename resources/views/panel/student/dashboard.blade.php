@@ -22,9 +22,14 @@
             <button class="ud-item" data-target="notifications"><i
                     class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
-            <button class="ud-item" data-target="inbox"><i
-                    class="fa-regular fa-comments"></i><span>{{ __('panel.messages') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+
+            <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" 
+                href="{{ route('chat.index') }}">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>{{ __('panel.messages') }}</span>
+                    {{-- Unread messages badge (optional - you can implement this later) --}}
+                    <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
+                </a>
             <button class="ud-item" data-target="courses"><i
                     class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
@@ -123,7 +128,6 @@
 
             <!-- Include other panels (notifications, inbox, courses, schedule, results, offers, wallet, community, support) -->
             @include('panel.common.notifications')
-            @include('panel.common.inbox')
             @include('panel.student.courses',['userCourses' => $userCourses])
             @include('panel.student.results',['userCourses' => $userCourses])
             @include('panel.student.schedule',['userExamsResults' => $userExamsResults])
@@ -150,4 +154,38 @@
          }
      });
  </script>
+
+ <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to update unread count in navigation
+    async function updateUnreadCount() {
+        try {
+            const response = await fetch('{{ route("chat.list") }}');
+            const chats = await response.json();
+            
+            let totalUnread = 0;
+            chats.forEach(chat => {
+                const userChatUid = '{{ Auth::user()->role_name }}|{{ Auth::user()->id }}';
+                totalUnread += chat.unread[userChatUid] || 0;
+            });
+            
+            const badge = document.getElementById('unreadCount');
+            if (totalUnread > 0) {
+                badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error updating unread count:', error);
+        }
+    }
+    
+    // Update unread count every 30 seconds (only if not on chat page)
+    if (!window.location.pathname.includes('/chat')) {
+        updateUnreadCount();
+        setInterval(updateUnreadCount, 30000);
+    }
+});
+</script>
 @endpush
