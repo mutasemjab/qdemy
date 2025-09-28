@@ -571,7 +571,7 @@ class AuthParentController extends Controller
 
             // Method 1: Using ParentStudent model (recommended)
             $parentStudents = ParentStudent::getByParent($parentProfile->id);
-            
+
             $children = $parentStudents->filter(function($parentStudent) {
                 return $parentStudent->student !== null;
             })->map(function ($parentStudent) {

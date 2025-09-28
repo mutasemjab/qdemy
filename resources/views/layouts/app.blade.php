@@ -27,7 +27,9 @@
 
 <body>
 
-    @include('layouts.header')
+    @if (!isset($hideHeader))
+        @include('layouts.header')
+    @endif
 
     <main>
         <!-- @include('admin.includes.alerts.success')

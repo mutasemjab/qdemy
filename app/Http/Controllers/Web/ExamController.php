@@ -9,27 +9,37 @@ use App\Models\Category;
 use App\Models\Question;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use App\Traits\Responses;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class ExamController extends Controller
 {
 
+    use Responses;
+
+    public $isApi          = false;
+    public $apiRoutePrefix = '';
+
     // ملحوظة هامة تخص تسليم وتصحيح الامتحان
     // يتم السماح بالتسليم سواء اجاب الطالب كل الاسئلة ام لا وعندها تصير submitted_at = now(),
     // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
     // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
     // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
-    /**
-     * التحكم في السماح بتعديل الإجابات السابقة
-    */
-    protected $can_edit_answers = true;
 
-    /**
-     * التحكم في التصحيح التلقائي عند وجود أسئلة مقالية
-    */
-    protected $auto_grade_with_essays = true;
+    public function __construct(Request $request)
+    {
+        // فحص إذا كان الطلب API
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $this->isApi          = true;
+            $this->apiRoutePrefix = API_ROUTE_PREFIX;
+            if($request->hasHeader('UserId')){
+                auth()->loginUsingId($request->header('UserId'));
+            }
+        }
+    }
 
     public function index(Request $request)
     {
@@ -125,6 +135,8 @@ class ExamController extends Controller
             'programms' => $programms,
             'grades' => $grades,
             'subjects' => $subjects,
+            'isApi' => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
         ]);
     }
 
@@ -134,12 +146,13 @@ class ExamController extends Controller
 
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
-            return redirect()->route('exam.index')->with('error', 'الامتحان غير متاح حاليا');
+            return redirect()->route($this->apiRoutePrefix.'exam.index')->with('error', 'الامتحان غير متاح حاليا');
         }
 
         $attempts         = $exam->user_attempts();
         $result           = $exam->result_attempt($user?->id);
         $current_attempts = $exam->current_user_attempts();
+
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
         $can_add_attempt  = $exam->can_add_attempt($user?->id);
 
@@ -151,7 +164,7 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                     ->with('error', 'تم انتهاء الوقت المحدد وتم تسليم الامتحان تلقائيا');
             }
         }
@@ -181,7 +194,7 @@ class ExamController extends Controller
                     return $q->id === $question?->id;
                 });
                 $question_nm = ($index + 2);
-                return redirect()->route('exam',['exam'=>$exam->id,'slug'=>$exam->slug,'page'=>$question_nm]);
+                return redirect()->route($this->apiRoutePrefix.'exam',['exam'=>$exam->id,'slug'=>$exam->slug,'page'=>$question_nm]);
             }else{
                 $question_nm = request()->get('page');
                 $question    = $pgQquestions?->first();
@@ -200,7 +213,10 @@ class ExamController extends Controller
             'can_add_attempt' => $can_add_attempt,
             'question_nm'     => $question_nm,
             '_questions'      => $_questions,
+            'isApi'           => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
         ]);
+
     }
 
     public function start_exam(Exam $exam)
@@ -209,7 +225,7 @@ class ExamController extends Controller
 
         // Check if user can start new attempt
         if (!$exam->can_add_attempt($user?->id)) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
 
@@ -217,7 +233,7 @@ class ExamController extends Controller
         $active_attempt = $exam->current_user_attempt();
 
         if ($active_attempt) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لديك محاولة جارية بالفعل'));
         }
 
@@ -237,8 +253,7 @@ class ExamController extends Controller
             'question_order' => $question_order,
             'status' => 'in_progress'
         ]);
-
-        return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
     }
 
     // تصحيح سؤال
@@ -248,13 +263,11 @@ class ExamController extends Controller
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
         $user = auth_student();
-
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
-
         if (!$current_attempt) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', translate_lang('لا توجد محاولة جارية'));
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+            ->with('error', translate_lang('لا توجد محاولة جارية'));
         }
 
         // Check time limit
@@ -262,7 +275,7 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                     ->with('error', translate_lang('تم انتهاء الوقت المحدد'));
             }
         }
@@ -278,7 +291,17 @@ class ExamController extends Controller
             $rules['answer'] = 'required|string|min:10';
         }
 
-        $request->validate($rules);
+        if($this->isApi){
+            $validator = Validator::make($request->all(),  $rules);
+            if ($validator->fails()) {
+                return $this->error_response('Validation failed', $validator->errors());
+            }
+        }else{
+            $request->validate($rules);
+        }
+
+        // dd(route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]));
+
 
         // Find or create exam answer
         DB::beginTransaction();
@@ -341,7 +364,7 @@ class ExamController extends Controller
                 // Auto-submit exam if all questions are answered
                 $this->submit_exam($current_attempt);
                 DB::commit();
-                return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                     ->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
             }else {
                 DB::commit();
@@ -354,7 +377,7 @@ class ExamController extends Controller
         // Redirect to next question
         $page      = $request->get('page', 1) ?? 1;
         $next_page = $page + 1;
-        return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $next_page])
+        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $next_page])
               ->with($error ?? '',$message_status ?? '');
     }
 
@@ -425,17 +448,17 @@ class ExamController extends Controller
 
         $current_attempt = ExamAttempt::where('user_id', $user?->id)
             ->where('exam_id', $exam->id)
-            ->where('status', 'in_progress')
+            ->where('submitted_at',null)
             ->first();
 
-        if (!$current_attempt) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+            if (!$current_attempt) {
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', 'لا توجد محاولة جارية');
         }
 
         $this->submit_exam($current_attempt);
 
-        return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
             ->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
@@ -452,9 +475,12 @@ class ExamController extends Controller
         $answers = $attempt->answers()->with(['question', 'question.options'])->get();
 
         return view('web.exam.review', [
-            'exam' => $exam,
+            'exam'    => $exam,
             'attempt' => $attempt,
-            'answers' => $answers
+            'answers' => $answers,
+            'isApi'   => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
         ]);
     }
+
 }

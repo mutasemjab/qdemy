@@ -1,6 +1,7 @@
 <?php
 define('CURRENCY','JOD');
 define('PGN',18);
+define('API_ROUTE_PREFIX','api.');
 define('FIELD_TYPE',[
     'scientific'=> 'scientific',
     'literary'  => 'literary',

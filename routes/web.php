@@ -54,7 +54,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
 
-    Route::post('/process-payment', [CardController::class, 'processPayment'])->name('payment.process');// not use yet when get payment gatway we will use it 
+    Route::post('/process-payment', [CardController::class, 'processPayment'])->name('payment.process');// not use yet when get payment gatway we will use it
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/contacts', [ContactUsController::class, 'index'])->name('contacts');
@@ -75,7 +75,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/download', [PagesController::class, 'download'])->name('download');
     Route::get('/sale-point', [PagesController::class, 'sale_point'])->name('sale-point');
     Route::get('/cards-order', [CardController::class, 'cards_order'])->name('card-order');
-    
+
     Route::prefix('bankQuestions')->name('bankQuestions.')->group(function () {
         Route::get('/', [BankQuestionController::class, 'index'])->name('index');
         Route::get('/download/{bankQuestion}', [BankQuestionController::class, 'download'])->name('download');
@@ -128,7 +128,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/show/{package?}/{clas?}', [PackageAndOfferController::class, 'show'])->name('package');
     });
 
-    // enrollment routes
+    // exam routes starts
     // عرض قائمة الامتحانات
     Route::get('exam/', [ExamController::class, 'index'])->name('exam.index');
     // عرض الامتحان
@@ -148,6 +148,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         // مراجعة محاولة معينة
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
+    // exam routes ends
 
     Route::prefix('page')->name('page.')->group(function () {
         Route::get('/privacy-policy', [PagesController::class, 'privacyPolicy'])->name('privacy-policy');
@@ -183,4 +184,4 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/available-students', [AuthController::class, 'getAvailableStudents'])->name('user.available.students');
     });
 });
-    
+

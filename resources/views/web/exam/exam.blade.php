@@ -1,3 +1,8 @@
+@if($isApi == true)
+@php $hideFooter = true; @endphp
+@php $hideHeader = true; @endphp
+@endif
+
 @extends('layouts.app')
 
 @section('title', $exam->title)
@@ -73,7 +78,7 @@
 
                 @if(!$result && !$current_attempts->count() && $can_add_attempt)
                     <div class="cmty-actions">
-                        <form action="{{route('start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
+                        <form action="{{route($apiRoutePrefix.'start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
                             @csrf
                             <button type='submit' class="cmty-like">
                                 @if($attempts->count()) {{ translate_lang('محاولة جديدة') }} @else {{ translate_lang('بدء الامتحان') }} @endif
@@ -106,13 +111,13 @@
 
                 @if($exam->show_results_immediately)
                     <div class="cmty-actions">
-                        <a href="{{ route('review.attempt', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="cmty-like">{{ translate_lang('مراجعة الإجابات') }}</a>
+                        <a href="{{ route($apiRoutePrefix.'review.attempt', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="cmty-like">{{ translate_lang('مراجعة الإجابات') }}</a>
                     </div>
                 @endif
 
                 @if(!$current_attempts->count() && $can_add_attempt)
                 <div class="cmty-actions">
-                    <form action="{{route('start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
+                    <form action="{{route($apiRoutePrefix.'start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
                         @csrf
                         <button type='submit' class="cmty-like">{{ translate_lang('محاولة جديدة') }}</button>
                     </form>
@@ -149,7 +154,7 @@
                     <span>{{ translate_lang('الدرجة') }}: {{ $question->grade }}</span>
                 </div>
 
-                <form action="{{route('answer.question',['exam'=>$exam->id,'question'=>$question->id,'page'=>$question_nm])}}" method='post'>
+                <form action="{{route($apiRoutePrefix.'answer.question',['exam'=>$exam->id,'question'=>$question->id,'page'=>$question_nm])}}" method='post'>
                     @csrf
                     <input type="hidden" name="page" value="{{ $question_nm }}">
 
@@ -192,7 +197,7 @@
                         <button type='submit' class="cmty-like">{{ translate_lang('حفظ الإجابة والمتابعة') }}</button>
 
                         @if($question_nm > 1)
-                        <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $question_nm - 1]) }}"
+                        <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $question_nm - 1]) }}"
                             class="cmty-like" style="background: #6c757d; margin-right: 10px;">{{ translate_lang('السؤال السابق') }}</a>
                         @endif
                     </div>
@@ -201,7 +206,7 @@
                 <!-- Finish Exam Button -->
                 @if($current_attempt->answers->count() > 0)
                     <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                        <form action="{{route('finish.exam',['exam'=>$exam->id])}}" method='post' onsubmit="return confirm('{{ translate_lang('هل أنت متأكد من تسليم الامتحان؟ لن تتمكن من التراجع.') }}')">
+                        <form action="{{route($apiRoutePrefix.'finish.exam',['exam'=>$exam->id])}}" method='post' onsubmit="return confirm('{{ translate_lang('هل أنت متأكد من تسليم الامتحان؟ لن تتمكن من التراجع.') }}')">
                             @csrf
                             <button type='submit' class="cmty-like" style="background: #dc3545;">{{ translate_lang('تسليم الامتحان') }}</button>
                         </form>
@@ -229,7 +234,7 @@
                         <div style="padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px;">
                             <div>
                                 <strong>
-                                    <a href="{{route('review.attempt',['exam'=>$exam->id,'attempt'=>$attempt->id])}}">
+                                    <a href="{{route($apiRoutePrefix.'review.attempt',['exam'=>$exam->id,'attempt'=>$attempt->id])}}">
                                         {{ translate_lang('محاولة') }}
                                     </a>
                                 </strong> -
@@ -242,7 +247,7 @@
                             </div>
                             @if($exam->show_results_immediately)
                                 <div style="margin-top: 10px;">
-                                    <a href="{{ route('review.attempt', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}"
+                                    <a href="{{ route($apiRoutePrefix.'review.attempt', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}"
                                        class="cmty-like" style="font-size: 12px; padding: 5px 10px;">{{ translate_lang('مراجعة') }}</a>
                                 </div>
                             @endif
@@ -277,8 +282,7 @@
     </div>
 </section>
 
-@if($current_attempt && $current_attempt->remaining_time)
-
+@if($current_attempt && $current_attempt?->remaining_time)
 <script>
     // Timer countdown with seconds
     let remainingSeconds = {{ $current_attempt->remaining_time }} * 60; // تحويل الدقائق إلى ثواني
@@ -293,7 +297,7 @@
                 // Auto submit form
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("finish.exam", ["exam" => $exam->id]) }}';
+                form.action = '{{ route($apiRoutePrefix."finish.exam", ["exam" => $exam->id]) }}';
 
                 const csrfToken = document.createElement('input');
                 csrfToken.type = 'hidden';
