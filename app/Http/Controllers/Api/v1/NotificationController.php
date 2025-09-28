@@ -16,7 +16,7 @@ class NotificationController extends Controller
     /**
      * Send notification to a specific user
      */
-    public function sendToUserWithSender(Request $request)
+    public function sendToUser(Request $request)
     {
         try {
             // Validate the request
