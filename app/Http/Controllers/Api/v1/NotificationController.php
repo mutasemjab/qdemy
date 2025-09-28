@@ -65,8 +65,6 @@ class NotificationController extends Controller
             );
 
             if ($result) {
-                // Log the notification
-                $this->logNotification($sender->id, $receiver->id, $validated['title'], $validated['body']);
 
                 return response()->json([
                     'status' => true,
