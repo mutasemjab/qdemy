@@ -214,22 +214,22 @@ class AuthParentController extends Controller
                 return $this->error_response('Access denied. Parents only.', null);
             }
 
-            $user->load(['parentt', 'parentt.students.user']);
+            $user->load(['parentt', 'parentt.students']);
 
             // Get children list
             $children = [];
             if ($user->parentt && $user->parentt->students) {
-                $children = $user->parentt->students->map(function ($parentStudent) {
+              $children = $user->parentt->students->map(function ($student) {
                     return [
-                        'id' => $parentStudent->user->id,
-                        'name' => $parentStudent->user->name,
-                        'email' => $parentStudent->user->email,
-                        'phone' => $parentStudent->user->phone,
-                        'photo' => $parentStudent->user->photo ? asset('assets/admin/uploads/' . $parentStudent->user->photo) : null,
-                        'class_id' => $parentStudent->user->clas_id,
-                        'balance' => $parentStudent->user->balance,
-                        'activate' => $parentStudent->user->activate,
-                        'added_at' => $parentStudent->created_at
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'email' => $student->email,
+                        'phone' => $student->phone,
+                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                        'class_id' => $student->clas_id,
+                        'balance' => $student->balance,
+                        'activate' => $student->activate,
+                        'added_at' => $student->pivot->created_at ?? null, // from pivot
                     ];
                 });
             }
