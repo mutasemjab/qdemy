@@ -17,12 +17,7 @@
                 </div>
 
                 <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session('success') }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    @endif
+                   
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
@@ -34,6 +29,7 @@
                                     <th>{{ __('messages.teacher') }}</th>
                                     <th>{{ __('messages.Subject') }}</th>
                                     <th>{{ __('messages.price') }}</th>
+                                    <th>{{ __('messages.commission_of_admin') }}</th>
                                     <th>{{ __('messages.created_at') }}</th>
                                     <th>{{ __('messages.actions') }}</th>
                                 </tr>
@@ -68,6 +64,9 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-success">JD {{ number_format($course->selling_price, 2) }}</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">% {{ $course->commission_of_admin }}</span>
                                         </td>
                                         <td>{{ $course->created_at->format('Y-m-d') }}</td>
                                         <td>

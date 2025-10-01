@@ -18,7 +18,7 @@
         integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . (file_exists(public_path('assets_front/css/style.css')) ? filemtime(public_path('assets_front/css/style.css')) : time()) }}">
 
     @stack('styles')
     @yield('styles')
@@ -336,203 +336,340 @@
         });
     </script>
 
-    <script>
-        (() => {
-            const root = document.querySelector('.blog-slider');
-            if (!root) return;
+<script>
+(() => {
+  const root = document.querySelector('.blog-slider');
+  if (!root) return;
 
-            const track = root.querySelector('.blog-slider__track');
-            const cards = [...root.querySelectorAll('.blog-card')];
-            const prevBtn = root.querySelector('.blog-slider__arrow--prev');
-            const nextBtn = root.querySelector('.blog-slider__arrow--next');
-            const dotsWrap = root.querySelector('.blog-slider__dots');
+  const viewport = root.querySelector('.blog-slider__viewport');
+  const track = root.querySelector('.blog-slider__track');
+  const dotsWrap = root.querySelector('.blog-slider__dots');
+  const prevBtn = root.querySelector('.blog-slider__arrow--prev');
+  const nextBtn = root.querySelector('.blog-slider__arrow--next');
 
-            let index = 0,
-                perView = 3,
-                pages = 1,
-                startX = 0,
-                curX = 0,
-                dragging = false;
+  let originals = Array.from(track.children);
+  if (!originals.length) return;
 
-            function computePerView() {
-                const w = root.clientWidth;
-                if (w <= 600) return 1;
-                if (w <= 992) return 2;
-                return 3;
-            }
+  let perView = 3, cloneN = 3, index = 0, step = 0, gap = 0, timer, dragging = false, startX = 0, curX = 0, started = false;
 
-            function layout() {
-                perView = computePerView();
-                pages = Math.max(1, Math.ceil(cards.length / perView));
-                index = Math.min(index, pages - 1);
-                buildDots();
-                update();
-            }
+  function dirRTL(){ return getComputedStyle(root).direction === 'rtl'; }
+  function computePerView(){
+    const w = root.clientWidth;
+    if (w <= 600) return 1;
+    if (w <= 992) return 2;
+    return 3;
+  }
 
-            function update() {
-                const gap = parseFloat(getComputedStyle(track).gap) || 0;
-                const cardW = cards[0].getBoundingClientRect().width;
-                const offset = index * (cardW * perView + gap * (perView - 1));
-                track.style.transform = `translateX(${(root.dir==='rtl' ? offset : -offset)}px)`;
-                prevBtn.disabled = index === 0;
-                nextBtn.disabled = index >= pages - 1;
-                [...dotsWrap.children].forEach((d, i) => d.setAttribute('aria-current', i === index ? 'true' :
-                'false'));
-            }
+  function enableArrows(){
+    [prevBtn, nextBtn].forEach(b=>{
+      if(!b) return;
+      b.disabled = false;
+      b.removeAttribute('disabled');
+      b.style.pointerEvents = 'auto';
+    });
+  }
 
-            function buildDots() {
-                dotsWrap.innerHTML = '';
-                for (let i = 0; i < pages; i++) {
-                    const b = document.createElement('button');
-                    b.type = 'button';
-                    b.addEventListener('click', () => {
-                        index = i;
-                        update();
-                    });
-                    dotsWrap.appendChild(b);
-                }
-            }
+  function eagerLoad(){
+    const nodes = Array.from(track.children).slice(0, (perView*2)+(cloneN*2));
+    nodes.forEach(n=>{
+      const img = n.querySelector('img[data-src]');
+      if (img){ img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
+    });
+  }
 
-            prevBtn.addEventListener('click', () => {
-                if (index > 0) {
-                    index--;
-                    update();
-                }
-            });
-            nextBtn.addEventListener('click', () => {
-                if (index < pages - 1) {
-                    index++;
-                    update();
-                }
-            });
+  function build(){
+    perView = computePerView();
+    cloneN = perView;
+    track.innerHTML = '';
+    const head = originals.slice(0, cloneN).map(n=>n.cloneNode(true));
+    const tail = originals.slice(-cloneN).map(n=>n.cloneNode(true));
+    tail.forEach(n=>track.appendChild(n));
+    originals.forEach(n=>track.appendChild(n));
+    head.forEach(n=>track.appendChild(n));
+    index = cloneN;
+    measure(true);
+    eagerLoad();
+    buildDots();
+    updateDots();
+    enableArrows();
+    ensureStart();
+  }
 
-            // drag / swipe
-            const viewport = root.querySelector('.blog-slider__viewport');
-            viewport.addEventListener('pointerdown', e => {
-                dragging = true;
-                startX = curX = e.clientX;
-                viewport.setPointerCapture(e.pointerId);
-            });
-            viewport.addEventListener('pointermove', e => {
-                if (!dragging) return;
-                curX = e.clientX;
-            });
-            viewport.addEventListener('pointerup', e => {
-                if (!dragging) return;
-                dragging = false;
-                const dx = curX - startX;
-                const thresh = 40;
-                if (Math.abs(dx) > thresh) {
-                    const isRTL = getComputedStyle(root).direction === 'rtl';
-                    const swipeLeft = dx < 0;
-                    if ((swipeLeft && !isRTL) || (!swipeLeft && isRTL)) { // next
-                        if (index < pages - 1) index++;
-                    } else {
-                        if (index > 0) index--;
-                    }
-                }
-                update();
-            });
+  function measure(jumpToPos=false){
+    gap = parseFloat(getComputedStyle(track).gap) || 0;
+    const first = track.children[0];
+    let cardW = first ? first.getBoundingClientRect().width : 0;
+    if (!cardW) cardW = viewport.clientWidth / perView;
+    step = cardW + gap;
+    if (jumpToPos) applyTransform(false);
+  }
 
-            window.addEventListener('resize', () => {
-                layout();
-            });
-            layout();
-            setInterval(() => {
-                if (pages <= 1) return;
-                if (index < pages - 1) {
-                    index++;
-                } else {
-                    index = 0;
-                }
-                update();
-            }, 5000);
+  function applyTransform(animated=true){
+    const sign = dirRTL() ? 1 : -1;
+    if (!animated){
+      track.style.transition = 'none';
+      track.style.transform = `translateX(${sign * index * step}px)`;
+      void track.offsetWidth;
+      track.style.transition = 'transform .6s cubic-bezier(.22,.61,.36,1)';
+    } else {
+      track.style.transform = `translateX(${sign * index * step}px)`;
+    }
+  }
 
-        })();
-    </script>
+  function normalize(){
+    if (index >= originals.length + cloneN){
+      index = cloneN;
+      applyTransform(false);
+    } else if (index < cloneN){
+      index = originals.length + cloneN - 1;
+      applyTransform(false);
+    }
+    enableArrows();
+  }
 
-    <script>
-        (function() {
-            const win = document.querySelector('.rvx-window');
-            const track = document.querySelector('.rvx-track');
-            const cards = Array.from(document.querySelectorAll('.rvx-card'));
-            const prev = document.querySelector('.rvx-prev');
-            const next = document.querySelector('.rvx-next');
-            const dotsBox = document.querySelector('.rvx-dots');
+  function buildDots(){
+    const pages = Math.max(1, originals.length - perView + 1);
+    dotsWrap.innerHTML = '';
+    for (let i=0;i<pages;i++){
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.addEventListener('click', () => {
+        const target = i + cloneN;
+        index = Math.min(cloneN + originals.length - perView, target);
+        applyTransform(true);
+        updateDots();
+      });
+      dotsWrap.appendChild(b);
+    }
+  }
 
-            const gap = 28;
-            let visible = 2; // بطاقتان معاً على الشاشات الكبيرة
-            const cardW = cards[0].offsetWidth;
-            const step = cardW + gap;
+  function updateDots(){
+    const pages = Math.max(1, originals.length - perView + 1);
+    const curRaw = (index - cloneN + originals.length) % originals.length;
+    const cur = Math.min(curRaw, originals.length - perView);
+    [...dotsWrap.children].forEach((d,k)=>d.setAttribute('aria-current', k===cur ? 'true':'false'));
+    if (dotsWrap.children.length !== pages) buildDots();
+  }
 
-            function pagesCount() {
-                const vw = win.clientWidth;
-                visible = Math.max(1, Math.floor((vw + gap) / (cardW + gap)));
-                return Math.max(1, Math.ceil(cards.length / visible));
-            }
+  function next(){
+    index += 1;
+    applyTransform(true);
+    updateDots();
+    enableArrows();
+  }
 
-            let pages = pagesCount();
-            let index = 0;
+  function prev(){
+    index -= 1;
+    applyTransform(true);
+    updateDots();
+    enableArrows();
+  }
 
-            function layout() {
-                pages = pagesCount();
-                dotsBox.innerHTML = '';
-                for (let i = 0; i < pages; i++) {
-                    const b = document.createElement('button');
-                    if (i === index) b.setAttribute('aria-current', 'true');
-                    b.addEventListener('click', () => {
-                        index = i;
-                        update();
-                    });
-                    dotsBox.appendChild(b);
-                }
-                update();
-            }
+  function start(){ stop(); timer = setInterval(next, 5000); started = true; }
+  function stop(){ if (timer) clearInterval(timer); }
+  function ensureStart(){
+    if (started) return;
+    if (step > 0){ start(); return; }
+    setTimeout(()=>{ measure(true); if (step > 0) start(); }, 60);
+  }
 
-            function update() {
-                [...dotsBox.children].forEach((b, i) => b.toggleAttribute('aria-current', i === index));
-                const x = -index * step * visible;
-                track.style.transform = `translateX(${x}px)`;
-            }
+  track.addEventListener('transitionend', () => { normalize(); });
 
-            prev.addEventListener('click', () => {
-                index = (index - 1 + pages) % pages;
-                update();
-            });
+  root.addEventListener('click', (e) => {
+    const prevHit = e.target.closest('.blog-slider__arrow--prev');
+    const nextHit = e.target.closest('.blog-slider__arrow--next');
+    if (prevHit) prev();
+    else if (nextHit) next();
+  });
 
-            next.addEventListener('click', () => {
-                index = (index + 1) % pages;
-                update();
-            });
+  viewport.addEventListener('pointerdown', e => {
+    dragging = true; startX = curX = e.clientX; viewport.setPointerCapture(e.pointerId);
+  });
+  viewport.addEventListener('pointermove', e => { if (!dragging) return; curX = e.clientX; });
+  viewport.addEventListener('pointerup', () => {
+    if (!dragging) return; dragging = false;
+    const dx = curX - startX, rtl = dirRTL();
+    if (Math.abs(dx) > 40){
+      const swipeLeft = dx < 0;
+      if ((swipeLeft && !rtl) || (!swipeLeft && rtl)) next(); else prev();
+    }
+  });
 
-            // سحب باللمس/الماوس
-            let startX = null,
-                moved = 0;
-            win.addEventListener('pointerdown', e => {
-                startX = e.clientX;
-                moved = 0;
-                win.setPointerCapture(e.pointerId);
-            });
-            win.addEventListener('pointermove', e => {
-                if (startX !== null) moved = e.clientX - startX;
-            });
-            win.addEventListener('pointerup', () => {
-                if (Math.abs(moved) > 40) {
-                    (moved > 0 ? prev : next).click();
-                }
-                startX = null;
-                moved = 0;
-            });
+  viewport.addEventListener('mouseenter', stop);
+  viewport.addEventListener('mouseleave', start);
 
-            // Auto play
-            setInterval(() => {
-                next.click();
-            }, 5000);
+  window.addEventListener('resize', () => {
+    const oldPer = perView;
+    const newPer = computePerView();
+    if (newPer !== oldPer){
+      originals = Array.from(track.children).slice(cloneN, cloneN + originals.length);
+      build();
+    } else {
+      measure(true);
+      updateDots();
+      enableArrows();
+      ensureStart();
+    }
+  });
 
-            window.addEventListener('resize', layout);
-            layout();
-        })();
-    </script>
+  const ro = new ResizeObserver(()=>{ measure(true); enableArrows(); ensureStart(); });
+  ro.observe(track);
+
+  window.addEventListener('load', ()=>{ measure(true); eagerLoad(); enableArrows(); ensureStart(); });
+
+  const lazies = track.querySelectorAll('img[data-src]');
+  if (lazies.length){
+    const io = new IntersectionObserver(es=>{
+      es.forEach(e=>{
+        if(e.isIntersecting){
+          const img=e.target; img.src=img.getAttribute('data-src'); img.removeAttribute('data-src'); io.unobserve(img);
+          setTimeout(()=>{ measure(true); enableArrows(); ensureStart(); }, 50);
+        }
+      })
+    },{root:viewport,rootMargin:'200px'});
+    lazies.forEach(img=>io.observe(img));
+  }
+
+  build();
+})();
+</script>
+
+
+<script>
+(function(){
+  const win=document.querySelector('.rvx-window');
+  const track=document.querySelector('.rvx-track');
+  const prev=document.querySelector('.rvx-prev');
+  const next=document.querySelector('.rvx-next');
+  const dotsBox=document.querySelector('.rvx-dots');
+  if(!win||!track||!dotsBox) return;
+
+  let originals=Array.from(track.children);
+  if(!originals.length) return;
+
+  const GAP=28;
+  let visible=2;
+  let cloneN=visible;
+  let items=[];
+  let index=0;
+  let step=0;
+  let timer, dragging=false, startX=0, curX=0;
+
+  function perView(){
+    const w=win.clientWidth;
+    if(w<=600) return 1;
+    if(w<=992) return 2;
+    return 2;
+  }
+
+  function setCardWidths(){
+    const vw=win.clientWidth;
+    const cardW=(vw - GAP*(visible-1))/visible;
+    items.forEach(el=>{ el.style.minWidth=cardW+'px'; });
+    step=cardW+GAP;
+  }
+
+  function buildClones(){
+    track.innerHTML='';
+    cloneN=visible;
+    const head=originals.slice(0,cloneN).map(n=>n.cloneNode(true));
+    const tail=originals.slice(-cloneN).map(n=>n.cloneNode(true));
+    tail.forEach(n=>track.appendChild(n));
+    originals.forEach(n=>track.appendChild(n));
+    head.forEach(n=>track.appendChild(n));
+    items=Array.from(track.children);
+  }
+
+  function jump(i){
+    track.style.transition='none';
+    track.style.transform=`translateX(${-i*step}px)`;
+    track.offsetHeight;
+    track.style.transition='transform .6s cubic-bezier(.22,.61,.36,1)';
+  }
+
+  function apply(){
+    track.style.transform=`translateX(${-index*step}px)`;
+    updateDots();
+  }
+
+  function normalize(){
+    if(index>=originals.length+cloneN){ index=cloneN; jump(index); }
+    if(index<cloneN){ index=cloneN+originals.length-1; jump(index); }
+  }
+
+  function currentDot(){
+    const raw=(index-cloneN+originals.length)%originals.length;
+    return raw;
+  }
+
+  function buildDots(){
+    dotsBox.innerHTML='';
+    for(let i=0;i<originals.length;i++){
+      const b=document.createElement('button');
+      b.type='button';
+      b.addEventListener('click',()=>{ index=cloneN+i; apply(); });
+      dotsBox.appendChild(b);
+    }
+    updateDots();
+  }
+
+  function updateDots(){
+    const cur=currentDot();
+    [...dotsBox.children].forEach((d,k)=>d.setAttribute('aria-current',k===cur?'true':'false'));
+  }
+
+  function measure(rebuild=false){
+    const newVis=perView();
+    if(rebuild || newVis!==visible){
+      visible=newVis;
+      buildClones();
+      setCardWidths();
+      index=cloneN;
+      jump(index);
+      buildDots();
+      eagerLoad();
+      ensureAuto();
+    }else{
+      setCardWidths();
+      jump(index);
+      updateDots();
+    }
+  }
+
+  function nextSlide(){ index+=1; apply(); }
+  function prevSlide(){ index-=1; apply(); }
+
+  track.addEventListener('transitionend',normalize);
+
+  win.addEventListener('pointerdown',e=>{ dragging=true; startX=curX=e.clientX; win.setPointerCapture(e.pointerId); });
+  win.addEventListener('pointermove',e=>{ if(!dragging) return; curX=e.clientX; });
+  win.addEventListener('pointerup',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(Math.abs(dx)>40){ dx<0?nextSlide():prevSlide(); }});
+
+  if(prev) prev.addEventListener('click',prevSlide);
+  if(next) next.addEventListener('click',nextSlide);
+
+  function start(){ stop(); timer=setInterval(nextSlide,5000); }
+  function stop(){ if(timer) clearInterval(timer); }
+  function ensureAuto(){ if(step>0){ start(); } }
+
+  win.addEventListener('mouseenter',stop);
+  win.addEventListener('mouseleave',start);
+
+  window.addEventListener('resize',()=>measure(true));
+  window.addEventListener('load',()=>measure(true));
+
+  function eagerLoad(){
+    const imgs=track.querySelectorAll('img[data-src]');
+    const io=new IntersectionObserver(es=>{
+      es.forEach(e=>{ if(e.isIntersecting){ const img=e.target; img.src=img.getAttribute('data-src'); img.removeAttribute('data-src'); io.unobserve(img); }});
+    },{root:win,rootMargin:'200px'});
+    imgs.forEach(img=>io.observe(img));
+  }
+
+  measure(true);
+})();
+</script>
+
 
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
@@ -543,6 +680,95 @@
     once: true
     });
     </script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const viewport=document.querySelector('.x3c-viewport');
+  const rail=viewport.querySelector('.x3c-rail');
+  const left=viewport.querySelector('.x3c-left');
+  const right=viewport.querySelector('.x3c-right');
+
+  let baseCells=Array.from(rail.children);
+  if(!baseCells.length)return;
+
+  let vis=window.matchMedia('(max-width:768px)').matches?1:3;
+  let cloneCount=vis;
+  let index=cloneCount;
+  let itemWidth=0;
+  let items,realCount=baseCells.length;
+  let animating=false,timer;
+
+  function buildClones(){
+    rail.innerHTML='';
+    const head=baseCells.slice(0,cloneCount).map(n=>n.cloneNode(true));
+    const tail=baseCells.slice(-cloneCount).map(n=>n.cloneNode(true));
+    tail.forEach(n=>rail.appendChild(n));
+    baseCells.forEach(n=>rail.appendChild(n));
+    head.forEach(n=>rail.appendChild(n));
+    items=Array.from(rail.children);
+  }
+
+  function jump(i){
+    rail.style.transition='none';
+    rail.style.transform=`translate3d(${-i*itemWidth}px,0,0)`;
+    rail.offsetHeight;
+    rail.style.transition='transform .7s cubic-bezier(.22,.61,.36,1)';
+  }
+
+  function focus(){
+    items.forEach(i=>i.classList.remove('x3c-focus'));
+    const centerOffset=(vis===3?1:0);
+    const mid=index+centerOffset;
+    if(items[mid])items[mid].classList.add('x3c-focus');
+  }
+
+  function measure(){
+    const nowVis=window.matchMedia('(max-width:768px)').matches?1:3;
+    if(nowVis!==vis){
+      vis=nowVis;cloneCount=vis;index=cloneCount;
+      baseCells=items.slice(cloneCount,cloneCount+realCount).map(n=>n.cloneNode(true));
+      buildClones();
+    }
+    itemWidth=viewport.clientWidth/vis;
+    items.forEach(i=>i.style.minWidth=itemWidth+'px');
+    jump(index);
+    focus();
+  }
+
+  function go(to){
+    if(animating)return;
+    animating=true;
+    index=to;
+    rail.style.transform=`translate3d(${-index*itemWidth}px,0,0)`;
+    focus();
+  }
+
+  function next(){go(index+1)}
+  function prev(){go(index-1)}
+
+  function normalize(){
+    if(index>=realCount+cloneCount){index=cloneCount;jump(index)}
+    else if(index<cloneCount){index=cloneCount+realCount-1;jump(index)}
+  }
+
+  rail.addEventListener('transitionend',()=>{
+    normalize();
+    animating=false;
+    focus();
+  });
+
+  left.addEventListener('click',prev);
+  right.addEventListener('click',next);
+
+  function startAuto(){ stopAuto(); timer=setInterval(next,5000) }
+  function stopAuto(){ if(timer) clearInterval(timer) }
+  viewport.addEventListener('mouseenter',stopAuto);
+  viewport.addEventListener('mouseleave',startAuto);
+
+  buildClones();
+  requestAnimationFrame(()=>{ measure(); startAuto(); });
+  window.addEventListener('resize',measure);
+});
+</script>
 
 
     @stack('scripts')

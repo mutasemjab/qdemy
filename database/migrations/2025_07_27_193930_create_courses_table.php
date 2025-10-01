@@ -20,6 +20,7 @@ return new class extends Migration
             $table->text('description_en');
             $table->text('description_ar');
             $table->double('selling_price');
+            $table->double('commission_of_admin')->default(0); // percentage
             $table->string('photo');
             $table->unsignedBigInteger('teacher_id')->nullable();
             $table->foreign('teacher_id')->references('id')->on('users')->onDelete('cascade');

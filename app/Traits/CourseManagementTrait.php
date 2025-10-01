@@ -603,6 +603,7 @@ trait CourseManagementTrait
             'description_en' => 'required|string',
             'description_ar' => 'required|string',
             'selling_price' => 'required|numeric|min:0',
+            'commission_of_admin' => 'nullable|numeric',
             'subject_id' => 'required|exists:subjects,id',
             'photo' => $courseId ? 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
         ];
@@ -695,7 +696,7 @@ trait CourseManagementTrait
     {
         $data = $request->only([
             'title_en', 'title_ar', 'description_en', 
-            'description_ar', 'selling_price', 'subject_id'
+            'description_ar','commission_of_admin' ,'selling_price', 'subject_id'
         ]);
 
         if ($isAdmin) {

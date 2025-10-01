@@ -11,6 +11,8 @@ use App\Models\CoursePayment;
 use Illuminate\Support\Facades\DB;
 use App\Models\CoursePaymentDetail;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\WalletTransaction;
 use Illuminate\Support\Facades\Validator;
 
 class EnrollmentController extends Controller
@@ -25,10 +27,7 @@ class EnrollmentController extends Controller
             return redirect()->route('user.login');
         }
 
-        // تنظيف السلة عند البداية
         CartRepository()->initializeCart();
-
-        // الحصول على البيانات من السلة
         $cartData = CartRepository()->getCartCoursesWithStatus();
 
         return view('web.checkout', [
@@ -77,9 +76,8 @@ class EnrollmentController extends Controller
         }
 
         try {
-            // التحقق من الصلاحية
             if (!CartRepository()->validCartContent($request->package_id)) {
-                CartRepository()->clearCart(); // مسح السلة بالكامل للبدء من جديد
+                CartRepository()->clearCart();
             }
 
             $cart = CartRepository()->setPackageCart($request->package_id, $request->courses);
@@ -155,24 +153,22 @@ class EnrollmentController extends Controller
         return CartRepository()->removeAnyPackageFromCart();
     }
 
-
-    // remove package from session && cart
     public function removeCourseFromPackage(Request $request)
     {
         $user = auth_student();
         if (!$user) {
             return response()->json([
-                'success'   => true,
-                'message'   => __('messages.login first'),
+                'success' => true,
+                'message' => __('messages.login first'),
             ]);
         }
         if (!$request->package_id || !$request->course_id) {
             return response()->json([
-                'success'   => false,
-                'message'   => __('messages.unexpected_error'),
+                'success' => false,
+                'message' => __('messages.unexpected_error'),
             ]);
         }
-        return CartRepository()->removeCourseFromPackage($request->package_id,$request->course_id);
+        return CartRepository()->removeCourseFromPackage($request->package_id, $request->course_id);
     }
 
     /**
@@ -193,7 +189,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // التحقق من البطاقة
         $cardValidation = $this->validateCard($request->card_number);
         if (!$cardValidation['valid']) {
             return response()->json([
@@ -203,12 +198,10 @@ class EnrollmentController extends Controller
         }
 
         $cardNumber = $cardValidation['card'];
-        // get course as collction to use same functions
-        $courses   = Course::where('id',$request->course_id)->get();
-        $course    = (clone $courses)->first();
+        $courses = Course::where('id', $request->course_id)->get();
+        $course = (clone $courses)->first();
         $courseId = $course?->id;
 
-        // التحققات
         $enrollmentCheck = $this->checkEnrollmentEligibility($user?->id, $course, $cardNumber);
         if (!$enrollmentCheck['valid']) {
             return response()->json([
@@ -217,12 +210,14 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // تنفيذ عملية التسجيل
         DB::beginTransaction();
         try {
             $this->enrollUserInCourse($user?->id, $course);
             $this->markCardAsUsed($cardNumber, $user?->id);
             $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
+            
+            // خصم العمولة من المعلم
+            $this->deductCommissionFromTeacher($course);
 
             CartRepository()->removeItem($courseId);
 
@@ -259,7 +254,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // التحقق من البطاقة
         $cardValidation = $this->validateCard($request->card_number);
         if (!$cardValidation['valid']) {
             return response()->json([
@@ -269,9 +263,8 @@ class EnrollmentController extends Controller
         }
 
         $cardNumber = $cardValidation['card'];
-
-        // الحصول على الكورسات الصالحة للشراء
         $validCourses = $this->getValidCoursesForPurchase($user?->id);
+        
         if ($validCourses->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -281,7 +274,6 @@ class EnrollmentController extends Controller
 
         $totalCost = $validCourses->sum('selling_price');
 
-        // التحقق من قيمة البطاقة
         if ($cardNumber->card->price != $totalCost) {
             return response()->json([
                 'success' => false,
@@ -289,11 +281,12 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // تنفيذ عملية الشراء
         DB::beginTransaction();
         try {
             foreach ($validCourses as $course) {
                 $this->enrollUserInCourse($user?->id, $course);
+                // خصم العمولة من كل معلم
+                $this->deductCommissionFromTeacher($course);
             }
 
             $this->markCardAsUsed($cardNumber, $user?->id);
@@ -334,7 +327,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // التحقق من البطاقة
         $cardValidation = $this->validateCard($request->card_number);
         if (!$cardValidation['valid']) {
             return response()->json([
@@ -353,7 +345,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // الحصول على الكورسات الصالحة للشراء من الباكدج
         $validCourses = $this->getValidPackageCoursesForPurchase($user?->id, $packageCart);
         if ($validCourses->isEmpty()) {
             return response()->json([
@@ -362,7 +353,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // التحقق من عدد الكورسات
         if ($validCourses->count() != $packageCart['max_courses']) {
             return response()->json([
                 'success' => false,
@@ -370,7 +360,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // التحقق من قيمة البطاقة
         if ($cardNumber->card->price != $packageCart['package_price']) {
             return response()->json([
                 'success' => false,
@@ -378,7 +367,6 @@ class EnrollmentController extends Controller
             ]);
         }
 
-        // تنفيذ عملية الشراء
         DB::beginTransaction();
         try {
             foreach ($validCourses as $course) {
@@ -413,9 +401,9 @@ class EnrollmentController extends Controller
     private function validateCard($cardNumber)
     {
         $card = CardNumber::where('number', $cardNumber)
-                         ->where('activate', 1)
-                         ->where('status', 2)
-                         ->first();
+            ->where('activate', 1)
+            ->where('status', 2)
+            ->first();
 
         if (!$card) {
             return [
@@ -434,8 +422,6 @@ class EnrollmentController extends Controller
 
     private function checkEnrollmentEligibility($userId, $course, $cardNumber)
     {
-        // التحقق من الاشتراك السابق
-
         if (CourseUser::where('user_id', $userId)->where('course_id', $course->id)->exists()) {
             return [
                 'valid' => false,
@@ -443,7 +429,6 @@ class EnrollmentController extends Controller
             ];
         }
 
-        // التحقق من حالة الكورس
         if (!$course->is_active) {
             return [
                 'valid' => false,
@@ -451,7 +436,6 @@ class EnrollmentController extends Controller
             ];
         }
 
-        // التحقق من قيمة البطاقة
         if ($cardNumber->card->price != $course->selling_price) {
             return [
                 'valid' => false,
@@ -467,13 +451,13 @@ class EnrollmentController extends Controller
         $courseIds = CartRepository()->getCourseCart();
 
         return Course::active()
-                    ->whereIn('id', $courseIds)
-                    ->whereNotIn('id', function ($query) use ($userId) {
-                        $query->select('course_id')
-                              ->from('course_users')
-                              ->where('user_id', $userId);
-                    })
-                    ->get();
+            ->whereIn('id', $courseIds)
+            ->whereNotIn('id', function ($query) use ($userId) {
+                $query->select('course_id')
+                    ->from('course_users')
+                    ->where('user_id', $userId);
+            })
+            ->get();
     }
 
     private function getValidPackageCoursesForPurchase($userId, $packageCart)
@@ -481,13 +465,13 @@ class EnrollmentController extends Controller
         $courseIds = $packageCart['courses'] ?? [];
 
         return Course::active()
-                    ->whereIn('id', $courseIds)
-                    ->whereNotIn('id', function ($query) use ($userId) {
-                        $query->select('course_id')
-                              ->from('course_users')
-                              ->where('user_id', $userId);
-                    })
-                    ->get();
+            ->whereIn('id', $courseIds)
+            ->whereNotIn('id', function ($query) use ($userId) {
+                $query->select('course_id')
+                    ->from('course_users')
+                    ->where('user_id', $userId);
+            })
+            ->get();
     }
 
     private function enrollUserInCourse($userId, $course)
@@ -536,5 +520,40 @@ class EnrollmentController extends Controller
         }
 
         return $payment;
+    }
+
+    /**
+     * خصم العمولة من المعلم وتسجيلها في المحفظة (للكورسات العادية)
+     */
+    private function deductCommissionFromTeacher($course)
+    {
+        if (!$course->teacher_id) {
+            return;
+        }
+
+        $commissionPercentage = $course->commission_of_admin ?? 0;
+        $commissionAmount = ($course->selling_price * $commissionPercentage) / 100;
+
+        if ($commissionAmount <= 0) {
+            return;
+        }
+
+        $teacher = User::find($course->teacher_id);
+        
+        if (!$teacher) {
+            return;
+        }
+
+        $teacher->decrement('balance', $commissionAmount);
+
+        WalletTransaction::create([
+            'user_id' => $teacher->id,
+            'admin_id' => 1,
+            'amount' => $commissionAmount,
+            'type' => 2,
+            'note' => "خصم عمولة إدارية ({$commissionPercentage}%) للكورس: {$course->title_ar}"
+        ]);
+
+        \Log::info("تم خصم عمولة {$commissionAmount} من المعلم {$teacher->name} للكورس {$course->title_ar}");
     }
 }

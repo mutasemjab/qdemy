@@ -2093,5 +2093,5 @@ return [
     'Employee deleted successfully' => 'تم حذف الموظف بنجاح',
     'Employee has been deleted successfully' => 'تم حذف الموظف بنجاح',
     'You want to delete the employee' => 'تريد حذف الموظف',
-
+    'commission_of_admin' => 'عمولة الأدمن',
 ];

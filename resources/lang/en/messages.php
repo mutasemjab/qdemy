@@ -2143,6 +2143,21 @@ return [
     'Employee deleted successfully' => 'Employee deleted successfully',
     'Employee has been deleted successfully' => 'Employee has been deleted successfully',
     'You want to delete the employee' => 'You want to delete the employee',
+    'commission_of_admin' => 'Commission of admin',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
 
 
 ];

@@ -10,6 +10,8 @@ use App\Models\ContentUserProgress;
 use App\Models\CourseContent;
 use App\Models\CoursePayment;
 use App\Models\CoursePaymentDetail;
+use App\Models\User;
+use App\Models\WalletTransaction;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -63,43 +65,39 @@ class EnrollmentController extends Controller
     /**
      * إضافة كورس للسلة
      */
- public function addToSession(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'course_id' => 'required|exists:courses,id'
-    ]);
+    public function addToSession(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'course_id' => 'required|exists:courses,id'
+        ]);
 
-    $user = auth('user-api')->user();
-    if ($validator->fails()) {
-        return $this->error_response($validator->errors()->first(), null);
-    }
-
-    if (!$user) {
-        return $this->error_response('يجب تسجيل الدخول أولاً', null);
-    }
-
-    try {
-        $cartRepository = $this->getCartRepository();
-        $result = $cartRepository->put($request->course_id);
-
-        if ($result && isset($result->original)) {
-            if ($result->original['success']) {
-                return $this->success_response($result->original['message'], $result->original);
-            } else {
-                // Handle specific failure cases with the actual message
-                return $this->error_response($result->original['message'], null);
-            }
+        $user = auth('user-api')->user();
+        if ($validator->fails()) {
+            return $this->error_response($validator->errors()->first(), null);
         }
 
-        return $this->error_response('حدث خطأ أثناء إضافة الكورس للسلة', null);
+        if (!$user) {
+            return $this->error_response('يجب تسجيل الدخول أولاً', null);
+        }
 
-    } catch (\Exception $e) {
-        return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
+        try {
+            $cartRepository = $this->getCartRepository();
+            $result = $cartRepository->put($request->course_id);
+
+            if ($result && isset($result->original)) {
+                if ($result->original['success']) {
+                    return $this->success_response($result->original['message'], $result->original);
+                } else {
+                    return $this->error_response($result->original['message'], null);
+                }
+            }
+
+            return $this->error_response('حدث خطأ أثناء إضافة الكورس للسلة', null);
+
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
+        }
     }
-}
-
-  
-
 
     /**
      * حذف كورس من السلة
@@ -271,7 +269,6 @@ class EnrollmentController extends Controller
         return $this->error_response('حدث خطأ أثناء حذف الباكدج من السلة', null);
     }
 
-
     /**
      * الدفع بالبطاقة للكورسات العادية
      */
@@ -299,7 +296,7 @@ class EnrollmentController extends Controller
         $cardNumber = $cardValidation['card'];
 
         // الحصول على الكورسات الصالحة للشراء
-        $validCourses = $this->getValidCoursesForPurchase($user?->id);
+        $validCourses = $this->getValidCoursesForPurchase($user->id);
         if ($validCourses->isEmpty()) {
             return $this->error_response(translate_lang('cart_is_empty'), null);
         }
@@ -315,11 +312,13 @@ class EnrollmentController extends Controller
         DB::beginTransaction();
         try {
             foreach ($validCourses as $course) {
-                $this->enrollUserInCourse($user?->id, $course);
+                $this->enrollUserInCourse($user->id, $course);
+                // خصم العمولة من كل معلم
+                $this->deductCommissionFromTeacher($course);
             }
 
-            $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'courses');
+            $this->markCardAsUsed($cardNumber, $user->id);
+            $this->createPaymentRecord($user->id, $validCourses, $cardNumber, 'courses');
 
             $cartRepository = $this->getCartRepository();
             $cartRepository->clearCart();
@@ -337,8 +336,6 @@ class EnrollmentController extends Controller
             return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
         }
     }
-
-    
 
     /**
      * Helper Methods
@@ -368,7 +365,6 @@ class EnrollmentController extends Controller
 
     private function checkEnrollmentEligibility($userId, $course, $cardNumber)
     {
-        // التحقق من الاشتراك السابق
         if (CourseUser::where('user_id', $userId)->where('course_id', $course->id)->exists()) {
             return [
                 'valid' => false,
@@ -376,7 +372,6 @@ class EnrollmentController extends Controller
             ];
         }
 
-        // التحقق من حالة الكورس
         if (!$course->is_active) {
             return [
                 'valid' => false,
@@ -384,7 +379,6 @@ class EnrollmentController extends Controller
             ];
         }
 
-        // التحقق من قيمة البطاقة
         if ($cardNumber->card->price != $course->selling_price) {
             return [
                 'valid' => false,
@@ -472,10 +466,45 @@ class EnrollmentController extends Controller
         return $payment;
     }
 
+    /**
+     * خصم العمولة من المعلم وتسجيلها في المحفظة
+     */
+    private function deductCommissionFromTeacher($course)
+    {
+        if (!$course->teacher_id) {
+            return;
+        }
+
+        $commissionPercentage = $course->commission_of_admin ?? 0;
+        $commissionAmount = ($course->selling_price * $commissionPercentage) / 100;
+
+        if ($commissionAmount <= 0) {
+            return;
+        }
+
+        $teacher = User::find($course->teacher_id);
+        
+        if (!$teacher) {
+            return;
+        }
+
+        $teacher->decrement('balance', $commissionAmount);
+
+        WalletTransaction::create([
+            'user_id' => $teacher->id,
+            'admin_id' => 1,
+            'amount' => $commissionAmount,
+            'type' => 2,
+            'note' => "خصم عمولة إدارية ({$commissionPercentage}%) للكورس: {$course->title_ar}"
+        ]);
+
+        \Log::info("تم خصم عمولة {$commissionAmount} من المعلم {$teacher->name} للكورس {$course->title_ar}");
+    }
+
     public function getUserEnrolledCourses(Request $request)
     {
         try {
-            $user = $request->user(); // authenticated user from token
+            $user = $request->user();
 
             if (!$user) {
                 return $this->error_response('User not authenticated', null);
@@ -483,14 +512,12 @@ class EnrollmentController extends Controller
 
             $perPage = $request->get('per_page', 10);
             $search = $request->get('search');
-            $sortBy = $request->get('sort_by', 'latest'); // latest, progress, name
+            $sortBy = $request->get('sort_by', 'latest');
 
-            // Get enrolled courses through the pivot table
             $query = Course::whereHas('enrollments', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program']);
 
-            // Apply search filter
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title_ar', 'like', "%{$search}%")
@@ -500,13 +527,11 @@ class EnrollmentController extends Controller
                 });
             }
 
-            // Apply sorting
             switch ($sortBy) {
                 case 'name':
                     $query->orderBy('title_ar', 'asc');
                     break;
                 case 'progress':
-                    // This will be handled after getting the results
                     break;
                 default:
                     $query->latest();
@@ -515,9 +540,7 @@ class EnrollmentController extends Controller
             $courses = $query->paginate($perPage);
 
             $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
-                // Calculate progress for each course
                 $calculateCourseProgress = $this->getCourseProgressData($user->id, $course->id);
-                // Get enrollment date
                 $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
 
                 return [
@@ -569,7 +592,6 @@ class EnrollmentController extends Controller
                 ];
             });
 
-            // Sort by progress if requested
             if ($sortBy === 'progress') {
                 $coursesData = $coursesData->sortByDesc('user_progress.course_progress')->values();
             }
@@ -603,7 +625,6 @@ class EnrollmentController extends Controller
         $course = Course::find($courseId);
         $progressPercentage = $course->calculateCourseProgress($userId);
         
-        // Get the detailed data that your controller expects
         $totalVideos = CourseContent::where('course_id', $courseId)
             ->where('content_type', 'video')
             ->count();
@@ -615,7 +636,7 @@ class EnrollmentController extends Controller
             ->where('content_user_progress.completed', true)
             ->count();
         
-        $watchingVideos = 0; // or implement your logic
+        $watchingVideos = 0;
         
         return [
             'course_progress' => $progressPercentage,
@@ -624,7 +645,6 @@ class EnrollmentController extends Controller
             'total_videos' => $totalVideos
         ];
     }
-
 
     /**
      * تحديث سلة الباكدج
@@ -649,9 +669,8 @@ class EnrollmentController extends Controller
         try {
             $cartRepository = $this->getCartRepository();
             
-            // التحقق من الصلاحية
             if (!$cartRepository->validCartContent($request->package_id)) {
-                $cartRepository->clearCart(); // مسح السلة بالكامل للبدء من جديد
+                $cartRepository->clearCart();
             }
 
             $cart = $cartRepository->setPackageCart($request->package_id, $request->courses);
@@ -685,7 +704,6 @@ class EnrollmentController extends Controller
             return $this->error_response('يجب تسجيل الدخول أولاً', null);
         }
 
-        // التحقق من البطاقة
         $cardValidation = $this->validateCard($request->card_number);
         if (!$cardValidation['valid']) {
             return $this->error_response($cardValidation['message'], null);
@@ -699,23 +717,19 @@ class EnrollmentController extends Controller
             return $this->error_response('لا توجد باكدج في السلة', null);
         }
 
-        // الحصول على الكورسات الصالحة للشراء من الباكدج
         $validCourses = $this->getValidPackageCoursesForPurchase($user->id, $packageCart);
         if ($validCourses->isEmpty()) {
             return $this->error_response(translate_lang('cart_is_empty'), null);
         }
 
-        // التحقق من عدد الكورسات
         if ($validCourses->count() != $packageCart['max_courses']) {
             return $this->error_response('يجب أن تحتوي السلة على ' . $packageCart['max_courses'] . ' كورسات صالحة وغير مشترك فيها', null);
         }
 
-        // التحقق من قيمة البطاقة
         if ($cardNumber->card->price != $packageCart['package_price']) {
             return $this->error_response('يجب أن تساوي قيمة البطاقة سعر الباكدج', null);
         }
 
-        // تنفيذ عملية الشراء
         DB::beginTransaction();
         try {
             foreach ($validCourses as $course) {
@@ -741,5 +755,4 @@ class EnrollmentController extends Controller
             return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
         }
     }
-
 }

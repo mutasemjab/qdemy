@@ -105,10 +105,32 @@
                                                id="selling_price"
                                                name="selling_price"
                                                value="{{ old('selling_price') }}"
-                                               step="0.01"
+                                               step="any"
                                                min="0"
                                                placeholder="0.00">
                                         @error('selling_price')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="commission_of_admin" class="form-label">
+                                        {{ __('messages.commission_of_admin') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">%</span>
+                                        <input type="number"
+                                               class="form-control @error('commission_of_admin') is-invalid @enderror"
+                                               id="commission_of_admin"
+                                               name="commission_of_admin"
+                                               value="{{ old('commission_of_admin') }}"
+                                               step="any"
+                                               min="0"
+                                               placeholder="0.00">
+                                        @error('commission_of_admin')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>

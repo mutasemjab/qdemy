@@ -79,12 +79,12 @@
 <section class="services">
     <h2 data-aos="zoom-in-up">{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
-        <a href="{{ route('community') }}" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
-        <a href="{{ route('exam.index') }}" class="service-btn light anim animate-glow">{{ __('front.Electronic Exams') }}</a>
-        <a href="{{ route('packages-offers') }}" class="service-btn dark">{{ __('front.packages_offers') }}</a>
-        <a href="{{ route('sale-point') }}" class="service-btn light anim animate-glow">{{ __('front.Sale Points') }}</a>
-        <a href="{{ route('ministerialQuestions.index') }}" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
-        <a href="{{ route('bankQuestions.index') }}" class="service-btn light anim animate-glow">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
+        <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
+        <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light anim animate-glow">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark">{{ __('front.packages_offers') }}</a>
+        <a href="{{ route('sale-point') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow">{{ __('front.Sale Points') }}</a>
+        <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
+        <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light anim animate-glow">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
@@ -135,6 +135,7 @@
     </div>
 </section>
 
+<!--
 <section class="teachers-carousel">
     <h2 data-aos="zoom-in-up">{{ __('front.Teachers') }}</h2>
     <div class="carousel-container">
@@ -151,7 +152,35 @@
     </div>
 </section>
 
-<section class="stats-section">
+-->
+<section data-aos="zoom-in-up" class="x3c-instructors">
+  <h2>{{ __('front.Teachers') }}</h2>
+  <div class="x3c-viewport">
+    <button class="x3c-arrow x3c-left">&#10094;</button>
+    <div class="x3c-rail">
+      @foreach($teachers as $teacher)
+        <div class="x3c-cell">
+          <div class="x3c-fig">
+            <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
+            <!--
+            <div class="x3c-cap">
+              <strong>{{ $teacher->name }}</strong>
+              @if(!empty($teacher->subject))
+                <span>{{ $teacher->subject }}</span>
+              @endif
+            </div>
+            -->
+            
+          </div>
+        </div>
+      @endforeach
+    </div>
+    <button class="x3c-arrow x3c-right">&#10095;</button>
+  </div>
+</section>
+
+
+<section data-aos="zoom-in-up" class="stats-section">
     <div class="stats-overlay">
         <div class="stat-item">
             <span class="stat-number">{{ $settings->number_of_course ?? '+20 Thousand' }}</span>
@@ -180,7 +209,7 @@
     <div class="faq-section-link">
         <a href="#">{{ __('front.See More') }} ←</a>
     </div>
-    <div class="faq-container">
+    <div data-aos="zoom-in" class="faq-container">
         @foreach($faqs as $index => $faq)
             <div class="faq-card {{ $index == 1 ? 'top-arrow faq-card-custom' : '' }}">
                 <div class="icon">
@@ -194,11 +223,11 @@
 </section>
 
 <section class="rvx" dir="rtl">
-    <h2 class="rvx-title">{{ __('front.Some Students Reviews') }}</h2>
+    <h2 data-aos="zoom-in-up" class="rvx-title">{{ __('front.Some Students Reviews') }}</h2>
 
     <div class="rvx-wrap">
         <!-- Blue side panel -->
-        <div class="rvx-stage">
+        <div data-aos="zoom-in" class="rvx-stage">
             <div class="rvx-panel">
                 <h3 class="rvx-panel-title">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
                 <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}" alt="Qdemy">
@@ -240,7 +269,7 @@
 </section>
 
 <section class="blog-slider" dir="rtl">
-    <h2 class="blog-slider__title">{{ __('front.Blogs') }}</h2>
+    <h2 data-aos="zoom-in-up" class="blog-slider__title">{{ __('front.Blogs') }}</h2>
 
     <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}" disabled>
         <span>&rsaquo;</span>
@@ -249,7 +278,7 @@
         <span>&lsaquo;</span>
     </button>
 
-    <div class="blog-slider__viewport">
+    <div data-aos="zoom-in" class="blog-slider__viewport">
         <div class="blog-slider__track">
             @foreach($blogs as $blog)
                 <article class="blog-card">

@@ -17,7 +17,7 @@ class WalletTransaction extends Model
     // Relationships
     public function user()
     {
-        return $belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function admin()
