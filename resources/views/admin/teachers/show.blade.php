@@ -284,16 +284,7 @@
                                         <i class="fas fa-edit"></i> {{ __('messages.Edit Teacher') }}
                                     </a>
                                 @endcan
-                                @can('teacher-delete')
-                                    <form action="{{ route('teachers.destroy', $teacher) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this teacher? This will also delete the associated user account if exists.') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-trash"></i> {{ __('messages.Delete Teacher') }}
-                                        </button>
-                                    </form>
-                                @endcan
+                                
                                 <a href="{{ route('teachers.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-list"></i> {{ __('messages.All Teachers') }}
                                 </a>

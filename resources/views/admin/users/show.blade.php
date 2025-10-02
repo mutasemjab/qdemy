@@ -207,16 +207,7 @@
                                         <i class="fas fa-edit"></i> {{ __('messages.Edit User') }}
                                     </a>
                                 @endcan
-                                @can('user-delete')
-                                    <form action="{{ route('users.destroy', $user) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this user?') }}')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-trash"></i> {{ __('messages.Delete User') }}
-                                        </button>
-                                    </form>
-                                @endcan
+                               
                                 <a href="{{ route('users.index') }}" class="btn btn-secondary">
                                     <i class="fas fa-list"></i> {{ __('messages.All Users') }}
                                 </a>

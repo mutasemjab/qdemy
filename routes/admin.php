@@ -33,6 +33,7 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ExamQuestionsController;
+use App\Http\Controllers\Admin\SocialMediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -93,6 +94,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             ->name('notifications.resend');
 
         // Resource Route
+        Route::resource('social-media', SocialMediaController::class);
         Route::resource('pages', PageController::class);
         Route::resource('contactUs', ContactUsController::class);
         Route::resource('onboardings', OnBoardingController::class);

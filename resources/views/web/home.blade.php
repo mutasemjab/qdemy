@@ -88,6 +88,7 @@
     </div>
 </section>
 
+
 <section class="social-media">
     <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
 
@@ -95,8 +96,10 @@
     @for($i = 0; $i < min(2, ceil($socialMediaVideos->count() / 2)); $i++)
         <div class="media-row">
             @if($videoIndex < $socialMediaVideos->count())
-                <div class="media-video" data-video="{{ $socialMediaVideos[$videoIndex]->video }}">
-                    <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
+                <div class="media-video" data-video="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}">
+                    <video muted loop playsinline preload="metadata">
+                        <source src="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}" type="video/mp4">
+                    </video>
                     <div class="overlay">
                         <i class="fas fa-play"></i>
                     </div>
@@ -104,13 +107,11 @@
                 @php $videoIndex++; @endphp
             @endif
 
-            <div class="media-image">
-                <img data-src="{{ asset('assets_front/images/social1.jpg') }}" alt="">
-            </div>
-
             @if($videoIndex < $socialMediaVideos->count())
-                <div class="media-video" data-video="{{ $socialMediaVideos[$videoIndex]->video }}">
-                    <img data-src="{{ asset('assets_front/images/videobg.jpg') }}" alt="">
+                <div class="media-video" data-video="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}">
+                    <video muted loop playsinline preload="metadata">
+                        <source src="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}" type="video/mp4">
+                    </video>
                     <div class="overlay">
                         <i class="fas fa-play"></i>
                     </div>
@@ -123,7 +124,10 @@
     <div class="video-popup">
         <div class="popup-content">
             <span class="close-btn">&times;</span>
-            <iframe data-src="" frameborder="0" allowfullscreen></iframe>
+            <video controls controlsList="nodownload">
+                <source src="" type="video/mp4">
+                {{ __('front.browser_not_support_video') }}
+            </video>
         </div>
     </div>
 
@@ -135,24 +139,7 @@
     </div>
 </section>
 
-<!--
-<section class="teachers-carousel">
-    <h2 data-aos="zoom-in-up">{{ __('front.Teachers') }}</h2>
-    <div class="carousel-container">
-        <button class="carousel-btn prev">&#10094;</button>
-        <div class="carousel-track">
-            @foreach($teachers as $teacher)
-                <div class="carousel-slide">
-                    <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
 
-                </div>
-            @endforeach
-        </div>
-        <button class="carousel-btn next">&#10095;</button>
-    </div>
-</section>
-
--->
 <section data-aos="zoom-in-up" class="x3c-instructors">
   <h2>{{ __('front.Teachers') }}</h2>
   <div class="x3c-viewport">
@@ -162,14 +149,6 @@
         <div class="x3c-cell">
           <div class="x3c-fig">
             <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
-            <!--
-            <div class="x3c-cap">
-              <strong>{{ $teacher->name }}</strong>
-              @if(!empty($teacher->subject))
-                <span>{{ $teacher->subject }}</span>
-              @endif
-            </div>
-            -->
             
           </div>
         </div>

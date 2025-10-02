@@ -49,8 +49,8 @@ class AuthController extends Controller
 
     public function showRegister()
     {
-
-        return view('web.register');
+        $classes = DB::table('clas')->get();
+        return view('web.register',compact('classes'));
     }
 
     public function login(Request $request)
@@ -88,9 +88,9 @@ class AuthController extends Controller
             'role_name' => 'required|in:student,parent',
         ];
 
-        // Add grade validation for students
+        // Add grade validation for students - validate against existing clas IDs
         if ($request->role_name === 'student') {
-            $rules['grade'] = 'required|in:1,2,3,4,5,6,7,8,9';
+            $rules['grade'] = 'required|exists:clas,id';
         }
 
         // Add children validation for parents
@@ -128,10 +128,10 @@ class AuthController extends Controller
                     if (is_array($childrenIds) && !empty($childrenIds)) {
                         // Verify all children exist and are students
                         $validChildren = User::whereIn('id', $childrenIds)
-                                           ->where('role_name', 'student')
-                                           ->where('activate', 1)
-                                           ->pluck('id')
-                                           ->toArray();
+                                        ->where('role_name', 'student')
+                                        ->where('activate', 1)
+                                        ->pluck('id')
+                                        ->toArray();
 
                         // Create parent-student relationships
                         foreach ($validChildren as $childId) {

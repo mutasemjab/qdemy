@@ -290,16 +290,7 @@
                                     <i class="fas fa-edit"></i> {{ __('messages.Edit Parent') }}
                                 </a>
                             @endcan
-                            @can('parent-delete')
-                                <form action="{{ route('parents.destroy', $parent) }}" method="POST" class="d-inline"
-                                      onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this parent? This will also delete the associated user account and student relationships if they exist.') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fas fa-trash"></i> {{ __('messages.Delete Parent') }}
-                                    </button>
-                                </form>
-                            @endcan
+                           
                             <a href="{{ route('parents.index') }}" class="btn btn-secondary">
                                 <i class="fas fa-list"></i> {{ __('messages.All Parents') }}
                             </a>

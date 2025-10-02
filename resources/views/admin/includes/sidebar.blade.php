@@ -376,6 +376,15 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
+                                @if ($user->can('social-media-table') || $user->can('social-media-add') || $user->can('social-media-edit') || $user->can('social-media-delete'))
+                                    <li class="nav-item">
+                                        <a href="{{ route('social-media.index') }}"
+                                            class="nav-link {{ request()->routeIs('social-media.*') ? 'active' : '' }}">
+                                            <i class="far fa-image nav-icon"></i>
+                                            <p>{{ __('messages.social_media') }}</p>
+                                        </a>
+                                    </li>
+                                @endif
                                 @if ($user->can('banner-table') || $user->can('banner-add') || $user->can('banner-edit') || $user->can('banner-delete'))
                                     <li class="nav-item">
                                         <a href="{{ route('banners.index') }}"

@@ -101,28 +101,8 @@
                             </div>
 
                             <!-- Additional Information -->
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="balance">{{ __('messages.Balance') }}</label>
-                                    <input type="number" step="0.01" min="0"
-                                           class="form-control @error('balance') is-invalid @enderror"
-                                           id="balance" name="balance" value="{{ old('balance', $user->balance) }}">
-                                    @error('balance')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
+                        
 
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="referal_code">{{ __('messages.Referral Code') }}</label>
-                                    <input type="text" class="form-control @error('referal_code') is-invalid @enderror"
-                                           id="referal_code" name="referal_code" value="{{ old('referal_code', $user->referal_code) }}">
-                                    @error('referal_code')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">

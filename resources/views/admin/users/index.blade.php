@@ -82,7 +82,6 @@
                                     <th>{{ __('messages.Email') }}</th>
                                     <th>{{ __('messages.Phone') }}</th>
                                     <th>{{ __('messages.Category') }}</th>
-                                    <th>{{ __('messages.Balance') }}</th>
                                     <th>{{ __('messages.Status') }}</th>
                                     <th>{{ __('messages.Actions') }}</th>
                                 </tr>
@@ -112,8 +111,7 @@
                                         </td>
                                         <td>{{ $user->email ?: '-' }}</td>
                                         <td>{{ $user->phone ?: '-' }}</td>
-                                        <td>{{ $user->clas->name ?? '-' }}</td>
-                                        <td>${{ number_format($user->balance, 2) }}</td>
+                                        <td>{{ $user->clas->name_ar ?? '-' }}</td>
                                         <td>
                                             <span class="badge badge-{{ $user->activate == 1 ? 'success' : 'danger' }}">
                                                 {{ $user->activate == 1 ? __('messages.Active') : __('messages.Inactive') }}
@@ -133,18 +131,7 @@
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 @endcan
-                                                @can('user-delete')
-                                                    <form action="{{ route('users.destroy', $user) }}" 
-                                                          method="POST" class="d-inline"
-                                                          onsubmit="return confirm('{{ __('messages.Are you sure you want to delete this user?') }}')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger" 
-                                                                title="{{ __('messages.Delete') }}">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endcan
+                                                
                                             </div>
                                         </td>
                                     </tr>

@@ -38,7 +38,7 @@ use App\Http\Controllers\Api\v1\Parent\SettingParentController;
 use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 use App\Http\Controllers\Api\v1\NotificationController;
-
+use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\ExamController;
 
 /*
@@ -61,6 +61,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // ================================
 Route::group(['prefix' => 'v1/user'], function () {
 
+
+    Route::get('/cards-order', [CardController::class, 'cards_order']);
 
     Route::get('/getSubjectsFromCategory', [CategoryController::class, 'getSubjectsFromCategory']); // api to get the subject from all categories
 

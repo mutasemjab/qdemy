@@ -21,6 +21,21 @@
                 </li>
                 <li><a href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
                 <li><a href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
+                
+                      {{-- Auth in mobile menu --}}
+                      @if(!auth('user')?->user())
+                        <li class="only-mobile">
+                            <a class="btn btn-primary w-100"style="color:#fff !important;" href="{{ route('user.register') }}"> {{ __('front.create_account') }} </a> </li>
+                        <li class="only-mobile"><a class="btn btn-outline w-100" href="{{ route('user.login') }}">{{ __('front.login') }}</a></li>
+                      @else
+                        <li class="only-mobile"><a class="btn btn-outline w-100" href="{{ route('student.account') }}">{{ __('front.my_account') }}</a></li>
+                        <li class="only-mobile">
+                          <form action="{{ route('user.logout') }}" method="post">@csrf
+                            <button class="btn btn-primary w-100" type="submit">{{ __('front.logout') }}</button>
+                          </form>
+                        </li>
+                      @endif
+                      
             </ul>
         </nav>
 
@@ -31,6 +46,7 @@
                 <i class="fas fa-shopping-cart"></i>
             </a>
 
+<div class="auth-cta">
             <!-- Auth Buttons -->
             @if(!auth('user')?->user())
               <a href="{{ route('user.register') }}" class="btn btn-primary">{{ __('front.create_account') }}</a>
@@ -41,7 +57,8 @@
                 <button style='border: 1px solid #0055D2;padding: 8px;' class="btn btn-primary">{{ __('front.logout') }}</button>
               </form>
             @endif
-
+ </div>
+ 
             <!-- Language Dropdown -->
             <div class="lang-dropdown">
                 <button class="lang-btn" type="button"><i class="fas fa-globe"></i></button>

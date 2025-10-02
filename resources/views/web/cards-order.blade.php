@@ -1,3 +1,7 @@
+@if($isApi)
+@php $hideFooter = true; @endphp
+@php $hideHeader = true; @endphp
+@endif
 @extends('layouts.app')
 @section('title', __('front.page_title'))
 

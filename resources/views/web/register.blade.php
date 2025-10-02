@@ -55,27 +55,16 @@
                     @enderror
 
                     <!-- Student Grade Field -->
-                    <div id="student_fields">
+                   <div id="student_fields">
                         <select name="grade" class="grade-select">
                             <option disabled selected>{{ __('front.select_grade') }}</option>
-                            <option {{ old('grade') == 1 ? 'selected' : '' }} value="1">{{ __('front.grade_1') }}
-                            </option>
-                            <option {{ old('grade') == 2 ? 'selected' : '' }} value="2">{{ __('front.grade_2') }}
-                            </option>
-                            <option {{ old('grade') == 3 ? 'selected' : '' }} value="3">{{ __('front.grade_3') }}
-                            </option>
-                            <option {{ old('grade') == 4 ? 'selected' : '' }} value="4">{{ __('front.grade_4') }}
-                            </option>
-                            <option {{ old('grade') == 5 ? 'selected' : '' }} value="5">{{ __('front.grade_5') }}
-                            </option>
-                            <option {{ old('grade') == 6 ? 'selected' : '' }} value="6">{{ __('front.grade_6') }}
-                            </option>
-                            <option {{ old('grade') == 7 ? 'selected' : '' }} value="7">{{ __('front.grade_7') }}
-                            </option>
-                            <option {{ old('grade') == 8 ? 'selected' : '' }} value="8">{{ __('front.grade_8') }}
-                            </option>
-                            <option {{ old('grade') == 9 ? 'selected' : '' }} value="9">{{ __('front.grade_9') }}
-                            </option>
+                            @foreach($classes as $class)
+                                <option 
+                                    value="{{ $class->id }}" 
+                                    {{ old('grade') == $class->id ? 'selected' : '' }}>
+                                    {{ app()->getLocale() == 'ar' ? $class->name_ar : $class->name_en }}
+                                </option>
+                            @endforeach
                         </select>
                         @error('grade')
                             <span class="text-danger">{{ $message }}</span>

@@ -27,7 +27,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::with('clas');
+        $query = User::where('role_name','student')->with('clas');
 
         // Search functionality
         if ($request->filled('search')) {

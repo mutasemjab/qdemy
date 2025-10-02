@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Validator;
 class CardController  extends Controller
 {
 
-     public function cards_order()
+    public function cards_order(Request $request)
     {
-        $cards = Card::get(); // Only show active cards
-        return view('web.cards-order', compact('cards'));
+        $cards = Card::get();
+        
+        // Check if request from mobile
+        $isApi = $request->is('api/*');
+        
+        // Auto-login for mobile
+        if($isApi && $request->has('UserId')){
+            auth()->loginUsingId($request->input('UserId'));
+        }
+        
+        return view('web.cards-order', compact('cards', 'isApi'));
     }
 
         public function processPayment(Request $request)

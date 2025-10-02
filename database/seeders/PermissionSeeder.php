@@ -168,7 +168,6 @@ class PermissionSeeder extends Seeder
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'admin',
-                    'description' => $description
                 ]);
                 
                 $this->command->line("  ✓ {$permission}");
