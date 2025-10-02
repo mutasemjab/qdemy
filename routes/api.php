@@ -74,6 +74,8 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::get('/onboardings', [OnBoardingController::class, 'index']);
     Route::get('/teachers', [TeacherController::class, 'index']);
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+    Route::post('/resend-otp', [AuthController::class, 'resendOtp']);
 
     Route::post('/check-phone-reset', [ForgotPasswordController::class, 'checkPhoneForReset']);
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
@@ -264,6 +266,8 @@ Route::group(['prefix' => 'v1/parent'], function () {
     Route::post('/register', [AuthParentController::class, 'register']);
     Route::post('/forgot-password', [AuthParentController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthParentController::class, 'resetPassword']);
+    Route::post('/verify-otp', [AuthParentController::class, 'verifyOtp']);
+    Route::post('/resend-otp', [AuthParentController::class, 'resendOtp']);
 
     // Protected routes (same auth middleware, but with role check in controllers)
     Route::group(['middleware' => ['auth:user-api']], function () {

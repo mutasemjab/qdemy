@@ -1,6 +1,6 @@
 <?php
 
-return array (
+return array(
   'What Makes QDEMY Special' => 'What Makes QDEMY Special',
   'QDEMY Services' => 'QDEMY Services',
   'QDEMY Community' => 'QDEMY Community',
@@ -426,14 +426,18 @@ return array (
   'خطأ' => 'Wrong',
   'قيد التصحيح' => 'Under Review',
 
-  'my_account'=>'My Account',
-  'logout'=>'Logout',
-  ''=>'',
-  ''=>'',
-  ''=>'',
-  ''=>'',
-  ''=>'',
-  ''=>'',
-  ''=>'',
+  'my_account' => 'My Account',
+  'logout' => 'Logout',
+  'login_confirm' => 'Login Confirmation',
+  'otp_sent_to'   => 'OTP Sent to:',
+  'resend_otp'    => 'Resend OTP',
+  'resend'        => 'Resend',
+  '' => '',
+  '' => '',
+  '' => '',
+  '' => '',
+  '' => '',
+  '' => '',
+  '' => '',
 
 );

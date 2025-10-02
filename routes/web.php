@@ -41,16 +41,6 @@ use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 |
 */
 
-// Route::get('/migrate-refresh', function () {
-//     // Run the migration command
-//     Artisan::call('migrate:fresh --seed');
-
-//     // Get the output of the command
-//     $output = Artisan::output();
-
-//     // Return a response with the output
-//     return response()->json(['message' => 'Migration and seeding completed successfully', 'output' => $output]);
-// });
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
 
@@ -178,7 +168,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/login', [AuthController::class, 'login'])->name('user.login.submit');
         Route::post('/register', [AuthController::class, 'register'])->name('user.register.submit');
         Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.reset');
-
+        Route::get('verify-otp', [AuthController::class, 'showOtpVerification'])->name('otp.verify');
+        Route::post('verify-otp', [AuthController::class, 'verifyOtp'])->name('otp.verify.submit');
+        Route::get('resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
           // AJAX routes for parent registration
         Route::post('/search-student', [AuthController::class, 'searchStudent'])->name('user.search.student');
         Route::get('/available-students', [AuthController::class, 'getAvailableStudents'])->name('user.available.students');

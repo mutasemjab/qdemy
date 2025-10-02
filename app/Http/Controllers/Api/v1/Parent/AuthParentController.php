@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Parentt;
 use App\Models\ParentStudent;
+use App\Services\OtpService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,8 +19,15 @@ class AuthParentController extends Controller
     use Responses;
 
 
+     protected $otpService;
+
+    public function __construct(OtpService $otpService)
+    {
+        $this->otpService = $otpService;
+    }
+
     /**
-     * Register a new parent
+     * Step 1: Register a new parent and send OTP
      */
     public function register(Request $request)
     {
@@ -56,7 +64,7 @@ class AuthParentController extends Controller
                 $referralCode = 'PAR_' . strtoupper(Str::random(8));
             }
 
-            // Create user
+            // Create user (NOT activated yet - will be activated after OTP verification)
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -67,7 +75,7 @@ class AuthParentController extends Controller
                 'fcm_token' => $request->fcm_token,
                 'ip_address' => $request->ip(),
                 'referal_code' => $referralCode,
-                'activate' => 1,
+                'activate' => 2, // User not activated until OTP verification
                 'balance' => 0
             ]);
 
@@ -76,6 +84,32 @@ class AuthParentController extends Controller
                 'name' => $request->name,
                 'user_id' => $user->id
             ]);
+
+            // Send OTP if phone is provided
+            if ($request->phone) {
+                $result = $this->otpService->generateAndSendOtp($request->phone);
+                
+                if (!$result['success']) {
+                    return $this->error_response(
+                        'Registration successful but failed to send OTP. Please try again.',
+                        ['user_id' => $user->id]
+                    );
+                }
+
+                return $this->success_response(
+                    'Parent registered successfully. Please verify OTP sent to your phone.',
+                    [
+                        'user_id' => $user->id,
+                        'phone' => $user->phone,
+                        'email' => $user->email,
+                        'requires_otp' => true,
+                        'parent_id' => $parent->id
+                    ]
+                );
+            }
+
+            // If no phone provided (email only registration), activate immediately
+            $user->update(['activate' => 1]);
 
             // Create token
             $tokenResult = $user->createToken('auth_token');
@@ -108,6 +142,178 @@ class AuthParentController extends Controller
             return $this->error_response('Registration failed: ' . $e->getMessage(), null);
         }
     }
+
+    /**
+     * Step 2: Verify OTP and activate parent account
+     */
+    public function verifyOtp(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|string',
+                'otp' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->error_response('Validation failed', $validator->errors());
+            }
+
+            // Check for test OTP
+            if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
+                $user = User::where('phone', $request->phone)
+                    ->where('role_name', 'parent')
+                    ->first();
+                
+                if (!$user) {
+                    return $this->error_response('Parent not found', null);
+                }
+
+                // Activate user
+                $user->update(['activate' => 1]);
+
+                // Get parent profile
+                $parent = Parentt::where('user_id', $user->id)->first();
+
+                // Get children
+                $children = $parent->students()->with('user')->get()->map(function($student) {
+                    return [
+                        'id' => $student->user->id,
+                        'name' => $student->user->name,
+                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : null,
+                        'clas_id' => $student->user->clas_id,
+                    ];
+                });
+
+                // Create token
+                $tokenResult = $user->createToken('auth_token');
+                $token = $tokenResult->accessToken;
+
+                $userData = [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'role_name' => $user->role_name,
+                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                        'balance' => $user->balance,
+                        'referal_code' => $user->referal_code,
+                        'activate' => $user->activate
+                    ],
+                    'parent_profile' => [
+                        'id' => $parent->id,
+                        'name' => $parent->name
+                    ],
+                    'children' => $children,
+                    'children_count' => $children->count(),
+                    'token' => $token,
+                ];
+
+                return $this->success_response('OTP verified successfully (Test Mode)', $userData);
+            }
+
+            // Verify real OTP
+            $user = User::where('phone', $request->phone)
+                ->where('role_name', 'parent')
+                ->first();
+            
+            if (!$user) {
+                return $this->error_response('Parent not found', null);
+            }
+
+            if (!$this->otpService->otpExists($request->phone)) {
+                return $this->error_response('OTP has expired. Please request a new one.', null);
+            }
+
+            if ($this->otpService->verifyOtp($request->phone, $request->otp)) {
+                // Activate user
+                $user->update(['activate' => 1]);
+
+                // Get parent profile
+                $parent = Parentt::where('user_id', $user->id)->first();
+
+                // Get children
+                $children = $parent->students()->with('user')->get()->map(function($student) {
+                    return [
+                        'id' => $student->user->id,
+                        'name' => $student->user->name,
+                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : null,
+                        'clas_id' => $student->user->clas_id,
+                    ];
+                });
+
+                // Create token
+                $tokenResult = $user->createToken('auth_token');
+                $token = $tokenResult->accessToken;
+
+                $userData = [
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone,
+                        'role_name' => $user->role_name,
+                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                        'balance' => $user->balance,
+                        'referal_code' => $user->referal_code,
+                        'activate' => $user->activate
+                    ],
+                    'parent_profile' => [
+                        'id' => $parent->id,
+                        'name' => $parent->name
+                    ],
+                    'children' => $children,
+                    'children_count' => $children->count(),
+                    'token' => $token,
+                ];
+
+                return $this->success_response('OTP verified successfully', $userData);
+            }
+
+            return $this->error_response('Invalid OTP. Please try again.', null);
+
+        } catch (\Exception $e) {
+            return $this->error_response('OTP verification failed: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
+     * Resend OTP
+     */
+    public function resendOtp(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'phone' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->error_response('Validation failed', $validator->errors());
+            }
+
+            // Check if user exists
+            $user = User::where('phone', $request->phone)
+                ->where('role_name', 'parent')
+                ->first();
+
+            if (!$user) {
+                return $this->error_response('Parent not found', null);
+            }
+
+            // Send OTP
+            $result = $this->otpService->generateAndSendOtp($request->phone);
+
+            if ($result['success']) {
+                return $this->success_response('OTP sent successfully', null);
+            }
+
+            return $this->error_response('Failed to send OTP. Please try again.', null);
+
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to resend OTP: ' . $e->getMessage(), null);
+        }
+    }
+
 
     /**
      * Login parent

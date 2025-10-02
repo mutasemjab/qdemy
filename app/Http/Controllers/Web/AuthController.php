@@ -7,15 +7,23 @@ use App\Models\Order;
 use App\Models\ParentStudent;
 use App\Models\Parentt;
 use App\Models\User;
+use App\Services\OtpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
+
+    protected $otpService;
+
+    public function __construct(OtpService $otpService)
+    {
+        $this->otpService = $otpService;
+    }
 
     public function resetPassword(Request $request)
     {
@@ -26,18 +34,17 @@ class AuthController extends Controller
 
         // Find the user
         $user = User::where('phone', $request->phone)
-                    ->first();
+            ->first();
 
         if (!$user) {
-            return redirect()->route('user.login')->with('error','User Not found with these phone number');
+            return redirect()->route('user.login')->with('error', 'User Not found with these phone number');
         }
 
         // Update the user's password
         $user->password = Hash::make($request->password);
         $user->save();
 
-        return redirect()->route('user.login')->with('success','Password Change Successfully');
-
+        return redirect()->route('user.login')->with('success', 'Password Change Successfully');
     }
 
     public function showLogin()
@@ -50,7 +57,7 @@ class AuthController extends Controller
     public function showRegister()
     {
         $classes = DB::table('clas')->get();
-        return view('web.register',compact('classes'));
+        return view('web.register', compact('classes'));
     }
 
     public function login(Request $request)
@@ -66,7 +73,7 @@ class AuthController extends Controller
             'activate' => 1
         ])) {
             $request->session()->regenerate();
-            
+
             // Redirect based on user role
             $user = Auth::user();
             return $this->redirectToUserPanel($user);
@@ -77,18 +84,20 @@ class AuthController extends Controller
             ->withInput($request->except('password'));
     }
 
+
+
     public function register(Request $request)
     {
         // Validation rules based on role
         $rules = [
             'name'      => 'required|string|max:255',
-            'phone'     => 'required|string|unique:users,phone|max:20',
+            'phone'     => 'nullable|string|unique:users,phone|max:20',
             'email'     => 'required|string|unique:users,email|max:255',
             'password'  => 'required|string|min:6',
             'role_name' => 'required|in:student,parent',
         ];
 
-        // Add grade validation for students - validate against existing clas IDs
+        // Add grade validation for students
         if ($request->role_name === 'student') {
             $rules['grade'] = 'required|exists:clas,id';
         }
@@ -101,8 +110,11 @@ class AuthController extends Controller
         $request->validate($rules);
 
         DB::beginTransaction();
-        
+
         try {
+            // Determine if OTP is required (phone is provided)
+            $requiresOtp = !empty($request->phone);
+
             // Create the user
             $user = User::create([
                 'name'      => $request->name,
@@ -111,7 +123,7 @@ class AuthController extends Controller
                 'password'  => Hash::make($request->password),
                 'role_name' => $request->role_name,
                 'clas_id'   => $request->role_name === 'student' ? $request->grade : null,
-                'activate'  => 1,
+                'activate'  => $requiresOtp ? 0 : 1, // Not activated if OTP required
             ]);
 
             // If it's a parent, create parent record and relationships
@@ -124,14 +136,14 @@ class AuthController extends Controller
                 // Add selected children if any
                 if ($request->selected_children) {
                     $childrenIds = json_decode($request->selected_children, true);
-                    
+
                     if (is_array($childrenIds) && !empty($childrenIds)) {
                         // Verify all children exist and are students
                         $validChildren = User::whereIn('id', $childrenIds)
-                                        ->where('role_name', 'student')
-                                        ->where('activate', 1)
-                                        ->pluck('id')
-                                        ->toArray();
+                            ->where('role_name', 'student')
+                            ->where('activate', 1)
+                            ->pluck('id')
+                            ->toArray();
 
                         // Create parent-student relationships
                         foreach ($validChildren as $childId) {
@@ -145,19 +157,137 @@ class AuthController extends Controller
             }
 
             DB::commit();
-            
+
+            // If phone provided, send OTP and redirect to verification page
+            if ($requiresOtp) {
+                $result = $this->otpService->generateAndSendOtp($request->phone);
+
+                if (!$result['success']) {
+                    return redirect()->back()
+                        ->withErrors(['otp' => 'فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.'])
+                        ->withInput($request->except('password'));
+                }
+
+                // Store user ID in session for OTP verification
+                Session::put('pending_verification_user_id', $user->id);
+                Session::put('pending_verification_phone', $request->phone);
+
+                return redirect()->route('otp.verify')
+                    ->with('success', 'تم التسجيل بنجاح. يرجى إدخال رمز التحقق المرسل إلى هاتفك.');
+            }
+
+            // No OTP required, login immediately
             Auth::login($user);
 
             // Redirect based on user role
             return $this->redirectToUserPanel($user);
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return redirect()->back()
                 ->withErrors(['registration' => 'حدث خطأ أثناء التسجيل. يرجى المحاولة مرة أخرى.'])
                 ->withInput($request->except('password'));
         }
+    }
+
+    /**
+     * Show OTP verification form
+     */
+    public function showOtpVerification()
+    {
+        if (!Session::has('pending_verification_user_id')) {
+            return redirect()->route('register')
+                ->withErrors(['error' => 'لا توجد عملية تحقق معلقة.']);
+        }
+
+        $phone = Session::get('pending_verification_phone');
+
+        // Return your existing otp.blade.php view
+        return view('web.otp', compact('phone'));
+    }
+
+    /**
+     * Step 2: Verify OTP and activate user
+     */
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:4',
+        ]);
+
+        if (!Session::has('pending_verification_user_id')) {
+            return redirect()->route('register')
+                ->withErrors(['error' => 'لا توجد عملية تحقق معلقة.']);
+        }
+
+        $userId = Session::get('pending_verification_user_id');
+        $phone = Session::get('pending_verification_phone');
+
+        $user = User::find($userId);
+
+        if (!$user) {
+            return redirect()->route('register')
+                ->withErrors(['error' => 'المستخدم غير موجود.']);
+        }
+
+        // Check for test OTP
+        if ($this->otpService->isTestOtp($phone, $request->otp)) {
+            $user->update(['activate' => 1]);
+
+            Session::forget(['pending_verification_user_id', 'pending_verification_phone']);
+
+            Auth::login($user);
+
+            return $this->redirectToUserPanel($user);
+        }
+
+        // Verify real OTP
+        if (!$this->otpService->otpExists($phone)) {
+            return redirect()->back()
+                ->withErrors(['otp' => 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.'])
+                ->withInput();
+        }
+
+        if ($this->otpService->verifyOtp($phone, $request->otp)) {
+            // Activate user
+            $user->update(['activate' => 1]);
+
+            // Clear session
+            Session::forget(['pending_verification_user_id', 'pending_verification_phone']);
+
+            // Login user
+            Auth::login($user);
+
+            // Redirect based on user role
+            return $this->redirectToUserPanel($user);
+        }
+
+        return redirect()->back()
+            ->withErrors(['otp' => 'رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.'])
+            ->withInput();
+    }
+
+    /**
+     * Resend OTP
+     */
+    public function resendOtp(Request $request)
+    {
+        if (!Session::has('pending_verification_user_id')) {
+            return redirect()->route('register')
+                ->withErrors(['error' => 'لا توجد عملية تحقق معلقة.']);
+        }
+
+        $phone = Session::get('pending_verification_phone');
+
+        $result = $this->otpService->generateAndSendOtp($phone);
+
+        if ($result['success']) {
+            return redirect()->back()
+                ->with('success', 'تم إعادة إرسال رمز التحقق بنجاح.');
+        }
+
+        return redirect()->back()
+            ->withErrors(['otp' => 'فشل إعادة إرسال رمز التحقق. يرجى المحاولة مرة أخرى.']);
     }
 
     /**
@@ -170,10 +300,10 @@ class AuthController extends Controller
         ]);
 
         $students = User::where('role_name', 'student')
-                       ->where('activate', 1)
-                       ->where('phone', 'LIKE', '%' . $request->phone . '%')
-                       ->select('id', 'name', 'phone', 'clas_id')
-                       ->get();
+            ->where('activate', 1)
+            ->where('phone', 'LIKE', '%' . $request->phone . '%')
+            ->select('id', 'name', 'phone', 'clas_id')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -188,20 +318,20 @@ class AuthController extends Controller
     public function getAvailableStudents(Request $request)
     {
         $search = $request->get('search', '');
-        
+
         $query = User::where('role_name', 'student')
-                    ->where('activate', 1);
+            ->where('activate', 1);
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', '%' . $search . '%')
-                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+                    ->orWhere('phone', 'LIKE', '%' . $search . '%');
             });
         }
 
         $students = $query->select('id', 'name', 'phone', 'clas_id')
-                         ->orderBy('name')
-                         ->paginate(20);
+            ->orderBy('name')
+            ->paginate(20);
 
         return response()->json([
             'success' => true,
