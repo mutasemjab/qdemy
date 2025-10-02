@@ -47,16 +47,16 @@ class PageController extends Controller
                 ->withErrors(['type' => __('messages.page_type_already_exists')]);
         }
 
-        try {
+       // try {
             Page::create($request->all());
 
-            return redirect()->route('admin.pages.index')
+            return redirect()->route('pages.index')
                 ->with('success', __('messages.page_created_successfully'));
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', __('messages.error_creating_page'));
-        }
+       // } catch (\Exception $e) {
+        //     return redirect()->back()
+        //         ->withInput()
+        //         ->with('error', __('messages.error_creating_page'));
+        // }
     }
 
     /**
@@ -102,7 +102,7 @@ class PageController extends Controller
         try {
             $page->update($request->all());
 
-            return redirect()->route('admin.pages.index')
+            return redirect()->route('pages.index')
                 ->with('success', __('messages.page_updated_successfully'));
         } catch (\Exception $e) {
             return redirect()->back()
@@ -118,7 +118,7 @@ class PageController extends Controller
     {
         try {
             $page->delete();
-            return redirect()->route('admin.pages.index')
+            return redirect()->route('pages.index')
                 ->with('success', __('messages.page_deleted_successfully'));
         } catch (\Exception $e) {
             return redirect()->back()
