@@ -6,14 +6,14 @@
 @section('content')
 <section class="universities-page">
 
-    <div class="courses-header-wrapper">
+    <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow courses-header-wrapper">
         <div class="courses-header">
             <h2>{{ translate_lang($title) }}</h2>
             <span class="grade-number">{{mb_substr( $title,0,1)}}</span>
         </div>
     </div>
 
-    <div class="examx-filters">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
         @include('web.alert-message')
         <form action='{{ route("courses") }}' method='get' id="filterForm">
             <div class="examx-row">
@@ -61,9 +61,11 @@
 
             <div class="examx-search">
                 <input type="text" placeholder="{{ translate_lang('search') }}" name='search' value="{{ request('search') }}">
+                <!--
                 <button type="submit">{{__('messages.search')}}
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </button>
+                -->
             </div>
         </form>
     </div>
@@ -73,7 +75,7 @@
         $user_enrollment_courses = CourseRepository()->getUserCoursesIds(auth_student()?->id);
     @endphp
 
-    <div class="grades-grid">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="grades-grid">
         @forelse ($courses as $course)
         <div class="university-card">
             <div class="card-image">
@@ -111,7 +113,7 @@
                         </a>
 
                         <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
-                        <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span>
+                        <!-- <span class="price">{{$course->selling_price}} {{ CURRENCY }}</span> -->
                     @endif
                 </div>
             </div>

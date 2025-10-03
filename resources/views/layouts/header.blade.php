@@ -2,25 +2,25 @@
 <header class="header">
     <div class="container">
         <a href="{{ route('home') }}">
-            <div class="logo">
+            <div class="logo" data-aos="fade" >
                 <img src="{{ asset('assets_front/images/logo.png') }}" alt="Logo">
             </div>
         </a>
         <nav class="nav" id="navMenu">
             <ul>
-                <li><a href="{{ route('home') }}" class="active">{{ __('front.home') }}</a></li>
-                <li><a href="{{ route('contacts') }}">{{ __('front.about_us') }}</a></li>
-                <li><a href="{{ route('courses') }}">{{ __('front.courses') }}</a></li>
-                <li><a href="{{ route('teachers') }}">{{ __('front.teachers') }}</a></li>
-                <li><a href="{{ route('sale-point') }}">{{ __('front.sale_points') }}</a></li>
-                <li>
+                <li data-aos="fade" ><a href="{{ route('home') }}" class="active">{{ __('front.home') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('contacts') }}">{{ __('front.about_us') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('courses') }}">{{ __('front.courses') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('teachers') }}">{{ __('front.teachers') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('sale-point') }}">{{ __('front.sale_points') }}</a></li>
+                <li data-aos="fade" >
                     <a href="{{ route('community') }}" class="community-link">
                         <span>{{ __('front.community') }}</span>
                         <img src="{{ asset('assets_front/images/icons/community.png') }}" alt="Community Icon" class="icon">
                     </a>
                 </li>
-                <li><a href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
-                <li><a href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
+                <li data-aos="fade" ><a href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
                 
                       {{-- Auth in mobile menu --}}
                       @if(!auth('user')?->user())
@@ -39,7 +39,7 @@
             </ul>
         </nav>
 
-        <div class="actions">
+        <div data-aos="fade" class="actions">
 
             <!-- Cart -->
             <a href="{{ route('checkout') }}" class="cart-icon">

@@ -6,22 +6,22 @@
   <div class="ct-wrap">
 
     <div class="ct-info">
-      <h1 class="ct-title">{{ __('front.Contact Us') }}</h1>
-      <p class="ct-desc">{{ __('front.If you have any inquiry, do not hesitate to contact us. We are available 24/7 to help you.') }}</p>
+      <h1 data-aos="fade-up" class="ct-title">{{ __('front.Contact Us') }}</h1>
+      <p data-aos="zoom-in" data-aos-delay="200" class="ct-desc">{{ __('front.If you have any inquiry, do not hesitate to contact us. We are available 24/7 to help you.') }}</p>
 
-      <h3 class="ct-sec">{{ __('front.Customer Service') }}</h3>
-      <p class="ct-note">{{ __('front.Our support team is available around the clock to answer any questions or concerns you have.') }}</p>
+      <h3 data-aos="fade-up" class="ct-sec">{{ __('front.Customer Service') }}</h3>
+      <p data-aos="fade-up" data-aos-delay="200" class="ct-note">{{ __('front.Our support team is available around the clock to answer any questions or concerns you have.') }}</p>
 
-      <h3 class="ct-sec">{{ __('front.Sales') }}</h3>
-      <p class="ct-note">{{ __('front.Our support team is available around the clock to answer any questions or concerns you have.') }}</p>
+      <h3 data-aos="fade-up" class="ct-sec">{{ __('front.Sales') }}</h3>
+      <p data-aos="fade-up" data-aos-delay="200" class="ct-note">{{ __('front.Our support team is available around the clock to answer any questions or concerns you have.') }}</p>
 
-      <h3 class="ct-sec">{{ __('front.Join Our Team') }}</h3>
-      <p class="ct-note">{{ __('front.To join our team, submit your information and qualifications via the following email:') }}<br>
+      <h3 data-aos="fade-up" class="ct-sec">{{ __('front.Join Our Team') }}</h3>
+      <p data-aos="fade-up" data-aos-delay="200" class="ct-note">{{ __('front.To join our team, submit your information and qualifications via the following email:') }}<br>
         <span class="ct-mail">Qdemy@info.com</span>
       </p>
     </div>
 
-    <div class="ct-card">
+    <div data-aos="fade-up" class="anim animate-breathe ct-card">
       <h2 class="ct-head">{{ __('front.Contact Us') }}</h2>
       <p class="ct-sub">{{ __('front.You can contact us anytime') }}</p>
 

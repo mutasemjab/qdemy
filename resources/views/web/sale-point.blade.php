@@ -3,30 +3,28 @@
 
 @section('content')
 <section class="sp2-page">
-    <div class="universities-header-wrapper">
+    <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow universities-header-wrapper">
         <div class="universities-header">
             <h2>{{ __('front.Sale Points') }}</h2>
         </div>
     </div>
 
-    <div class="sp2-head">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="sp2-head">
         <div class="sp2-brand">{{ __('front.Qdemy Cards') }}</div>
         <div class="sp2-sub">{{ __('front.Cards available in the following libraries:') }}</div>
     </div>
 
-    <div class="examx-filters">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
         <form method="GET" action="{{ route('sale-point') }}" class="examx-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" 
                    name="search" 
                    placeholder="{{ __('front.Search') }}" 
                    value="{{ request('search') }}">
-            <button type="submit" style="background: none; border: none;">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </button>
         </form>
     </div>
 
-    <div class="sp2-box">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="sp2-box">
         @if($posGrouped->count() > 0)
             @foreach($posGrouped as $countryName => $locations)
                 <div class="sp2-group {{ $loop->first ? 'is-open' : '' }}">

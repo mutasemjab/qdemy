@@ -121,103 +121,106 @@ class PackageAndOfferController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
   public function show(Request $request, Package $package, Category $clas = null)
-{
-    try {
-        $is_type_class = ($package->type == 'class');
-        
-        // Build complete nested structure with parent hierarchy
-        $structure = collect();
+    {
+        try {
+            $is_type_class = ($package->type == 'class');
+            
+            // Build complete nested structure with parent hierarchy
+            $structure = collect();
 
-        if ($is_type_class) {
-            // Get package categories from package_categories pivot table
-            $packageCategories = $package->categories()->with('parent')->get();
-            
-            // Group categories by their root parent to avoid duplicates
-            $rootGroups = collect();
-            
-            foreach ($packageCategories as $category) {
-                $rootCategory = $this->findRootCategory($category);
+            if ($is_type_class) {
+                // Get package categories from package_categories pivot table
+                $packageCategories = $package->categories()->with('parent')->get();
                 
-                // Check if we already have this root category
-                if (!$rootGroups->contains('id', $rootCategory->id)) {
-                    $categoryTree = $this->buildFullCategoryTree($rootCategory, $packageCategories, $clas);
-                    $rootGroups->push($categoryTree);
-                }
-            }
-            
-            $structure = $rootGroups;
-        } else {
-            // For subject type packages - get subjects through package_categories
-            $packageSubjects = $package->subjects()->where('is_active', true)
-                ->with(['program.parent', 'grade.parent', 'semester.parent'])->get();
-            
-            // Group subjects by their root program
-            $subjectsByRoot = $packageSubjects->groupBy(function($subject) {
-                $mainCategory = $subject->program ?? $subject->grade ?? $subject->semester;
-                if ($mainCategory) {
-                    $rootCategory = $this->findRootCategory($mainCategory);
-                    return $rootCategory->id;
-                }
-                return 'no_program';
-            });
-
-            foreach ($subjectsByRoot as $rootId => $subjects) {
-                if ($rootId !== 'no_program') {
-                    $firstSubject = $subjects->first();
-                    $mainCategory = $firstSubject->program ?? $firstSubject->grade ?? $firstSubject->semester;
-                    $rootCategory = $this->findRootCategory($mainCategory);
+                // Group categories by their root parent to avoid duplicates
+                $rootGroups = collect();
+                
+                foreach ($packageCategories as $category) {
+                    $rootCategory = $this->findRootCategory($category);
                     
-                    $structure->push([
-                        'id' => $rootCategory->id,
-                        'name_ar' => $rootCategory->name_ar,
-                        'name_en' => $rootCategory->name_en,
-                        'localized_name' => $rootCategory->localized_name,
-                        'type' => $rootCategory->type,
-                        'children' => collect(),
-                        'subjects' => $this->formatSubjectsWithFullCourses($subjects)
-                    ]);
+                    // Check if we already have this root category
+                    if (!$rootGroups->contains('id', $rootCategory->id)) {
+                        $categoryTree = $this->buildFullCategoryTree($rootCategory, $packageCategories, $clas);
+                        $rootGroups->push($categoryTree);
+                    }
+                }
+                
+                $structure = $rootGroups;
+            } else {
+                // For subject type packages - get subjects through package_categories
+                $packageSubjects = $package->subjects()->where('is_active', true)
+                    ->with(['program.parent', 'grade.parent', 'semester.parent'])->get();
+                
+                // Group subjects by their root program
+                $subjectsByRoot = $packageSubjects->groupBy(function($subject) {
+                    $mainCategory = $subject->program ?? $subject->grade ?? $subject->semester;
+                    if ($mainCategory) {
+                        $rootCategory = $this->findRootCategory($mainCategory);
+                        return $rootCategory->id;
+                    }
+                    return 'no_program';
+                });
+
+                foreach ($subjectsByRoot as $rootId => $subjects) {
+                    if ($rootId !== 'no_program') {
+                        $firstSubject = $subjects->first();
+                        $mainCategory = $firstSubject->program ?? $firstSubject->grade ?? $firstSubject->semester;
+                        $rootCategory = $this->findRootCategory($mainCategory);
+                        
+                        $structure->push([
+                            'id' => $rootCategory->id,
+                            'name_ar' => $rootCategory->name_ar,
+                            'name_en' => $rootCategory->name_en,
+                            'localized_name' => $rootCategory->localized_name,
+                            'type' => $rootCategory->type,
+                            'children' => collect(),
+                            'subjects' => $this->formatSubjectsWithFullCourses($subjects)
+                        ]);
+                    }
                 }
             }
+
+            return $this->success_response('تم جلب تفاصيل الباقة بنجاح', [
+                'package' => [
+                    'id' => $package->id,
+                    'name' => $package->name,
+                    'description' => $package->description,
+                    'price' => (float) $package->price,
+                    'formatted_price' => sprintf('%g', $package->price),
+                    'type' => $package->type,
+                    'how_much_course_can_select' => $package->how_much_course_can_select,
+                ],
+                'is_type_class' => $is_type_class,
+                'structure' => $structure->values(),
+                'selected_class' => $clas ? [
+                    'id' => $clas->id,
+                    'name_ar' => $clas->name_ar,
+                    'name_en' => $clas->name_en,
+                    'localized_name' => $clas->localized_name,
+                ] : null
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->error_response('حدث خطأ أثناء جلب تفاصيل الباقة: ' . $e->getMessage(), null);
         }
-
-        return $this->success_response('تم جلب تفاصيل الباقة بنجاح', [
-            'package' => [
-                'id' => $package->id,
-                'name' => $package->name,
-                'description' => $package->description,
-                'price' => (float) $package->price,
-                'formatted_price' => sprintf('%g', $package->price),
-                'type' => $package->type,
-                'how_much_course_can_select' => $package->how_much_course_can_select,
-            ],
-            'is_type_class' => $is_type_class,
-            'structure' => $structure->values(),
-            'selected_class' => $clas ? [
-                'id' => $clas->id,
-                'name_ar' => $clas->name_ar,
-                'name_en' => $clas->name_en,
-                'localized_name' => $clas->localized_name,
-            ] : null
-        ]);
-
-    } catch (\Exception $e) {
-        return $this->error_response('حدث خطأ أثناء جلب تفاصيل الباقة: ' . $e->getMessage(), null);
     }
-}
 
-/**
- * Find the root (top-level) category
- */
-private function findRootCategory($category)
-{
-    $current = $category;
-    while ($current && $current->parent) {
-        $current = $current->parent;
+    /**
+     * Find the root (top-level) category
+     */
+    private function findRootCategory($category)
+    {
+        $current = $category;
+        while ($current && $current->parent) {
+            $current = $current->parent;
+        }
+        return $current;
     }
-    return $current;
-}
 
-/**
+    /**
+     * Build full category tree with all children recursively
+     */
+ /**
  * Build full category tree with all children recursively
  */
 private function buildFullCategoryTree($rootCategory, $packageCategories, $selectedClass = null)
@@ -232,24 +235,32 @@ private function buildFullCategoryTree($rootCategory, $packageCategories, $selec
         'subjects' => collect()
     ];
 
+    // Check if this category itself is in the package
+    $isPackageCategory = $packageCategories->contains('id', $rootCategory->id);
+
     // Get ALL direct children of this category
     $allChildren = Category::where('parent_id', $rootCategory->id)->get();
     
     if ($allChildren->count() > 0) {
-        // Filter children that have package categories in their hierarchy
-        $validChildren = $allChildren->filter(function($child) use ($packageCategories) {
-            return $this->hasPackageCategoryInHierarchy($child, $packageCategories);
-        });
+        // If this category is in the package, show ALL children
+        // Otherwise, only show children that lead to package categories
+        if ($isPackageCategory) {
+            $validChildren = $allChildren;
+        } else {
+            $validChildren = $allChildren->filter(function($child) use ($packageCategories) {
+                return $this->hasPackageCategoryInHierarchy($child, $packageCategories);
+            });
+        }
 
-        // Build children recursively (only children that lead to package categories)
+        // Build children recursively
         if ($validChildren->count() > 0) {
-            $node['children'] = $validChildren->map(function($child) use ($packageCategories, $selectedClass) {
-                return $this->buildChildCategoryNode($child, $packageCategories, $selectedClass);
+            $node['children'] = $validChildren->map(function($child) use ($packageCategories, $selectedClass, $isPackageCategory) {
+                // Pass down whether we're inside a package category
+                return $this->buildChildCategoryNode($child, $packageCategories, $selectedClass, $isPackageCategory);
             })->values();
         }
     } else {
         // This is a leaf node - check if it's in package categories and add subjects
-        $isPackageCategory = $packageCategories->contains('id', $rootCategory->id);
         if ($isPackageCategory) {
             $subjects = $this->getSubjectsForCategory($rootCategory, $selectedClass);
             $node['subjects'] = $this->formatSubjectsWithFullCourses($subjects);
@@ -259,10 +270,11 @@ private function buildFullCategoryTree($rootCategory, $packageCategories, $selec
     return $node;
 }
 
+
 /**
  * Build child category node recursively
  */
-private function buildChildCategoryNode($category, $packageCategories, $selectedClass = null)
+private function buildChildCategoryNode($category, $packageCategories, $selectedClass = null, $parentIsInPackage = false)
 {
     $node = [
         'id' => $category->id,
@@ -274,25 +286,35 @@ private function buildChildCategoryNode($category, $packageCategories, $selected
         'subjects' => collect()
     ];
 
+    // Check if this category itself is in the package
+    $isPackageCategory = $packageCategories->contains('id', $category->id);
+    
+    // This category should be treated as "in package" if it or any parent is in package
+    $shouldShowContent = $isPackageCategory || $parentIsInPackage;
+
     // Get direct children
     $children = Category::where('parent_id', $category->id)->get();
     
     if ($children->count() > 0) {
-        // Filter children that have package categories in their hierarchy
-        $validChildren = $children->filter(function($child) use ($packageCategories) {
-            return $this->hasPackageCategoryInHierarchy($child, $packageCategories);
-        });
+        // If this category or parent is in the package, show ALL children
+        // Otherwise, only show children that lead to package categories
+        if ($shouldShowContent) {
+            $validChildren = $children;
+        } else {
+            $validChildren = $children->filter(function($child) use ($packageCategories) {
+                return $this->hasPackageCategoryInHierarchy($child, $packageCategories);
+            });
+        }
 
         // Has valid children, build them recursively
         if ($validChildren->count() > 0) {
-            $node['children'] = $validChildren->map(function($child) use ($packageCategories, $selectedClass) {
-                return $this->buildChildCategoryNode($child, $packageCategories, $selectedClass);
+            $node['children'] = $validChildren->map(function($child) use ($packageCategories, $selectedClass, $shouldShowContent) {
+                return $this->buildChildCategoryNode($child, $packageCategories, $selectedClass, $shouldShowContent);
             })->values();
         }
     } else {
-        // Leaf node - check if this category is in the package
-        $isPackageCategory = $packageCategories->contains('id', $category->id);
-        if ($isPackageCategory) {
+        // Leaf node - if this or parent is in package, show subjects
+        if ($shouldShowContent) {
             $subjects = $this->getSubjectsForCategory($category, $selectedClass);
             $node['subjects'] = $this->formatSubjectsWithFullCourses($subjects);
         }
@@ -301,50 +323,50 @@ private function buildChildCategoryNode($category, $packageCategories, $selected
     return $node;
 }
 
-/**
- * Get subjects connected to a category and its children
- */
-private function getSubjectsForCategory($category, $selectedClass = null)
-{
-    $subjects = collect();
+    /**
+     * Get subjects connected to a category and its children
+     */
+    private function getSubjectsForCategory($category, $selectedClass = null)
+    {
+        $subjects = collect();
 
-    try {
-        // Get category IDs to search in
-        $categoryIds = [$category->id];
-        
-        // Try to get children if repository is available
         try {
-            $childrenIds = CategoryRepository()->getAllSubChilds($category->id, true, true)->pluck('id')->toArray();
-            $categoryIds = array_merge($categoryIds, $childrenIds);
-        } catch (\Exception $e) {
-            // Continue with just the main category if children lookup fails
-        }
-
-        // Filter by selected class if provided
-        if ($selectedClass) {
+            // Get category IDs to search in
+            $categoryIds = [$category->id];
+            
+            // Try to get children if repository is available
             try {
-                $classChildren = CategoryRepository()->getAllSubChilds($selectedClass->id, true, true)->pluck('id')->toArray();
-                $categoryIds = array_intersect($categoryIds, $classChildren);
+                $childrenIds = CategoryRepository()->getAllSubChilds($category->id, true, true)->pluck('id')->toArray();
+                $categoryIds = array_merge($categoryIds, $childrenIds);
             } catch (\Exception $e) {
-                // Continue without class filtering if it fails
+                // Continue with just the main category if children lookup fails
             }
+
+            // Filter by selected class if provided
+            if ($selectedClass) {
+                try {
+                    $classChildren = CategoryRepository()->getAllSubChilds($selectedClass->id, true, true)->pluck('id')->toArray();
+                    $categoryIds = array_intersect($categoryIds, $classChildren);
+                } catch (\Exception $e) {
+                    // Continue without class filtering if it fails
+                }
+            }
+
+            // Get subjects connected to these categories
+            $subjects = Subject::where('is_active', true)
+                ->where(function($query) use ($categoryIds) {
+                    $query->whereIn('programm_id', $categoryIds)
+                        ->orWhereIn('grade_id', $categoryIds)
+                        ->orWhereIn('semester_id', $categoryIds);
+                })
+                ->get();
+
+        } catch (\Exception $e) {
+            // Return empty collection if there's an error
         }
 
-        // Get subjects connected to these categories
-        $subjects = Subject::where('is_active', true)
-            ->where(function($query) use ($categoryIds) {
-                $query->whereIn('programm_id', $categoryIds)
-                      ->orWhereIn('grade_id', $categoryIds)
-                      ->orWhereIn('semester_id', $categoryIds);
-            })
-            ->get();
-
-    } catch (\Exception $e) {
-        // Return empty collection if there's an error
+        return $subjects;
     }
-
-    return $subjects;
-}
 
 /**
  * Format subjects with their courses including full relations

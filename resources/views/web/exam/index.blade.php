@@ -10,13 +10,13 @@
 @section('content')
 <section class="examx-page">
 
-    <div class="universities-header-wrapper">
+    <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow universities-header-wrapper">
         <div class="universities-header">
             <h2>{{ translate_lang('e-exams')}}</h2>
         </div>
     </div>
 
-    <div class="examx-filters">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
         @include('web.alert-message')
 
         <form action='{{ route($apiRoutePrefix."exam.index") }}' method='get' id="filterForm">
@@ -64,15 +64,13 @@
             </div>
 
             <div class="examx-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" placeholder="{{ translate_lang('search') }}" name='search' value="{{ request('search') }}">
-                <button type="submit">{{__('messages.search')}}
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
             </div>
         </form>
     </div>
 
-    <div class="examx-grid">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="examx-grid">
         @forelse($exams as $exam)
         <div class="examx-card">
             <div class="examx-content">

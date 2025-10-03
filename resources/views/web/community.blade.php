@@ -3,7 +3,7 @@
 
 @section('content')
 <section class="cmty-page">
-    <div class="universities-header-wrapper">
+    <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow universities-header-wrapper">
         <div class="universities-header">
             <h2>{{ __('front.header') }}</h2>
         </div>
@@ -11,7 +11,7 @@
 
     <!-- Post Creation Form (for logged-in users) -->
     @auth
-    <div class="cmty-create-post">
+    <div  data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"  class="cmty-create-post">
         <form action="{{ route('community.store') }}" method="POST">
             @csrf
             <div class="cmty-post cmty-post--outlined">
@@ -35,7 +35,7 @@
     </div>
     @endauth
 
-    <div class="cmty-feed">
+    <div  data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200"  class="cmty-feed">
         @forelse($posts as $post)
         <article class="cmty-post {{ $loop->first ? 'cmty-post--outlined' : '' }}">
             <header class="cmty-head">

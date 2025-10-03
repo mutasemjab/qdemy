@@ -3,13 +3,13 @@
 
 @section('content')
 <section class="tch-wrap">
-    <div class="universities-header-wrapper">
+    <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow universities-header-wrapper">
         <div class="universities-header">
             <h2>{{ __('front.Teachers') }}</h2>
         </div>
     </div>
 
-    <div class="examx-filters">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
         <div class="examx-row">
             <!-- Subject Filter -->
             <div class="examx-dropdown">
@@ -37,10 +37,10 @@
         </div>
     </div>
 
-    <div class="tch-grid">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tch-grid">
         @if($teachers->count() > 0)
             @foreach ($teachers as $teacher)
-                <div class="tch-item">
+                <div class="anim animate-tilt tch-item">
                     <a href="{{ route('teacher', $teacher->id) }}">
                         <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
                     </a>
