@@ -169,54 +169,7 @@ class EnrollmentController extends Controller
         }
     }
 
-    /**
-     * Debug cart session - for testing purposes
-    */
-    public function debugCart()
-    {
-        $user = auth('user-api')->user();
-        if (!$user) {
-            return $this->error_response('يجب تسجيل الدخول أولاً', null);
-        }
-
-        try {
-            $cartRepository = $this->getCartRepository();
-            $isApiRequest = request()->is('api/*') || auth()->guard('user-api')->check();
-            
-            $debugData = [
-                'user_id' => $user->id,
-                'request_type' => $isApiRequest ? 'API (Mobile)' : 'Web',
-                'repository_type' => get_class($cartRepository),
-                'course_cart' => $cartRepository->getCourseCart(),
-                'package_cart' => $cartRepository->getPackageCart(),
-            ];
-
-            // Add session data only for web requests
-            if (!$isApiRequest) {
-                $sessionKey = 'cart_' . $user->id;
-                $packageSessionKey = 'package_cart_' . $user->id;
-                
-                $debugData = array_merge($debugData, [
-                    'session_id' => session()->getId(),
-                    'cart_session_key' => $sessionKey,
-                    'package_session_key' => $packageSessionKey,
-                    'cart_session_data' => session($sessionKey, []),
-                    'package_session_data' => session($packageSessionKey, []),
-                    'all_session_data' => session()->all(),
-                ]);
-            } else {
-                $debugData['cache_keys'] = [
-                    'courses' => "mobile_cart_courses_{$user->id}",
-                    'package' => "mobile_cart_package_{$user->id}"
-                ];
-            }
-
-            return $this->success_response('بيانات تشخيص السلة', $debugData);
-
-        } catch (\Exception $e) {
-            return $this->error_response('حدث خطأ أثناء تشخيص السلة: ' . $e->getMessage(), null);
-        }
-    }
+   
 
     /**
      * Get cart summary

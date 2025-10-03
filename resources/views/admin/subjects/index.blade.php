@@ -190,7 +190,7 @@
                     </div>
 
                     <div class="d-flex justify-content-center mt-3">
-                        {{ $subjects->links() }}
+                        {{ $subjects->links('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>
