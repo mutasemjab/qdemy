@@ -80,10 +80,17 @@ class Course extends Model
     public function calculateCourseProgress($userId = null)
     {
         $user_id = $userId ? $userId : auth_student()?->id;
+        
         // Get all video contents for the course
         $totalVideos = CourseContent::where('course_id', $this->id)
             ->where('content_type', 'video')
             ->count();
+        
+        // Return 0 if no videos exist
+        if ($totalVideos == 0) {
+            return 0;
+        }
+        
         // Get user progress for this course
         $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
             ->where('content_user_progress.user_id', $user_id)
@@ -91,7 +98,8 @@ class Course extends Model
             ->where('course_contents.content_type', 'video')
             ->where('content_user_progress.completed', true)
             ->count();
-        return $courseProgress = ($completedVideos / $totalVideos) * 100;
+        
+        return ($completedVideos / $totalVideos) * 100;
     }
 
     /**

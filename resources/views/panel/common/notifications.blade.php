@@ -17,7 +17,7 @@
         @if(is_null($note->read_at))
           <form method="POST" action="{{ route('student.notifications.read', $note->id) }}">
             @csrf
-            <button type="submit" class="btn btn-sm btn-link">{{ __('panel.mark_as_read') }}</button>
+            <button type="submit" class="ud-primary">{{ __('panel.mark_as_read') }}</button>
           </form>
         @endif
       </div>

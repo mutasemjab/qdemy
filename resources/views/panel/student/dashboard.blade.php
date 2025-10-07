@@ -23,16 +23,17 @@
                     class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
 
-            <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" 
-                href="{{ route('chat.index') }}">
-                    <i class="fa-solid fa-comments"></i>
-                    <span>{{ __('panel.messages') }}</span>
+            <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}"  href="{{ route('chat.index') }}">
+                    <i class="fa-solid fa-comments"></i><span>{{ __('panel.messages') }}</span>
                     {{-- Unread messages badge (optional - you can implement this later) --}}
                     <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
+                    <i class="fa-solid fa-angle-left"></i>
                 </a>
-            <button class="ud-item" data-target="courses"><i
-                    class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+            <button class="ud-item" data-target="courses">
+                <i class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span>
+                <i class="fa-solid fa-angle-left"></i>
+                </button>
+                
             <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول الزمني</span><i class="fa-solid fa-angle-left"></i></button>
 
             <button class="ud-item" data-target="results"><i

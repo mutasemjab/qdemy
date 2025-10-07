@@ -148,6 +148,7 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            height: 52px;
         }
 
         .search-btn:hover {

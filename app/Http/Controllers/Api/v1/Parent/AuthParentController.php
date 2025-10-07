@@ -807,52 +807,7 @@ class AuthParentController extends Controller
         }
     }
 
-    /**
-     * Get specific child details
-     */
-    // public function getChild(Request $request, $childId)
-    // {
-    //     try {
-    //         $user = $request->user();
-
-    //         if ($user->role_name !== 'parent') {
-    //             return $this->error_response('Access denied. Parents only.', null);
-    //         }
-
-    //         $parentProfile = $user->parent;
-    //         if (!$parentProfile) {
-    //             return $this->error_response('Parent profile not found', null);
-    //         }
-
-    //         // Verify this child belongs to this parent
-    //         $parentStudent = ParentStudent::where('parentt_id', $parentProfile->id)
-    //                                     ->where('user_id', $childId)
-    //                                     ->with('user')
-    //                                     ->first();
-
-    //         if (!$parentStudent) {
-    //             return $this->error_response('Child not found or not associated with your account', null);
-    //         }
-
-    //         $childData = [
-    //             'id' => $parentStudent->user->id,
-    //             'name' => $parentStudent->user->name,
-    //             'email' => $parentStudent->user->email,
-    //             'phone' => $parentStudent->user->phone,
-    //             'photo' => $parentStudent->user->photo ? asset('assets/admin/uploads/' . $parentStudent->user->photo) : null,
-    //             'class_id' => $parentStudent->user->clas_id,
-    //             'balance' => $parentStudent->user->balance,
-    //             'activate' => $parentStudent->user->activate,
-    //             'added_at' => $parentStudent->created_at,
-    //             'last_login' => $parentStudent->user->last_login
-    //         ];
-
-    //         return $this->success_response('Child details retrieved successfully', $childData);
-
-    //     } catch (\Exception $e) {
-    //         return $this->error_response('Failed to retrieve child details: ' . $e->getMessage(), null);
-    //     }
-    // }
+  
 
 
     /**
@@ -925,10 +880,13 @@ class AuthParentController extends Controller
         }
     }
 
+    
+    
+
     /**
-     * Forgot password
+     * Step 1: Check phone and send OTP for password reset
      */
-     public function checkPhoneForReset(Request $request)
+    public function checkPhoneForReset(Request $request)
     {
         try {
             // Validation rules
@@ -954,24 +912,33 @@ class AuthParentController extends Controller
                 return $this->error_response('Account is deactivated. Please contact support.', null);
             }
 
+            // Generate and send OTP
+            $result = $this->otpService->generateAndSendOtp($request->phone);
+
+            if (!$result['success']) {
+                return $this->error_response('Failed to send OTP. Please try again.', null);
+            }
+
             $userData = [
                 'phone_exists' => true,
                 'user_id' => $user->id,
                 'name' => $user->name,
                 'phone' => $user->phone,
                 'can_reset' => true,
-                'message' => 'Phone number verified. You can proceed to reset password.'
+                'otp_sent' => true,
+                'message' => 'OTP sent successfully. Please verify to reset password.'
             ];
 
-            return $this->success_response('Phone number verified successfully', $userData);
+            return $this->success_response('Phone number verified and OTP sent successfully', $userData);
 
         } catch (\Exception $e) {
             return $this->error_response('Phone verification failed: ' . $e->getMessage(), null);
         }
     }
 
+
     /**
-     * Reset password using phone number
+     * Step 3: Reset password using phone number (after OTP verification)
      */
     public function resetPassword(Request $request)
     {
@@ -979,6 +946,7 @@ class AuthParentController extends Controller
             // Validation rules
             $validator = Validator::make($request->all(), [
                 'phone' => 'required|string',
+                'otp' => 'required|string',
                 'password' => 'required|string|min:6|confirmed'
             ]);
 
@@ -998,6 +966,18 @@ class AuthParentController extends Controller
             // Check if account is activated
             if ($user->activate != 1) {
                 return $this->error_response('Account is deactivated. Please contact support.', null);
+            }
+
+            // Verify OTP one more time for security
+            $isTestOtp = $this->otpService->isTestOtp($request->phone, $request->otp);
+            $isValidOtp = $this->otpService->verifyOtp($request->phone, $request->otp);
+
+            if (!$isTestOtp && !$isValidOtp) {
+                // Check if OTP exists
+                if (!$this->otpService->otpExists($request->phone)) {
+                    return $this->error_response('OTP has expired. Please request a new one.', null);
+                }
+                return $this->error_response('Invalid OTP. Please verify OTP first.', null);
             }
 
             // Update password
@@ -1025,6 +1005,7 @@ class AuthParentController extends Controller
         }
     }
 
+  
 
     /**
      * Get parent statistics/dashboard data

@@ -93,11 +93,12 @@
                                                     </form>
                                                 @endcan
                                                 
-                                                <button class="btn btn-sm btn-light" data-bs-toggle="collapse" 
-                                                        data-bs-target="#section{{ $section->id }}Contents" 
+                                               <button class="btn btn-sm btn-light" data-toggle="collapse" 
+                                                        data-target="#section{{ $section->id }}Contents" 
                                                         title="{{ __('messages.toggle_contents') }}">
                                                     <i class="fas fa-chevron-down"></i>
                                                 </button>
+
                                             </div>
                                         </div>
                                     </div>
@@ -222,8 +223,8 @@
                                                                 </form>
                                                             @endcan
                                                             
-                                                            <button class="btn btn-sm btn-light" data-bs-toggle="collapse" 
-                                                                    data-bs-target="#subsection{{ $subsection->id }}Contents" 
+                                                            <button class="btn btn-sm btn-light" data-toggle="collapse" 
+                                                                    data-target="#subsection{{ $subsection->id }}Contents" 
                                                                     title="{{ __('messages.toggle_contents') }}">
                                                                 <i class="fas fa-chevron-down"></i>
                                                             </button>
@@ -456,17 +457,16 @@
     align-items: center;
 }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle collapse button icon rotation
-    const toggleButtons = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    // Handle collapse button icon rotation (Bootstrap 4)
+    const toggleButtons = document.querySelectorAll('[data-toggle="collapse"]');
     
     toggleButtons.forEach(button => {
-        const target = document.querySelector(button.getAttribute('data-bs-target'));
+        const target = document.querySelector(button.getAttribute('data-target'));
         
         if (target) {
-            target.addEventListener('show.bs.collapse', function() {
+            $(target).on('show.bs.collapse', function() {
                 const icon = button.querySelector('i');
                 if (icon) {
                     icon.classList.remove('fa-chevron-down');
@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            target.addEventListener('hide.bs.collapse', function() {
+            $(target).on('hide.bs.collapse', function() {
                 const icon = button.querySelector('i');
                 if (icon) {
                     icon.classList.remove('fa-chevron-up');

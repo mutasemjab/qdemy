@@ -6,7 +6,7 @@
 <section class="grade-page">
 
     <!-- Header -->
-    <div class="grades-header-wrapper">
+    <div data-aos="fade-up" data-aos-duration="1000" class="grades-header-wrapper">
         <div class="grades-header">
             <h2>{{$grade->localized_name}}</h2>
             <span class="grade-number">{{$grade->sort_order}}</span>
@@ -15,14 +15,14 @@
 
     <!-- Semesters -->
      @if($semesters && $semesters->count())
-     <div class="semesters-row">
+     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="semesters-row">
         @foreach($semesters as $index => $semester)
           <a href="javascript:void(0)" class="semester-box" id='{{$index}}_semester' data-semester="{{$index}}">{{$semester->localized_name}}</a>
         @endforeach
      </div>
     <!-- Subjects -->
     @foreach($semesters as $index => $semester)
-        <div class="subjects-grid semester-content"  id="{{$index}}_semester_content"
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="subjects-grid semester-content"  id="{{$index}}_semester_content"
             style="{{ !$loop->first ? 'display:none;' : '' }}">
             @php $subjects  = SubjectRepository()->getSubjectsForSemester($semester) ?? []; @endphp
             @if($subjects && $subjects->count())

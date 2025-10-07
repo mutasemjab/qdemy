@@ -3,13 +3,13 @@
 @section('title',__('getTawjihiProgrammGrades'))
 @section('content')
 <section class="tawjihi-page">
-    <a href="{{route('tawjihi-first-year',['slug'=>$tawjihiFirstYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2009.png') }}');">
+    <a data-aos="fade-up" data-aos-duration="1000" href="{{route('tawjihi-first-year',['slug'=>$tawjihiFirstYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2009.png') }}');">
         <div class="tawjihi-text">
             <h3>{{translate_lang('tawjihi')}}</h3>
             <p>{{$tawjihiFirstYear?->localized_name}}</p>
         </div>
     </a>
-    <a href="{{route('tawjihi-grade-year-fields',['slug'=>$tawjihiLastYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2008.png') }}');">
+    <a data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" href="{{route('tawjihi-grade-year-fields',['slug'=>$tawjihiLastYear?->slug])}}" class="tawjihi-card" style="background-image: url('{{ asset('images/tawjihi-2008.png') }}');">
         <div class="tawjihi-text">
             <h3>{{translate_lang('tawjihi')}}</h3>
             <p>{{$tawjihiLastYear?->localized_name}}</p>

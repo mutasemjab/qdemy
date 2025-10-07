@@ -29,6 +29,7 @@ class CourseTeacherController extends Controller
             }
 
             $courses = Course::with(['subject:id,name_ar,name_en'])
+                ->withCount('students') // Add this line to get enrolled students count
                 ->where('teacher_id', $user->id)
                 ->paginate(10);
 
@@ -48,6 +49,7 @@ class CourseTeacherController extends Controller
                     ] : null,
                     'sections_count' => $course->sections()->count(),
                     'contents_count' => $course->contents()->count(),
+                    'enrolled_students_count' => $course->students_count, 
                     'created_at' => $course->created_at,
                     'updated_at' => $course->updated_at
                 ];
