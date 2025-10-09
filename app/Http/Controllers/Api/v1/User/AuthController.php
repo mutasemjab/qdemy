@@ -211,7 +211,7 @@ class AuthController extends Controller
         if ($this->otpService->verifyOtp($request->phone, $request->otp)) {
             // Activate user
             $user->update(['activate' => 1]);
-
+            $user->refresh();
             $token = $user->createToken('auth_token')->accessToken;
 
             return response()->json([
