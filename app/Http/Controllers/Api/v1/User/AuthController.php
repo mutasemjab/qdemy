@@ -181,7 +181,7 @@ class AuthController extends Controller
             // Activate user
             $user->update(['activate' => 1]);
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('authToken')->accessToken;
 
             return response()->json([
                 'status' => true,
@@ -212,7 +212,7 @@ class AuthController extends Controller
             // Activate user
             $user->update(['activate' => 1]);
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('authToken')->accessToken;
 
             return response()->json([
                 'status' => true,
