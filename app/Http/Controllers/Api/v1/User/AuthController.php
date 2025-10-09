@@ -168,28 +168,28 @@ class AuthController extends Controller
         }
 
         // Check for test OTP
-        if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
-            $user = User::where('phone', $request->phone)->first();
+        // if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
+        //     $user = User::where('phone', $request->phone)->first();
             
-            if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
+        //     if (!$user) {
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'User not found'
+        //         ], 404);
+        //     }
 
-            // Activate user
-            $user->update(['activate' => 1]);
+        //     // Activate user
+        //     $user->update(['activate' => 1]);
 
-            $token = $user->createToken('auth_token')->accessToken;
+        //     $token = $user->createToken('auth_token')->accessToken;
 
-            return response()->json([
-                'status' => true,
-                'message' => 'OTP verified successfully (Test Mode)',
-                'data' => $this->formatUserData($user),
-                'token' => $token
-            ], 200);
-        }
+        //     return response()->json([
+        //         'status' => true,
+        //         'message' => 'OTP verified successfully (Test Mode)',
+        //         'data' => $this->formatUserData($user),
+        //         'token' => $token
+        //     ], 200);
+        // }
 
         // Verify OTP
         $user = User::where('phone', $request->phone)->first();
