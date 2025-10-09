@@ -320,15 +320,22 @@ class CategoriesSeeder extends Seeder
             ['name_ar' => 'الرياضيات', 'name_en' => 'Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#3498db', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
             ['name_ar' => 'الكيمياء', 'name_en' => 'Chemistry', 'icon' => 'fas fa-flask', 'color' => '#e67e22', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
             ['name_ar' => 'العلوم الحياتية', 'name_en' => 'Biology', 'icon' => 'fas fa-dna', 'color' => '#27ae60', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'علوم الأرض والبيئة', 'name_en' => 'Earth and Environmental Sciences', 'icon' => 'fas fa-dna', 'color' => '#27ae60', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
             ['name_ar' => 'الفيزياء', 'name_en' => 'Physics', 'icon' => 'fas fa-atom', 'color' => '#3498db', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
-            ['name_ar' => 'مبحث علمي', 'name_en' => 'optional Scientific field', 'icon' => 'fas fa-dna', 'color' => '#3498db', 'field_type_id' => $scientific_fields_id, 'is_subject' => 1],
-            ['name_ar' => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language (advanced)', 'icon' => 'fas fa-book', 'color' => '#3498db', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+
             ['name_ar' => 'رياضيات الأعمال', 'name_en' => 'Business Mathematics', 'icon' => 'fas fa-subscript', 'color' => '#e67e22', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
             ['name_ar' => 'الثقافة المالية', 'name_en' => 'Financial Literacy', 'icon' => 'fas fa-book', 'color' => '#27ae60', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'فلسفة', 'name_en' => 'Philosophy', 'icon' => 'fas fa-book', 'color' => '#27ae60', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'تاريخ', 'name_en' => 'History', 'icon' => 'fas fa-book', 'color' => '#27ae60', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'جغرافيا', 'name_en' => 'Geography', 'icon' => 'fas fa-book', 'color' => '#27ae60', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'علم الإجتماع وعلم النفس', 'name_en' => 'Sociology and Psychology', 'icon' => 'fas fa-book', 'color' => '#27ae60', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+            ['name_ar' => 'اللغة الإنجليزية (متقدم)', 'name_en' => 'English Language (advanced)', 'icon' => 'fas fa-book', 'color' => '#3498db', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
             ['name_ar' => 'اللغة العربية (تخصص)', 'name_en' => 'Arabic Language (Specialization)', 'icon' => 'fas fa-feather-alt', 'color' => '#e74c3c', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
             ['name_ar' => 'التربية الإسلامية (تخصص)', 'name_en' => 'Islamic Education (Specialization)', 'icon' => 'fas fa-book', 'color' => '#3498db', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
-            ['name_ar' => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db', 'field_type_id' => null, 'is_subject' => 1],
-            ['name_ar' => 'مبحث إنساني', 'name_en' => 'Humanities', 'icon' => 'fas fa-language', 'color' => '#9b59b6', 'field_type_id' => $literary_fields_id, 'is_subject' => 1],
+
+            ['name_ar' => 'مبحث علمي', 'name_en' => 'optional Scientific field', 'icon' => 'fas fa-dna', 'color' => '#3498db', 'field_type_id' => $scientific_fields_id, 'is_subject' => 0],
+            ['name_ar' => 'مبحث إنساني', 'name_en' => 'Humanities', 'icon' => 'fas fa-language', 'color' => '#9b59b6', 'field_type_id' => $literary_fields_id, 'is_subject' => 0],
+            ['name_ar' => 'مبحث إختياري', 'name_en' => 'Optional field', 'icon' => 'fas fa-dna', 'color' => '#3498db', 'field_type_id' => null, 'is_subject' => 0],
         ];
 
         $sortOrder = 1;
@@ -356,13 +363,13 @@ class CategoriesSeeder extends Seeder
 
         $subjects = array_merge($subjects, [
             ['name_en' => 'Digital skills', 'is_ministry' => false, 'is_optional' => false, 'category_id' => $medicalCategory->id],
-            ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $medicalCategory->id],
+            ['name_en' => 'Mathematics', 'is_ministry' => false, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $medicalCategory->id],
 
-            ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Chemistry', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'Biology', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
             ['name_en' => 'English Language (advanced)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $medicalCategory->id],
+            ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $medicalCategory->id],
         ]);
 
         // الحقل الهندسي
@@ -401,11 +408,10 @@ class CategoriesSeeder extends Seeder
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $businessCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $businessCategory->id],
 
-            ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $businessCategory->id],
             ['name_en' => 'Business Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $businessCategory->id],
             ['name_en' => 'Financial Literacy', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $businessCategory->id],
             ['name_en' => 'English Language (advanced)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $businessCategory->id],
-            // ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $businessCategory->id]
+            ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $businessCategory->id]
         ]);
 
         // حقل القانون والشريعة
@@ -416,11 +422,10 @@ class CategoriesSeeder extends Seeder
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $lawCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $lawCategory->id],
 
-            ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $lawCategory->id],
             ['name_en' => 'Arabic Language (Specialization)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $lawCategory->id],
             ['name_en' => 'Islamic Education (Specialization)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $lawCategory->id],
             ['name_en' => 'Humanities', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $lawCategory->id],
-            // ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $lawCategory->id],
+            ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id' => $lawCategory->id],
         ]);
 
         // حقل اللغات والعلوم الإجتماعية
@@ -431,11 +436,10 @@ class CategoriesSeeder extends Seeder
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $langCategory->id],
             ['name_en' => 'Optional field', 'is_ministry' => false, 'is_optional' => true, 'category_id' => $langCategory->id],
 
-            ['name_en' => 'Mathematics', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
             ['name_en' => 'Arabic Language (Specialization)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
             ['name_en' => 'English Language (advanced)', 'is_ministry' => true, 'is_optional' => false, 'category_id' => $langCategory->id],
             ['name_en' => 'Humanities', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $langCategory->id],
-            // ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $langCategory->id],
+            ['name_en' => 'Optional field', 'is_ministry' => true, 'is_optional' => true, 'category_id'  => $langCategory->id],
         ]);
 
         foreach ($subjects as $key => $subject) {

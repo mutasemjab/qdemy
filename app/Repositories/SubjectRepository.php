@@ -148,23 +148,23 @@ class SubjectRepository
     // return collection
     public function getOptionalSubjectOptions($field, $subject)
     {
-        return $this->model->where('is_active', true)
+        $subject = $this->model->where('is_active', true)
+            ->where('is_subject', 1)
             ->where(function ($q) use ($subject, $field) {
                 if ($subject->field_type_id) $q->where('field_type_id', $subject->field_type_id);
             })
             ->whereHas('grade', function ($q) {
                 $q->where('ctg_key', 'final_year');
             })
-            ->whereHas('category_subjects', function ($q) {
-                $q->where('is_optional', false);
-            })
             ->whereDoesntHave('category_subjects', function ($q) use ($subject, $field) {
                 $q->where('category_id', $field->id);
                 $q->where('pivot_level', 'field');
-            })
-            ->get();
+            });
 
-        return collect();
+        return $subject->get();
+
+            // dd($subject->pluck('name_en')->toArray());
+            // return collect();
     }
 
     //  tawjihi subjects end
