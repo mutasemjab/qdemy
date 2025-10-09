@@ -74,7 +74,6 @@ class TeacherController extends Controller
             if ($teacher->courses && $teacher->courses->count() > 0) {
                 $teacherData['recent_courses'] = $teacher->courses()
                     ->latest()
-                    ->limit(3)
                     ->get()
                     ->map(function ($course) {
                         return [

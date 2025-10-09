@@ -103,13 +103,9 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
   <div class="footer-top-accent" aria-hidden="true"></div>
 
   <div class="footer-container">
-    {{-- العمود 1: الشعار + وصف + السوشيال --}}
+
     <section class="footer-brand" aria-label="About {{ config('app.name') }}">
-      @if($footerSettings)
-        <img src="{{ $footerSettings->logo_url }}" alt="{{ config('app.name') }} Logo" class="footer-logo">
-      @else
-        <img src="{{ asset('assets_front/images/logo-white.png') }}" alt="{{ config('app.name') }} Logo" class="footer-logo">
-      @endif
+        <img src="{{ asset('assets/admin/uploads/logo-white.png') }}" alt="{{ config('app.name') }} Logo" class="footer-logo">
 
       <p class="footer-desc">
         @if($footerSettings && $footerSettings->text_under_logo_in_footer)
@@ -119,7 +115,7 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
         @endif
       </p>
 
-      {{-- أيقونات التواصل الاجتماعي --}}
+
       <div class="footer-social" aria-label="{{ __('front.follow_us_social_media') }}">
         @php
           $fb = $footerSettings->facebook ?? '#';
@@ -143,7 +139,7 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
       </div>
     </section>
 
-    {{-- العمود 3: تواصل معنا --}}
+
     <section class="footer-contact" aria-label="{{ __('front.contact_us') }}">
       <h4 class="footer-title">{{ __('front.contact_us') }}</h4>
       <ul class="contact-list">
@@ -199,7 +195,6 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
       
     </section>
     
-        {{-- العمود 2: دعم فني + روابط سريعة --}}
     <nav class="footer-links" aria-label="Footer links">
 
       <div class="footer-block">
@@ -216,7 +211,6 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
     
   </div>
 
-  {{-- شريط سفلي صغير للحقوق --}}
   <div class="footer-bottom">
     <p class="copy">
       © {{ date('Y') }} {{ config('app.name') }} — {{ __('front.all_rights_reserved') }}

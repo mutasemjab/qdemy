@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\v1\User\BannerController;
 use App\Http\Controllers\Api\v1\User\SettingController;
 use App\Http\Controllers\Api\v1\User\HomeController;
 use App\Http\Controllers\Api\v1\User\PosController;
+use App\Http\Controllers\Api\v1\User\NotificationUserController;
 
 // Teacher Controllers
 use App\Http\Controllers\Api\v1\Teacher\AuthTeacherController;
@@ -156,10 +157,10 @@ Route::group(['prefix' => 'v1/user'], function () {
 
 
         Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationController::class, 'index']);
-            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
-            Route::post('/{notification}/read', [NotificationController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+            Route::get('/', [NotificationUserController::class, 'index']);
+            Route::get('/unread-count', [NotificationUserController::class, 'getUnreadCount']);
+            Route::post('/{notification}/read', [NotificationUserController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationUserController::class, 'markAllAsRead']);
         });
 
 

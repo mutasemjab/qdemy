@@ -65,7 +65,7 @@ class AuthController extends Controller
                 'email' => 'nullable|email|unique:users,email',
                 'phone' => 'nullable|string|unique:users,phone',
                 'password' => 'required|string|min:4|confirmed',
-                'role_name' => 'required|in:student,parent',
+                'role_name' => 'nullable|in:student,parent',
                 'clas_id' => 'nullable|exists:clas,id',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
                 'fcm_token' => 'nullable|string'
@@ -74,7 +74,7 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validation failed',
+                    'message' => $validator->errors()->first(),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -107,7 +107,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
-                'role_name' => $request->role_name,
+                'role_name' => "student",
                 'clas_id' => $request->clas_id,
                 'photo' => $photoPath,
                 'fcm_token' => $request->fcm_token,

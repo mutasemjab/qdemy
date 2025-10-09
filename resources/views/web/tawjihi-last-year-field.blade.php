@@ -4,21 +4,21 @@
 
 @section('content')
 <section class="tj2009">
-  <div class="tj2009__decor tj2009__decor--left">
+  <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--left">
     <img data-src="{{ asset('assets_front/images/tawjihi-left-bg.png') }}" alt="">
   </div>
-  <div class="tj2009__decor tj2009__decor--right">
+  <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--right">
     <img data-src="{{ asset('assets_front/images/tj-right.png') }}" alt="">
   </div>
 
     <div class="tj2009__inner">
-        <header class="tj2009__head">
+        <header data-aos="fade-up" data-aos-duration="1000" class="tj2009__head">
         <h2>{{$field?->localized_name}}</h2>
         <h3 class="">{{translate_lang('Ministry Subjects')}}</h3>
         </header>
 
         @if($ministrySubjects && $ministrySubjects->count())
-        <div class="tj2009__subjects">
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="tj2009__subjects">
             @foreach($ministrySubjects as $index => $ministrySubject)
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
@@ -55,9 +55,9 @@
         </div>
         @endif
 
-        <h3 class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
+        <h3 data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
         @if($schoolSubjects && $schoolSubjects->count())
-        <div class="tj2009__subjects">
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subjects">
             @foreach($schoolSubjects as $index => $schoolSubject)
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
@@ -107,10 +107,8 @@
     /* display: inline-flex; */
     align-items: center;
     /* gap: 8px; */
-    background: #fff;
     border-radius: 18px;
     /* padding: 5px 14px 5px 10px; */
-    box-shadow: 0 1px 10px rgba(0,85,210,0.07);
     margin: 0;
     /* min-width: 120px; */
     transition: box-shadow 0.17s;
@@ -118,7 +116,6 @@
 }
 
 .subject-plus-dropdown-examx .examx-pill {
-    background: #fff;
     color: #0055D2;
     border: none;
     border-radius: 50%;
@@ -130,16 +127,15 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 1px 6px rgba(0,85,210,0.15);
     transition: box-shadow 0.18s, background 0.18s;
     outline: none;
     margin: 0 0 0 5px;
     z-index: 2;
+    background-color: #ffffff00;
 }
 .subject-plus-dropdown-examx .examx-pill:focus,
 .subject-plus-dropdown-examx .examx-pill:hover {
-    background: #f5faff;
-    box-shadow: 0 2px 12px rgba(0,85,210,0.25);
+
 }
 
 /* لا تغير قائمة الدروب داون نفسها */

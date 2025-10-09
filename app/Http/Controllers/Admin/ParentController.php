@@ -170,7 +170,7 @@ class ParentController extends Controller
     public function show(Parentt $parent)
     {
         $parent->load(['user', 'students']);
-        return view('parents.show', compact('parent'));
+        return view('admin.parents.show', compact('parent'));
     }
 
     /**
@@ -183,7 +183,7 @@ class ParentController extends Controller
         $students = User::where('role_name', 'student')->get();
         $selectedStudentIds = $parent->students->pluck('id')->toArray();
         
-        return view('parents.edit', compact('parent', 'students', 'selectedStudentIds'));
+        return view('admin.parents.edit', compact('parent', 'students', 'selectedStudentIds'));
     }
 
     /**

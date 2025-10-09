@@ -89,7 +89,7 @@
 </section>
 
 
-<section class="social-media">
+<section data-aos="zoom-in-up"  class="social-media">
     <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
 
     @php $videoIndex = 0; @endphp

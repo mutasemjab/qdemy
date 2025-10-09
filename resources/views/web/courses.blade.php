@@ -87,13 +87,13 @@
             </div>
             <div class="card-info">
                 <p class="course-date">{{ $course->created_at->locale(app()->getLocale())->translatedFormat('d F Y') }}</p>
-                <a class='text-decoration-none text-dark' href="{{route('course',['course'=>$course->id,'slug'=>$course->slug])}}">
+                <a class='text-dark' href="{{route('course',['course'=>$course->id,'slug'=>$course->slug])}}">
                     <span class="course-title">{{$course->subject?->localized_name}}</span>
                     <span class="course-title">{{$course->title}}</span>
                 </a>
                 <div class="instructor">
                     <img data-src="{{$course->teacher?->photo_url}}" alt="Instructor">
-                    <a class='text-decoration-none text-dark' href="{{route('teacher',$course->teacher?->id ?? '-')}}">
+                    <a class='text-dark' href="{{route('teacher',$course->teacher?->id ?? '-')}}">
                         <span>{{$course->teacher?->name}}</span>
                     </a>
                 </div>

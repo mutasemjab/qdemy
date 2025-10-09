@@ -20,14 +20,16 @@
                     class="fa-solid fa-gear"></i><span>{{ __('panel.account_settings') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
             <button class="ud-item" data-target="notifications"><i
-                    class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
-          <a class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" 
+                    class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span>
+                    <i class="fa-solid fa-angle-left"></i>
+                    </button>
+          <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" 
                 href="{{ route('chat.index') }}">
                     <i class="fa-solid fa-comments"></i>
                     <span>{{ __('panel.messages') }}</span>
                     {{-- Unread messages badge (optional - you can implement this later) --}}
                     <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
+                    <i class="fa-solid fa-angle-left"></i>
                 </a>
                 
             <button class="ud-item" data-target="kids"><i
@@ -327,6 +329,104 @@
 
 @push('styles')
 <style>
+.ud-bars{
+  display:block !important;
+  width:100% !important;
+  grid-column:1 / -1 !important;
+  align-self:stretch !important;
+  box-sizing:border-box !important;
+  padding:10px 18px 18px !important;
+  margin:0 !important;
+}
+.ud-bar{width:100% !important}
+
+.ud-add-child-form{background:#fff;border:1px solid #e6e9f2;border-radius:16px;box-shadow:0 14px 30px rgba(17,24,39,.06);padding:18px}
+.ud-search-student{display:flex;flex-direction:column;gap:10px;position:relative}
+.ud-search-student label{font-weight:800;color:#0f172a;display:flex;flex-direction:column;gap:8px}
+#studentSearch{
+  width:100%; height:44px; border:1.5px solid #e2e6ef; border-radius:12px; padding:10px 14px;
+  font-weight:600; color:#111827; background:#fff; transition:border-color .15s ease, box-shadow .15s ease;
+}
+#studentSearch::placeholder{color:#9aa3af;font-weight:600}
+#studentSearch:focus{outline:none;border-color:#bcd3ff;box-shadow:0 0 0 3px rgba(46,108,240,.12)}
+
+.ud-search-results{
+  margin-top:10px; border:1px solid #e2e6ef; border-radius:12px; overflow:hidden; background:#fff;
+  max-height:300px; overflow-y:auto; display:none;
+}
+.ud-search-results.show{display:block}
+.ud-search-results .item{
+  display:flex; align-items:center; gap:10px; padding:10px 12px; cursor:pointer;
+  border-bottom:1px solid #f1f3f7;
+}
+.ud-search-results .item:last-child{border-bottom:none}
+.ud-search-results .avatar{
+  width:36px; height:36px; border-radius:50%; object-fit:cover; flex:0 0 auto; border:1px solid #e6e9f2;
+}
+.ud-search-results .meta{display:flex;flex-direction:column;min-width:0}
+.ud-search-results .name{font-weight:800;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ud-search-results .sub{font-size:12px;color:#6b7280;font-weight:700}
+.ud-search-results .item:hover{background:#f7f9ff}
+
+@media (max-width:600px){
+  .ud-add-child-form{padding:14px}
+  #studentSearch{height:42px}
+}
+
+@media (max-width:600px){
+  .ud-reports-grid{
+    grid-template-columns:1fr!important;
+    gap:14px;
+  }
+}
+.ud-children-list{display:grid;grid-template-columns:1fr;gap:18px}
+.ud-child-card{grid-column:span 12;background:#ffffff;border:1px solid #e6e9f2;border-radius:16px;box-shadow:0 14px 30px rgba(17,24,39,.06);overflow:hidden;display:flex;flex-direction:column}
+.ud-kid-head{display:flex;align-items:center;gap:14px;padding:16px 18px;background:#f8fafc;border-bottom:1px solid #eef2f7}
+.ud-kid-head img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #e5e7eb;flex:0 0 auto;filter:drop-shadow(0 2px 6px rgba(0,0,0,.08))}
+.ud-kid-head h2{display: flex;align-items: center;margin:0;font-size:18px;font-weight:800;line-height:1.2}
+.ud-kid-head .g-sub1{display:inline-block;margin-top:6px;font-size:13px;color:#6b7280;font-weight:600}
+.ud-child-actions{margin-inline-start:auto;display:flex;gap:8px}
+.ud-child-btn{width:38px;height:38px;border-radius:10px;border:1px solid #e5e7ef;background:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease}
+.ud-child-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(0,0,0,.08);border-color:#d7dcea}
+.ud-child-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 18px}
+.ud-stat-item{background:#fdfdfd;border:1px solid #eef2f7;border-radius:12px;padding:12px;text-align:center}
+.ud-stat-number{font-size:20px;font-weight:800;color:#0b57d0}
+.ud-stat-label{font-size:12px;color:#6b7280;font-weight:700;margin-top:4px;text-transform:uppercase;letter-spacing:.02em}
+.ud-bars{display:grid;gap:14px;padding:10px 18px 18px}
+.ud-bar{background:#ffffff;border:1px solid #eef2f7;border-radius:12px;padding:12px}
+.ud-bar-head{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.ud-bar-head b{font-weight:800;font-size:14px;color:#0f172a}
+.ud-bar-head small{color:#64748b;font-weight:700}
+.ud-bar-track{position:relative;height:10px;background:#eef2f7;border-radius:999px;overflow:hidden}
+.ud-bar-track span{position:absolute;inset:0 0 0 auto;width:0;height:100%;background:linear-gradient(90deg,#2e6cf0,#0b57d0);border-radius:999px;transition:width .3s ease}
+.ud-bar-foot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-size:12px;color:#64748b}
+.ud-recent-exams{padding:4px 18px 18px}
+.ud-recent-exams h4{margin:0 0 10px;font-size:15px;font-weight:900;color:#0f172a}
+.ud-exam-result{display:flex;align-items:center;gap:12px;background:#ffffff;border:1px solid #eef2f7;border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.ud-exam-info{display:flex;gap:10px;align-items:center}
+.ud-exam-title{font-weight:800;color:#111827;font-size:14px}
+.ud-exam-date{font-size:12px;color:#6b7280}
+.ud-exam-score{margin-inline-start:auto;font-weight:900;padding:6px 10px;border-radius:10px;font-size:13px}
+.ud-exam-score.passed{background:#e8f7ef;color:#0f9d58;border:1px solid #b9ebcf}
+.ud-exam-score.failed{background:#feeeee;color:#d93025;border:1px solid #f6c7c3}
+.ud-no-courses{display:flex;gap:8px;align-items:center;justify-content:center;background:#f7f9fc;border:1px solid #eef2f7;border-radius:12px;padding:14px;color:#6b7280;font-weight:700}
+.ud-no-children{background:#ffffff;border:1px dashed #dbe2ee;border-radius:16px;padding:28px;text-align:center;color:#475569}
+.ud-no-children i{font-size:36px;color:#0b57d0;margin-bottom:8px}
+.ud-no-children h3{margin:6px 0 8px;font-size:18px;font-weight:900;color:#0f172a}
+.ud-primary{display:inline-flex;align-items:center;justify-content:center;padding:10px 14px;border-radius:12px;background:#0b57d0;color:#fff;font-weight:800;border:0;cursor:pointer}
+.ud-primary:hover{filter:brightness(1.05)}
+@media (min-width:640px){.ud-child-card{grid-column:span 6}}
+@media (min-width:992px){.ud-child-card{grid-column:span 4}}
+@media (max-width:480px){
+  .ud-kid-head{padding:14px}
+  .ud-kid-head img{width:48px;height:48px}
+  .ud-stat-number{font-size:18px}
+  .ud-child-stats{grid-template-columns:repeat(3,1fr);gap:8px}
+  .ud-bars{padding:8px 14px 14px}
+  .ud-exam-result{padding:8px 10px}
+}
+
+
 .ud-child-actions {
     display: flex;
     gap: 10px;
@@ -351,7 +451,6 @@
     justify-content: space-around;
     margin: 15px 0;
     padding: 15px;
-    background: #f8f9fa;
     border-radius: 8px;
 }
 
@@ -387,7 +486,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 8px 10px;
     border-bottom: 1px solid #f1f3f4;
 }
 
@@ -436,9 +535,51 @@
 
 .ud-reports-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 20px;
 }
+
+button.ud-btn-outline{
+  --c:#0055D2;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 16px;
+  min-height:40px;
+  border:2px solid var(--c);
+  background:#fff;
+  color:var(--c);
+  font-weight:800;
+  border-radius:12px;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease, box-shadow .15s ease, transform .06s ease;
+}
+
+button.ud-btn-outline:hover{
+  background:rgba(0,85,210,.06);
+  box-shadow:0 6px 18px rgba(0,85,210,.18);
+}
+
+button.ud-btn-outline:active{
+  transform:translateY(1px);
+  box-shadow:none;
+}
+
+button.ud-btn-outline:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(0,85,210,.25);
+}
+
+button.ud-btn-outline[disabled],
+button.ud-btn-outline:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+button.ud-btn-outline .icon{font-size:1.05em; line-height:0}
+
 
 .ud-report-card {
     background: #fff;
