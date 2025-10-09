@@ -216,9 +216,11 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'OTP verified successfully',
-                'data' => $this->formatUserData($user),
-                'token' => $token
+                'message' => 'Register successful', 
+                'data' => [
+                    'user' => $this->formatUserData($user),
+                    'token' => $token,
+                ],
             ], 200);
         }
 
