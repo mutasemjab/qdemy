@@ -25,9 +25,9 @@ class DatabaseSeeder extends Seeder
             if ($name == 'users' || $name == 'content_user_progress' || $name == 'teachers' || $name == 'categories' || $name == 'courses' || $name == 'questions' || $name == 'exams') {
                DB::table($name)->truncate();
             }
-            // if ($name == 'categories' || $name == 'subjects' || $name == 'category_subjects' ||  $name == 'content_user_progress' ||  $name == 'course_user') {
-            //    DB::table($name)->truncate();
-            // }
+            if ($name == 'categories' || $name == 'subjects' || $name == 'category_subjects' ||  $name == 'content_user_progress' ||  $name == 'course_user') {
+               DB::table($name)->truncate();
+            }
         }
         DB::statement("SET foreign_key_checks=1");
 
