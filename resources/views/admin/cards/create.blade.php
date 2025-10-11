@@ -1,5 +1,10 @@
 @extends('layouts.admin')
 
+@section('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -57,7 +62,6 @@
                             @enderror
                         </div>
 
-
                         <div class="mb-3">
                             <label for="teacher" class="form-label">{{ __('messages.teacher') }}</label>
                             <select class="form-control @error('teacher_id') is-invalid @enderror"
@@ -75,7 +79,24 @@
                             @enderror
                         </div>
 
-
+                        <div class="mb-3">
+                            <label for="doseyat_ids" class="form-label">{{ __('messages.doseyats') }}</label>
+                            <select class="form-control select2 @error('doseyat_ids') is-invalid @enderror"
+                                    id="doseyat_ids"
+                                    name="doseyat_ids[]"
+                                    multiple="multiple">
+                                @foreach($doseyats as $doseyat)
+                                    <option value="{{ $doseyat->id }}" 
+                                            {{ in_array($doseyat->id, old('doseyat_ids', [])) ? 'selected' : '' }}>
+                                        {{ $doseyat->name }} - {{ number_format($doseyat->price, 2) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('doseyat_ids')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">{{ __('messages.doseyat_help') }}</div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="name" class="form-label">{{ __('messages.name') }} <span class="text-danger">*</span></label>
@@ -153,3 +174,18 @@
     </div>
 </div>
 @endsection
+
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: '{{ __("messages.select_doseyats") }}',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush

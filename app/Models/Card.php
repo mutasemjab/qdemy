@@ -28,6 +28,12 @@ class Card extends Model
         return $this->belongsTo(POS::class);
     }
 
+    public function doseyats()
+    {
+        return $this->belongsToMany(Doseyat::class, 'card_doseyat_frees', 'card_id', 'doseyat_id')
+            ->withTimestamps();
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);

@@ -31,18 +31,24 @@
                     <i class="fa-solid fa-angle-left"></i>
                 </a>
 
-            <a href="{{route('teacher.courses.index')}}"><button class="ud-item" data-target="courses"><i
-                    class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button></a>
+                <a class="ud-item nav-link {{ request()->routeIs('teacher.courses.index') ? 'active' : '' }}"
+                   href="{{ route('teacher.courses.index') }}">
+                  <i class="fa-solid fa-graduation-cap"></i>
+                  <span>{{ __('panel.my_courses') }}</span>
+                  <i class="fa-solid fa-angle-left"></i>
+                </a>
 
             <!-- New Students Tab -->
             <button class="ud-item" data-target="students"><i
                     class="fa-solid fa-users"></i><span>{{ __('panel.my_students') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
 
-             <a href="{{route('teacher.exams.index')}}"> <button class="ud-item" data-target="results"><i
-                    class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.exams') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button></a>
+            <a class="ud-item nav-link {{ request()->routeIs('teacher.exams.index') ? 'active' : '' }}" 
+               href="{{ route('teacher.exams.index') }}">
+              <i class="fa-solid fa-square-poll-vertical"></i>
+              <span>{{ __('panel.exams') }}</span>
+              <i class="fa-solid fa-angle-left"></i>
+            </a>
     
             <button class="ud-item" data-target="community"><i
                     class="fa-solid fa-magnifying-glass"></i><span>{{ __('panel.q_community') }}</span><i
@@ -130,11 +136,11 @@
                         </label>
 
                         <label>{{ __('panel.description_en') }}
-                            <textarea name="description_en" rows="4">{{ old('description_en', $teacher->description_en ?? '') }}</textarea>
+                            <textarea class="textarea-tech" name="description_en" rows="4">{{ old('description_en', $teacher->description_en ?? '') }}</textarea>
                         </label>
 
                         <label>{{ __('panel.description_ar') }}
-                            <textarea name="description_ar" rows="4">{{ old('description_ar', $teacher->description_ar ?? '') }}</textarea>
+                            <textarea class="textarea-tech" name="description_ar" rows="4">{{ old('description_ar', $teacher->description_ar ?? '') }}</textarea>
                         </label>
 
                         <!-- Social Media Links -->

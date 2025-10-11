@@ -5,7 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Services\FirebaseChatService;
 use Kreait\Firebase\Factory;
-
+use App\Models\{Post, Comment};
+use App\Observers\{PostObserver, CommentObserver};
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -46,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Your existing boot logic...
+         Post::observe(PostObserver::class);
+         Comment::observe(CommentObserver::class);
     }
 }

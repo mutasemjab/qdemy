@@ -23,9 +23,11 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CardNumberController;
 use App\Http\Controllers\Admin\OnBoardingController;
 use App\Http\Controllers\Admin\BankQuestionController;
+use App\Http\Controllers\Admin\BannedWordController;
 use App\Http\Controllers\Admin\SpecialQdemyController;
 use App\Http\Controllers\Admin\CourseSectionController;
 use App\Http\Controllers\Admin\CourseUserController;
+use App\Http\Controllers\Admin\DoseyatController;
 use App\Http\Controllers\Admin\OpinionStudentController;
 use App\Http\Controllers\Admin\QuestionWebsiteController;
 use App\Http\Controllers\Admin\WalletTransactionController;
@@ -34,6 +36,9 @@ use App\Http\Controllers\Admin\MinisterialYearsQuestionController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\ExamQuestionsController;
 use App\Http\Controllers\Admin\SocialMediaController;
+use App\Http\Controllers\Reports\CardReportController;
+use App\Http\Controllers\Reports\CourseEnrollmentReportController;
+use App\Http\Controllers\Reports\DoseyatReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,8 +86,60 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
         //Reports
+  
+        // Card Reports Routes
+        Route::prefix('card-reports')->name('card-reports.')->group(function () {
+            Route::get('/', [CardReportController::class, 'index'])
+                ->name('index')
+                ->middleware('permission:card-report');
+            
+            Route::get('/export-excel', [CardReportController::class, 'exportExcel'])
+                ->name('export-excel')
+                ->middleware('permission:card-report');
+            
+            Route::get('/print', [CardReportController::class, 'print'])
+                ->name('print')
+                ->middleware('permission:card-report');
+        });
 
+            // Doseyat Reports Routes
+        Route::prefix('doseyat-reports')->name('doseyat-reports.')->group(function () {
+            Route::get('/', [DoseyatReportController::class, 'index'])
+                ->name('index')
+                ->middleware('permission:doseyat-report');
+            
+            Route::get('/export-excel', [DoseyatReportController::class, 'exportExcel'])
+                ->name('export-excel')
+                ->middleware('permission:doseyat-report');
+            
+            Route::get('/print', [DoseyatReportController::class, 'print'])
+                ->name('print')
+                ->middleware('permission:doseyat-report');
+        });
+        
 
+        // Course Enrollment Reports Routes
+        Route::prefix('enrollment-reports')->name('reports.enrollments.')->group(function () {
+            Route::get('/', [CourseEnrollmentReportController::class, 'index'])
+                ->name('index')
+                ->middleware('permission:enrollment-report');
+            
+            Route::get('/export-excel', [CourseEnrollmentReportController::class, 'exportExcel'])
+                ->name('export')
+                ->middleware('permission:enrollment-report');
+            
+            Route::get('/print', [CourseEnrollmentReportController::class, 'print'])
+                ->name('print')
+                ->middleware('permission:enrollment-report');
+            
+            Route::get('/student/{student}', [CourseEnrollmentReportController::class, 'showStudent'])
+                ->name('show-student')
+                ->middleware('permission:enrollment-report');
+            
+            Route::get('/course/{course}', [CourseEnrollmentReportController::class, 'showCourse'])
+                ->name('show-course')
+                ->middleware('permission:enrollment-report');
+        });
         //  End Report
 
 
@@ -94,6 +151,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             ->name('notifications.resend');
 
         // Resource Route
+        Route::resource('doseyats', DoseyatController::class);
+        Route::resource('banned-words', BannedWordController::class)->except(['show', 'edit', 'update']);
         Route::resource('social-media', SocialMediaController::class);
         Route::resource('pages', PageController::class);
         Route::resource('contactUs', ContactUsController::class);

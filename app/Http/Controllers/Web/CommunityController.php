@@ -31,7 +31,7 @@ class CommunityController extends Controller
         Post::create([
             'content' => $request->content,
             'user_id' => Auth::id(),
-            'is_approved' => false, // Admin needs to approve
+            'is_approved' => true, // Admin needs to approve
             'is_active' => true,
         ]);
 

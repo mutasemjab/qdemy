@@ -243,6 +243,12 @@ button,
     color: #000;
 }
 
+.textarea-tech {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 10px 12px;
+}
+
 .lang-dropdown {
     position: relative;
 }
@@ -3630,7 +3636,6 @@ a.text-dark {
   background:#fff; cursor:pointer; font-weight:700; min-width:220px;
   transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
 }
-.examx-pill:hover{border-color:#bcd3ff; box-shadow:0 0 0 3px rgba(46,108,240,.12)}
 .examx-pill i{transition:transform .2s ease}
 
 .examx-menu{

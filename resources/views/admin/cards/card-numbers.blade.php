@@ -93,6 +93,7 @@
                     </div>
 
                     @if($cardNumbers->count() > 0)
+                        @can('cardnumbers-table')
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-dark">
@@ -149,91 +150,95 @@
                                             <td>{{ $cardNumber->created_at->format('Y-m-d H:i') }}</td>
                                             <td>
                                                 <div class="btn-group-vertical" role="group">
-                                                    @if($cardNumber->isAvailableForSale())
-                                                        <!-- Mark as Sold Button -->
-                                                        <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
-                                                              method="POST" 
-                                                              style="display: inline-block;"
-                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_sold') }}')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-info btn-sm mb-1">
-                                                                {{ __('messages.mark_as_sold') }}
+                                                    @can('cardnumbers-edit')
+                                                        @if($cardNumber->isAvailableForSale())
+                                                            <!-- Mark as Sold Button -->
+                                                            <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
+                                                                method="POST" 
+                                                                style="display: inline-block;"
+                                                                onsubmit="return confirm('{{ __('messages.confirm_mark_sold') }}')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button type="submit" class="btn btn-info btn-sm mb-1">
+                                                                    {{ __('messages.mark_as_sold') }}
+                                                                </button>
+                                                            </form>
+                                                            
+                                                        @elseif($cardNumber->isSoldNotAssigned())
+                                                            <!-- Assign to User Button -->
+                                                            <button type="button" class="btn btn-primary btn-sm mb-1" 
+                                                                    onclick="showAssignModal({{ $cardNumber->id }}, '{{ $cardNumber->number }}')">
+                                                                {{ __('messages.assign_to_user') }}
                                                             </button>
-                                                        </form>
-                                                        
-                                                    @elseif($cardNumber->isSoldNotAssigned())
-                                                        <!-- Assign to User Button -->
-                                                        <button type="button" class="btn btn-primary btn-sm mb-1" 
-                                                                onclick="showAssignModal({{ $cardNumber->id }}, '{{ $cardNumber->number }}')">
-                                                            {{ __('messages.assign_to_user') }}
-                                                        </button>
-                                                        <!-- Mark as Not Sold Button -->
-                                                        <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
-                                                              method="POST" 
-                                                              style="display: inline-block;"
-                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_not_sold') }}')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-outline-secondary btn-sm mb-1">
-                                                                {{ __('messages.mark_as_not_sold') }}
-                                                            </button>
-                                                        </form>
-                                                        
-                                                    @elseif($cardNumber->isSoldAndAssigned())
-                                                        <!-- Mark as Used Button -->
-                                                        <form action="{{ route('card-numbers.mark-used', $cardNumber) }}" 
-                                                              method="POST" 
-                                                              style="display: inline-block;"
-                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_used') }}')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-success btn-sm mb-1">
-                                                                {{ __('messages.mark_as_used') }}
-                                                            </button>
-                                                        </form>
-                                                        <!-- Remove Assignment Button -->
-                                                        <form action="{{ route('card-numbers.remove-assignment', $cardNumber) }}" 
-                                                              method="POST" 
-                                                              style="display: inline-block;"
-                                                              onsubmit="return confirm('{{ __('messages.confirm_remove_assignment') }}')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-outline-warning btn-sm mb-1">
-                                                                {{ __('messages.remove_assignment') }}
-                                                            </button>
-                                                        </form>
-                                                        
-                                                    @elseif($cardNumber->isUsed())
-                                                        <!-- Mark as Not Used Button -->
-                                                        <form action="{{ route('card-numbers.toggle-status', $cardNumber) }}" 
-                                                              method="POST" 
-                                                              style="display: inline-block;"
-                                                              onsubmit="return confirm('{{ __('messages.confirm_mark_unused') }}')">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <button type="submit" class="btn btn-outline-success btn-sm mb-1">
-                                                                {{ __('messages.mark_unused') }}
-                                                            </button>
-                                                        </form>
-                                                    @endif
-                                                    
-                                                    <!-- Toggle Activate Button -->
-                                                    <form action="{{ route('card-numbers.toggle-activate', $cardNumber) }}" 
-                                                          method="POST" 
-                                                          style="display: inline-block;">
-                                                        @csrf
-                                                        @method('PATCH')
-                                                        @if($cardNumber->activate == 1)
-                                                            <button type="submit" class="btn btn-warning btn-sm">
-                                                                {{ __('messages.deactivate') }}
-                                                            </button>
-                                                        @else
-                                                            <button type="submit" class="btn btn-secondary btn-sm">
-                                                                {{ __('messages.activate') }}
-                                                            </button>
+                                                            <!-- Mark as Not Sold Button -->
+                                                            <form action="{{ route('card-numbers.toggle-sell', $cardNumber) }}" 
+                                                                method="POST" 
+                                                                style="display: inline-block;"
+                                                                onsubmit="return confirm('{{ __('messages.confirm_mark_not_sold') }}')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button type="submit" class="btn btn-outline-secondary btn-sm mb-1">
+                                                                    {{ __('messages.mark_as_not_sold') }}
+                                                                </button>
+                                                            </form>
+                                                            
+                                                        @elseif($cardNumber->isSoldAndAssigned())
+                                                            <!-- Mark as Used Button -->
+                                                            <form action="{{ route('card-numbers.mark-used', $cardNumber) }}" 
+                                                                method="POST" 
+                                                                style="display: inline-block;"
+                                                                onsubmit="return confirm('{{ __('messages.confirm_mark_used') }}')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button type="submit" class="btn btn-success btn-sm mb-1">
+                                                                    {{ __('messages.mark_as_used') }}
+                                                                </button>
+                                                            </form>
+                                                            <!-- Remove Assignment Button -->
+                                                            <form action="{{ route('card-numbers.remove-assignment', $cardNumber) }}" 
+                                                                method="POST" 
+                                                                style="display: inline-block;"
+                                                                onsubmit="return confirm('{{ __('messages.confirm_remove_assignment') }}')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button type="submit" class="btn btn-outline-warning btn-sm mb-1">
+                                                                    {{ __('messages.remove_assignment') }}
+                                                                </button>
+                                                            </form>
+                                                            
+                                                        @elseif($cardNumber->isUsed())
+                                                            <!-- Mark as Not Used Button -->
+                                                            <form action="{{ route('card-numbers.toggle-status', $cardNumber) }}" 
+                                                                method="POST" 
+                                                                style="display: inline-block;"
+                                                                onsubmit="return confirm('{{ __('messages.confirm_mark_unused') }}')">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button type="submit" class="btn btn-outline-success btn-sm mb-1">
+                                                                    {{ __('messages.mark_unused') }}
+                                                                </button>
+                                                            </form>
                                                         @endif
-                                                    </form>
+                                                    @endcan
+                                                    
+                                                    @can('cardnumbers-activate')
+                                                        <!-- Toggle Activate Button -->
+                                                        <form action="{{ route('card-numbers.toggle-activate', $cardNumber) }}" 
+                                                            method="POST" 
+                                                            style="display: inline-block;">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            @if($cardNumber->activate == 1)
+                                                                <button type="submit" class="btn btn-warning btn-sm">
+                                                                    {{ __('messages.deactivate') }}
+                                                                </button>
+                                                            @else
+                                                                <button type="submit" class="btn btn-secondary btn-sm">
+                                                                    {{ __('messages.activate') }}
+                                                                </button>
+                                                            @endif
+                                                        </form>
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -241,6 +246,8 @@
                                 </tbody>
                             </table>
                         </div>
+                        @endcan
+
 
                         <div class="d-flex justify-content-center">
                             {{ $cardNumbers->appends(request()->query())->links() }}
