@@ -300,8 +300,6 @@ class ExamController extends Controller
             $request->validate($rules);
         }
 
-        // dd(route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]));
-
 
         // Find or create exam answer
         DB::beginTransaction();

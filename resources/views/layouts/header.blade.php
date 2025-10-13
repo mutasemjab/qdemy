@@ -21,7 +21,7 @@
                 </li>
                 <li data-aos="fade" ><a href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
                 <li data-aos="fade" ><a href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
-                
+
                       {{-- Auth in mobile menu --}}
                       @if(!auth('user')?->user())
                         <li class="only-mobile">
@@ -35,7 +35,7 @@
                           </form>
                         </li>
                       @endif
-                      
+
             </ul>
         </nav>
 
@@ -58,7 +58,7 @@
               </form>
             @endif
  </div>
- 
+
             <!-- Language Dropdown -->
             <div class="lang-dropdown">
                 <button class="lang-btn" type="button"><i class="fas fa-globe"></i></button>
