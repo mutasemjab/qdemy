@@ -7,7 +7,7 @@ use App\Traits\Responses;
 use App\Traits\HasNotifications;
 use Illuminate\Http\Request;
 
-class NotificationController extends Controller
+class NotificationUserController extends Controller
 {
     use Responses, HasNotifications;
 

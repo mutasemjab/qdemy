@@ -4,16 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 class Card extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
      protected $guarded = [];
     
     protected $casts = [
         'price' => 'decimal:2',
         'number_of_cards' => 'integer',
     ];
+
+    // Activity Log Configuration
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']) // Log all attributes, or specify: ['name', 'price', 'number_of_cards']
+            ->logOnlyDirty() // Only log changed attributes
+            ->dontSubmitEmptyLogs()
+            ->useLogName('card') // Custom log name
+            ->setDescriptionForEvent(fn(string $eventName) => "Card has been {$eventName}");
+    }
 
      public function getPhotoUrlAttribute()
     {
@@ -26,6 +38,12 @@ class Card extends Model
     public function pos()
     {
         return $this->belongsTo(POS::class);
+    }
+
+    public function doseyats()
+    {
+        return $this->belongsToMany(Doseyat::class, 'card_doseyat_frees', 'card_id', 'doseyat_id')
+            ->withTimestamps();
     }
 
     public function category()

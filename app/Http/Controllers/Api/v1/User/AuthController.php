@@ -65,7 +65,7 @@ class AuthController extends Controller
                 'email' => 'nullable|email|unique:users,email',
                 'phone' => 'nullable|string|unique:users,phone',
                 'password' => 'required|string|min:4|confirmed',
-                'role_name' => 'required|in:student,parent',
+                'role_name' => 'nullable|in:student,parent',
                 'clas_id' => 'nullable|exists:clas,id',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
                 'fcm_token' => 'nullable|string'
@@ -74,7 +74,7 @@ class AuthController extends Controller
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Validation failed',
+                    'message' => $validator->errors()->first(),
                     'errors' => $validator->errors()
                 ], 422);
             }
@@ -107,7 +107,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'password' => Hash::make($request->password),
-                'role_name' => $request->role_name,
+                'role_name' => "student",
                 'clas_id' => $request->clas_id,
                 'photo' => $photoPath,
                 'fcm_token' => $request->fcm_token,
@@ -168,28 +168,28 @@ class AuthController extends Controller
         }
 
         // Check for test OTP
-        if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
-            $user = User::where('phone', $request->phone)->first();
+        // if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
+        //     $user = User::where('phone', $request->phone)->first();
             
-            if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
+        //     if (!$user) {
+        //         return response()->json([
+        //             'status' => false,
+        //             'message' => 'User not found'
+        //         ], 404);
+        //     }
 
-            // Activate user
-            $user->update(['activate' => 1]);
+        //     // Activate user
+        //     $user->update(['activate' => 1]);
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+        //     $token = $user->createToken('auth_token')->accessToken;
 
-            return response()->json([
-                'status' => true,
-                'message' => 'OTP verified successfully (Test Mode)',
-                'data' => $this->formatUserData($user),
-                'token' => $token
-            ], 200);
-        }
+        //     return response()->json([
+        //         'status' => true,
+        //         'message' => 'OTP verified successfully (Test Mode)',
+        //         'data' => $this->formatUserData($user),
+        //         'token' => $token
+        //     ], 200);
+        // }
 
         // Verify OTP
         $user = User::where('phone', $request->phone)->first();
@@ -211,14 +211,16 @@ class AuthController extends Controller
         if ($this->otpService->verifyOtp($request->phone, $request->otp)) {
             // Activate user
             $user->update(['activate' => 1]);
-
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $user->refresh();
+            $token = $user->createToken('auth_token')->accessToken;
 
             return response()->json([
                 'status' => true,
-                'message' => 'OTP verified successfully',
-                'data' => $this->formatUserData($user),
-                'token' => $token
+                'message' => 'Register successful', 
+                'data' => [
+                    'user' => $this->formatUserData($user),
+                    'token' => $token,
+                ],
             ], 200);
         }
 

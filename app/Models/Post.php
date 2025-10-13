@@ -13,6 +13,8 @@ class Post extends Model
         protected $casts = [
         'is_approved' => 'boolean',
         'is_active' => 'boolean',
+         'moderation_flags' => 'array', 
+        'violation_score' => 'integer',
     ];
 
      public function canBeDeletedBy($userId)

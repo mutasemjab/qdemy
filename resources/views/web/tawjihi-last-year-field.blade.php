@@ -4,21 +4,21 @@
 
 @section('content')
 <section class="tj2009">
-  <div class="tj2009__decor tj2009__decor--left">
+  <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--left">
     <img data-src="{{ asset('assets_front/images/tawjihi-left-bg.png') }}" alt="">
   </div>
-  <div class="tj2009__decor tj2009__decor--right">
+  <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--right">
     <img data-src="{{ asset('assets_front/images/tj-right.png') }}" alt="">
   </div>
 
     <div class="tj2009__inner">
-        <header class="tj2009__head">
+        <header data-aos="fade-up" data-aos-duration="1000" class="tj2009__head">
         <h2>{{$field?->localized_name}}</h2>
         <h3 class="">{{translate_lang('Ministry Subjects')}}</h3>
         </header>
 
         @if($ministrySubjects && $ministrySubjects->count())
-        <div class="tj2009__subjects">
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="tj2009__subjects">
             @foreach($ministrySubjects as $index => $ministrySubject)
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
@@ -36,7 +36,7 @@
                         @if($subjects && $subjects->count())
                         @foreach($subjects as $optiona_subject)
                             <li>
-                                <a class="text-decoration-none" href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
+                                <a class="" href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
                                     {{$optiona_subject->localized_name}}
                                 </a>
                             </li>
@@ -55,9 +55,9 @@
         </div>
         @endif
 
-        <h3 class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
+        <h3 data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
         @if($schoolSubjects && $schoolSubjects->count())
-        <div class="tj2009__subjects">
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subjects">
             @foreach($schoolSubjects as $index => $schoolSubject)
             <div href="javascript:void(0)" class="tj2009__item"
                 style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
@@ -75,7 +75,7 @@
                         @if($subjects && $subjects->count())
                         @foreach($subjects as $optiona_subject)
                             <li>
-                                <a class="text-decoration-none" href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
+                                <a class="" href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
                                     {{$optiona_subject->localized_name}}
                                 </a>
                             </li>
@@ -98,53 +98,110 @@
 @endsection
 @push('styles')
 <style>
-.tj2009__item {
-    display: grid;
-    place-items: center !important;
-    align-content: center!important;
-}
-.subject-plus-dropdown-examx {
-    /* display: inline-flex; */
-    align-items: center;
-    /* gap: 8px; */
-    background: #fff;
-    border-radius: 18px;
-    /* padding: 5px 14px 5px 10px; */
-    box-shadow: 0 1px 10px rgba(0,85,210,0.07);
-    margin: 0;
-    /* min-width: 120px; */
-    transition: box-shadow 0.17s;
-    position: relative;
+.tj2009__item{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
 }
 
-.subject-plus-dropdown-examx .examx-pill {
-    background: #fff;
-    color: #0055D2;
-    border: none;
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-    font-size: 22px;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 1px 6px rgba(0,85,210,0.15);
-    transition: box-shadow 0.18s, background 0.18s;
-    outline: none;
-    margin: 0 0 0 5px;
-    z-index: 2;
+.subject-plus-dropdown-examx{
+  position:relative;
+  align-items:center;
+  border-radius:18px;
+  margin:0;
+  transition:box-shadow .17s;
+  margin-top:8px;
 }
+
+.subject-plus-dropdown-examx .examx-pill{
+  color:#0055D2;
+  border:none;
+  border-radius:50%;
+  width:32px;
+  height:32px;
+  font-size:22px;
+  font-weight:bold;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  outline:none;
+  background-color:transparent;
+}
+
 .subject-plus-dropdown-examx .examx-pill:focus,
-.subject-plus-dropdown-examx .examx-pill:hover {
-    background: #f5faff;
-    box-shadow: 0 2px 12px rgba(0,85,210,0.25);
+.subject-plus-dropdown-examx .examx-pill:hover{
+  border:none!important;
 }
 
-/* لا تغير قائمة الدروب داون نفسها */
-.subject-plus-dropdown-examx .examx-menu {
-    z-index: 3;
+.subject-plus-dropdown-examx .examx-menu{z-index:4}
+.subject-plus-dropdown-examx .examx-menu{z-index:3}
+
+.examx-pill{min-width:181px}
+
+@media (max-width:768px){
+  .examx-pill{min-width:120px}
+  .tj2009__item span{
+    font-size:10px;
+    max-width:72px;
+    transform:translateY(-9px);
+  }
 }
+
+@media (max-width:710px){
+  .tj2009__subjects{
+    grid-template-columns:repeat(3,1fr)!important;
+    gap:18px;
+    padding:20px;
+  }
+}
+
+@media (max-width:640px){
+  .examx-pill{min-width:100px;width:100%}
+}
+
+@media (max-width:560px){
+  .tj2009__item{
+    width:108px;
+    height:127px;
+    background-size:106px 124px;
+  }
+}
+
+.tj2009{
+  position:relative;
+  min-height:max-content;
+  overflow:hidden;
+  padding:20px 0 300px 0;
+}
+
+.examx-menu li{padding:0;margin:0}
+
+.examx-menu a{
+  display:block;
+  width:100%;
+  box-sizing:border-box;
+  padding:10px 12px;
+  text-decoration:none;
+  border-radius:10px;
+  color:#111827;
+  transition:background .15s ease;
+  font-size:13px;
+}
+
+@media (max-width:768px){
+  .examx-dropdown .examx-menu{
+    left:8px!important;
+    right:8px!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:none!important;
+    transform:none!important;
+  }
+}
+
 </style>
 @endpush

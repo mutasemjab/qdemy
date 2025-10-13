@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Package extends Model
 {
-    use HasFactory;
+    use HasFactory,LogsActivity;
 
      protected $guarded = [];
 
@@ -19,6 +21,17 @@ class Package extends Model
         static::deleting(function ($package) {
             $package->packageCategories()->delete();
         });
+    }
+
+    // Activity Log Configuration
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']) // Log all attributes, or specify: ['name', 'price', 'number_of_cards']
+            ->logOnlyDirty() // Only log changed attributes
+            ->dontSubmitEmptyLogs()
+            ->useLogName('Package') // Custom log name
+            ->setDescriptionForEvent(fn(string $eventName) => "Package has been {$eventName}");
     }
 
     /**

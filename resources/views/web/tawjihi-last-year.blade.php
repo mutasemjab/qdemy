@@ -3,11 +3,11 @@
 
 @section('content')
 <section class="f08-page">
-    <div class="f08-head">{{$tawjihiLastYear->localized_name}}</div>
+    <div data-aos="fade-up" data-aos-duration="1000" class="f08-head">{{$tawjihiLastYear->localized_name}}</div>
 
     @if($tawjihiLastYearFields && $tawjihiLastYearFields->count())
     @foreach($tawjihiLastYearFields as $index => $tawjihiLastYearField)
-    <div class="f08-section" style="background-image: url('{{ asset('images') }}{{$index % 2 ? '/literature-box.png' : '/science-box.png'}}');">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="f08-section" style="background-image: url('{{ asset('images') }}{{$index % 2 ? '/literature-box.png' : '/science-box.png'}}');">
 
         <h2 class="f08-title">{{$tawjihiLastYearField->localized_name}}</h2>
 

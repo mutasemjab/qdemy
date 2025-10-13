@@ -376,8 +376,9 @@
 
 @push('styles')
 <style>
+
 .ud-student-info-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #fff;
     color: white;
     border-radius: 15px;
     padding: 25px;
@@ -392,14 +393,19 @@
 }
 
 .ud-stat-card {
-    background: rgba(255,255,255,0.1);
+    background: rgb(211 203 203 / 10%);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     padding: 20px;
     display: flex;
     align-items: center;
     gap: 15px;
+    color: #000;
+}
+
+.ud-name {
+    color: #000;
 }
 
 .ud-stat-icon {
@@ -444,6 +450,7 @@
     padding: 15px;
     border-radius: 10px;
     border-left: 4px solid #ffd700;
+    color: #000;
 }
 
 .ud-achievement-badge i {
@@ -506,11 +513,104 @@
     color: #adb5bd;
 }
 
-.ud-courses-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 25px;
+.ud-courses-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
 }
+
+.ud-course-card{
+  background:#fff;
+  border:1px solid #e6e9f2;
+  border-radius:16px;
+  box-shadow:0 14px 30px rgba(17,24,39,.06);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.ud-course-card:hover{
+  transform:translateY(-2px);
+  border-color:#dbe3f7;
+  box-shadow:0 18px 34px rgba(17,24,39,.08);
+}
+
+.ud-course-header{
+  position:relative;
+  aspect-ratio:16/9;
+  background:#f3f5f9;
+  overflow:hidden;
+}
+.ud-course-header img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform:scale(1.02);
+  transition:transform .25s ease;
+}
+.ud-course-card:hover .ud-course-header img{ transform:scale(1.06); }
+
+.ud-course-progress-circle{
+  position:absolute;
+  inset:auto 12px 12px auto;
+  width:66px;
+  height:66px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+}
+
+.circular-chart{width:54px;height:54px}
+.circular-chart .circle-bg{
+  fill:none; stroke:#eef2f7; stroke-width:3.2;
+}
+.circular-chart .circle{
+  fill:none; stroke:#0b57d0; stroke-width:3.2; stroke-linecap:round;
+  transform:rotate(-90deg); transform-origin:50% 50%;
+}
+.circular-chart .percentage{
+  fill:#0f172a; font-weight:800; font-size:9px; text-anchor:middle;
+}
+
+.ud-course-body{padding:14px 14px 16px; display:flex; flex-direction:column; gap:8px}
+.ud-course-body h4{
+  margin:0; font-size:16px; font-weight:900; color:#0f172a; line-height:1.35;
+}
+
+.ud-course-teacher,
+.ud-course-subject{
+  margin:0; display:flex; align-items:center; gap:8px; color:#475569; font-size:13px; font-weight:700;
+}
+.ud-course-teacher i,
+.ud-course-subject i{font-size:12px; color:#64748b}
+
+.ud-course-stats{
+  margin-top:6px;
+  display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+}
+.ud-course-stat{
+  background:#f7f9fc;
+  border:1px solid #eef2f7;
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+.ud-course-stat span{display:block; font-weight:900; font-size:18px; color:#0b57d0}
+.ud-course-stat small{display:block; margin-top:3px; font-size:11px; color:#6b7280; font-weight:800; text-transform:uppercase; letter-spacing:.02em}
+
+.ud-course-enrolled{
+  margin-top:8px; padding-top:8px;
+  border-top:1px dashed #e6e9f2;
+  color:#6b7280; font-size:12px; font-weight:700;
+}
+
+@media (max-width:900px){
+  .ud-courses-grid{grid-template-columns:1fr}
+  .ud-course-progress-circle{width:58px;height:58px}
+  .circular-chart{width:48px;height:48px}
+}
+
 
 .ud-course-card {
     background: white;
@@ -633,7 +733,6 @@
     padding: 20px;
     border-radius: 10px;
     text-align: center;
-    border-left: 4px solid #007bff;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
@@ -695,7 +794,6 @@
 .ud-exam-score-circle {
     text-align: center;
     padding: 15px;
-    background: #f8f9fa;
     border-radius: 50%;
     min-width: 80px;
 }
@@ -753,14 +851,15 @@
 .ud-progress-bar-large {
     position: relative;
     height: 30px;
-    background: #f1f3f4;
+    background: #ffffff;
     border-radius: 15px;
     overflow: hidden;
+    border: solid #e9e9e9;
 }
 
 .ud-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #28a745);
+    background: linear-gradient(90deg, #b3d7ff, #0c5ce5);
     border-radius: 15px;
     transition: width 0.6s ease;
 }
@@ -770,7 +869,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
+    color: #000;
     font-weight: bold;
     font-size: 14px;
 }
@@ -812,7 +911,7 @@
 
 .ud-progress-bar .ud-progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #28a745);
+    background: linear-gradient(90deg, #b3d7ff, #0c5ce5);
     border-radius: 4px;
     transition: width 0.6s ease;
 }
@@ -826,41 +925,72 @@
     color: #2c3e50;
 }
 
-.ud-performance-metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+.ud-performance-metrics{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:14px !important;
 }
 
-.ud-metric-card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+.ud-metric-card{
+  background:#fff !important;
+  border:1px solid #e6e9f2 !important;
+  border-radius:12px !important;
+  box-shadow:0 10px 22px rgba(17,24,39,.05) !important;
+  padding:12px 14px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
 }
 
-.ud-metric-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+.ud-metric-header{
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  border-bottom:1px solid #f1f5f9 !important;
+  padding-bottom:8px !important;
+}
+.ud-metric-header i{font-size:16px !important; color:#0b57d0 !important}
+.ud-metric-header h4{margin:0 !important; font-size:14px !important; font-weight:900 !important; color:#0f172a !important}
+
+.ud-metric-body{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  min-height:44px !important;
 }
 
-.ud-metric-header i {
-    color: #007bff;
-    font-size: 20px;
+.ud-trend{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  font-weight:900 !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  border:1px solid #eef2f7 !important;
+  background:#f8fafc !important;
+  color:#0f172a !important;
+}
+.ud-trend.up{background:#e9f7ef !important; border-color:#c7ebd7 !important; color:#0f9d58 !important}
+.ud-trend.down{background:#feeeee !important; border-color:#f6c7c3 !important; color:#d93025 !important}
+.ud-trend.right{background:#f8fafc !important; border-color:#eef2f7 !important; color:#475569 !important}
+
+.ud-pass-rate{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:84px !important;
+  padding:8px 10px !important;
+  border-radius:10px !important;
+  background:#eef4ff !important;
+  border:1px solid #d9e6ff !important;
+  color:#0b57d0 !important;
+  font-weight:900 !important;
 }
 
-.ud-metric-header h4 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 16px;
+@media (max-width:600px){
+  .ud-performance-metrics{grid-template-columns:1fr !important}
 }
 
-.ud-metric-body {
-    text-align: center;
-}
 
 .ud-trend {
     display: inline-flex;
@@ -898,6 +1028,7 @@
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-top: 20px;
 }
 
 .ud-subject-performance h3 {

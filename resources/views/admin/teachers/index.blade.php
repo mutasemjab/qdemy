@@ -61,6 +61,7 @@
                                     <th>{{ __('messages.Lesson') }}</th>
                                     <th>{{ __('messages.Social Media') }}</th>
                                     <th>{{ __('messages.User Account') }}</th>
+                                    <th>{{ __('messages.activate') }}</th>
                                     <th>{{ __('messages.Created At') }}</th>
                                     <th>{{ __('messages.Actions') }}</th>
                                 </tr>
@@ -126,6 +127,10 @@
                                                     <i class="fas fa-user-times"></i> {{ __('messages.No Account') }}
                                                 </span>
                                             @endif
+                                        </td>
+                                        <td> <span class="badge badge-{{ $teacher->user->activate == 1 ? 'success' : 'danger' }}">
+                                                {{ $teacher->user->activate == 1 ? __('messages.Active') : __('messages.Inactive') }}
+                                            </span>
                                         </td>
                                         <td>{{ $teacher->created_at->format('M d, Y') }}</td>
                                         <td>

@@ -72,7 +72,7 @@
                                         <tr>
                                             <td>
                                                 <a href="{{ route('admin.community.posts.show', $post) }}">
-                                                    {{ Str::limit($post->title, 50) }}
+                                                    {{ Str::limit($post->content, 50) }}
                                                 </a>
                                             </td>
                                             <td>{{ $post->user->name }}</td>
@@ -122,8 +122,8 @@
                                                     @endcan
                                                     
                                                     @can('community-delete')
-                                                        <form action="{{ route('admin.community.comments.destroy', $comment) }}" 
-                                                              method="POST" class="d-inline">
+                                                        <form action="{{ route('admin.community.posts.destroy', $post) }}" 
+                                                            method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-sm btn-danger" 
@@ -140,10 +140,10 @@
                             </table>
                         </div>
                         
-                        {{ $comments->withQueryString()->links() }}
+                        {{ $posts->withQueryString()->links() }}
                     @else
                         <div class="text-center py-4">
-                            <p class="text-muted">{{ __('messages.no_comments_found') }}</p>
+                            <p class="text-muted">{{ __('messages.no_posts_found') }}</p>
                         </div>
                     @endif
                 </div>

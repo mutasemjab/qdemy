@@ -19,6 +19,7 @@ use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
 use App\Http\Controllers\Web\TeacherController;
 use App\Http\Controllers\Web\ContactUsController;
+use App\Http\Controllers\Web\DoseyatController;
 use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\VideoProgressController;
 use App\Http\Controllers\Web\StudentAccountController;
@@ -29,7 +30,8 @@ use App\Http\Controllers\Web\ElementaryProgrammController;
 use App\Http\Controllers\Web\InternationalProgramController;
 use App\Http\Controllers\Web\MinisterialYearsQuestionController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
+use App\Models\BannedWord;
+use App\Services\ContentModerationService;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -46,6 +48,26 @@ Route::get('/my-esspresso',function () {
 });
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
+
+    Route::get('/test-moderation/{word}', function ($word) {
+    // مسح Cache
+    \Cache::forget('banned_words_active');
+    
+    // الكلمات المحظورة
+    $bannedWords = BannedWord::where('is_active', true)->get();
+    
+    // اختبار المحتوى
+    $service = new ContentModerationService();
+    $result = $service->moderate($word);
+    
+    return response()->json([
+        'test_word' => $word,
+        'banned_words_in_db' => $bannedWords->pluck('word'),
+        'banned_words_count' => $bannedWords->count(),
+        'moderation_result' => $result,
+        'should_be_blocked' => !$result['is_clean'],
+    ]);
+});
 
     Route::post('/process-payment', [CardController::class, 'processPayment'])->name('payment.process');// not use yet when get payment gatway we will use it
 
@@ -70,6 +92,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/download', [PagesController::class, 'download'])->name('download');
     Route::get('/sale-point', [PagesController::class, 'sale_point'])->name('sale-point');
     Route::get('/cards-order', [CardController::class, 'cards_order'])->name('card-order');
+    Route::get('/doseyat', [DoseyatController::class, 'doseyat'])->name('doseyat');
 
     Route::prefix('bankQuestions')->name('bankQuestions.')->group(function () {
         Route::get('/', [BankQuestionController::class, 'index'])->name('index');

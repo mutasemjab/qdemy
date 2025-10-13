@@ -27,7 +27,7 @@
                                     <th>{{ __('messages.photo') }}</th>
                                     <th>{{ __('messages.title') }}</th>
                                     <th>{{ __('messages.teacher') }}</th>
-                                    <th>{{ __('messages.Subject') }}</th>
+                                    <th>{{ __('messages.Lesson/Subject') }}</th>
                                     <th>{{ __('messages.price') }}</th>
                                     <th>{{ __('messages.commission_of_admin') }}</th>
                                     <th>{{ __('messages.created_at') }}</th>

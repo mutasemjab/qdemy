@@ -157,19 +157,51 @@ class PermissionSeeder extends Seeder
                 'courseUser-add' => 'Manually enroll students',
                 'courseUser-edit' => 'Edit course enrollments',
                 'courseUser-delete' => 'Remove course enrollments'
-            ]
+            ],
+            'financial' => [
+                'card-table' => 'View Card table',
+                'card-add' => 'add Card table',
+                'card-edit' => 'Edit Card table',
+                'card-delete' => 'Remove Card table',
+                'cardnumbers-table'     => 'View Card Numbers table',
+                'cardnumbers-edit'      => 'Edit / Manage Card Numbers (Sell, Assign, Use)',
+                'cardnumbers-activate'  => 'Activate / Deactivate Card Numbers',
+            ],
+            'doseyat' => [
+                'doseyat-table' => 'View doseyat table',
+                'doseyat-add' => 'add doseyat table',
+                'doseyat-edit' => 'Edit doseyat table',
+                'doseyat-delete' => 'Remove doseyat table'
+            ],
+            'report' => [
+                'card-report' => 'View Card Report',
+                'doseyat-report' => 'View Doseyat Report',
+                'enrollment-report' => 'View Enrollment Report',
+            ],
+            'bannedWord' => [
+               'bannedWord-table' => 'View Banned Word table',
+                'bannedWord-add' => 'add Banned Word table',
+                'bannedWord-edit' => 'Edit Banned Word table',
+                'bannedWord-delete' => 'Remove Banned Word table'
+            ],
+            'activityLog' => [
+               'activityLog-table' => 'View Activity Logs table',
+                'activityLog-add' => 'add Activity Logs table',
+                'activityLog-edit' => 'Edit Activity Logs table',
+                'activityLog-delete' => 'Remove Activity Logs table'
+            ],
         ];
 
         // Create permissions with descriptions
         foreach ($permissionGroups as $group => $permissions) {
             $this->command->info("Creating {$group} permissions...");
-            
+
             foreach ($permissions as $permission => $description) {
                 Permission::create([
                     'name' => $permission,
                     'guard_name' => 'admin',
                 ]);
-                
+
                 $this->command->line("  ✓ {$permission}");
             }
         }
@@ -192,7 +224,7 @@ class PermissionSeeder extends Seeder
             'name' => 'super-admin',
             'guard_name' => 'admin'
         ]);
-        
+
         $allPermissions = [];
         foreach ($permissionGroups as $permissions) {
             $allPermissions = array_merge($allPermissions, array_keys($permissions));
@@ -205,8 +237,8 @@ class PermissionSeeder extends Seeder
             'name' => 'manager',
             'guard_name' => 'admin'
         ]);
-        
-        $managerPermissions = array_filter($allPermissions, function($permission) {
+
+        $managerPermissions = array_filter($allPermissions, function ($permission) {
             // Exclude role and employee deletion
             return !in_array($permission, ['role-delete', 'employee-delete']);
         });
@@ -218,24 +250,37 @@ class PermissionSeeder extends Seeder
             'name' => 'teacher',
             'guard_name' => 'admin'
         ]);
-        
+
         $teacherPermissions = [
             // Course management
-            'course-table', 'course-add', 'course-edit',
+            'course-table',
+            'course-add',
+            'course-edit',
             // Question management
-            'question-table', 'question-add', 'question-edit',
+            'question-table',
+            'question-add',
+            'question-edit',
             // Exam management
-            'exam-table', 'exam-add', 'exam-edit',
+            'exam-table',
+            'exam-add',
+            'exam-edit',
             // Student management
-            'user-table', 'user-edit',
+            'user-table',
+            'user-edit',
             // Course enrollment
-            'courseUser-table', 'courseUser-add', 'courseUser-edit',
+            'courseUser-table',
+            'courseUser-add',
+            'courseUser-edit',
             // Question bank
-            'bank-question-table', 'bank-question-add', 'bank-question-edit',
+            'bank-question-table',
+            'bank-question-add',
+            'bank-question-edit',
             // View parents
             'parent-table',
             // Community
-            'community-table', 'community-add', 'community-edit'
+            'community-table',
+            'community-add',
+            'community-edit'
         ];
         $teacher->givePermissionTo($teacherPermissions);
         $this->command->line("  ✓ Teacher role");
@@ -245,22 +290,42 @@ class PermissionSeeder extends Seeder
             'name' => 'content-manager',
             'guard_name' => 'admin'
         ]);
-        
+
         $contentPermissions = [
             // Blog management
-            'blog-table', 'blog-add', 'blog-edit', 'blog-delete',
+            'blog-table',
+            'blog-add',
+            'blog-edit',
+            'blog-delete',
             // Banner management
-            'banner-table', 'banner-add', 'banner-edit', 'banner-delete',
+            'banner-table',
+            'banner-add',
+            'banner-edit',
+            'banner-delete',
             // Category management
-            'category-table', 'category-add', 'category-edit', 'category-delete',
+            'category-table',
+            'category-add',
+            'category-edit',
+            'category-delete',
             // Social media
-            'socialMedia-table', 'socialMedia-add', 'socialMedia-edit', 'socialMedia-delete',
+            'socialMedia-table',
+            'socialMedia-add',
+            'socialMedia-edit',
+            'socialMedia-delete',
             // Community
-            'community-table', 'community-add', 'community-edit', 'community-delete',
+            'community-table',
+            'community-add',
+            'community-edit',
+            'community-delete',
             // Onboarding
-            'onboarding-table', 'onboarding-add', 'onboarding-edit', 'onboarding-delete',
+            'onboarding-table',
+            'onboarding-add',
+            'onboarding-edit',
+            'onboarding-delete',
             // Notifications
-            'notification-table', 'notification-add', 'notification-edit'
+            'notification-table',
+            'notification-add',
+            'notification-edit'
         ];
         $contentManager->givePermissionTo($contentPermissions);
         $this->command->line("  ✓ Content Manager role");
@@ -270,24 +335,34 @@ class PermissionSeeder extends Seeder
             'name' => 'support',
             'guard_name' => 'admin'
         ]);
-        
+
         $supportPermissions = [
             // User support
-            'user-table', 'user-edit',
+            'user-table',
+            'user-edit',
             // Parent support
-            'parent-table', 'parent-edit',
+            'parent-table',
+            'parent-edit',
             // Teacher support
             'teacher-table',
             // Course enrollment support
-            'courseUser-table', 'courseUser-add', 'courseUser-edit',
+            'courseUser-table',
+            'courseUser-add',
+            'courseUser-edit',
             // Wallet transactions
-            'wallet-transaction-table', 'wallet-transaction-add',
+            'wallet-transaction-table',
+            'wallet-transaction-add',
             // Website questions
-            'questionWebsite-table', 'questionWebsite-add', 'questionWebsite-edit',
+            'questionWebsite-table',
+            'questionWebsite-add',
+            'questionWebsite-edit',
             // Student opinions
-            'opinionStudent-table', 'opinionStudent-add', 'opinionStudent-edit',
+            'opinionStudent-table',
+            'opinionStudent-add',
+            'opinionStudent-edit',
             // Notifications
-            'notification-table', 'notification-add'
+            'notification-table',
+            'notification-add'
         ];
         $support->givePermissionTo($supportPermissions);
         $this->command->line("  ✓ Support role");
@@ -297,26 +372,52 @@ class PermissionSeeder extends Seeder
             'name' => 'academic-manager',
             'guard_name' => 'admin'
         ]);
-        
+
         $academicPermissions = [
             // Course management
-            'course-table', 'course-add', 'course-edit', 'course-delete',
+            'course-table',
+            'course-add',
+            'course-edit',
+            'course-delete',
             // Question management
-            'question-table', 'question-add', 'question-edit', 'question-delete',
+            'question-table',
+            'question-add',
+            'question-edit',
+            'question-delete',
             // Exam management
-            'exam-table', 'exam-add', 'exam-edit', 'exam-delete',
+            'exam-table',
+            'exam-add',
+            'exam-edit',
+            'exam-delete',
             // Question bank
-            'bank-question-table', 'bank-question-add', 'bank-question-edit', 'bank-question-delete',
+            'bank-question-table',
+            'bank-question-add',
+            'bank-question-edit',
+            'bank-question-delete',
             // Ministerial questions
-            'ministerial-question-table', 'ministerial-question-add', 'ministerial-question-edit', 'ministerial-question-delete',
+            'ministerial-question-table',
+            'ministerial-question-add',
+            'ministerial-question-edit',
+            'ministerial-question-delete',
             // Package management
-            'package-table', 'package-add', 'package-edit', 'package-delete',
+            'package-table',
+            'package-add',
+            'package-edit',
+            'package-delete',
             // Teacher management
-            'teacher-table', 'teacher-add', 'teacher-edit',
+            'teacher-table',
+            'teacher-add',
+            'teacher-edit',
             // Course enrollments
-            'courseUser-table', 'courseUser-add', 'courseUser-edit', 'courseUser-delete',
+            'courseUser-table',
+            'courseUser-add',
+            'courseUser-edit',
+            'courseUser-delete',
             // Categories
-            'category-table', 'category-add', 'category-edit', 'category-delete'
+            'category-table',
+            'category-add',
+            'category-edit',
+            'category-delete'
         ];
         $academicManager->givePermissionTo($academicPermissions);
         $this->command->line("  ✓ Academic Manager role");

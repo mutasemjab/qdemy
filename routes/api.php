@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\v1\User\BannerController;
 use App\Http\Controllers\Api\v1\User\SettingController;
 use App\Http\Controllers\Api\v1\User\HomeController;
 use App\Http\Controllers\Api\v1\User\PosController;
+use App\Http\Controllers\Api\v1\User\NotificationUserController;
 
 // Teacher Controllers
 use App\Http\Controllers\Api\v1\Teacher\AuthTeacherController;
@@ -39,6 +40,7 @@ use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 use App\Http\Controllers\Api\v1\NotificationController;
 use App\Http\Controllers\Web\CardController;
+use App\Http\Controllers\Web\DoseyatController;
 use App\Http\Controllers\Web\ExamController;
 
 /*
@@ -63,6 +65,8 @@ Route::group(['prefix' => 'v1/user'], function () {
 
 
     Route::get('/cards-order', [CardController::class, 'cards_order']);
+    Route::get('/doseyat', [DoseyatController::class, 'doseyat']);
+
 
     Route::get('/getSubjectsFromCategory', [CategoryController::class, 'getSubjectsFromCategory']); // api to get the subject from all categories
 
@@ -111,7 +115,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::post('/follow/toggle', [FollowController::class, 'toggleFollow']);
         Route::get('/teachers/{teacherId}', [TeacherController::class, 'show']);
 
-        Route::get('/exams/{exam}/link', [ExamController::class, 'getExamLink']);
         Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);
@@ -131,9 +134,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
         Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
 
-        // Notifications
-        Route::get('/notifications', [NotificationApiController::class, 'index']);
-        Route::post('/notifications/{id}/read', [NotificationApiController::class, 'read']);
 
         // Cart & Payment
         Route::get('/cart', [EnrollmentController::class, 'index']);
@@ -156,10 +156,10 @@ Route::group(['prefix' => 'v1/user'], function () {
 
 
         Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationController::class, 'index']);
-            Route::get('/unread-count', [NotificationController::class, 'getUnreadCount']);
-            Route::post('/{notification}/read', [NotificationController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
+            Route::get('/', [NotificationUserController::class, 'index']);
+            Route::get('/unread-count', [NotificationUserController::class, 'getUnreadCount']);
+            Route::post('/{notification}/read', [NotificationUserController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationUserController::class, 'markAllAsRead']);
         });
 
 
@@ -300,10 +300,10 @@ Route::group(['prefix' => 'v1/parent'], function () {
 
         // Notifications
          Route::prefix('notifications')->group(function () {
-            Route::get('/', [NotificationTeacherController::class, 'index']);
-            Route::get('/unread-count', [NotificationTeacherController::class, 'getUnreadCount']);
-            Route::post('/{notification}/read', [NotificationTeacherController::class, 'markAsRead']);
-            Route::post('/mark-all-read', [NotificationTeacherController::class, 'markAllAsRead']);
+            Route::get('/', [NotificationParentController::class, 'index']);
+            Route::get('/unread-count', [NotificationParentController::class, 'getUnreadCount']);
+            Route::post('/{notification}/read', [NotificationParentController::class, 'markAsRead']);
+            Route::post('/mark-all-read', [NotificationParentController::class, 'markAllAsRead']);
         });
 
 

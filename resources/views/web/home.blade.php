@@ -82,14 +82,14 @@
         <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
         <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light anim animate-glow">{{ __('front.Electronic Exams') }}</a>
         <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark">{{ __('front.packages_offers') }}</a>
-        <a href="{{ route('sale-point') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow">{{ __('front.Sale Points') }}</a>
+        <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow">{{ __('front.Doseyat') }}</a>
         <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
         <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light anim animate-glow">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
 
-<section class="social-media">
+<section data-aos="zoom-in-up"  class="social-media">
     <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
 
     @php $videoIndex = 0; @endphp

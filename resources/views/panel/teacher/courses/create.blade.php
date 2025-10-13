@@ -5,14 +5,12 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}"
-                alt="">
+            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
-
         <a href="{{ route('teacher.courses.index') }}" class="ud-item">
             <i class="fa-solid fa-arrow-left"></i>
             <span>{{ __('panel.back_to_courses') }}</span>
@@ -25,7 +23,7 @@
 
             @if($errors->any())
                 <div class="alert alert-danger">
-                    <ul style="margin: 0; padding-left: 20px;">
+                    <ul class="ud-errors">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -35,17 +33,18 @@
 
             <form method="POST" action="{{ route('teacher.courses.store') }}" enctype="multipart/form-data" class="course-form" id="courseForm">
                 @csrf
-                
-                <!-- Course Photo -->
+
                 <div class="form-group">
                     <label for="photo">{{ __('panel.course_photo') }} *</label>
                     <div class="photo-upload-wrapper">
-                        <input type="file" class="form-control" id="photo" name="photo" accept="image/*" required>
+                        <input type="file" class="form-control file-input" id="photo" name="photo" accept="image/*" required>
+                        <div class="upload-preview" id="photo-preview" style="display:none">
+                            <img src="" alt="Preview" class="preview-image">
+                        </div>
                     </div>
                     <small class="form-text">{{ __('panel.supported_formats') }}: JPG, PNG, GIF. {{ __('panel.max_size') }}: 2MB</small>
                 </div>
 
-                <!-- Course Basic Info -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="title_ar">{{ __('panel.course_title_ar') }} *</label>
@@ -57,7 +56,6 @@
                     </div>
                 </div>
 
-                <!-- Course Descriptions -->
                 <div class="form-group">
                     <label for="description_ar">{{ __('panel.description_ar') }} *</label>
                     <textarea id="description_ar" name="description_ar" rows="4" required>{{ old('description_ar') }}</textarea>
@@ -68,7 +66,6 @@
                     <textarea id="description_en" name="description_en" rows="4" required>{{ old('description_en') }}</textarea>
                 </div>
 
-                <!-- Category & Subject Selection -->
                 <div class="form-row">
                     <div class="form-group">
                         <label for="parent_category">{{ __('panel.select_program') }} *</label>
@@ -98,22 +95,17 @@
                     <small class="form-text">{{ __('panel.select_category_first') }}</small>
                 </div>
 
-                <!-- Price -->
                 <div class="form-group">
                     <label for="selling_price">{{ __('panel.course_price') }} *</label>
                     <div class="price-input-wrapper">
-                        <input type="number" id="selling_price" name="selling_price" 
-                               value="{{ old('selling_price', 0) }}" min="0" step="0.01" required>
+                        <input type="number" id="selling_price" name="selling_price" value="{{ old('selling_price', 0) }}" min="0" step="0.01" required>
                         <span class="currency">{{ __('panel.currency') }}</span>
                     </div>
                     <small class="form-text">{{ __('panel.enter_zero_for_free') }}</small>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="form-actions">
-                    <a href="{{ route('teacher.courses.index') }}" class="btn btn-secondary">
-                        {{ __('panel.cancel') }}
-                    </a>
+                    <a href="{{ route('teacher.courses.index') }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
                     <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="fa-solid fa-save"></i>
                         {{ __('panel.create_course') }}
@@ -127,304 +119,192 @@
 
 @section('styles')
 <style>
-.course-form {
-    max-width: 800px;
-}
+.ud-wrap{display:grid;grid-template-columns:260px 1fr;gap:24px;padding:16px 0}
+.ud-menu{margin: 10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
+.ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
+.ud-user h3{font-size:16px;margin:0 0 2px 0}
+.ud-user span{font-size:12px;color:#6b7280}
+.ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
+.ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
+.ud-content{min-width:0}
+.ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
+.ud-title{font-size:20px;font-weight:900;margin-bottom:16px;color:#0f172a}
 
-.form-group {
-    margin-bottom: 20px;
-}
+.course-form{max-width:900px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.form-group label{font-weight:800;color:#0f172a}
+.form-group .form-text{color:#6b7280;font-size:12px}
+.file-input{padding:10px 12px;border-radius:10px;border:1px solid #e5e7eb;background:#fff}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;font-size:14px;background:#fff;transition:border-color .16s,box-shadow .16s}
+.form-group textarea{min-height:120px;resize:vertical}
+.form-group select:disabled,.form-group input:disabled{background:#f8fafc;color:#9aa3af}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
 
-.form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-    color: #333;
-}
+.photo-upload-wrapper{display:flex;flex-direction:column;gap:10px}
+.upload-preview{display:inline-block}
+.preview-image{max-width:220px;height:130px;object-fit:cover;border-radius:12px;border:2px solid #0055D2}
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
-}
+.ud-errors{margin:0;padding-left:20px}
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
+.price-input-wrapper{position:relative}
+.price-input-wrapper .currency{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#6b7280;font-weight:800}
+.price-input-wrapper input{padding-right:70px}
 
-.form-group select:disabled {
-    background-color: #f8f9fa;
-    color: #6c757d;
-    cursor: not-allowed;
-}
+.form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px;padding-top:16px;border-top:1px solid #eef0f3}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:#0055D2;color:#fff;border:1px solid #0048b3}
+.btn-primary:hover{box-shadow:0 10px 22px rgba(0,85,210,.22)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-secondary{background:#111827;color:#fff;border:1px solid #0b1220}
+.btn-secondary:hover{box-shadow:0 10px 22px rgba(17,24,39,.22)}
 
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
+.alert{padding:12px 14px;border-radius:12px;margin-bottom:16px}
+.alert-danger{background:#fef2f2;color:#991b1b;border:1px solid #fee2e2}
 
-.price-input-wrapper {
-    position: relative;
+@media (max-width:992px){
+  .ud-wrap{grid-template-columns:1fr}
+  .ud-menu{position:static}
 }
-
-.price-input-wrapper .currency {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #666;
-    font-weight: 600;
-}
-
-.price-input-wrapper input {
-    padding-right: 60px;
-}
-
-.form-text {
-    color: #666;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.form-actions {
-    display: flex;
-    gap: 15px;
-    justify-content: flex-end;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-.btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.btn-primary {
-    background: #007bff;
-    color: white;
-}
-
-.btn-primary:hover {
-    background: #0056b3;
-}
-
-.btn-primary:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #545b62;
-}
-
-.alert {
-    padding: 12px 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-}
-
-.alert-danger {
-    background: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
-}
-
-.alert ul {
-    margin: 0;
-    padding-left: 20px;
-}
-
-@media (max-width: 768px) {
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-actions {
-        flex-direction: column;
-    }
+@media (max-width:768px){
+  .form-row{grid-template-columns:1fr}
+  .form-actions{flex-direction:column}
+  .course-form{max-width:100%}
 }
 </style>
 @endsection
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const parentCategorySelect = document.getElementById('parent_category');
-    const childCategorySelect = document.getElementById('category_id');
-    const subjectSelect = document.getElementById('subject_id');
-    const submitBtn = document.getElementById('submitBtn');
-    const courseForm = document.getElementById('courseForm');
+document.addEventListener('DOMContentLoaded',function(){
+  const parentCategorySelect=document.getElementById('parent_category');
+  const childCategorySelect=document.getElementById('category_id');
+  const subjectSelect=document.getElementById('subject_id');
+  const submitBtn=document.getElementById('submitBtn');
+  const courseForm=document.getElementById('courseForm');
+  const photoInput=document.getElementById('photo');
+  const photoPreview=document.getElementById('photo-preview');
 
-    // Handle parent category change
-    parentCategorySelect.addEventListener('change', function() {
-        const parentId = this.value;
-        
-        // Reset child category and subject
-        resetSelect(childCategorySelect, '{{ __("panel.select_grade_first") }}');
-        resetSelect(subjectSelect, '{{ __("panel.select_subject") }}');
-        childCategorySelect.disabled = true;
-        subjectSelect.disabled = true;
-        
-        if (parentId) {
-            // Show loading state
-            setLoadingState(childCategorySelect, '{{ __("panel.loading") }}...');
-            
-            // Build URL for child categories
-            const childrenUrl = "{{ route('teacher.categories.children', ':id') }}".replace(':id', parentId);
-            
-            // Fetch child categories
-            fetch(childrenUrl)
-                .then(response => response.json())
-                .then(data => {
-                    // Reset the select with default option
-                    resetSelect(childCategorySelect, '{{ __("panel.select_grade_first") }}');
-                    
-                    // Add option to use parent category itself
-                    addOption(childCategorySelect, parentId, '{{ __("panel.use_parent_category") }}');
-                    
-                    // Add child categories if any exist
-                    if (data && data.length > 0) {
-                        data.forEach(function(category) {
-                            const name = category.name_ar || category.name_en || 'Unknown';
-                            addOption(childCategorySelect, category.id, name);
-                        });
-                    }
-                    
-                    // Enable the child select
-                    childCategorySelect.disabled = false;
-                })
-                .catch(error => {
-                    console.error('Error loading categories:', error);
-                    alert('{{ __("panel.error_loading_categories") }}');
-                    resetSelect(childCategorySelect, '{{ __("panel.select_grade_first") }}');
-                    childCategorySelect.disabled = false;
-                });
-        }
-    });
+  photoInput.addEventListener('change',function(e){
+    const file=e.target.files[0];
+    if(file){
+      const reader=new FileReader();
+      reader.onload=function(ev){
+        const img=photoPreview.querySelector('.preview-image');
+        img.src=ev.target.result;
+        photoPreview.style.display='inline-block';
+      };
+      reader.readAsDataURL(file);
+    }else{
+      photoPreview.style.display='none';
+    }
+  });
 
-    // Handle child category change - this loads subjects
-    childCategorySelect.addEventListener('change', function() {
-        const categoryId = this.value;
-        
-        // Reset subjects
-        resetSelect(subjectSelect, '{{ __("panel.select_subject") }}');
-        subjectSelect.disabled = true;
-        
-        if (categoryId) {
-            loadSubjects(categoryId);
-        }
-    });
-
-    // Function to load subjects based on selected category
-    function loadSubjects(categoryId) {
-        // Show loading state
-        setLoadingState(subjectSelect, '{{ __("panel.loading") }}...');
-        subjectSelect.disabled = true;
-        
-        // Build URL with query parameter
-        const subjectsUrl = "{{ route('teacher.subjects.by-category') }}?category_id=" + categoryId;
-        
-        fetch(subjectsUrl)
-            .then(response => response.json())
-            .then(data => {
-                // Reset with default option
-                resetSelect(subjectSelect, '{{ __("panel.select_subject") }}');
-                
-                if (data && data.length > 0) {
-                    data.forEach(function(subject) {
-                        const subjectName = subject.name_ar || subject.name_en || subject.name || 'Unknown';
-                        addOption(subjectSelect, subject.id, subjectName);
-                    });
-                    subjectSelect.disabled = false;
-                } else {
-                    addOption(subjectSelect, '', '{{ __("panel.no_subjects_available") }}', true);
-                    subjectSelect.disabled = true;
-                }
-            })
-            .catch(error => {
-                console.error('Error loading subjects:', error);
-                alert('{{ __("panel.error_loading_subjects") }}');
-                resetSelect(subjectSelect, '{{ __("panel.select_subject") }}');
-                subjectSelect.disabled = false;
+  parentCategorySelect.addEventListener('change',function(){
+    const parentId=this.value;
+    resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
+    resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
+    childCategorySelect.disabled=true;
+    subjectSelect.disabled=true;
+    if(parentId){
+      setLoadingState(childCategorySelect,'{{ __("panel.loading") }}...');
+      const childrenUrl="{{ route('teacher.categories.children', ':id') }}".replace(':id',parentId);
+      fetch(childrenUrl)
+        .then(r=>r.json())
+        .then(data=>{
+          resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
+          addOption(childCategorySelect,parentId,'{{ __("panel.use_parent_category") }}');
+          if(data&&data.length>0){
+            data.forEach(function(category){
+              const name=category.name_ar||category.name_en||'';
+              addOption(childCategorySelect,category.id,name);
             });
+          }
+          childCategorySelect.disabled=false;
+        })
+        .catch(()=>{
+          resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
+          childCategorySelect.disabled=false;
+        });
     }
+  });
 
-    // Helper function to reset select element
-    function resetSelect(selectElement, defaultText) {
-        selectElement.innerHTML = '';
-        addOption(selectElement, '', defaultText);
+  childCategorySelect.addEventListener('change',function(){
+    const categoryId=this.value;
+    resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
+    subjectSelect.disabled=true;
+    if(categoryId){
+      loadSubjects(categoryId);
     }
+  });
 
-    // Helper function to set loading state
-    function setLoadingState(selectElement, loadingText) {
-        selectElement.innerHTML = '';
-        addOption(selectElement, '', loadingText);
-    }
+  function loadSubjects(categoryId){
+    setLoadingState(subjectSelect,'{{ __("panel.loading") }}...');
+    subjectSelect.disabled=true;
+    const subjectsUrl="{{ route('teacher.subjects.by-category') }}?category_id="+categoryId;
+    fetch(subjectsUrl)
+      .then(r=>r.json())
+      .then(data=>{
+        resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
+        if(data&&data.length>0){
+          data.forEach(function(subject){
+            const nm=subject.name_ar||subject.name_en||subject.name||'';
+            addOption(subjectSelect,subject.id,nm);
+          });
+          subjectSelect.disabled=false;
+        }else{
+          addOption(subjectSelect,'','{{ __("panel.no_subjects_available") }}',true);
+          subjectSelect.disabled=true;
+        }
+      })
+      .catch(()=>{
+        resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
+        subjectSelect.disabled=false;
+      });
+  }
 
-    // Helper function to add option to select
-    function addOption(selectElement, value, text, disabled = false) {
-        const option = document.createElement('option');
-        option.value = value;
-        option.textContent = text;
-        if (disabled) option.disabled = true;
-        selectElement.appendChild(option);
-    }
+  function resetSelect(sel,txt){
+    sel.innerHTML='';
+    addOption(sel,'',txt);
+  }
+  function setLoadingState(sel,txt){
+    sel.innerHTML='';
+    addOption(sel,'',txt);
+  }
+  function addOption(sel,val,txt,disabled=false){
+    const o=document.createElement('option');
+    o.value=val;
+    o.textContent=txt;
+    if(disabled) o.disabled=true;
+    sel.appendChild(o);
+  }
 
-    // Form submission with loading state
-    courseForm.addEventListener('submit', function(e) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
-        
-        // Re-enable button after 10 seconds to prevent permanent lock
-        setTimeout(function() {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fa-solid fa-save"></i> {{ __("panel.create_course") }}';
-        }, 10000);
-    });
+  courseForm.addEventListener('submit',function(){
+    submitBtn.disabled=true;
+    submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
+    setTimeout(function(){
+      submitBtn.disabled=false;
+      submitBtn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.create_course") }}';
+    },10000);
+  });
 
-    // Restore old values if validation fails
-    @if(old('parent_category'))
-        parentCategorySelect.value = '{{ old("parent_category") }}';
-        parentCategorySelect.dispatchEvent(new Event('change'));
-        
-        setTimeout(function() {
-            @if(old('category_id'))
-                childCategorySelect.value = '{{ old("category_id") }}';
-                childCategorySelect.dispatchEvent(new Event('change'));
-                
-                setTimeout(function() {
-                    @if(old('subject_id'))
-                        subjectSelect.value = '{{ old("subject_id") }}';
-                    @endif
-                }, 1000);
-            @endif
-        }, 1000);
-    @endif
+  @if(old('parent_category'))
+    parentCategorySelect.value='{{ old("parent_category") }}';
+    parentCategorySelect.dispatchEvent(new Event('change'));
+    setTimeout(function(){
+      @if(old('category_id'))
+        childCategorySelect.value='{{ old("category_id") }}';
+        childCategorySelect.dispatchEvent(new Event('change'));
+        setTimeout(function(){
+          @if(old('subject_id'))
+            subjectSelect.value='{{ old("subject_id") }}';
+          @endif
+        },1000);
+      @endif
+    },1000);
+  @endif
 });
 </script>
 @endsection

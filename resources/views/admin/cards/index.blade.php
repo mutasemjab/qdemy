@@ -7,14 +7,16 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4>{{ __('messages.cards_list') }}</h4>
+
+                    @can('card-add')
                     <a href="{{ route('cards.create') }}" class="btn btn-primary">
                         {{ __('messages.create_card') }}
                     </a>
+                    @endcan
                 </div>
 
                 <div class="card-body">
-               
-
+                    @can('card-table')
                     @if($cards->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
@@ -24,6 +26,7 @@
                                         <th>{{ __('messages.pos') }}</th>
                                         <th>{{ __('messages.name') }}</th>
                                         <th>{{ __('messages.price') }}</th>
+                                        <th>{{ __('messages.doseyat') }}</th>
                                         <th>{{ __('messages.number_of_cards') }}</th>
                                         <th>{{ __('messages.generated_numbers') }}</th>
                                         <th>{{ __('messages.active_inactive') }}</th>
@@ -45,6 +48,15 @@
                                             </td>
                                             <td>{{ $card->name }}</td>
                                             <td>{{ number_format($card->price, 2) }}</td>
+                                            <td>
+                                                @if($card->doseyats->count() > 0)
+                                                    @foreach($card->doseyats as $doseyat)
+                                                        <span class="badge bg-primary mb-1">{{ $doseyat->name }}</span>
+                                                    @endforeach
+                                                @else
+                                                    <span class="badge bg-secondary">{{ __('messages.no_doseyats') }}</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <span class="badge bg-primary">{{ number_format($card->number_of_cards) }}</span>
                                             </td>
@@ -70,10 +82,14 @@
                                                        class="btn btn-secondary btn-sm mb-1">
                                                         {{ __('messages.view_numbers') }}
                                                     </a>
+
+                                                    @can('card-edit')
                                                     <a href="{{ route('cards.edit', $card) }}" 
                                                        class="btn btn-warning btn-sm mb-1">
                                                         {{ __('messages.edit') }}
                                                     </a>
+                                                    @endcan
+
                                                     <form action="{{ route('cards.regenerate-numbers', $card) }}" 
                                                           method="POST" 
                                                           style="display: inline-block;"
@@ -84,6 +100,8 @@
                                                             {{ __('messages.regenerate') }}
                                                         </button>
                                                     </form>
+                                                    
+                                                    @can('card-delete')
                                                     <form action="{{ route('cards.destroy', $card) }}" 
                                                           method="POST" 
                                                           style="display: inline-block;"
@@ -94,6 +112,7 @@
                                                             {{ __('messages.delete') }}
                                                         </button>
                                                     </form>
+                                                    @endcan
                                                 </div>
                                             </td>
                                         </tr>
@@ -108,11 +127,14 @@
                     @else
                         <div class="text-center">
                             <p class="text-muted">{{ __('messages.no_cards_found') }}</p>
+                            @can('card-add')
                             <a href="{{ route('cards.create') }}" class="btn btn-primary">
                                 {{ __('messages.create_first_card') }}
                             </a>
+                            @endcan
                         </div>
                     @endif
+                    @endcan
                 </div>
             </div>
         </div>

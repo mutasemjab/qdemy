@@ -15,27 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        DB::statement("SET foreign_key_checks=0");
-        $databaseName = DB::getDatabaseName();
-        $tables       = DB::select("SELECT * FROM information_schema.tables WHERE table_schema = '$databaseName'");
-        foreach ($tables as $table) {
-            $name = $table->TABLE_NAME;
-            // if you don't want to truncate migrations
-            DB::table($name)->truncate();
-            if ($name == 'users' || $name == 'content_user_progress' || $name == 'teachers' || $name == 'categories' || $name == 'courses' || $name == 'questions' || $name == 'exams') {
-               DB::table($name)->truncate();
-            }
-            if ($name == 'categories' || $name == 'subjects' || $name == 'category_subjects' ||  $name == 'content_user_progress' ||  $name == 'course_user') {
-               DB::table($name)->truncate();
-            }
-        }
-        DB::statement("SET foreign_key_checks=1");
-
         $this->call(PermissionSeeder::class);
         $this->call(ClasSeeder::class);
        // $this->call(UserSeeder::class);
         $this->call(CategoriesSeeder::class);
         $this->call(AdminSeeder::class);
+        $this->call(BannedWordsSeeder::class);
 
       // $this->call(TeachersSeeder::class);
      //  $this->call(CoursesSeeder::class);

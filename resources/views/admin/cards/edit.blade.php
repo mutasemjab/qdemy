@@ -1,5 +1,10 @@
 @extends('layouts.admin')
 
+@section('css')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -41,6 +46,7 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
                         <div class="mb-3">
                             <label for="category_id" class="form-label">{{ __('messages.category') }}</label>
                             <select class="form-control @error('category_id') is-invalid @enderror" 
@@ -50,7 +56,7 @@
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" 
                                             {{ old('category_id', $card->category_id) == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
+                                        {{ $category->name_ar }}
                                     </option>
                                 @endforeach
                             </select>
@@ -75,6 +81,32 @@
                             @error('teacher_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="doseyat_ids" class="form-label">{{ __('messages.doseyats') }}</label>
+                            <select class="form-control select2 @error('doseyat_ids') is-invalid @enderror"
+                                    id="doseyat_ids"
+                                    name="doseyat_ids[]"
+                                    multiple="multiple">
+                                @foreach($doseyats as $doseyat)
+                                    <option value="{{ $doseyat->id }}" 
+                                            {{ in_array($doseyat->id, old('doseyat_ids', $card->doseyats->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ $doseyat->name }} - {{ number_format($doseyat->price, 2) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('doseyat_ids')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">{{ __('messages.doseyat_help') }}</div>
+                            @if($card->doseyats->count() > 0)
+                                <div class="mt-2">
+                                    <small class="text-muted">{{ __('messages.current_doseyats') }}: 
+                                        <strong>{{ $card->doseyats->pluck('name')->implode(', ') }}</strong>
+                                    </small>
+                                </div>
+                            @endif
                         </div>
 
                         <div class="mb-3">
@@ -111,7 +143,7 @@
                             <label for="photo" class="form-label">{{ __('messages.photo') }}</label>
                             @if($card->photo)
                                 <div class="mb-2">
-                                    <img src="{{ $card->photo_url }}" alt="{{ $card->title }}" 
+                                    <img src="{{ $card->photo_url }}" alt="{{ $card->name }}" 
                                          class="img-thumbnail" style="width: 150px; height: 150px; object-fit: cover;">
                                     <p class="form-text">{{ __('messages.current_photo') }}</p>
                                 </div>
@@ -169,3 +201,17 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            placeholder: '{{ __("messages.select_doseyats") }}',
+            allowClear: true,
+            width: '100%'
+        });
+    });
+</script>
+@endpush

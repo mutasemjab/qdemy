@@ -24,7 +24,7 @@
                                     <div class="form-group">
                                         <label>{{ __('messages.Current Photo') }}</label>
                                         <div>
-                                            <img src="{{ asset('storage/' . $teacher->photo) }}" 
+                                            <img src="{{ asset('assets/admin/uploads/' . $teacher->photo) }}" 
                                                  alt="{{ $teacher->name }}" 
                                                  class="img-thumbnail" 
                                                  style="max-width: 200px; max-height: 200px; object-fit: cover;">
@@ -231,6 +231,23 @@
                                     </div>
                                 </div>
 
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="activate" class="required">{{ __('messages.Status') }}</label>
+                                    <select class="form-control @error('activate') is-invalid @enderror"
+                                            id="activate" name="activate" required>
+                                        <option value="1" {{ old('activate', $teacher->user->activate) == 1 ? 'selected' : '' }}>
+                                            {{ __('messages.Active') }}
+                                        </option>
+                                        <option value="2" {{ old('activate', $teacher->user->activate) == 2 ? 'selected' : '' }}>
+                                            {{ __('messages.Inactive') }}
+                                        </option>
+                                    </select>
+                                    @error('activate')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                            
                             </div>
                         </div>

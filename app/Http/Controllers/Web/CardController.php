@@ -4,6 +4,7 @@ namespace  App\Http\Controllers\Web;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Card;
+use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,7 +13,13 @@ class CardController  extends Controller
 
     public function cards_order(Request $request)
     {
-        $cards = Card::get();
+        // Load cards with category and doseyats relationships
+        $cards = Card::with(['category', 'doseyats'])->get();
+        
+        // Get active categories that have cards
+        $categories = Category::where('parent_id', null)
+            ->whereHas('cards')
+            ->get();
         
         // Check if request from mobile
         $isApi = $request->is('api/*');
@@ -22,10 +29,11 @@ class CardController  extends Controller
             auth()->loginUsingId($request->input('UserId'));
         }
         
-        return view('web.cards-order', compact('cards', 'isApi'));
+        return view('web.cards-order', compact('cards', 'categories', 'isApi'));
     }
 
-        public function processPayment(Request $request)
+    
+    public function processPayment(Request $request)
     {
         // Validate the request
         $validator = Validator::make($request->all(), [

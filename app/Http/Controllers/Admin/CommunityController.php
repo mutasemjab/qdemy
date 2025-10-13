@@ -68,7 +68,6 @@ class CommunityController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
             'content' => 'required|string|min:10',
             'user_id' => 'required|exists:users,id',
             'is_approved' => 'boolean',
@@ -76,7 +75,6 @@ class CommunityController extends Controller
         ]);
 
         Post::create([
-            'title' => $request->title,
             'content' => $request->content,
             'user_id' => $request->user_id,
             'is_approved' => $request->has('is_approved'),
@@ -97,14 +95,12 @@ class CommunityController extends Controller
     public function update(Request $request, Post $post)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
             'content' => 'required|string|min:10',
             'is_approved' => 'boolean',
             'is_active' => 'boolean',
         ]);
 
         $post->update([
-            'title' => $request->title,
             'content' => $request->content,
             'is_approved' => $request->has('is_approved'),
             'is_active' => $request->has('is_active'),

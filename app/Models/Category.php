@@ -239,6 +239,16 @@ class Category extends Model
         return Str::slug(app()->getLocale() === 'ar' ? $this->attributes['name_ar'] : $this->attributes['name_en']);
     }
 
+    public function doseyats()
+    {
+        return $this->hasMany(Doseyat::class, 'category_id');
+    }
+
+    public function cards()
+    {
+        return $this->hasMany(Card::class, 'category_id');
+    }
+
      public function bankQuestions()
     {
         return $this->hasMany(BankQuestion::class);

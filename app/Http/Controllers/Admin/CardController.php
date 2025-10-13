@@ -3,15 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Complaint;
-use App\Models\User;
-use App\Models\Driver;
-use App\Models\Order;
-use Illuminate\Support\Facades\Validator;
-
 use App\Models\Card;
 use App\Models\CardNumber;
 use App\Models\Category;
+use App\Models\Doseyat;
 use App\Models\POS;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
@@ -26,7 +21,7 @@ class CardController extends Controller
      */
     public function index()
     {
-        $cards = Card::with(['pos', 'cardNumbers'])
+        $cards = Card::with(['pos', 'cardNumbers', 'doseyats'])
             ->latest()
             ->paginate(10);
 
@@ -41,7 +36,8 @@ class CardController extends Controller
         $posRecords = POS::orderBy('name')->get();
         $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.create', compact('posRecords', 'categories', 'teachers'));
+        $doseyats = Doseyat::orderBy('name')->get();
+        return view('admin.cards.create', compact('posRecords', 'categories', 'teachers', 'doseyats'));
     }
 
     /**
@@ -53,6 +49,8 @@ class CardController extends Controller
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
+            'doseyat_ids' => 'nullable|array',
+            'doseyat_ids.*' => 'exists:doseyats,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
@@ -62,13 +60,21 @@ class CardController extends Controller
         DB::beginTransaction();
 
         try {
-        
-
             if ($request->hasFile('photo')) {
                 $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
             }
+            
+            // Extract doseyat_ids before creating the card
+            $doseyatIds = $validated['doseyat_ids'] ?? [];
+            unset($validated['doseyat_ids']); // Remove from validated data
+            
             // Create the card
             $card = Card::create($validated);
+
+            // Attach doseyats
+            if (!empty($doseyatIds)) {
+                $card->doseyats()->attach($doseyatIds);
+            }
 
             // Generate card numbers
             $generatedNumbers = $card->generateCardNumbers();
@@ -91,7 +97,7 @@ class CardController extends Controller
      */
     public function show(Card $card)
     {
-        $card->load(['pos', 'cardNumbers', 'category', 'teacher']);
+        $card->load(['pos', 'cardNumbers', 'category', 'teacher', 'doseyats']);
         return view('admin.cards.show', compact('card'));
     }
 
@@ -103,7 +109,8 @@ class CardController extends Controller
         $posRecords = POS::orderBy('name')->get();
         $categories = Category::where('parent_id', null)->get();
         $teachers = Teacher::get();
-        return view('admin.cards.edit', compact('card', 'posRecords', 'categories', 'teachers'));
+        $doseyats = Doseyat::orderBy('name')->get();
+        return view('admin.cards.edit', compact('card', 'posRecords', 'categories', 'teachers', 'doseyats'));
     }
 
     /**
@@ -115,11 +122,12 @@ class CardController extends Controller
             'pos_id' => 'nullable|exists:p_o_s,id',
             'category_id' => 'nullable|exists:categories,id',
             'teacher_id' => 'nullable|exists:teachers,id',
+            'doseyat_ids' => 'nullable|array',
+            'doseyat_ids.*' => 'exists:doseyats,id',
             'name' => 'required|string|max:255',
             'price' => 'required|numeric|min:0',
             'number_of_cards' => 'required|integer|min:1|max:10000',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-
         ]);
 
         DB::beginTransaction();
@@ -127,9 +135,8 @@ class CardController extends Controller
         try {
             $oldNumberOfCards = $card->number_of_cards;
 
-            
             if ($request->hasFile('photo')) {
-            if ($card->photo) {
+                if ($card->photo) {
                     $filePath = base_path('assets/admin/uploads/' . $card->photo);
                     if (file_exists($filePath)) {
                         unlink($filePath);
@@ -138,8 +145,17 @@ class CardController extends Controller
                 $validated['photo'] = uploadImage('assets/admin/uploads', $request->photo);
             }
 
+            // Extract doseyat_ids before updating the card
+            $doseyatIds = $validated['doseyat_ids'] ?? null;
+            unset($validated['doseyat_ids']); // Remove from validated data
+
             // Update the card
             $card->update($validated);
+
+            // Sync doseyats
+            if ($doseyatIds !== null) {
+                $card->doseyats()->sync($doseyatIds);
+            }
 
             // If number of cards changed, regenerate card numbers
             if ($oldNumberOfCards != $request->number_of_cards) {

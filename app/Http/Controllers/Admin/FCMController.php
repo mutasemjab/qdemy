@@ -85,7 +85,7 @@ class FCMController extends BaseController
                     \Log::error("FCM Error for user ID $userId: " . json_encode($response));
                     if (isset($response['error']['details'][0]['errorCode']) && $response['error']['details'][0]['errorCode'] === 'UNREGISTERED') {
                         \Log::info("FCM token cleanup for user ID $userId");
-                        User::where('id', $userId)->update(['fcm_token' => null]);
+                       // User::where('id', $userId)->update(['fcm_token' => null]);
                     }
                     return false;
                 }
