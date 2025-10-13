@@ -15,7 +15,13 @@
   --success:#0f766e;
   --error:#b91c1c;
 }
-.container-page{display:grid;gap:16px}
+.container-page{
+    display:grid;
+    gap:16px;
+    max-width: 1300px;
+    margin: auto;
+    padding: 30px 0;
+}
 .header{
   background:var(--card);
   border:1px solid var(--line);
@@ -26,8 +32,9 @@
   justify-content:space-between;
   align-items:end
 }
-.dropdown-menu{display:none!important}
-.dropdown-menu.show{display:block!important}
+.dropdown { position: relative; }
+.dropdown-menu { display: none; }
+.dropdown-menu.show {list-style: none;display: block; }
 
 .header h2{margin:0;color:var(--ink);font-weight:800;font-size:22px}
 .header p{margin:4px 0 0 0;color:var(--muted);font-size:13px}
@@ -51,7 +58,11 @@
 .f-col-2{grid-column:span 2}
 .f-col-1{grid-column:span 1}
 @media(max-width:1200px){.f-col-3{grid-column:span 4}.f-col-2{grid-column:span 3}}
-@media(max-width:992px){.f-col-3,.f-col-2{grid-column:span 6}}
+@media(max-width:992px){.f-col-3,.f-col-2{grid-column:span 6}
+    .container-page {
+    padding: 30px 30px;
+}
+}
 @media(max-width:576px){.f-col-3,.f-col-2,.f-col-1{grid-column:span 12}}
 .form-label{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px}
 .form-select,.form-control{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px}
@@ -74,8 +85,6 @@
 .kebab:hover{border-color:#cfd4dc;box-shadow:0 6px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
 .kebab:focus{outline:none;box-shadow:0 0 0 3px rgba(0,85,210,.15)}
 .dropdown-menu{min-width:180px;border:1px solid #e5e7eb;border-radius:12px;padding:8px;background:#fff;box-shadow:0 16px 40px rgba(15,23,42,.12)}
-.dropdown-item{border-radius:8px;padding:.5rem .75rem;font-weight:600}
-.dropdown-item:hover{background:#f3f4f6}
 .dropdown-divider{margin:.35rem 0}
 .text-danger{color:#dc2626}
 .cardx-head{
@@ -91,8 +100,11 @@
 .kebab{border:1px solid var(--line);background:#fff;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
 .kebab:focus{outline:2px solid #cbd5e1;outline-offset:2px}
 .dropdown-menu{border-radius:10px;border:1px solid var(--line);min-width:220px}
-.dropdown-item{font-weight:600}
-
+.dropdown-item{text-decoration: none;font-weight:600}
+button.btn.btn-light.border.rounded-3.px-2 {
+    background-color: #fff;
+    cursor: pointer;
+}
 .cardx-body{padding:12px;display:flex;flex-direction:column;gap:8px}
 .title{margin:2px 0 0 0;color:var(--ink);font-weight:800;font-size:16px}
 .desc{margin:0;color:var(--muted);font-size:12px}
@@ -104,7 +116,7 @@
 
 .cardx-foot{display:flex;gap:8px;padding:0 12px 12px 12px;margin-top:auto}
 .btn-mini{
-  flex:1 1 0%;border:1px solid var(--primary);color:var(--primary);
+  text-decoration: none;flex:1 1 0%;border:1px solid var(--primary);color:var(--primary);
   background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:700;display:inline-flex;justify-content:center;align-items:center;gap:6px
 }
 .btn-mini.alt{border-color:#475569;color:#475569}
@@ -202,8 +214,8 @@
               <span class="status {{ $exam->is_active ? 'active' : 'inactive' }}">
                 {{ $exam->is_active ? __('panel.active') : __('panel.inactive') }}
               </span>
-<div class="dropdown dropdown-inline">
-  <button class="kebab" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
+<div class="dropdown">
+  <button class="btn btn-light border rounded-3 px-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="More">
     <i class="fas fa-ellipsis-vertical"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
@@ -325,5 +337,6 @@ $(function(){
   });
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 @endpush
