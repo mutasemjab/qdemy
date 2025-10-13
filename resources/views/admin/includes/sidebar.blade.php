@@ -662,6 +662,19 @@
                                     </a>
                                 </li>
                             @endif
+                            @if (
+                                $user->can('activityLog-table') ||
+                                    $user->can('activityLog-add') ||
+                                    $user->can('activityLog-edit') ||
+                                    $user->can('activityLog-delete'))
+                                <li class="nav-item">
+                                    <a href="{{ route('activity-logs.index') }}"
+                                        class="nav-link {{ request()->routeIs('activity-logs.*') ? 'active' : '' }}">
+                                        <i class="far fa-id-badge nav-icon"></i>
+                                        <p>{{ __('messages.Activity Logs') }}</p>
+                                    </a>
+                                </li>
+                            @endif
 
                             <li class="nav-item">
                                 <a href="{{ route('admin.login.edit', auth()->user()->id) }}"

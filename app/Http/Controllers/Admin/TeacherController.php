@@ -196,6 +196,7 @@ class TeacherController extends Controller
             'email' => 'nullable|email|unique:users,email,' . ($teacher->user_id ?? 'NULL'),
             'phone' => 'nullable|string|unique:users,phone,' . ($teacher->user_id ?? 'NULL'),
             'password' => 'nullable|string|min:6',
+            'activate' => 'nullable',
         ]);
 
         DB::beginTransaction();
@@ -229,6 +230,10 @@ class TeacherController extends Controller
 
                 if ($request->filled('phone')) {
                     $userUpdateData['phone'] = $request->phone;
+                }
+               
+                if ($request->filled('activate')) {
+                    $userUpdateData['activate'] = $request->activate;
                 }
 
                 if ($request->filled('password')) {

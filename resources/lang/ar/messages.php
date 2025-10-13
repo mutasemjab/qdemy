@@ -2338,6 +2338,7 @@ return [
     'BannedWord_Added_Successfully' => 'تم إضافة الكلمة بنجاح',
     'BannedWord_Deleted_Successfully' => 'تم حذف الكلمة بنجاح',
     'No_Permission' => 'ليس لديك صلاحية للقيام بهذا الإجراء',
+    'Activity Logs' => 'تسجيل حركات النظام',
   '' => '',
   '' => '',
 ];

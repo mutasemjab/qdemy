@@ -2384,7 +2384,7 @@ return [
   'BannedWord_Added_Successfully' => 'Word added successfully',
   'BannedWord_Deleted_Successfully' => 'Word deleted successfully',
   'No_Permission' => 'You do not have permission to perform this action',
-  '' => '',
+  'Activity Logs' => 'Activity Logs',
   '' => '',
   '' => '',
   '' => '',

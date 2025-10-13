@@ -152,14 +152,20 @@ class User extends Authenticatable
        return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/Profile-picture.png');
     }
 
-    public function followedTeachers()
+
+   public function followers()
    {
-      return $this->hasMany(Follow::class);
+      return $this->hasMany(Follow::class, 'teacher_id');
+   }
+
+   public function following()
+   {
+      return $this->hasMany(Follow::class, 'user_id');
    }
 
    public function isFollowing($teacherId)
    {
-      return $this->followedTeachers()->where('teacher_id', $teacherId)->exists();
+      return $this->following()->where('teacher_id', $teacherId)->exists();
    }
 
   

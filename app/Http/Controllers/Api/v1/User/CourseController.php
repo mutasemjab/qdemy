@@ -26,7 +26,7 @@ class CourseController extends Controller
     /**
      * Get course details with user progress
      */
-    public function show(Request $request, Course $course, $slug = null)
+   public function show(Request $request, Course $course, $slug = null)
     {
         try {
             $user = $request->user(); // authenticated user from token
@@ -89,7 +89,7 @@ class CourseController extends Controller
                 'updated_at' => $course->updated_at
             ];
 
-            // Build structured sections with nested contents
+            // Build structured sections with nested contents and exams
             $courseData['sections'] = [];
             
             if ($mainSections) {
@@ -108,7 +108,8 @@ class CourseController extends Controller
                                 'id' => $child->id,
                                 'title_ar' => $child->title_ar,
                                 'title_en' => $child->title_en,
-                                'contents' => []
+                                'contents' => [],
+                                'exams' => []
                             ];
 
                             // Get contents for this subsection
@@ -127,6 +128,27 @@ class CourseController extends Controller
                                         'video_url' => $content->video_url,
                                         'file_path' => $content->file_path,
                                         'pdf_type' => $content->pdf_type
+                                    ];
+                                }
+                            }
+
+                            // Get exams for this subsection (only if user is enrolled)
+                            if ($is_enrolled && $user) {
+                                $sectionExams = $course->exams()->where('section_id', $child->id)->get();
+                                foreach ($sectionExams as $exam) {
+                                    $childData['exams'][] = [
+                                        'id' => $exam->id,
+                                        'title_ar' => $exam->title_ar,
+                                        'title_en' => $exam->title_en,
+                                        'description_ar' => $exam->description_ar,
+                                        'description_en' => $exam->description_en,
+                                        'duration_minutes' => $exam->duration_minutes,
+                                        'total_grade' => $exam->total_grade,
+                                        'passing_grade' => $exam->passing_grade,
+                                        'is_active' => $exam->is_active,
+                                        'start_date' => $exam->start_date,
+                                        'end_date' => $exam->end_date,
+                                        'attempts_allowed' => $exam->attempts_allowed
                                     ];
                                 }
                             }
@@ -156,6 +178,28 @@ class CourseController extends Controller
                         }
                     }
 
+                    // Get exams for main section (only if user is enrolled)
+                    if ($is_enrolled && $user) {
+                        $sectionData['exams'] = [];
+                        $mainSectionExams = $course->exams()->where('section_id', $section->id)->get();
+                        foreach ($mainSectionExams as $exam) {
+                            $sectionData['exams'][] = [
+                                'id' => $exam->id,
+                                'title_ar' => $exam->title_ar,
+                                'title_en' => $exam->title_en,
+                                'description_ar' => $exam->description_ar,
+                                'description_en' => $exam->description_en,
+                                'duration_minutes' => $exam->duration_minutes,
+                                'total_grade' => $exam->total_grade,
+                                'passing_grade' => $exam->passing_grade,
+                                'is_active' => $exam->is_active,
+                                'start_date' => $exam->start_date,
+                                'end_date' => $exam->end_date,
+                                'attempts_allowed' => $exam->attempts_allowed
+                            ];
+                        }
+                    }
+
                     $courseData['sections'][] = $sectionData;
                 }
             }
@@ -180,26 +224,8 @@ class CourseController extends Controller
                     'watching_videos' => $calculateCourseProgress['watching_videos'],
                     'total_videos' => $calculateCourseProgress['total_videos']
                 ];
-
-                // Add exams if available
-                $exams = $course->exams;
-                $courseData['exams'] = [];
-                if ($exams) {
-                    foreach ($exams as $exam) {
-                        $courseData['exams'][] = [
-                            'id' => $exam->id,
-                            'title' => $exam->title,
-                            'description' => $exam->description,
-                            'duration' => $exam->duration,
-                            'total_marks' => $exam->total_marks,
-                            'passing_marks' => $exam->passing_marks,
-                            'is_active' => $exam->is_active
-                        ];
-                    }
-                }
             } else {
                 $courseData['user_progress'] = null;
-                $courseData['exams'] = null;
             }
 
             return $this->success_response('Course details retrieved successfully', $courseData);

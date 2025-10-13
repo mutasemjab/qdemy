@@ -7,6 +7,13 @@ use App\Services\FirebaseChatService;
 use Kreait\Firebase\Factory;
 use App\Models\{Post, Comment};
 use App\Observers\{PostObserver, CommentObserver};
+use App\Models\Course;
+use App\Models\Exam;
+use App\Models\Doseyat;
+use App\Observers\CourseObserver;
+use App\Observers\ExamObserver;
+use App\Observers\DoseyatObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -47,6 +54,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+         Course::observe(CourseObserver::class);
+         Exam::observe(ExamObserver::class);
+         Doseyat::observe(DoseyatObserver::class);
          Post::observe(PostObserver::class);
          Comment::observe(CommentObserver::class);
     }

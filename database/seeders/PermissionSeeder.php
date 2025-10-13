@@ -184,6 +184,12 @@ class PermissionSeeder extends Seeder
                 'bannedWord-edit' => 'Edit Banned Word table',
                 'bannedWord-delete' => 'Remove Banned Word table'
             ],
+            'activityLog' => [
+               'activityLog-table' => 'View Activity Logs table',
+                'activityLog-add' => 'add Activity Logs table',
+                'activityLog-edit' => 'Edit Activity Logs table',
+                'activityLog-delete' => 'Remove Activity Logs table'
+            ],
         ];
 
         // Create permissions with descriptions

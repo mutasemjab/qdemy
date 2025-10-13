@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ActivityLogController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\Admin\POSController;
@@ -82,7 +83,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
 
-
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
+        
+        // View logs for specific model instance
+        Route::get('activity-logs/{modelClass}/{modelId}', [ActivityLogController::class, 'show'])->name('activity-logs.show');
 
 
         //Reports
