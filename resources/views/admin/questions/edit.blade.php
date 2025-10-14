@@ -202,6 +202,34 @@
                             </div>
                         </div>
 
+                        @if($question->photo)
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>{{ __('messages.Current Photo') }}</label>
+                                        <div>
+                                            <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}" 
+                                                 alt="{{ $question->title_ar }}" 
+                                                 class="img-thumbnail" 
+                                                 style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                         <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="photo">{{ __('messages.New Photo') }}</label>
+                                    <input type="file" class="form-control-file @error('photo') is-invalid @enderror" 
+                                           id="photo" name="photo" accept="image/*">
+                                    @error('photo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">{{ __('messages.Leave empty to keep current photo') }}</small>
+                                </div>
+                         </div>
+
                         <!-- Multiple Choice Options -->
                         <div id="multiple-choice-options" class="row" style="display: none;">
                             <div class="col-12">

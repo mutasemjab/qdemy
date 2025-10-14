@@ -129,7 +129,7 @@
                                                value="{{ old('commission_of_admin') }}"
                                                step="any"
                                                min="0"
-                                               placeholder="0.00">
+                                               placeholder="0.00" required>
                                         @error('commission_of_admin')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

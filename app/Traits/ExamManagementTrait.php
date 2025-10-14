@@ -282,6 +282,13 @@ trait ExamManagementTrait
         DB::beginTransaction();
 
         try {
+             if ($question->photo) {
+                $filePath = base_path('assets/admin/uploads/' . $question->photo);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
             // Delete question (cascade will handle options)
             $question->delete();
 
@@ -358,6 +365,7 @@ trait ExamManagementTrait
             'course_id' => 'nullable|exists:courses,id',
             'explanation_en' => 'nullable|string',
             'explanation_ar' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ];
 
         // Type-specific validation
@@ -413,6 +421,31 @@ trait ExamManagementTrait
             'title_en', 'title_ar', 'question_en', 'question_ar',
             'type', 'grade', 'course_id', 'explanation_en', 'explanation_ar'
         ]);
+
+        // Handle photo deletion
+        if ($request->input('delete_photo') == '1' && $question && $question->photo) {
+            $oldFilePath = base_path('assets/admin/uploads/' . $question->photo);
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
+            }
+            $data['photo'] = null;
+        }
+
+        // Handle photo upload
+        if ($request->hasFile('photo')) {
+            // Delete old photo if updating
+            if ($question && $question->photo) {
+                $oldFilePath = base_path('assets/admin/uploads/' . $question->photo);
+                if (file_exists($oldFilePath)) {
+                    unlink($oldFilePath);
+                }
+            }
+
+            $photo = $request->file('photo');
+            $photoName = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $photo->move(base_path('assets/admin/uploads'), $photoName);
+            $data['photo'] = $photoName;
+        }
 
         // Set creator based on user type
         if ($isAdmin) {

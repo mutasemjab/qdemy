@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('grade', 5, 2)->default(1.00); // Grade for this question
             $table->text('explanation_en')->nullable(); // Optional explanation
             $table->text('explanation_ar')->nullable();
+            $table->string('photo')->nullable();
 
             // Foreign keys
             $table->unsignedBigInteger('course_id')->nullable();

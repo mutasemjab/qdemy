@@ -1,462 +1,384 @@
 @extends('layouts.app')
 
 @section('title', __('panel.questions'))
-
 @section('page_title', __('panel.questions_management'))
 
 @push('styles')
 <style>
-    .question-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        border: 1px solid #e3e6f0;
-    }
-    .question-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .question-type-badge {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.7rem;
-        border-radius: 50px;
-    }
-    .question-preview {
-        max-height: 3em;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-    }
-    .filter-card {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        border: none;
-        border-radius: 15px;
-    }
-    .stats-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 15px;
-        border: none;
-    }
+:root{
+  --ql-bg:#f6f8fc;
+  --ql-surface:#ffffff;
+  --ql-ink:#0f172a;
+  --ql-muted:#667085;
+  --ql-line:#e5e7eb;
+  --ql-primary:#0055D2;
+  --ql-success:#10b981;
+  --ql-info:#3b82f6;
+  --ql-warn:#f59e0b;
+  --ql-danger:#ef4444;
+  --ql-max:1300px;
+}
+body{background:var(--ql-bg)}
+.ql-shell{max-width:var(--ql-max);margin:0 auto;padding:16px}
+.ql-hero{border:1px solid var(--ql-line);border-radius:18px;padding:18px;background:radial-gradient(1200px 300px at 20% -10%, rgba(0,85,210,.06), transparent 60%),linear-gradient(180deg,#fff,#f8fbff)}
+.ql-hero h2{margin:0;font-weight:900;color:var(--ql-ink);letter-spacing:.2px}
+.ql-hero p{margin:6px 0 0;color:var(--ql-muted)}
+.ql-btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;height:44px;padding:0 14px;border:1px solid var(--ql-line);background:#fff;color:var(--ql-ink);font-weight:900;text-decoration:none;cursor:pointer;transition:box-shadow .16s,transform .16s}
+.ql-btn:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(15,23,42,.06)}
+.ql-btn-primary{background:var(--ql-primary);border-color:var(--ql-primary);color:#fff}
+.ql-btn-outline{color:var(--ql-primary);border-color:var(--ql-primary)}
+.ql-btn-outline:hover{background:var(--ql-primary);color:#fff}
+.ql-statgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-top:16px}
+.ql-statgrid .ql-col{grid-column:span 3}
+@media(max-width:1200px){.ql-statgrid .ql-col{grid-column:span 4}}
+@media(max-width:768px){.ql-statgrid .ql-col{grid-column:span 6}}
+.ql-stat{border:1px solid var(--ql-line);border-radius:16px;background:var(--ql-surface);padding:16px;text-align:center;transition:transform .16s,box-shadow .16s}
+.ql-stat:hover{transform:translateY(-2px);box-shadow:0 16px 26px rgba(15,23,42,.06)}
+.ql-stat .ql-ico{width:46px;height:46px;border-radius:12px;margin:0 auto 8px;color:#fff;display:flex;align-items:center;justify-content:center}
+.ql-stat .ql-val{font-size:22px;font-weight:900;color:var(--ql-ink)}
+.ql-stat .ql-lab{font-size:12px;color:var(--ql-muted)}
+.ql-stat.primary .ql-ico{background:var(--ql-primary)}
+.ql-stat.success .ql-ico{background:var(--ql-success)}
+.ql-stat.info .ql-ico{background:var(--ql-info)}
+.ql-stat.warn .ql-ico{background:var(--ql-warn)}
+.ql-filter{border:1px solid var(--ql-line);border-radius:16px;background:var(--ql-surface);padding:16px;margin-top:16px}
+.ql-filter-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.ql-filter-title{font-weight:900;color:var(--ql-ink);margin:0}
+.ql-fgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+.ql-f3{grid-column:span 3}
+.ql-f2{grid-column:span 2}
+.ql-f4{grid-column:span 4}
+.ql-f1{grid-column:span 1}
+@media(max-width:1200px){.ql-f3{grid-column:span 4}.ql-f2{grid-column:span 3}.ql-f4{grid-column:span 5}.ql-f1{grid-column:span 0}}
+@media(max-width:768px){.ql-f3,.ql-f2,.ql-f4{grid-column:span 12}}
+.ql-field{display:flex;flex-direction:column;gap:6px}
+.ql-label{font-weight:800;color:var(--ql-ink);font-size:13px;margin:0}
+.ql-select,.ql-input{border-radius:12px;border:1px solid var(--ql-line);height:44px}
+.ql-inputgroup .ql-btn{height:44px}
+.ql-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ql-chip{padding:7px 12px;border-radius:999px;border:1px solid var(--ql-line);background:#fff;font-size:12px;font-weight:800;color:var(--ql-ink);cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
+.ql-chip.qx-active{border-color:var(--ql-primary);color:var(--ql-primary);background:rgba(0,85,210,.08)}
+.ql-list{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:10px}
+.ql-list .ql-col{grid-column:span 4}
+@media(max-width:1200px){.ql-list .ql-col{grid-column:span 6}}
+@media(max-width:768px){.ql-list .ql-col{grid-column:span 12}}
+.ql-card{display:flex;flex-direction:column;height:100%;background:var(--ql-surface);border:1px solid var(--ql-line);border-radius:16px;overflow:hidden;transition:transform .18s,box-shadow .18s}
+.ql-card:hover{transform:translateY(-3px);box-shadow:0 18px 34px rgba(15,23,42,.08)}
+.ql-card-h{display:flex;justify-content:space-between;align-items:start;padding:14px 16px;border-bottom:1px solid var(--ql-line)}
+.ql-badges{display:flex;gap:6px;flex-wrap:wrap}
+.ql-badge{border-radius:999px;font-weight:800}
+.ql-badge-type{padding:6px 10px;font-size:12px}
+.ql-type-mc{background:rgba(16,185,129,.12);color:#047857}
+.ql-type-tf{background:rgba(59,130,246,.12);color:#1d4ed8}
+.ql-type-es{background:rgba(245,158,11,.16);color:#b45309}
+.ql-badge-sec{background:#eef2f7;color:#111827;padding:6px 10px;font-size:12px;border-radius:999px}
+.ql-kebab{position:relative}
+.ql-iconbtn{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ql-line);background:#fff;color:var(--ql-ink);cursor:pointer}
+.ql-menu{position:absolute;top:44px;inset-inline-end:0;background:#fff;border:1px solid var(--ql-line);border-radius:14px;min-width:190px;padding:8px;box-shadow:0 18px 40px rgba(15,23,42,.12);display:none;z-index:10}
+.ql-kebab.qx-open .ql-menu{display:block}
+.ql-menu a,.ql-menu button{text-decoration:none;cursor:pointer;display:flex;gap:8px;align-items:center;width:100%;text-align:start;background:none;border:0;padding:9px 10px;border-radius:10px;font-weight:700;font-size:14px;color:var(--ql-ink)}
+.ql-menu a:hover,.ql-menu button:hover{background:rgba(0,85,210,.08);color:var(--ql-primary)}
+.ql-card-b{padding:16px;display:flex;flex-direction:column;gap:10px}
+.ql-title{font-size:16px;font-weight:900;color:var(--ql-ink);margin:0}
+.ql-prev{color:var(--ql-muted);font-size:13px;line-height:1.55;max-height:3.2em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ql-optline{display:flex;align-items:center;gap:8px;color:var(--ql-muted);font-size:12px}
+.ql-card-f{margin-top:auto;padding:12px 16px;border-top:1px solid var(--ql-line);display:flex;justify-content:space-between;align-items:center}
+.ql-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--ql-line);border-radius:999px;padding:6px 10px;font-weight:800;font-size:12px}
+.ql-time{display:inline-flex;align-items:center;gap:6px;color:var(--ql-muted);font-size:12px}
+.modal-content{border:1px solid var(--ql-line);border-radius:16px}
+.modal:not(.show){display:none}
+.spinner-border{color:var(--ql-primary)!important}
+.ql-empty{color:#cbd5e1}
+@media(max-width:768px){
+  .ql-hero{padding:14px}
+  .ql-btn{height:46px}
+  .ql-filter{position:sticky;top:8px;z-index:2}
+}
 </style>
 @endpush
 
 @section('content')
 <div class="container-fluid">
-    <!-- Page Header -->
-    <div class="row mb-4">
-        <div class="col-lg-8">
-            <h2 class="text-dark fw-bold mb-2">{{ __('panel.questions_management') }}</h2>
-            <p class="text-muted">{{ __('panel.manage_your_questions_desc') }}</p>
+  <div class="ql-shell">
+    <div class="ql-hero">
+      <div class="d-flex justify-content-between align-items-end gap-2 flex-wrap">
+        <div>
+          <h2>{{ __('panel.questions_management') }}</h2>
+          <p>{{ __('panel.manage_your_questions_desc') }}</p>
         </div>
-        <div class="col-lg-4 text-end">
-            <a href="{{ route('teacher.exams.exam_questions.create', $exam) }}" class="btn btn-primary btn-lg shadow-sm">
-                <i class="fas fa-plus me-2"></i>{{ __('panel.create_question') }}
-            </a>
+        <br>
+        <div class="d-flex gap-2">
+          <a href="{{ route('teacher.exams.exam_questions.create', $exam) }}" class="ql-btn ql-btn-primary"><i class="fas fa-plus"></i>{{ __('panel.create_question') }}</a>
         </div>
+      </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card stats-card">
-                <div class="card-body text-center">
-                    <div class="fs-2 mb-2">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h4 class="mb-1">{{ $totalQuestions ?? 0 }}</h4>
-                    <small class="opacity-75">{{ __('panel.total_questions') }}</small>
-                </div>
-            </div>
+    <div class="ql-statgrid">
+      <div class="ql-col">
+        <div class="ql-stat primary">
+          <div class="ql-ico"><i class="fas fa-question-circle"></i></div>
+          <div class="ql-val">{{ $totalQuestions ?? 0 }}</div>
+          <div class="ql-lab">{{ __('panel.total_questions') }}</div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <div class="fs-2 mb-2">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h4 class="mb-1">{{ $multipleChoiceCount ?? 0 }}</h4>
-                    <small class="opacity-75">{{ __('panel.multiple_choice') }}</small>
-                </div>
-            </div>
+      </div>
+      <div class="ql-col">
+        <div class="ql-stat success">
+          <div class="ql-ico"><i class="fas fa-check-circle"></i></div>
+          <div class="ql-val">{{ $multipleChoiceCount ?? 0 }}</div>
+          <div class="ql-lab">{{ __('panel.multiple_choice') }}</div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <div class="fs-2 mb-2">
-                        <i class="fas fa-balance-scale"></i>
-                    </div>
-                    <h4 class="mb-1">{{ $trueFalseCount ?? 0 }}</h4>
-                    <small class="opacity-75">{{ __('panel.true_false') }}</small>
-                </div>
-            </div>
+      </div>
+      <div class="ql-col">
+        <div class="ql-stat info">
+          <div class="ql-ico"><i class="fas fa-balance-scale"></i></div>
+          <div class="ql-val">{{ $trueFalseCount ?? 0 }}</div>
+          <div class="ql-lab">{{ __('panel.true_false') }}</div>
         </div>
-        <div class="col-md-3 mb-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body text-center">
-                    <div class="fs-2 mb-2">
-                        <i class="fas fa-pen"></i>
-                    </div>
-                    <h4 class="mb-1">{{ $essayCount ?? 0 }}</h4>
-                    <small class="opacity-75">{{ __('panel.essay') }}</small>
-                </div>
-            </div>
+      </div>
+      <div class="ql-col">
+        <div class="ql-stat warn">
+          <div class="ql-ico"><i class="fas fa-pen"></i></div>
+          <div class="ql-val">{{ $essayCount ?? 0 }}</div>
+          <div class="ql-lab">{{ __('panel.essay') }}</div>
         </div>
+      </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card filter-card shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('teacher.exams.exam_questions.index', $exam) }}" id="filterForm">
-                <div class="row g-3">
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">{{ __('panel.course') }}</label>
-                        <select name="course_id" class="form-select">
-                            <option value="">{{ __('panel.all_courses') }}</option>
-                            @if(isset($courses))
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                        {{ app()->getLocale() === 'ar' ? $course->title_ar : $course->title_en }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">{{ __('panel.type') }}</label>
-                        <select name="type" class="form-select">
-                            <option value="">{{ __('panel.all_types') }}</option>
-                            <option value="multiple_choice" {{ request('type') === 'multiple_choice' ? 'selected' : '' }}>
-                                {{ __('panel.multiple_choice') }}
-                            </option>
-                            <option value="true_false" {{ request('type') === 'true_false' ? 'selected' : '' }}>
-                                {{ __('panel.true_false') }}
-                            </option>
-                            <option value="essay" {{ request('type') === 'essay' ? 'selected' : '' }}>
-                                {{ __('panel.essay') }}
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">{{ __('panel.grade_range') }}</label>
-                        <select name="grade_range" class="form-select">
-                            <option value="">{{ __('panel.all_grades') }}</option>
-                            <option value="0-1" {{ request('grade_range') === '0-1' ? 'selected' : '' }}>0-1</option>
-                            <option value="1-5" {{ request('grade_range') === '1-5' ? 'selected' : '' }}>1-5</option>
-                            <option value="5-10" {{ request('grade_range') === '5-10' ? 'selected' : '' }}>5-10</option>
-                            <option value="10+" {{ request('grade_range') === '10+' ? 'selected' : '' }}>10+</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">{{ __('panel.search') }}</label>
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control" 
-                                   placeholder="{{ __('panel.search_questions_placeholder') }}" 
-                                   value="{{ request('search') }}">
-                            <button type="submit" class="btn btn-outline-primary">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <a href="{{ route('teacher.exams.exam_questions.index',$exam) }}" class="btn btn-outline-secondary w-100">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    </div>
-                </div>
-            </form>
+    <div class="ql-filter">
+      <div class="ql-filter-head">
+        <h5 class="ql-filter-title">{{ __('panel.filters') }}</h5>
+        <a href="{{ route('teacher.exams.exam_questions.index',$exam) }}" class="ql-btn"><i class="fas fa-rotate"></i></a>
+      </div>
+      <form method="GET" action="{{ route('teacher.exams.exam_questions.index', $exam) }}" id="qlFilterForm">
+        <div class="ql-fgrid">
+          <div class="ql-f3 ql-field">
+            <label class="ql-label">{{ __('panel.course') }}</label>
+            <select name="course_id" class="ql-select">
+              <option value="">{{ __('panel.all_courses') }}</option>
+              @if(isset($courses))
+                @foreach($courses as $course)
+                  <option value="{{ $course->id }}" {{ request('course_id') == $course->id ? 'selected' : '' }}>
+                    {{ app()->getLocale() === 'ar' ? $course->title_ar : $course->title_en }}
+                  </option>
+                @endforeach
+              @endif
+            </select>
+          </div>
+          <div class="ql-f2 ql-field">
+            <label class="ql-label">{{ __('panel.type') }}</label>
+            <select name="type" class="ql-select">
+              <option value="">{{ __('panel.all_types') }}</option>
+              <option value="multiple_choice" {{ request('type') === 'multiple_choice' ? 'selected' : '' }}>{{ __('panel.multiple_choice') }}</option>
+              <option value="true_false" {{ request('type') === 'true_false' ? 'selected' : '' }}>{{ __('panel.true_false') }}</option>
+              <option value="essay" {{ request('type') === 'essay' ? 'selected' : '' }}>{{ __('panel.essay') }}</option>
+            </select>
+          </div>
+          <div class="ql-f2 ql-field">
+            <label class="ql-label">{{ __('panel.grade_range') }}</label>
+            <select name="grade_range" class="ql-select">
+              <option value="">{{ __('panel.all_grades') }}</option>
+              <option value="0-1" {{ request('grade_range') === '0-1' ? 'selected' : '' }}>0-1</option>
+              <option value="1-5" {{ request('grade_range') === '1-5' ? 'selected' : '' }}>1-5</option>
+              <option value="5-10" {{ request('grade_range') === '5-10' ? 'selected' : '' }}>5-10</option>
+              <option value="10+" {{ request('grade_range') === '10+' ? 'selected' : '' }}>10+</option>
+            </select>
+          </div>
+          <div class="ql-f4 ql-field">
+            <label class="ql-label">{{ __('panel.search') }}</label>
+            <div class="input-group ql-inputgroup">
+              <input type="text" name="search" class="form-control ql-input" placeholder="{{ __('panel.search_questions_placeholder') }}" value="{{ request('search') }}" autocomplete="off">
+              <button type="submit" class="ql-btn ql-btn-outline"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="ql-chips">
+              <button type="button" class="ql-chip ql-js-chip" data-type="multiple_choice">{{ __('panel.multiple_choice') }}</button>
+              <button type="button" class="ql-chip ql-js-chip" data-type="true_false">{{ __('panel.true_false') }}</button>
+              <button type="button" class="ql-chip ql-js-chip" data-type="essay">{{ __('panel.essay') }}</button>
+            </div>
+          </div>
         </div>
+      </form>
     </div>
 
-    <!-- Questions Grid -->
     @if(isset($questions) && $questions->count() > 0)
-        <div class="row">
-            @foreach($questions as $question)
-                <div class="col-lg-6 col-xl-4 mb-4">
-                    <div class="card question-card h-100">
-                        <div class="card-body d-flex flex-column">
-                            <!-- Header -->
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <span class="badge question-type-badge 
-                                        {{ $question->type === 'multiple_choice' ? 'bg-success' : 
-                                           ($question->type === 'true_false' ? 'bg-info' : 'bg-warning') }}">
-                                        {{ __('panel.' . $question->type) }}
-                                    </span>
-                                    @if($question->course)
-                                        <span class="badge bg-secondary ms-1">
-                                            {{ app()->getLocale() === 'ar' ? $question->course->title_ar : $question->course->title_en }}
-                                        </span>
-                                    @endif
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-link p-0 text-muted" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <a class="dropdown-item view-question" href="#" 
-                                               data-question-id="{{ $question->id }}">
-                                                <i class="fas fa-eye me-2"></i>{{ __('panel.view') }}
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="{{ route('teacher.exams.exam_questions.edit', [$exam, $question]) }}">
-                                                <i class="fas fa-edit me-2"></i>{{ __('panel.edit') }}
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form action="{{ route('teacher.exams.exam_questions.destroy', [$exam, $question]) }}" 
-                                                  method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="dropdown-item text-danger delete-question">
-                                                    <i class="fas fa-trash me-2"></i>{{ __('panel.delete') }}
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <!-- Title -->
-                            <h5 class="card-title mb-2">
-                                {{ app()->getLocale() === 'ar' ? $question->title_ar : $question->title_en }}
-                            </h5>
-
-                            <!-- Question Preview -->
-                            <div class="question-preview text-muted mb-3 flex-grow-1">
-                                {{ strip_tags(app()->getLocale() === 'ar' ? $question->question_ar : $question->question_en) }}
-                            </div>
-
-                            <!-- Options Preview (for multiple choice and true/false) -->
-                            @if($question->type === 'multiple_choice' && $question->options->count() > 0)
-                                <div class="mb-3">
-                                    <small class="text-muted fw-semibold">{{ __('panel.options') }}:</small>
-                                    <div class="mt-1">
-                                        @foreach($question->options->take(2) as $option)
-                                            <div class="small text-muted d-flex align-items-center">
-                                                <i class="fas fa-{{ $option->is_correct ? 'check-circle text-success' : 'circle text-muted' }} me-2"></i>
-                                                {{ Str::limit(app()->getLocale() === 'ar' ? $option->option_ar : $option->option_en, 30) }}
-                                            </div>
-                                        @endforeach
-                                        @if($question->options->count() > 2)
-                                            <small class="text-muted">{{ __('panel.and_x_more', ['count' => $question->options->count() - 2]) }}</small>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-
-                            <!-- Footer Info -->
-                            <div class="d-flex justify-content-between align-items-center mt-auto pt-2 border-top">
-                                <div class="d-flex align-items-center">
-                                    <i class="fas fa-star text-warning me-1"></i>
-                                    <small class="fw-semibold">{{ $question->grade }}</small>
-                                </div>
-                                <small class="text-muted">
-                                    <i class="fas fa-clock me-1"></i>
-                                    {{ $question->created_at->diffForHumans() }}
-                                </small>
-                            </div>
-
-                            <!-- Usage Info -->
-                            @if($question->exams_count > 0)
-                                <div class="mt-2">
-                                    <small class="text-info">
-                                        <i class="fas fa-clipboard-list me-1"></i>
-                                        {{ __('panel.used_in_x_exams', ['count' => $question->exams_count]) }}
-                                    </small>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
+      <div class="ql-list">
+        @foreach($questions as $question)
+          <div class="ql-col">
+            <div class="ql-card">
+              <div class="ql-card-h">
+                <div class="ql-badges">
+                  <span class="ql-badge ql-badge-type {{ $question->type === 'multiple_choice' ? 'ql-type-mc' : ($question->type === 'true_false' ? 'ql-type-tf' : 'ql-type-es') }}">{{ __('panel.' . $question->type) }}</span>
+                  @if($question->course)
+                    <span class="ql-badge-sec">{{ app()->getLocale() === 'ar' ? $question->course->title_ar : $question->course->title_en }}</span>
+                  @endif
                 </div>
-            @endforeach
-        </div>
+                <div class="ql-kebab ql-js-kebab" tabindex="0">
+                  <button type="button" class="ql-iconbtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
+                  <div class="ql-menu" role="menu">
+                    <a href="#" class="ql-js-view" data-question-id="{{ $question->id }}"><i class="fas fa-eye"></i><span>{{ __('panel.view') }}</span></a>
+                    <a href="{{ route('teacher.exams.exam_questions.edit', [$exam, $question]) }}"><i class="fas fa-pen-to-square"></i><span>{{ __('panel.edit') }}</span></a>
+                    <form action="{{ route('teacher.exams.exam_questions.destroy', [$exam, $question]) }}" method="POST">
+                      @csrf
+                      @method('DELETE')
+                      <button type="submit" class="text-danger"><i class="fas fa-trash"></i><span>{{ __('panel.delete') }}</span></button>
+                    </form>
+                  </div>
+                </div>
+              </div>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4">
-            {{ $questions->appends(request()->query())->links() }}
-        </div>
-    @else
-        <!-- Empty State -->
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i class="fas fa-question-circle fa-5x text-muted"></i>
+              <div class="ql-card-b">
+                <h5 class="ql-title">{{ app()->getLocale() === 'ar' ? $question->title_ar : $question->title_en }}</h5>
+                <div class="ql-prev">{{ strip_tags(app()->getLocale() === 'ar' ? $question->question_ar : $question->question_en) }}</div>
+                @if($question->type !== 'essay' && $question->options->count() > 0)
+                  @foreach($question->options->take(2) as $option)
+                    <div class="ql-optline">
+                      <i class="fas fa-{{ $option->is_correct ? 'check-circle text-success' : 'circle' }}"></i>
+                      <span>{{ Str::limit(app()->getLocale() === 'ar' ? $option->option_ar : $option->option_en, 40) }}</span>
+                    </div>
+                  @endforeach
+                  @if($question->options->count() > 2)
+                    <div class="ql-optline"><i class="fas fa-ellipsis"></i><span>{{ __('panel.and_x_more', ['count' => $question->options->count() - 2]) }}</span></div>
+                  @endif
+                @endif
+                @if($question->exams_count > 0)
+                  <div class="ql-optline"><i class="fas fa-clipboard-list text-info"></i><span>{{ __('panel.used_in_x_exams', ['count' => $question->exams_count]) }}</span></div>
+                @endif
+              </div>
+
+              <div class="ql-card-f">
+                <div class="ql-pill"><i class="fas fa-star" style="color:#fbbf24"></i><span>{{ $question->grade }}</span></div>
+                <div class="ql-time"><i class="fas fa-clock"></i><span>{{ $question->created_at->diffForHumans() }}</span></div>
+              </div>
             </div>
-            <h3 class="text-muted mb-3">{{ __('panel.no_questions_found') }}</h3>
-            <p class="text-muted mb-4">{{ __('panel.no_questions_desc') }}</p>
-            <a href="{{ route('teacher.exams.exam_questions.create',$exam) }}" class="btn btn-primary btn-lg">
-                <i class="fas fa-plus me-2"></i>{{ __('panel.create_first_question') }}
-            </a>
-        </div>
+          </div>
+        @endforeach
+      </div>
+
+      <div class="d-flex justify-content-center mt-4">
+        {{ $questions->appends(request()->query())->links() }}
+      </div>
+    @else
+      <div class="text-center py-5">
+        <div class="mb-4"><i class="fas fa-question-circle fa-5x ql-empty"></i></div>
+        <h3 class="mb-2" style="color:var(--ql-ink)">{{ __('panel.no_questions_found') }}</h3>
+        <p class="text-muted mb-4">{{ __('panel.no_questions_desc') }}</p>
+        <a href="{{ route('teacher.exams.exam_questions.create',$exam) }}" class="ql-btn ql-btn-primary"><i class="fas fa-plus"></i>{{ __('panel.create_first_question') }}</a>
+      </div>
     @endif
+  </div>
 </div>
 
-<!-- Question Preview Modal -->
 <div class="modal fade" id="questionModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ __('panel.question_preview') }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body" id="questionPreview">
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">{{ __('panel.loading') }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ __('panel.question_preview') }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="qlPreviewArea">
+        <div class="text-center py-4"><div class="spinner-border" role="status"><span class="visually-hidden">{{ __('panel.loading') }}</span></div></div>
+      </div>
     </div>
+  </div>
 </div>
 @endsection
 
 @push('scripts')
 <script>
-$(document).ready(function() {
-    // Auto-submit filter form on select change
-    $('#filterForm select').on('change', function() {
-        $('#filterForm').submit();
+document.addEventListener('DOMContentLoaded',function(){
+  var form=document.getElementById('qlFilterForm');
+  if(form){
+    form.querySelectorAll('select').forEach(function(s){s.addEventListener('change',function(){form.submit()})});
+    var si=form.querySelector('input[name="search"]');var to;
+    if(si){si.addEventListener('input',function(){clearTimeout(to);to=setTimeout(function(){form.submit()},500)})}
+    var chips=document.querySelectorAll('.ql-js-chip');var typeSel=form.querySelector('select[name="type"]');
+    chips.forEach(function(ch){
+      if(typeSel && typeSel.value===ch.dataset.type){ch.classList.add('qx-active')}
+      ch.addEventListener('click',function(){if(typeSel){typeSel.value=ch.dataset.type;form.submit()}})
     });
+  }
 
-    // Search with delay
-    let searchTimeout;
-    $('input[name="search"]').on('input', function() {
-        clearTimeout(searchTimeout);
-        const form = $('#filterForm');
-        searchTimeout = setTimeout(function() {
-            form.submit();
-        }, 500);
+  document.querySelectorAll('.ql-js-kebab').forEach(function(kb){
+    var btn=kb.querySelector('.ql-iconbtn');
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      document.querySelectorAll('.ql-js-kebab.qx-open').forEach(function(o){if(o!==kb)o.classList.remove('qx-open')});
+      kb.classList.toggle('qx-open');
+      btn.setAttribute('aria-expanded',kb.classList.contains('qx-open')?'true':'false');
     });
+    kb.addEventListener('keydown',function(e){
+      if(e.key==='Enter' || e.key===' '){e.preventDefault();btn.click()}
+      if(e.key==='Escape'){kb.classList.remove('qx-open');btn.setAttribute('aria-expanded','false')}
+    });
+  });
+  document.addEventListener('click',function(){document.querySelectorAll('.ql-js-kebab.qx-open').forEach(function(o){o.classList.remove('qx-open')})});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.ql-js-kebab.qx-open').forEach(function(o){o.classList.remove('qx-open')})}});
 
-    // View question details
-    $('.view-question').on('click', function(e) {
-        e.preventDefault();
-        const questionId = $(this).data('question-id');
-        
-        $('#questionModal').modal('show');
-        $('#questionPreview').html(`
-            <div class="text-center py-4">
-                <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">{{ __('panel.loading') }}</span>
-                </div>
-            </div>
-        `);
-        
-       // Replace the problematic line with this
-            const showUrl = '{{ route("teacher.exams.exam_questions.show", [$exam, ":questionId"]) }}'.replace(':questionId', questionId);
-            $.get(showUrl)
-            .done(function(response) {
-                if (response.success) {
-                    const question = response.data;
-                    let optionsHtml = '';
-                    
-                    if (question.type === 'multiple_choice' || question.type === 'true_false') {
-                        question.options.forEach((option, index) => {
-                            const correctIcon = option.is_correct ? 
-                                '<i class="fas fa-check-circle text-success me-2"></i>' : 
-                                '<i class="far fa-circle text-muted me-2"></i>';
-                            const optionText = '{{ app()->getLocale() }}' === 'ar' ? 
-                                option.option_ar : option.option_en;
-                            optionsHtml += `
-                                <div class="d-flex align-items-center mb-2 p-2 border rounded">
-                                    ${correctIcon}
-                                    <span>${optionText}</span>
-                                </div>
-                            `;
-                        });
-                    }
-                    
-                    const questionText = '{{ app()->getLocale() }}' === 'ar' ? 
-                        question.question_ar : question.question_en;
-                    const title = '{{ app()->getLocale() }}' === 'ar' ? 
-                        question.title_ar : question.title_en;
-                    const explanation = '{{ app()->getLocale() }}' === 'ar' ? 
-                        question.explanation_ar : question.explanation_en;
-                    
-                    const previewHtml = `
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h4 class="mb-0">${title}</h4>
-                                <div>
-                                    <span class="badge bg-primary">${question.type.replace('_', ' ').toUpperCase()}</span>
-                                    <span class="badge bg-warning ms-1">{{ __('panel.grade') }}: ${question.grade}</span>
-                                </div>
-                            </div>
-                            ${question.course ? `<span class="badge bg-secondary mb-2">${'{{ app()->getLocale() }}' === 'ar' ? question.course.title_ar : question.course.title_en}</span>` : ''}
-                        </div>
-                        
-                        <div class="mb-4">
-                            <h6 class="text-muted">{{ __('panel.question') }}:</h6>
-                            <div class="p-3 bg-light rounded">${questionText}</div>
-                        </div>
-                        
-                        ${optionsHtml ? `
-                            <div class="mb-4">
-                                <h6 class="text-muted">{{ __('panel.options') }}:</h6>
-                                ${optionsHtml}
-                            </div>
-                        ` : ''}
-                        
-                        ${explanation ? `
-                            <div class="mb-3">
-                                <h6 class="text-muted">{{ __('panel.explanation') }}:</h6>
-                                <div class="p-3 bg-light rounded text-muted">${explanation}</div>
-                            </div>
-                        ` : ''}
-                    `;
-                    
-                    $('#questionPreview').html(previewHtml);
-                } else {
-                    $('#questionPreview').html(`
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            ${response.message || '{{ __("panel.failed_to_load_question") }}'}
-                        </div>
-                    `);
-                }
-            })
-            .fail(function() {
-                $('#questionPreview').html(`
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        {{ __('panel.failed_to_load_question') }}
-                    </div>
-                `);
+  document.querySelectorAll('.ql-js-view').forEach(function(a){
+    a.addEventListener('click',function(e){
+      e.preventDefault();
+      var id=this.dataset.questionId;
+      var modal=new bootstrap.Modal(document.getElementById('questionModal'));
+      var area=document.getElementById('qlPreviewArea');
+      area.innerHTML='<div class="text-center py-4"><div class="spinner-border" role="status"><span class="visually-hidden">{{ __('panel.loading') }}</span></div></div>';
+      modal.show();
+      var url='{{ route("teacher.exams.exam_questions.show", [$exam, ":id"]) }}'.replace(':id',id);
+      fetch(url,{headers:{'X-Requested-With':'XMLHttpRequest'}})
+        .then(function(r){return r.ok?r.json():Promise.reject()})
+        .then(function(res){
+          if(!res||!res.success){throw 0}
+          var q=res.data||{};
+          var t=('{{ app()->getLocale() }}'==='ar'?q.title_ar:q.title_en)||'';
+          var qt=('{{ app()->getLocale() }}'==='ar'?q.question_ar:q.question_en)||'';
+          var ex=('{{ app()->getLocale() }}'==='ar'?q.explanation_ar:q.explanation_en)||'';
+          var c=q.course?('{{ app()->getLocale() }}'==='ar'?q.course.title_ar:q.course.title_en):'';
+          var opts='';
+          if(q.type==='multiple_choice'||q.type==='true_false'){
+            (q.options||[]).forEach(function(o){
+              var ic=o.is_correct?'<i class="fas fa-check-circle text-success me-2"></i>':'<i class="far fa-circle text-muted me-2"></i>';
+              var tx=('{{ app()->getLocale() }}'==='ar'?o.option_ar:o.option_en)||'';
+              opts+='<div class="d-flex align-items-center mb-2 p-2 border rounded">'+ic+'<span>'+tx+'</span></div>';
             });
-    });
-
-    // Delete confirmation
-    $('.delete-question').on('click', function(e) {
-        e.preventDefault();
-        
-        const form = $(this).closest('form');
-        const questionTitle = $(this).closest('.card').find('.card-title').text().trim();
-        
-        Swal.fire({
-            title: '{{ __("panel.confirm_delete") }}',
-            text: '{{ __("panel.delete_question_warning") }}',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: '{{ __("panel.yes_delete") }}',
-            cancelButtonText: '{{ __("panel.cancel") }}'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                form.submit();
-            }
+          }
+          var typeClass=q.type==='multiple_choice'?'ql-type-mc':(q.type==='true_false'?'ql-type-tf':'ql-type-es');
+          var html=''
+            +'<div class="mb-3 d-flex justify-content-between align-items-center">'
+            +'<h4 class="m-0">'+t+'</h4>'
+            +'<div class="d-flex flex-wrap gap-1">'
+            +'<span class="ql-badge ql-badge-type '+typeClass+'">'+String(q.type||'').replace('_',' ')+'</span>'
+            +'<span class="ql-badge-sec">{{ __("panel.grade") }}: '+(q.grade??0)+'</span>'
+            +(c?'<span class="ql-badge-sec">'+c+'</span>':'')
+            +'</div></div>'
+            +'<div class="mb-3"><div class="p-3 bg-light rounded">'+qt+'</div></div>'
+            +(opts?'<div class="mb-3"><h6 class="text-muted mb-2">{{ __("panel.options") }}</h6>'+opts+'</div>':'')
+            +(ex?'<div class="mb-2"><h6 class="text-muted mb-2">{{ __("panel.explanation") }}</h6><div class="p-3 bg-light rounded text-muted">'+ex+'</div></div>':'');
+          area.innerHTML=html;
+        })
+        .catch(function(){
+          area.innerHTML='<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>{{ __("panel.failed_to_load_question") }}</div>';
         });
     });
+  });
 
-    // Tooltip initialization
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+  document.querySelectorAll('.delete-question').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.preventDefault();
+      var f=this.closest('form');
+      if(window.Swal){
+        Swal.fire({
+          title:'{{ __("panel.confirm_delete") }}',
+          text:'{{ __("panel.delete_question_warning") }}',
+          icon:'warning',
+          showCancelButton:true,
+          confirmButtonColor:'#d33',
+          cancelButtonColor:'#3085d6',
+          confirmButtonText:'{{ __("panel.yes_delete") }}',
+          cancelButtonText:'{{ __("panel.cancel") }}'
+        }).then(function(r){if(r.isConfirmed){f.submit()}});
+      }else{
+        if(confirm('{{ __("panel.delete_question_warning") }}')) f.submit();
+      }
     });
+  });
 });
 </script>
 @endpush

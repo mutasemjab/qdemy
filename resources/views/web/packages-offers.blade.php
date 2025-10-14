@@ -5,13 +5,13 @@
 <section class="pkgo-wrap">
 
 
-    <div class="universities-header-wrapper">
+    <div data-aos="fade-up" data-aos-duration="1000" class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{translate_lang('packages_offers')}}</h2>
+            <h2 data-aos="fade" data-aos-duration="1000" data-aos-delay="200">{{translate_lang('packages_offers')}}</h2>
         </div>
     </div>
 
-  <div class="co-chooser">
+  <div data-aos="fade-up" data-aos-duration="1000" class="co-chooser">
     <button class="co-chooser-btn" id="coChooserBtn">
       <span> {{$programm?->localized_name ?? translate_lang('choose the programm') }} </span>
       <i class="fa-solid fa-caret-down"></i>
@@ -30,12 +30,12 @@
     @endif
   </div>
 
-  <div class="pkgo-head">
+  <div data-aos="fade-up" data-aos-duration="1000" class="pkgo-head">
     {{translate_lang('cards')}} {{$programm?->localized_name}}
    </div>
 
     @foreach($packages as $package)
-    <div class="pkgo-row">
+    <div data-aos="fade-up" data-aos-duration="1000" class="pkgo-row">
         <div class="pkgo-side pkgo-side-1">
         <span>{{ $package->name }}</span>
         </div>

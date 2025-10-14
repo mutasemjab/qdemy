@@ -105,7 +105,7 @@ $termsConditions = Page::where('type', 1)->first(); // TYPE_TERMS_CONDITIONS = 1
   <div class="footer-container">
 
     <section class="footer-brand" aria-label="About {{ config('app.name') }}">
-        <img src="{{ asset('assets/admin/uploads/logo-white.png') }}" alt="{{ config('app.name') }} Logo" class="footer-logo">
+        <img src="{{ asset('assets/admin/uploads/'. $footerSettings->logo) }}" alt="{{ config('app.name') }} Logo" class="footer-logo">
 
       <p class="footer-desc">
         @if($footerSettings && $footerSettings->text_under_logo_in_footer)
