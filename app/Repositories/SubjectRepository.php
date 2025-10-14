@@ -145,8 +145,8 @@ class SubjectRepository
     // @param $subject = instance of subject
     // الحصول علي المواد الاختيارية لمبحث اختياري
     // معين ف احدي حقول توجيهي السنة النهائية
-    // return collection
-    public function getOptionalSubjectOptions($field, $subject)
+    // return query
+    public function optionalSubjectOptions($field, $subject)
     {
         $subject = $this->model->where('is_active', true)
             ->where('is_subject', 1)
@@ -161,10 +161,16 @@ class SubjectRepository
                 $q->where('pivot_level', 'field');
             });
 
-        return $subject->get();
+        return $subject;
+    }
 
-            // dd($subject->pluck('name_en')->toArray());
-            // return collect();
+    // @param $subject = instance of subject
+    // الحصول علي المواد الاختيارية لمبحث اختياري
+    // معين ف احدي حقول توجيهي السنة النهائية
+    // return collection = $this->optionalSubjectOptions->get()
+    public function getOptionalSubjectOptions($field, $subject)
+    {
+        return $this->optionalSubjectOptions($field, $subject)->get();
     }
 
     //  tawjihi subjects end

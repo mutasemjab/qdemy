@@ -62,7 +62,7 @@
               </form>
             @endif
  </div>
- 
+
             <!-- Language Dropdown -->
 <div class="language-switch" id="languageSwitch">
   <button class="ls-btn" type="button" id="lsBtn"><i class="fas fa-globe"></i></button>

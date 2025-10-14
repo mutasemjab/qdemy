@@ -43,6 +43,9 @@ use App\Services\ContentModerationService;
 |
 */
 
+Route::get('/my-esspresso',function () {
+    return view('my-esspresso')
+});
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
 
@@ -73,6 +76,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::post('/contacts/store', [ContactUsController::class, 'store'])->name('contacts.store');
 
     Route::get('/courses', [CourseController::class, 'index'])->name('courses');
+
     Route::get('/course/{course}/{slug?}', [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
     Route::get('/universities-programm/{programm?}/{slug?}', [UniversityProgramController::class, 'index'])->name('universities-programm');
@@ -81,6 +85,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/international-programm/{programm?}/{slug?}', [InternationalProgramController::class, 'programm'])->name('international-programm');
 
     Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
+
     Route::get('/teacher/{id}', [TeacherController::class, 'show'])->name('teacher');
 
 
@@ -121,7 +126,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     Route::get('/student-account', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('student.account');
 
-    Route::group(['prefix' => 'cart'], function () {
+    Route::group(['prefix' => 'cart','middleware' => ['auth:user']], function () {
+
         Route::get('/', [EnrollmentController::class, 'index'])->name('checkout');
         Route::post('/add-to-session', [EnrollmentController::class, 'addToSession'])->name('add.to.session');
         Route::get('/courses-count', [EnrollmentController::class, 'getCoursesCount'])->name('courses.count');
@@ -133,6 +139,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/remove-course-from-package', [EnrollmentController::class, 'removeCourseFromPackage'])->name('remove.course.from.package');
         Route::post('/package/update', [EnrollmentController::class, 'updatePackageCart'])->name('cart.package.update');
         Route::get('/package/get', [EnrollmentController::class, 'getPackageCart'])->name('cart.package.get');
+
     });
 
     // packages routes

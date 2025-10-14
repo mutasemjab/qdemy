@@ -23,9 +23,9 @@ class EnrollmentController extends Controller
     public function index()
     {
         $user = auth_student();
-        if (!$user) {
-            return redirect()->route('user.login');
-        }
+        // if (!$user) {
+        //     return redirect()->route('user.login');
+        // }
 
         CartRepository()->initializeCart();
         $cartData = CartRepository()->getCartCoursesWithStatus();
@@ -215,7 +215,7 @@ class EnrollmentController extends Controller
             $this->enrollUserInCourse($user?->id, $course);
             $this->markCardAsUsed($cardNumber, $user?->id);
             $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
-            
+
             // خصم العمولة من المعلم
             $this->deductCommissionFromTeacher($course);
 
@@ -264,7 +264,7 @@ class EnrollmentController extends Controller
 
         $cardNumber = $cardValidation['card'];
         $validCourses = $this->getValidCoursesForPurchase($user?->id);
-        
+
         if ($validCourses->isEmpty()) {
             return response()->json([
                 'success' => false,
@@ -539,7 +539,7 @@ class EnrollmentController extends Controller
         }
 
         $teacher = User::find($course->teacher_id);
-        
+
         if (!$teacher) {
             return;
         }
