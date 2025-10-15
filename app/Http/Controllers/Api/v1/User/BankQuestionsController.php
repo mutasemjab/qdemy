@@ -111,17 +111,17 @@ class BankQuestionsController extends Controller
             return [
                 'id' => $question->id,
                 'display_name' => $question->display_name,
-                'category' => [
+               'category' => [
                     'id' => $question->category?->id,
-                    'name' => $this->getCategoryName($question),
-                    'breadcrumb' => $this->getCategoryBreadcrumb($question)
+                    'name' => $question->category_name,
+                    'breadcrumb' => $question->category_breadcrumb
                 ],
                 'subject' => [
                     'id' => $question->subject?->id,
-                    'name' => $this->getSubjectName($question)
+                    'name' => $question->subject_name
                 ],
                 'file_info' => [
-                    'size' => $this->getFormattedFileSize($question),
+                    'size' => $question->formatted_file_size,
                     'has_pdf' => !empty($question->pdf),
                 ],
                 'download_count' => $question->download_count ?? 0,
