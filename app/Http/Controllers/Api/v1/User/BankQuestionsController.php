@@ -57,7 +57,6 @@ class BankQuestionsController extends Controller
                 'is_active' => $question->is_active,
                 'created_at' => $question->created_at,
                 'pdf_urls' => [
-                    'view' => !empty($question->pdf) ? route('api.bank-questions.pdf.view', $question->id) : null,
                     'download' => !empty($question->pdf) ? route('api.bank-questions.pdf.download', $question->id) : null,
                     'direct' => $question->pdf_path // This uses your existing getPdfPathAttribute
                 ]
