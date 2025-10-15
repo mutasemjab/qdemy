@@ -132,7 +132,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
 
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
-        Route::get('/bank-questions/{id}/pdf/download', [BankQuestionsController::class, 'downloadPdf'])->name('api.bank-questions.pdf.download');
 
         Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
 
