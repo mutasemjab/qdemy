@@ -23,9 +23,6 @@ class Bunny{
        
         // Make sure region is properly set - use Region enum if available
         $region = $this->bunny_region;
-        if ($region === 'de') {
-            $region = Region::FALKENSTEIN; // or whatever the correct constant is
-        }
         
         $this->storageClient = new Client(
             $this->bunny_storage_password,
