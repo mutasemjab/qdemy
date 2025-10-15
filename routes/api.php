@@ -102,6 +102,7 @@ Route::group(['prefix' => 'v1/user'], function () {
     });
 
     Route::get('/pos', [PosController::class, 'index']);
+    Route::get('/home', HomeController::class);
 
     // Protected routes (all users use the same auth middleware)
     Route::group(['middleware' => ['auth:user-api']], function () {
@@ -115,7 +116,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::post('/follow/toggle', [FollowController::class, 'toggleFollow']);
         Route::get('/teachers/{teacherId}', [TeacherController::class, 'show']);
 
-        Route::get('/home', HomeController::class);
         Route::get('/profile', [AuthController::class, 'profile']);
         Route::post('/update-profile', [AuthController::class, 'updateProfile']);
         Route::delete('/delete-account', [AuthController::class, 'deleteAccount']);
