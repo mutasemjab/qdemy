@@ -7,6 +7,7 @@ use App\Models\BankQuestion;
 use App\Models\MinisterialYearsQuestion;
 use Illuminate\Http\Request;
 use App\Traits\Responses;
+use Illuminate\Support\Facades\Log;
 
 class BankQuestionsController extends Controller
 {
@@ -67,6 +68,50 @@ class BankQuestionsController extends Controller
         $questions->setCollection($transformedQuestions);
 
         return $this->success_response(__('Bank Questions fetched successfully'), $questions);
+    }
+
+      public function downloadPdf($id)
+    {
+        $bankQuestion = BankQuestion::find($id);
+
+        if (!$bankQuestion || !$bankQuestion->pdf || !$bankQuestion->pdfExists()) {
+            return $this->error_response(__('File not found'), [], 404);
+        }
+
+        try {
+            // Get file content from Bunny storage
+            $fileContent = BunnyHelper()->getFileContent($bankQuestion->pdf);
+
+            if (!$fileContent) {
+                return $this->error_response(__('File not found'), [], 404);
+            }
+
+            // Increment download count
+            $bankQuestion->increment('download_count');
+
+            // Prepare filename
+            $filename = $bankQuestion->display_name ?? 'document.pdf';
+            if (!str_ends_with(strtolower($filename), '.pdf')) {
+                $filename .= '.pdf';
+            }
+
+            // Return file as download
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+
+        } catch (\Exception $e) {
+            Log::error('Error downloading PDF', [
+                'bank_question_id' => $bankQuestion->id,
+                'pdf_path' => $bankQuestion->pdf,
+                'error' => $e->getMessage()
+            ]);
+
+            return $this->error_response(__('Download error'), [], 500);
+        }
     }
 
      public function getMinisterialYearQuestion()
