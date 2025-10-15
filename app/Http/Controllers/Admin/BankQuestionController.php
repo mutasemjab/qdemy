@@ -207,9 +207,6 @@ class BankQuestionController extends Controller
         ));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, BankQuestion $bankQuestion)
     {
         $request->validate([
@@ -232,71 +229,219 @@ class BankQuestionController extends Controller
 
         DB::beginTransaction();
         try {
+            Log::info('Starting bank question update', [
+                'bank_question_id' => $bankQuestion->id,
+                'has_new_file' => $request->hasFile('pdf')
+            ]);
+
+            $oldFile = $bankQuestion->pdf; // Store old file path before update
+
             if ($request->hasFile('pdf')) {
-                $upload_response = BunnyHelper()->upload($request->pdf, BankQuestion::BUNNY_PATH . '/'. $bankQuestion->id);
+                Log::info('Processing new PDF upload for update', [
+                    'bank_question_id' => $bankQuestion->id,
+                    'file_name' => $request->file('pdf')->getClientOriginalName(),
+                    'file_size' => $request->file('pdf')->getSize()
+                ]);
+
+                $upload_response = BunnyHelper()->upload(
+                    $request->file('pdf'), 
+                    BankQuestion::BUNNY_PATH . '/' . $bankQuestion->id
+                );
+
+                if (!$upload_response) {
+                    Log::error('Upload response is null during update');
+                    DB::rollback();
+                    return redirect()->route('bank-questions.index')
+                        ->with('error', __('messages.file_upload_failed'));
+                }
+
                 $upload_response_data = $upload_response->getData();
                 
-                if($upload_response_data->success && $upload_response_data->file_path){
+                Log::info('Update upload response received', [
+                    'bank_question_id' => $bankQuestion->id,
+                    'success' => $upload_response_data->success ?? false,
+                    'file_path' => $upload_response_data->file_path ?? null
+                ]);
+
+                if (isset($upload_response_data->success) && $upload_response_data->success && isset($upload_response_data->file_path)) {
                     $data['pdf'] = $upload_response_data->file_path;
-                    $data['pdf_size'] = $upload_response_data->data?->file_size;
-                    
+                    $data['pdf_size'] = $upload_response_data->data->file_size ?? null;
+
                     // Keep existing display name if not provided in form and no new file name
                     if (!$data['display_name']) {
-                        $data['display_name'] = $upload_response_data->data?->original_name;
+                        $data['display_name'] = $upload_response_data->data->original_name ?? $bankQuestion->display_name;
                     }
-                    
-                    $oldFile = $bankQuestion->pdf;
-                    if($oldFile){ 
-                        BunnyHelper()->delete($oldFile); 
+
+                    // Verify the new file exists before proceeding
+                    if (!BunnyHelper()->exists($data['pdf'])) {
+                        Log::error('New file upload succeeded but verification failed during update', [
+                            'bank_question_id' => $bankQuestion->id,
+                            'pdf_path' => $data['pdf']
+                        ]);
+                        DB::rollback();
+                        return redirect()->route('bank-questions.index')
+                            ->with('error', __('messages.file_upload_verification_failed'));
                     }
+
+                    Log::info('New file uploaded and verified successfully', [
+                        'bank_question_id' => $bankQuestion->id,
+                        'new_file_path' => $data['pdf']
+                    ]);
+
+                } else {
+                    $error_message = $upload_response_data->message ?? __('messages.file_upload_failed');
+                    Log::error('Upload failed during update', [
+                        'bank_question_id' => $bankQuestion->id,
+                        'error_message' => $error_message
+                    ]);
+                    DB::rollback();
+                    return redirect()->route('bank-questions.index')
+                        ->with('error', $error_message);
+                }
+            } else {
+                // If no new file uploaded, keep existing display_name if not provided
+                if (!$data['display_name']) {
+                    $data['display_name'] = $bankQuestion->display_name;
                 }
             }
-            
-            $bankQuestion->update($data);
-            DB::commit();
-            $message_status = 'success';
-            $message = __('messages.bank_question_updated_successfully');
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            $message = $e->getMessage();
-            $message_status = 'error';
-        }
 
-        return redirect()->route('bank-questions.index')
-            ->with($message_status, $message);
+            // Update the bank question
+            $updateResult = $bankQuestion->update($data);
+
+            if (!$updateResult) {
+                Log::error('Failed to update bank question in database', [
+                    'bank_question_id' => $bankQuestion->id
+                ]);
+                DB::rollback();
+                return redirect()->route('bank-questions.index')
+                    ->with('error', __('messages.some_thing_wont_wrong'));
+            }
+
+            // Delete old file only after successful update and if new file was uploaded
+            if ($request->hasFile('pdf') && $oldFile && isset($data['pdf']) && $oldFile !== $data['pdf']) {
+                try {
+                    $deleteResult = BunnyHelper()->delete($oldFile);
+                    Log::info('Old file deletion result', [
+                        'bank_question_id' => $bankQuestion->id,
+                        'old_file_path' => $oldFile,
+                        'delete_result' => $deleteResult
+                    ]);
+                } catch (\Exception $deleteException) {
+                    // Log the error but don't fail the update
+                    Log::warning('Failed to delete old file during update', [
+                        'bank_question_id' => $bankQuestion->id,
+                        'old_file_path' => $oldFile,
+                        'error' => $deleteException->getMessage()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            Log::info('Bank question updated successfully', ['bank_question_id' => $bankQuestion->id]);
+
+            return redirect()->route('bank-questions.index')
+                ->with('success', __('messages.bank_question_updated_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Exception during bank question update', [
+                'bank_question_id' => $bankQuestion->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            DB::rollback();
+            
+            return redirect()->route('bank-questions.index')
+                ->with('error', $e->getMessage());
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(BankQuestion $bankQuestion)
     {
         DB::beginTransaction();
         try {
-            // Delete PDF file
-            if ($bankQuestion->pdf) {
-                $oldFile = $bankQuestion->pdf;
-                if($oldFile){ 
-                    BunnyHelper()->delete($oldFile); 
+            Log::info('Starting bank question deletion', [
+                'bank_question_id' => $bankQuestion->id,
+                'has_pdf' => !empty($bankQuestion->pdf),
+                'pdf_path' => $bankQuestion->pdf
+            ]);
+
+            $oldFile = $bankQuestion->pdf;
+
+            // Delete the bank question from database first
+            $deleteResult = $bankQuestion->delete();
+
+            if (!$deleteResult) {
+                Log::error('Failed to delete bank question from database', [
+                    'bank_question_id' => $bankQuestion->id
+                ]);
+                DB::rollback();
+                return redirect()->route('bank-questions.index')
+                    ->with('error', __('messages.some_thing_wont_wrong'));
+            }
+
+            // Delete PDF file after successful database deletion
+            if ($oldFile) {
+                try {
+                    // Check if file exists before attempting deletion
+                    if (BunnyHelper()->exists($oldFile)) {
+                        $fileDeleteResult = BunnyHelper()->delete($oldFile);
+                        Log::info('PDF file deletion result', [
+                            'bank_question_id' => $bankQuestion->id,
+                            'file_path' => $oldFile,
+                            'delete_result' => $fileDeleteResult
+                        ]);
+                    } else {
+                        Log::info('PDF file does not exist, skipping deletion', [
+                            'bank_question_id' => $bankQuestion->id,
+                            'file_path' => $oldFile
+                        ]);
+                    }
+                } catch (\Exception $fileDeleteException) {
+                    // Log the error but don't fail the deletion since DB record is already deleted
+                    Log::warning('Failed to delete PDF file during bank question deletion', [
+                        'bank_question_id' => $bankQuestion->id,
+                        'file_path' => $oldFile,
+                        'error' => $fileDeleteException->getMessage()
+                    ]);
                 }
             }
-            
-            $bankQuestion->delete();
-            DB::commit();
-            
-            $message_status = 'success';
-            $message = __('messages.bank_question_deleted_successfully');
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            $message_status = 'error';
-            $message = $e->getMessage();
-        }
 
-        return redirect()->route('bank-questions.index')
-            ->with($message_status, $message);
+            // Also try to delete the entire folder for this bank question
+            try {
+                $folderPath = BankQuestion::BUNNY_PATH . '/' . $bankQuestion->id;
+                BunnyHelper()->deleteFiles($folderPath);
+                Log::info('Bank question folder cleaned up', [
+                    'bank_question_id' => $bankQuestion->id,
+                    'folder_path' => $folderPath
+                ]);
+            } catch (\Exception $folderDeleteException) {
+                Log::warning('Failed to clean up bank question folder', [
+                    'bank_question_id' => $bankQuestion->id,
+                    'error' => $folderDeleteException->getMessage()
+                ]);
+            }
+
+            DB::commit();
+            Log::info('Bank question deleted successfully', ['bank_question_id' => $bankQuestion->id]);
+
+            return redirect()->route('bank-questions.index')
+                ->with('success', __('messages.bank_question_deleted_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Exception during bank question deletion', [
+                'bank_question_id' => $bankQuestion->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            DB::rollback();
+
+            return redirect()->route('bank-questions.index')
+                ->with('error', $e->getMessage());
+        }
     }
+ 
 
     /**
      * Download PDF file
