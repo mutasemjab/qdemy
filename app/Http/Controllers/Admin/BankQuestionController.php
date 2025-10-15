@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use App\Traits\SubjectCategoryTrait;
-
+use Illuminate\Support\Facades\Log;
 
 class BankQuestionController extends Controller
 {
@@ -81,41 +81,85 @@ class BankQuestionController extends Controller
             $bank = BankQuestion::create($data);
             
             if ($request->hasFile('pdf')) {
-                $upload_response = BunnyHelper()->upload($request->pdf, BankQuestion::BUNNY_PATH . '/' . $bank->id);
+                // Add logging to debug
+                Log::info('Processing PDF upload', [
+                    'bank_id' => $bank->id,
+                    'file_name' => $request->file('pdf')->getClientOriginalName(),
+                    'file_size' => $request->file('pdf')->getSize()
+                ]);
+                
+                $upload_response = BunnyHelper()->upload(
+                    $request->file('pdf'), 
+                    BankQuestion::BUNNY_PATH . '/' . $bank->id
+                );
+                
+                // Check if response is valid
+                if (!$upload_response) {
+                    Log::error('Upload response is null');
+                    DB::rollback();
+                    return redirect()->route('bank-questions.index')
+                        ->with('error', __('messages.file_upload_failed'));
+                }
+                
                 $upload_response_data = $upload_response->getData();
                 
-                if($upload_response_data->success && $upload_response_data->file_path){
+                Log::info('Upload response received', [
+                    'success' => $upload_response_data->success ?? false,
+                    'file_path' => $upload_response_data->file_path ?? null,
+                    'response_data' => json_encode($upload_response_data)
+                ]);
+                
+                if(isset($upload_response_data->success) && $upload_response_data->success && isset($upload_response_data->file_path)) {
                     $bank->pdf = $upload_response_data->file_path;
-                    $bank->pdf_size = $upload_response_data->data?->file_size;
+                    $bank->pdf_size = $upload_response_data->data->file_size ?? null;
                     
                     // Use custom display name if provided, otherwise use original file name
                     if (!$bank->display_name) {
-                        $bank->display_name = $upload_response_data->data?->original_name;
+                        $bank->display_name = $upload_response_data->data->original_name ?? 'Uploaded PDF';
                     }
                     
                     if($bank->save()){
-                        DB::commit();
-                        $message_status = 'success';
-                        $message = __('messages.bank_question_created_successfully');
+                        // Verify the file actually exists after upload
+                        if (BunnyHelper()->exists($bank->pdf)) {
+                            DB::commit();
+                            Log::info('Bank question created successfully', ['bank_id' => $bank->id, 'pdf_path' => $bank->pdf]);
+                            return redirect()->route('bank-questions.index')
+                                ->with('success', __('messages.bank_question_created_successfully'));
+                        } else {
+                            Log::error('File upload succeeded but file verification failed', ['pdf_path' => $bank->pdf]);
+                            DB::rollback();
+                            return redirect()->route('bank-questions.index')
+                                ->with('error', __('messages.file_upload_verification_failed'));
+                        }
                     } else {
+                        Log::error('Failed to save bank question after upload');
                         DB::rollback();
-                        $message = __('messages.some_thing_wont_wrong');
-                        $message_status = 'error';
+                        return redirect()->route('bank-questions.index')
+                            ->with('error', __('messages.some_thing_wont_wrong'));
                     }
                 } else {
+                    $error_message = $upload_response_data->message ?? __('messages.file_upload_failed');
+                    Log::error('Upload failed', ['error_message' => $error_message]);
                     DB::rollback();
-                    $message = __('messages.file_upload_failed');
-                    $message_status = 'error';
+                    return redirect()->route('bank-questions.index')
+                        ->with('error', $error_message);
                 }
+            } else {
+                Log::error('No PDF file found in request');
+                DB::rollback();
+                return redirect()->route('bank-questions.index')
+                    ->with('error', __('messages.no_file_uploaded'));
             }
         } catch (\Exception $e) {
+            Log::error('Exception in store method', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             DB::rollback();
-            $message = $e->getMessage();
-            $message_status = 'error';
+            return redirect()->route('bank-questions.index')
+                ->with('error', $e->getMessage());
         }
-
-        return redirect()->route('bank-questions.index')
-            ->with($message_status, $message);
     }
 
     /**
@@ -257,19 +301,46 @@ class BankQuestionController extends Controller
     /**
      * Download PDF file
      */
-    public function downloadPdf(BankQuestion $bankQuestion)
+   public function downloadPdf(BankQuestion $bankQuestion)
     {
         if (!$bankQuestion->pdf || !$bankQuestion->pdfExists()) {
             abort(404, __('messages.file_not_found'));
         }
         
-        // Increment download count
-        $bankQuestion->increment('download_count');
-        
-        return response()->download(
-            $bankQuestion->pdf_path, 
-            $bankQuestion->display_name ?? 'document.pdf'
-        );
+        try {
+            // Get file content from Bunny storage
+            $fileContent = BunnyHelper()->getFileContent($bankQuestion->pdf);
+            
+            if (!$fileContent) {
+                Log::error('Failed to get file content from Bunny', ['pdf_path' => $bankQuestion->pdf]);
+                abort(404, __('messages.file_not_found'));
+            }
+            
+            // Increment download count
+            $bankQuestion->increment('download_count');
+            
+            // Prepare filename
+            $filename = $bankQuestion->display_name ?? 'document.pdf';
+            if (!str_ends_with(strtolower($filename), '.pdf')) {
+                $filename .= '.pdf';
+            }
+            
+            // Return file as download response
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+                
+        } catch (\Exception $e) {
+            Log::error('Error downloading PDF', [
+                'bank_question_id' => $bankQuestion->id,
+                'pdf_path' => $bankQuestion->pdf,
+                'error' => $e->getMessage()
+            ]);
+            abort(500, __('messages.download_error'));
+        }
     }
 
     /**

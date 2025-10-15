@@ -44,7 +44,7 @@ use App\Services\ContentModerationService;
 */
 
 Route::get('/my-esspresso',function () {
-    return view('my-esspresso')
+    return view('my-esspresso');
 });
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {

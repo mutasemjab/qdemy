@@ -1,166 +1,111 @@
+{{-- resources/views/questions/index.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', __('messages.questions'))
-
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="card-title">{{ __('messages.questions') }}</h3>
-                    @can('question-add')
-                        <a href="{{ route('questions.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> {{ __('messages.add_question') }}
+                    <div>
+                        <h4>{{ __('messages.exam_questions') }}: {{ $exam->name }}</h4>
+                        <small class="text-muted">{{ __('messages.total_grade') }}: {{ $exam->total_grade }}</small>
+                    </div>
+                    <div>
+                        <a href="{{ route('questions.create', $exam) }}" class="btn btn-primary">
+                            {{ __('messages.add_question') }}
                         </a>
-                    @endcan
+                        <a href="{{ route('exams.show', $exam) }}" class="btn btn-secondary">
+                            {{ __('messages.back_to_exam') }}
+                        </a>
+                    </div>
                 </div>
 
                 <div class="card-body">
+                  
 
-
-                    <!-- Filters -->
-                    <form method="GET" class="mb-4">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <select name="course_id" class="form-control">
-                                    <option value="">{{ __('messages.all_courses') }}</option>
-                                    @foreach($courses as $course)
-                                        <option value="{{ $course->id }}"
-                                                {{ request('course_id') == $course->id ? 'selected' : '' }}>
-                                            {{ $course->title_en }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <select name="type" class="form-control">
-                                    <option value="">{{ __('messages.all_types') }}</option>
-                                    <option value="multiple_choice" {{ request('type') == 'multiple_choice' ? 'selected' : '' }}>
-                                        {{ __('messages.multiple_choice') }}
-                                    </option>
-                                    <option value="true_false" {{ request('type') == 'true_false' ? 'selected' : '' }}>
-                                        {{ __('messages.true_false') }}
-                                    </option>
-                                    <option value="essay" {{ request('type') == 'essay' ? 'selected' : '' }}>
-                                        {{ __('messages.essay') }}
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <input type="text" name="search" class="form-control"
-                                       placeholder="{{ __('messages.search_questions') }}"
-                                       value="{{ request('search') }}">
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" class="btn btn-outline-primary">
-                                    <i class="fas fa-search"></i> {{ __('messages.filter') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Questions Table -->
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>{{ __('messages.title') }}</th>
-                                    <th>{{ __('messages.course') }}</th>
+                                    <th>{{ __('messages.order') }}</th>
+                                    <th>{{ __('messages.question') }}</th>
                                     <th>{{ __('messages.type') }}</th>
                                     <th>{{ __('messages.grade') }}</th>
-                                    <th>{{ __('messages.created_by') }}</th>
-                                    <th>{{ __('messages.created_at') }}</th>
+                                    <th>{{ __('messages.image') }}</th>
                                     <th>{{ __('messages.actions') }}</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="questions-table">
                                 @forelse($questions as $question)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                    <tr data-id="{{ $question->id }}">
                                         <td>
-                                            <strong>{{ $question->title_en }}</strong><br>
-                                            <small class="text-muted">{{ $question->title_ar }}</small>
+                                            <span class="badge bg-primary">{{ $question->order }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info">{{ $question->course?->title_en }}</span>
+                                            <div class="question-preview">
+                                                {{ Str::limit($question->question_text, 100) }}
+                                            </div>
                                         </td>
                                         <td>
-                                            @if($question->type === 'multiple_choice')
-                                                <span class="badge bg-primary">
-                                                    <i class="fas fa-list"></i> {{ __('messages.multiple_choice') }}
-                                                </span>
-                                            @elseif($question->type === 'true_false')
-                                                <span class="badge bg-success">
-                                                    <i class="fas fa-check-circle"></i> {{ __('messages.true_false') }}
-                                                </span>
+                                            @switch($question->type)
+                                                @case('multiple_choice')
+                                                    <span class="badge bg-info">{{ __('messages.multiple_choice') }}</span>
+                                                    @break
+                                                @case('true_false')
+                                                    <span class="badge bg-success">{{ __('messages.true_false') }}</span>
+                                                    @break
+                                                @case('essay')
+                                                    <span class="badge bg-warning">{{ __('messages.essay') }}</span>
+                                                    @break
+                                                @case('fill_blank')
+                                                    <span class="badge bg-secondary">{{ __('messages.fill_blank') }}</span>
+                                                    @break
+                                            @endswitch
+                                        </td>
+                                        <td>{{ $question->grade }}</td>
+                                        <td>
+                                            @if($question->question_image)
+                                                <i class="fas fa-image text-success"></i>
                                             @else
-                                                <span class="badge bg-warning">
-                                                    <i class="fas fa-edit"></i> {{ __('messages.essay') }}
-                                                </span>
+                                                <i class="fas fa-times text-muted"></i>
                                             @endif
                                         </td>
-                                        <td>
-                                            <span class="badge bg-secondary">{{ $question->grade }}</span>
-                                        </td>
-                                        <td>
-                                            @if($question->creator)
-                                                {{ $question->creator->name }}
-                                            @else
-                                                <span class="text-muted">-</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $question->created_at->format('Y-m-d') }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                @can('question-table')
-                                                    <a href="{{ route('questions.show', $question) }}"
-                                                       class="btn btn-sm btn-info"
-                                                       title="{{ __('messages.view') }}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                @endcan
-
-                                                @can('question-edit')
-                                                    <a href="{{ route('questions.edit', $question) }}"
-                                                       class="btn btn-sm btn-warning"
-                                                       title="{{ __('messages.edit') }}">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                @endcan
-
-                                                @can('question-delete')
-                                                    <form action="{{ route('questions.destroy', $question) }}"
-                                                          method="POST"
-                                                          class="d-inline"
-                                                          onsubmit="return confirm('{{ __('messages.confirm_delete_question') }}')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                                class="btn btn-sm btn-danger"
-                                                                title="{{ __('messages.delete') }}">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                @endcan
+                                                <a href="{{ route('questions.show', [$exam, $question]) }}" class="btn btn-sm btn-info">
+                                                    {{ __('messages.view') }}
+                                                </a>
+                                                <a href="{{ route('questions.edit', [$exam, $question]) }}" class="btn btn-sm btn-warning">
+                                                    {{ __('messages.edit') }}
+                                                </a>
+                                                <form action="{{ route('questions.duplicate', [$exam, $question]) }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-secondary">
+                                                        {{ __('messages.duplicate') }}
+                                                    </button>
+                                                </form>
+                                                <form action="{{ route('questions.destroy', [$exam, $question]) }}" method="POST" style="display: inline;">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                                            onclick="return confirm('{{ __('messages.confirm_delete') }}')">
+                                                        {{ __('messages.delete') }}
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center">
-                                            {{ __('messages.no_questions_found') }}
-                                        </td>
+                                        <td colspan="6" class="text-center">{{ __('messages.no_questions_found') }}</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
 
-                    <!-- Pagination -->
                     <div class="d-flex justify-content-center">
-                        {{ $questions->appends(request()->query())->links() }}
+                        {{ $questions->links() }}
                     </div>
                 </div>
             </div>

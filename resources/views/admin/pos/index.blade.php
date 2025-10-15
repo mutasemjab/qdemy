@@ -20,10 +20,8 @@
                                 <thead class="table-dark">
                                     <tr>
                                         <th>{{ __('messages.id') }}</th>
-                                        <th>{{ __('messages.country_name') }}</th>
                                         <th>{{ __('messages.name') }}</th>
                                         <th>{{ __('messages.phone') }}</th>
-                                        <th>{{ __('messages.google_map_link') }}</th>
                                         <th>{{ __('messages.address') }}</th>
                                         <th>{{ __('messages.created_at') }}</th>
                                         <th>{{ __('messages.actions') }}</th>
@@ -33,10 +31,8 @@
                                     @foreach($posRecords as $pos)
                                         <tr>
                                             <td>{{ $pos->id }}</td>
-                                            <td>{{ $pos->country_name }}</td>
                                             <td>{{ $pos->name }}</td>
                                             <td>{{ $pos->phone }}</td>
-                                            <td>{{ $pos->google_map_link ?? null }}</td>
                                             <td>{{ Str::limit($pos->address, 50) }}</td>
                                             <td>{{ $pos->created_at->format('Y-m-d') }}</td>
                                             <td>

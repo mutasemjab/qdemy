@@ -32,20 +32,6 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="phone" class="form-label">{{ __('messages.country_name') }} <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('country_name') is-invalid @enderror" 
-                                   id="country_name" 
-                                   name="country_name" 
-                                   value="{{ old('country_name', $po->country_name) }}" 
-                                   placeholder="{{ __('messages.enter_country_name') }}"
-                                   required>
-                            @error('country_name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                       
-                        <div class="mb-3">
                             <label for="phone" class="form-label">{{ __('messages.phone') }} <span class="text-danger">*</span></label>
                             <input type="text" 
                                    class="form-control @error('phone') is-invalid @enderror" 
@@ -55,20 +41,6 @@
                                    placeholder="{{ __('messages.enter_phone') }}"
                                    required>
                             @error('phone')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-               
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">{{ __('messages.google_map_link') }} <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('google_map_link') is-invalid @enderror" 
-                                   id="google_map_link" 
-                                   name="google_map_link" 
-                                   value="{{ old('google_map_link', $po->google_map_link) }}" 
-                                   placeholder="{{ __('messages.enter_google_map_link') }}"
-                                   required>
-                            @error('google_map_link')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
