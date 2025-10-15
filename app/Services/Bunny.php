@@ -268,7 +268,7 @@ class Bunny{
 
         // البحث عن كلمات مفتاحية في رسالة الخطأ
         if (stripos($message, 'timeout') !== false || stripos($message, 'timed out') !== false) {
-            return 'انتهت مهلة الاتصال - حاول مرة أخرى';
+            return 'انتهت مهلة الاتصال  حاول مرة أخرى';
         }
 
         if (stripos($message, 'connection') !== false) {
