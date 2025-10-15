@@ -1,0 +1,73 @@
+@extends('layouts.admin')
+
+@section('title', __('messages.edit_post'))
+
+@section('content')
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title">{{ __('messages.edit_post') }}</h3>
+                    <a href="{{ route('admin.community.posts.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> {{ __('messages.back') }}
+                    </a>
+                </div>
+
+                <form action="{{ route('admin.community.posts.update', $post) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="card-body">
+                      
+
+                        <div class="form-group">
+                            <label for="content">{{ __('messages.content') }} <span class="text-danger">*</span></label>
+                            <textarea class="form-control @error('content') is-invalid @enderror" 
+                                      id="content" name="content" rows="6" required>{{ old('content', $post->content) }}</textarea>
+                            @error('content')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label>{{ __('messages.author') }}</label>
+                            <input type="text" class="form-control" value="{{ $post->user->name }}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="hidden" name="is_approved" value="0">
+                                <input type="checkbox" class="form-check-input" id="is_approved"
+                                        name="is_approved" value="1" {{ old('is_approved', $post->is_approved) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_approved">
+                                    {{ __('messages.approved') }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="hidden" name="is_active" value="0">
+                                <input type="checkbox" class="form-check-input" id="is_active"
+                                        name="is_active" value="1" {{ old('is_active', $post->is_active) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_active">
+                                    {{ __('messages.active') }}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> {{ __('messages.update') }}
+                        </button>
+                        <a href="{{ route('admin.community.posts.index') }}" class="btn btn-secondary">
+                            {{ __('messages.cancel') }}
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

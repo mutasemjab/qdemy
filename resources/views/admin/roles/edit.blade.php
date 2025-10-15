@@ -1,85 +1,248 @@
 @extends("layouts.admin")
 
+@section('title', __('messages.Edit Role'))
 
 @section('css')
+<style>
+.permission-group {
+    border: 1px solid #e3e6f0;
+    border-radius: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.permission-group-header {
+    background-color: #f8f9fc;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e3e6f0;
+    font-weight: 600;
+    color: #5a5c69;
+}
+
+.permission-group-body {
+    padding: 1rem;
+}
+
+
+
+.select-all-group {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+
+
+.permission-label {
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+}
+
+</style>
 @endsection
 
 @section('content')
-    <div class="container-fluid">
-
-        <div class="row">
-            <div class="col-12">
-                <div class="page-title-box">
-                    <div class="page-title-right">
-                        <ol class="breadcrumb m-0">
-                            <li class="breadcrumb-item"><a
-                                    href="{{ route('admin.role.index') }}">Role</a></li>
-                            <li class="breadcrumb-item active">Create</li>
-                        </ol>
-                    </div>
-                    <h4 class="page-title">Edit Role</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('admin.role.index') }}">{{ __('messages.Roles') }}</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ __('messages.Edit') }}</li>
+                    </ol>
                 </div>
+                <h4 class="page-title">{{ __('messages.Edit Role') }}: {{ $role->name }}</h4>
             </div>
         </div>
+    </div>
 
-        <div class="row justify-content-center">
-            <div class="col-6">
-                <div class="card">
-                    <div class="card-body">
-                        <form action="{{ route('admin.role.update', $data->id) }}" method="post">
-                            @csrf
-                            {{ method_field('PATCH') }}
-                             <div class="my-3">
-                                <input type="text"
-                                    class="form-control @if ($errors->has('name')) is-invalid @endif" id="name"
-                                    placeholder=" Name" value="{{ $data->name }}" name="name">
-                                @error('name')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                                <span class="emsg text-danger"></span>
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{{ __('messages.Role Information') }}</h5>
+                </div>
+                <div class="card-body">
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('admin.role.update', $role) }}" method="POST">
+                        @csrf
+                        @method('PUT')
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="name" class="form-label">{{ __('messages.Role Name') }} <span class="text-danger">*</span></label>
+                                    <input type="text" 
+                                           class="form-control @error('name') is-invalid @enderror" 
+                                           id="name" 
+                                           name="name" 
+                                           value="{{ old('name', $role->name) }}" 
+                                           placeholder="{{ __('messages.Enter role name') }}" 
+                                           required>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
                             </div>
-                            <div class="my-3">
-                                @foreach($permissions as $value)
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label class="form-label">{{ __('messages.Role Statistics') }}</label>
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <small class="text-muted">
+                                                <i class="fas fa-users me-1"></i> 
+                                                {{ $role->users->count() }} {{ __('messages.users assigned') }}
+                                                <br>
+                                                <i class="fas fa-key me-1"></i> 
+                                                {{ $role->permissions->count() }} {{ __('messages.permissions granted') }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                                     <br>
-                                     <input   class="ml-5" type="checkbox" name="perms[]" id="perm_{{$value->id}}" value="{{ $value->id }}" {{in_array($value->id, $role_permissions) ? 'checked':''}}>
-                                    <label for="perm_{{$value->id}}"> {{ $value->name }}. </label>
-                                    <br>
+                        <div class="mb-4">
+                            <h5>{{ __('messages.Permissions') }} <span class="text-danger">*</span></h5>
+                            <p class="text-muted">{{ __('messages.Select permissions for this role') }}</p>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="select-all-permissions">
+                                    <label class="form-check-label fw-bold" for="select-all-permissions">
+                                        {{ __('messages.Select All Permissions') }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            @error('permissions')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                            @enderror
+
+                            <div class="row">
+                                @foreach($permissionGroups as $groupName => $permissions)
+                                    <div class="col-md-6 col-lg-4 mb-3">
+                                        <div class="permission-group">
+                                            <div class="permission-group-header">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span>{{ __('messages.' . ucfirst($groupName)) }}</span>
+                                                    <div class="form-check">
+                                                        <input type="checkbox" 
+                                                               class="form-check-input select-group" 
+                                                               id="select-group-{{ $groupName }}" 
+                                                               data-group="{{ $groupName }}">
+                                                        <label class="form-check-label small" for="select-group-{{ $groupName }}">
+                                                            {{ __('messages.Select All') }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="permission-group-body">
+                                                @foreach($permissions as $permission)
+                                                    <div class="permission-item">
+                                                        <div class="form-check">
+                                                            <input type="checkbox" 
+                                                                   class="form-check-input permission-checkbox group-{{ $groupName }}" 
+                                                                   name="permissions[]" 
+                                                                   id="permission-{{ $permission->id }}" 
+                                                                   value="{{ $permission->id }}"
+                                                                   {{ in_array($permission->id, old('permissions', $rolePermissions)) ? 'checked' : '' }}>
+                                                            <label class="form-check-label permission-label" 
+                                                                   for="permission-{{ $permission->id }}">
+                                                                {{ __('messages.' . str_replace('-', '_', $permission->name)) }}
+                                                            </label>
+                                                        </div>
+                                                    
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                             </div>
-                            <div class="row" id="permissions">
-                                @error('perms')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                                <span class="emsg text-danger"></span>
-                            </div>
+                        </div>
 
-
-
-
-
-                    </div>
-
-
-
-
-                    <div class="text-right">
-                        <button type="submit"
-                            class="btn btn-success waves-effect waves-light">Update</button>
-                        <a type="button" href="{{ route('admin.role.index') }}"
-                            class="btn btn-danger waves-effect waves-light m-l-10">Cancel
-                        </a>
-                    </div>
-
-
+                        <div class="d-flex justify-content-end">
+                            <a href="{{ route('admin.role.index') }}" class="btn btn-secondary me-2">
+                                <i class="fas fa-times"></i> {{ __('messages.Cancel') }}
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> {{ __('messages.Update') }}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
 @endsection
 
 @section('script')
+<script>
+$(document).ready(function() {
+    // Initialize select all status
+    updateSelectAllStatus();
+    
+    // Initialize group select status
+    $('.select-group').each(function() {
+        const groupName = $(this).data('group');
+        updateGroupSelectStatus(groupName);
+    });
 
+    // Select all permissions
+    $('#select-all-permissions').change(function() {
+        $('.permission-checkbox').prop('checked', $(this).is(':checked'));
+        $('.select-group').prop('checked', $(this).is(':checked'));
+    });
+
+    // Select group permissions
+    $('.select-group').change(function() {
+        const group = $(this).data('group');
+        $(`.group-${group}`).prop('checked', $(this).is(':checked'));
+        updateSelectAllStatus();
+    });
+
+    // Individual permission change
+    $('.permission-checkbox').change(function() {
+        const group = $(this).attr('class').match(/group-(\w+)/);
+        if (group) {
+            updateGroupSelectStatus(group[1]);
+        }
+        updateSelectAllStatus();
+    });
+
+    function updateGroupSelectStatus(groupName) {
+        const totalInGroup = $(`.group-${groupName}`).length;
+        const checkedInGroup = $(`.group-${groupName}:checked`).length;
+        
+        $(`#select-group-${groupName}`).prop('checked', totalInGroup === checkedInGroup);
+    }
+
+    function updateSelectAllStatus() {
+        const totalPermissions = $('.permission-checkbox').length;
+        const checkedPermissions = $('.permission-checkbox:checked').length;
+        
+        $('#select-all-permissions').prop('checked', totalPermissions === checkedPermissions);
+        
+        // Update group select statuses
+        $('.select-group').each(function() {
+            const groupName = $(this).data('group');
+            updateGroupSelectStatus(groupName);
+        });
+    }
+});
+</script>
 @endsection

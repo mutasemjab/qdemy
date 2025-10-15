@@ -1,237 +1,424 @@
-{{-- resources/views/questions/edit.blade.php --}}
 @extends('layouts.admin')
 
+@section('title', __('messages.edit_question'))
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4>{{ __('messages.edit_question') }}: {{ $exam->name }}</h4>
+                    <h3 class="card-title">{{ __('messages.edit_question') }}</h3>
+                    <div class="card-tools">
+                        <a href="{{ route('questions.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> {{ __('messages.back') }}
+                        </a>
+                        <a href="{{ route('questions.show', $question) }}" class="btn btn-info">
+                            <i class="fas fa-eye"></i> {{ __('messages.view') }}
+                        </a>
+                    </div>
                 </div>
 
-                <div class="card-body">
-                    <form action="{{ route('questions.update', [$exam, $question]) }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="row mb-3">
+                <form action="{{ route('questions.update', $question) }}" method="POST" id="questionForm">
+                    @csrf
+                    @method('PUT')
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Question Title English -->
                             <div class="col-md-6">
-                                <label for="type" class="form-label">{{ __('messages.question_type') }} <span class="text-danger">*</span></label>
-                                <select class="form-control @error('type') is-invalid @enderror" 
-                                        id="type" name="type" required onchange="toggleQuestionFields()">
-                                    <option value="">{{ __('messages.select_question_type') }}</option>
-                                    <option value="multiple_choice" {{ old('type', $question->type) == 'multiple_choice' ? 'selected' : '' }}>
-                                        {{ __('messages.multiple_choice') }}
-                                    </option>
-                                    <option value="true_false" {{ old('type', $question->type) == 'true_false' ? 'selected' : '' }}>
-                                        {{ __('messages.true_false') }}
-                                    </option>
-                                    <option value="essay" {{ old('type', $question->type) == 'essay' ? 'selected' : '' }}>
-                                        {{ __('messages.essay') }}
-                                    </option>
-                                    <option value="fill_blank" {{ old('type', $question->type) == 'fill_blank' ? 'selected' : '' }}>
-                                        {{ __('messages.fill_blank') }}
-                                    </option>
-                                </select>
-                                @error('type')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-3">
-                                <label for="grade" class="form-label">{{ __('messages.grade') }} <span class="text-danger">*</span></label>
-                                <input type="number" step="0.1" class="form-control @error('grade') is-invalid @enderror" 
-                                       id="grade" name="grade" value="{{ old('grade', $question->grade) }}" min="0.1" required>
-                                @error('grade')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-3">
-                                <label for="order" class="form-label">{{ __('messages.order') }} <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('order') is-invalid @enderror" 
-                                       id="order" name="order" value="{{ old('order', $question->order) }}" min="1" required>
-                                @error('order')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="question_text" class="form-label">{{ __('messages.question_text') }} <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('question_text') is-invalid @enderror" 
-                                      id="question_text" name="question_text" rows="4" required>{{ old('question_text', $question->question_text) }}</textarea>
-                            @error('question_text')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="question_image" class="form-label">{{ __('messages.question_image') }}</label>
-                            @if($question->question_image)
-                                <div class="mb-2">
-                                    <img src="{{ asset('assets/admin/uploads/' . $question->question_image) }}" 
-                                         alt="Current Image" class="img-thumbnail" style="max-height: 150px;">
-                                    <p class="small text-muted">{{ __('messages.current_image') }}</p>
+                                <div class="form-group mb-3">
+                                    <label for="title_en" class="form-label">
+                                        {{ __('messages.title_en') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control @error('title_en') is-invalid @enderror" 
+                                           id="title_en" 
+                                           name="title_en" 
+                                           value="{{ old('title_en', $question->title_en) }}" 
+                                           placeholder="{{ __('messages.enter_question_title_en') }}">
+                                    @error('title_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                            @endif
-                            <input type="file" class="form-control @error('question_image') is-invalid @enderror" 
-                                   id="question_image" name="question_image" accept="image/*">
-                            <small class="text-muted">{{ __('messages.leave_empty_keep_current') }}</small>
-                            @error('question_image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            </div>
+
+                            <!-- Question Title Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="title_ar" class="form-label">
+                                        {{ __('messages.title_ar') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control @error('title_ar') is-invalid @enderror" 
+                                           id="title_ar" 
+                                           name="title_ar" 
+                                           value="{{ old('title_ar', $question->title_ar) }}" 
+                                           placeholder="{{ __('messages.enter_question_title_ar') }}"
+                                           dir="rtl">
+                                    @error('title_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Question Text English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="question_en" class="form-label">
+                                        {{ __('messages.question_en') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea class="form-control @error('question_en') is-invalid @enderror" 
+                                              id="question_en" 
+                                              name="question_en" 
+                                              rows="4" 
+                                              placeholder="{{ __('messages.enter_question_text_en') }}">{{ old('question_en', $question->question_en) }}</textarea>
+                                    @error('question_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Question Text Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="question_ar" class="form-label">
+                                        {{ __('messages.question_ar') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea class="form-control @error('question_ar') is-invalid @enderror" 
+                                              id="question_ar" 
+                                              name="question_ar" 
+                                              rows="4" 
+                                              placeholder="{{ __('messages.enter_question_text_ar') }}"
+                                              dir="rtl">{{ old('question_ar', $question->question_ar) }}</textarea>
+                                    @error('question_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Course -->
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="course_id" class="form-label">
+                                        {{ __('messages.course') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('course_id') is-invalid @enderror" 
+                                            id="course_id" 
+                                            name="course_id">
+                                        <option value="">{{ __('messages.select_course') }}</option>
+                                        @foreach($courses as $course)
+                                            <option value="{{ $course->id }}" 
+                                                    {{ old('course_id', $question->course_id) == $course->id ? 'selected' : '' }}>
+                                                {{ $course->title_en }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('course_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Question Type -->
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="type" class="form-label">
+                                        {{ __('messages.question_type') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('type') is-invalid @enderror" 
+                                            id="type" 
+                                            name="type"
+                                            onchange="toggleQuestionType()">
+                                        <option value="">{{ __('messages.select_question_type') }}</option>
+                                        <option value="multiple_choice" {{ old('type', $question->type) == 'multiple_choice' ? 'selected' : '' }}>
+                                            {{ __('messages.multiple_choice') }}
+                                        </option>
+                                        <option value="true_false" {{ old('type', $question->type) == 'true_false' ? 'selected' : '' }}>
+                                            {{ __('messages.true_false') }}
+                                        </option>
+                                        <option value="essay" {{ old('type', $question->type) == 'essay' ? 'selected' : '' }}>
+                                            {{ __('messages.essay') }}
+                                        </option>
+                                    </select>
+                                    @error('type')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Grade -->
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="grade" class="form-label">
+                                        {{ __('messages.grade') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" 
+                                           class="form-control @error('grade') is-invalid @enderror" 
+                                           id="grade" 
+                                           name="grade" 
+                                           value="{{ old('grade', $question->grade) }}" 
+                                           step="0.25" 
+                                           min="0.25"
+                                           placeholder="1.00">
+                                    @error('grade')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Explanation English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="explanation_en" class="form-label">
+                                        {{ __('messages.explanation_en') }}
+                                    </label>
+                                    <textarea class="form-control @error('explanation_en') is-invalid @enderror" 
+                                              id="explanation_en" 
+                                              name="explanation_en" 
+                                              rows="3" 
+                                              placeholder="{{ __('messages.optional_explanation_en') }}">{{ old('explanation_en', $question->explanation_en) }}</textarea>
+                                    @error('explanation_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Explanation Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="explanation_ar" class="form-label">
+                                        {{ __('messages.explanation_ar') }}
+                                    </label>
+                                    <textarea class="form-control @error('explanation_ar') is-invalid @enderror" 
+                                              id="explanation_ar" 
+                                              name="explanation_ar" 
+                                              rows="3" 
+                                              placeholder="{{ __('messages.optional_explanation_ar') }}"
+                                              dir="rtl">{{ old('explanation_ar', $question->explanation_ar) }}</textarea>
+                                    @error('explanation_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Multiple Choice Options -->
-                        <div id="multiple_choice_fields" style="display: none;">
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('messages.answer_options') }} <span class="text-danger">*</span></label>
-                                <div id="options_container">
-                                    @if(old('options') || ($question->type == 'multiple_choice' && $question->options))
-                                        @php
-                                            $options = old('options') ?: $question->options;
-                                            $correctAnswers = old('correct_answers') ?: $question->correct_answers ?: [];
-                                        @endphp
-                                        @foreach($options as $index => $option)
-                                            <div class="row mb-2">
-                                                <div class="col-md-8">
-                                                    <input type="text" class="form-control" name="options[]" 
-                                                           placeholder="{{ __('messages.option') }} {{ $index + 1 }}" 
-                                                           value="{{ $option }}">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" 
-                                                               name="correct_answers[]" value="{{ $index }}"
-                                                               {{ in_array($index, $correctAnswers) ? 'checked' : '' }}>
-                                                        <label class="form-check-label">{{ __('messages.correct') }}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-1">
-                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeOption(this)">×</button>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div class="row mb-2">
-                                            <div class="col-md-8">
-                                                <input type="text" class="form-control" name="options[]" placeholder="{{ __('messages.option') }} 1">
-                                            </div>
-                                            <div class="col-md-3">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="correct_answers[]" value="0">
-                                                    <label class="form-check-label">{{ __('messages.correct') }}</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1">
-                                                <button type="button" class="btn btn-sm btn-danger" onclick="removeOption(this)">×</button>
-                                            </div>
-                                        </div>
-                                    @endif
+                        <div id="multiple-choice-options" class="row" style="display: none;">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">{{ __('messages.answer_options') }}</h5>
+                                <div id="options-container">
+                                    <!-- Existing options will be loaded here -->
                                 </div>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="addOption()">{{ __('messages.add_option') }}</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addOption()">
+                                    <i class="fas fa-plus"></i> {{ __('messages.add_option') }}
+                                </button>
                             </div>
                         </div>
 
                         <!-- True/False Options -->
-                        <div id="true_false_fields" style="display: none;">
-                            <div class="mb-3">
-                                <label class="form-label">{{ __('messages.correct_answer') }} <span class="text-danger">*</span></label>
-                                <div>
-                                    @php
-                                        $correctAnswer = old('correct_answers') ?: (isset($question->correct_answers[0]) ? $question->correct_answers[0] : null);
-                                    @endphp
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="correct_answers" 
-                                               id="true_answer" value="true" {{ $correctAnswer === 'true' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="true_answer">{{ __('messages.true') }}</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="correct_answers" 
-                                               id="false_answer" value="false" {{ $correctAnswer === 'false' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="false_answer">{{ __('messages.false') }}</label>
-                                    </div>
+                        <div id="true-false-options" class="row" style="display: none;">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">{{ __('messages.correct_answer') }}</h5>
+                                @php
+                                    $correctAnswer = null;
+                                    if ($question->type === 'true_false' && $question->options->isNotEmpty()) {
+                                        $trueOption = $question->options->where('option_en', 'True')->first();
+                                        $correctAnswer = $trueOption && $trueOption->is_correct ? '1' : '0';
+                                    }
+                                @endphp
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="true_false_answer" 
+                                           id="answer_true" value="1" 
+                                           {{ old('true_false_answer', $correctAnswer) == '1' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="answer_true">
+                                        <span class="badge bg-success">{{ __('messages.true') }}</span>
+                                    </label>
                                 </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="true_false_answer" 
+                                           id="answer_false" value="0" 
+                                           {{ old('true_false_answer', $correctAnswer) == '0' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="answer_false">
+                                        <span class="badge bg-danger">{{ __('messages.false') }}</span>
+                                    </label>
+                                </div>
+                                @error('true_false_answer')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="explanation" class="form-label">{{ __('messages.explanation') }}</label>
-                            <textarea class="form-control @error('explanation') is-invalid @enderror" 
-                                      id="explanation" name="explanation" rows="2" 
-                                      placeholder="{{ __('messages.explanation_placeholder') }}">{{ old('explanation', $question->explanation) }}</textarea>
-                            @error('explanation')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <!-- Essay Note -->
+                        <div id="essay-note" class="row" style="display: none;">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    {{ __('messages.essay_question_note') }}
+                                </div>
+                            </div>
                         </div>
+                    </div>
 
+                    <div class="card-footer">
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('questions.show', [$exam, $question]) }}" class="btn btn-secondary">
+                            <a href="{{ route('questions.index') }}" class="btn btn-secondary">
                                 {{ __('messages.cancel') }}
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                {{ __('messages.update_question') }}
+                                <i class="fas fa-save"></i> {{ __('messages.update_question') }}
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-let optionCount = {{ count($question->options ?? []) ?: 1 }};
+let optionCount = 0;
+const existingOptions = @json($question->options->toArray());
 
-function toggleQuestionFields() {
+function toggleQuestionType() {
     const type = document.getElementById('type').value;
-    const mcFields = document.getElementById('multiple_choice_fields');
-    const tfFields = document.getElementById('true_false_fields');
+    const multipleChoiceDiv = document.getElementById('multiple-choice-options');
+    const trueFalseDiv = document.getElementById('true-false-options');
+    const essayDiv = document.getElementById('essay-note');
     
-    // Hide all fields first
-    mcFields.style.display = 'none';
-    tfFields.style.display = 'none';
+    // Hide all option divs
+    multipleChoiceDiv.style.display = 'none';
+    trueFalseDiv.style.display = 'none';
+    essayDiv.style.display = 'none';
     
-    // Show relevant fields
+    // Show relevant div
     if (type === 'multiple_choice') {
-        mcFields.style.display = 'block';
+        multipleChoiceDiv.style.display = 'block';
+        if (optionCount === 0) {
+            loadExistingOptions();
+        }
     } else if (type === 'true_false') {
-        tfFields.style.display = 'block';
+        trueFalseDiv.style.display = 'block';
+    } else if (type === 'essay') {
+        essayDiv.style.display = 'block';
+    }
+}
+
+function loadExistingOptions() {
+    const container = document.getElementById('options-container');
+    container.innerHTML = '';
+    
+    if (existingOptions.length > 0) {
+        existingOptions.forEach((option, index) => {
+            if (option.option_en !== 'True' && option.option_en !== 'False') {
+                optionCount++;
+                const optionHtml = createOptionHtml(optionCount, option.option_en, option.option_ar, option.is_correct);
+                container.insertAdjacentHTML('beforeend', optionHtml);
+            }
+        });
+    } else {
+        // Add default 4 options if no existing options
+        for (let i = 0; i < 4; i++) {
+            addOption();
+        }
     }
 }
 
 function addOption() {
     optionCount++;
-    const container = document.getElementById('options_container');
-    const newOption = document.createElement('div');
-    newOption.className = 'row mb-2';
-    newOption.innerHTML = `
-        <div class="col-md-8">
-            <input type="text" class="form-control" name="options[]" placeholder="{{ __('messages.option') }} ${optionCount}">
-        </div>
-        <div class="col-md-3">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="correct_answers[]" value="${optionCount - 1}">
-                <label class="form-check-label">{{ __('messages.correct') }}</label>
-            </div>
-        </div>
-        <div class="col-md-1">
-            <button type="button" class="btn btn-sm btn-danger" onclick="removeOption(this)">×</button>
-        </div>
-    `;
-    container.appendChild(newOption);
+    const container = document.getElementById('options-container');
+    const optionHtml = createOptionHtml(optionCount, '', '', false);
+    container.insertAdjacentHTML('beforeend', optionHtml);
 }
 
-function removeOption(button) {
-    if (document.getElementById('options_container').children.length > 1) {
-        button.closest('.row').remove();
+function createOptionHtml(count, optionEn = '', optionAr = '', isCorrect = false) {
+    return `
+        <div class="option-item mb-3 p-3 border rounded" id="option-${count}">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">{{ __('messages.option') }} ${String.fromCharCode(64 + count)}</h6>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOption(${count})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="form-label">{{ __('messages.option_text_en') }}</label>
+                    <input type="text" class="form-control" name="options[${count-1}][option_en]" 
+                           value="${optionEn}" placeholder="{{ __('messages.enter_option_en') }}" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">{{ __('messages.option_text_ar') }}</label>
+                    <input type="text" class="form-control" name="options[${count-1}][option_ar]" 
+                           value="${optionAr}" placeholder="{{ __('messages.enter_option_ar') }}" dir="rtl" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">{{ __('messages.correct') }}</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" 
+                               name="options[${count-1}][is_correct]" value="1" 
+                               id="correct-${count}" ${isCorrect ? 'checked' : ''}>
+                        <label class="form-check-label" for="correct-${count}">
+                            {{ __('messages.correct_answer') }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function removeOption(optionId) {
+    const option = document.getElementById(`option-${optionId}`);
+    if (option) {
+        option.remove();
+        updateOptionLetters();
     }
+}
+
+function updateOptionLetters() {
+    const options = document.querySelectorAll('.option-item');
+    options.forEach((option, index) => {
+        const letter = String.fromCharCode(65 + index);
+        const header = option.querySelector('h6');
+        if (header) {
+            header.textContent = `{{ __('messages.option') }} ${letter}`;
+        }
+    });
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    toggleQuestionFields();
+    const currentType = document.getElementById('type').value;
+    if (currentType) {
+        toggleQuestionType();
+    }
+});
+
+// Form validation
+document.getElementById('questionForm').addEventListener('submit', function(e) {
+    const type = document.getElementById('type').value;
+    
+    if (type === 'multiple_choice') {
+        const options = document.querySelectorAll('.option-item');
+        if (options.length < 2) {
+            e.preventDefault();
+            alert('{{ __("messages.minimum_two_options_required") }}');
+            return;
+        }
+        
+        const correctOptions = document.querySelectorAll('input[name*="[is_correct]"]:checked');
+        if (correctOptions.length === 0) {
+            e.preventDefault();
+            alert('{{ __("messages.at_least_one_correct_answer_required") }}');
+            return;
+        }
+    } else if (type === 'true_false') {
+        const selectedAnswer = document.querySelector('input[name="true_false_answer"]:checked');
+        if (!selectedAnswer) {
+            e.preventDefault();
+            alert('{{ __("messages.please_select_correct_answer") }}');
+            return;
+        }
+    }
 });
 </script>
 @endsection
-
