@@ -69,9 +69,71 @@ class BankQuestionsController extends Controller
 
     
 
-     public function getMinisterialYearQuestion()
+    public function getMinisterialYearQuestion(Request $request)
     {
-        $questions = MinisterialYearsQuestion::with('category')->latest()->paginate(10);
+        $query = MinisterialYearsQuestion::with(['category', 'subject'])
+            ->latest();
+
+        // Add filtering capabilities
+        if ($request->has('category_id') && $request->category_id) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('subject_id') && $request->subject_id) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        if ($request->has('search') && $request->search) {
+            $query->where(function($q) use ($request) {
+                $search = $request->search;
+                $q->where('display_name', 'like', "%{$search}%")
+                  ->orWhereHas('category', function($catQuery) use ($search) {
+                      $catQuery->where('name_ar', 'like', "%{$search}%")
+                               ->orWhere('name_en', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('subject', function($subQuery) use ($search) {
+                      $subQuery->where('name_ar', 'like', "%{$search}%")
+                               ->orWhere('name_en', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Add active scope if it exists
+        if (method_exists(MinisterialYearsQuestion::class, 'scopeActive')) {
+            $query->active();
+        }
+
+        $perPage = $request->get('per_page', 10);
+        $questions = $query->paginate($perPage);
+
+        // Transform the data to match bank questions structure
+        $transformedQuestions = $questions->getCollection()->map(function ($question) {
+            return [
+                'id' => $question->id,
+                'display_name' => $question->display_name,
+                'category' => [
+                    'id' => $question->category?->id,
+                    'name' => $this->getCategoryName($question),
+                    'breadcrumb' => $this->getCategoryBreadcrumb($question)
+                ],
+                'subject' => [
+                    'id' => $question->subject?->id,
+                    'name' => $this->getSubjectName($question)
+                ],
+                'file_info' => [
+                    'size' => $this->getFormattedFileSize($question),
+                    'has_pdf' => !empty($question->pdf),
+                ],
+                'download_count' => $question->download_count ?? 0,
+                'is_active' => $question->is_active ?? true,
+                'created_at' => $question->created_at,
+                'pdf_path' => $question->pdf_path ,
+            ];
+        });
+
+        // Update the collection in paginator
+        $questions->setCollection($transformedQuestions);
+
         return $this->success_response(__('Ministerial Year Questions fetched successfully'), $questions);
     }
 }

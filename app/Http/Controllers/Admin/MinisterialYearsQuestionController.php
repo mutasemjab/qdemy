@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Traits\SubjectCategoryTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class MinisterialYearsQuestionController extends Controller
 {
@@ -50,9 +51,7 @@ class MinisterialYearsQuestionController extends Controller
         return view('admin.ministerial_questions.create', compact('parentCategories', 'subjects'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -79,41 +78,91 @@ class MinisterialYearsQuestionController extends Controller
             $ministerialYear = MinisterialYearsQuestion::create($data);
             
             if ($request->hasFile('pdf')) {
-                $upload_response = BunnyHelper()->upload($request->pdf, MinisterialYearsQuestion::BUNNY_PATH . '/' . $ministerialYear->id);
+                // Add logging to debug
+                Log::info('Processing PDF upload for ministerial question', [
+                    'ministerial_id' => $ministerialYear->id,
+                    'file_name' => $request->file('pdf')->getClientOriginalName(),
+                    'file_size' => $request->file('pdf')->getSize()
+                ]);
+                
+                $upload_response = BunnyHelper()->upload(
+                    $request->file('pdf'), 
+                    MinisterialYearsQuestion::BUNNY_PATH . '/' . $ministerialYear->id
+                );
+                
+                // Check if response is valid
+                if (!$upload_response) {
+                    Log::error('Upload response is null for ministerial question');
+                    DB::rollback();
+                    return redirect()->route('ministerial-questions.index')
+                        ->with('error', __('messages.file_upload_failed'));
+                }
+                
                 $upload_response_data = $upload_response->getData();
                 
-                if($upload_response_data->success && $upload_response_data->file_path){
+                Log::info('Ministerial upload response received', [
+                    'ministerial_id' => $ministerialYear->id,
+                    'success' => $upload_response_data->success ?? false,
+                    'file_path' => $upload_response_data->file_path ?? null,
+                    'response_data' => json_encode($upload_response_data)
+                ]);
+                
+                if(isset($upload_response_data->success) && $upload_response_data->success && isset($upload_response_data->file_path)) {
                     $ministerialYear->pdf = $upload_response_data->file_path;
-                    $ministerialYear->pdf_size = $upload_response_data->data?->file_size;
+                    $ministerialYear->pdf_size = $upload_response_data->data->file_size ?? null;
                     
                     // Use custom display name if provided, otherwise use original file name
                     if (!$ministerialYear->display_name) {
-                        $ministerialYear->display_name = $upload_response_data->data?->original_name;
+                        $ministerialYear->display_name = $upload_response_data->data->original_name ?? 'Uploaded PDF';
                     }
                     
                     if($ministerialYear->save()){
-                        DB::commit();
-                        $message_status = 'success';
-                        $message = __('messages.ministerial_question_created_successfully');
+                        // Verify the file actually exists after upload
+                        if (BunnyHelper()->exists($ministerialYear->pdf)) {
+                            DB::commit();
+                            Log::info('Ministerial question created successfully', [
+                                'ministerial_id' => $ministerialYear->id, 
+                                'pdf_path' => $ministerialYear->pdf
+                            ]);
+                            return redirect()->route('ministerial-questions.index')
+                                ->with('success', __('messages.ministerial_question_created_successfully'));
+                        } else {
+                            Log::error('File upload succeeded but file verification failed for ministerial', [
+                                'pdf_path' => $ministerialYear->pdf
+                            ]);
+                            DB::rollback();
+                            return redirect()->route('ministerial-questions.index')
+                                ->with('error', __('messages.file_upload_verification_failed'));
+                        }
                     } else {
+                        Log::error('Failed to save ministerial question after upload');
                         DB::rollback();
-                        $message = __('messages.some_thing_wont_wrong');
-                        $message_status = 'error';
+                        return redirect()->route('ministerial-questions.index')
+                            ->with('error', __('messages.some_thing_wont_wrong'));
                     }
                 } else {
+                    $error_message = $upload_response_data->message ?? __('messages.file_upload_failed');
+                    Log::error('Ministerial upload failed', ['error_message' => $error_message]);
                     DB::rollback();
-                    $message = __('messages.file_upload_failed');
-                    $message_status = 'error';
+                    return redirect()->route('ministerial-questions.index')
+                        ->with('error', $error_message);
                 }
+            } else {
+                Log::error('No PDF file found in ministerial request');
+                DB::rollback();
+                return redirect()->route('ministerial-questions.index')
+                    ->with('error', __('messages.no_file_uploaded'));
             }
         } catch (\Exception $e) {
+            Log::error('Exception in ministerial store method', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             DB::rollback();
-            $message = $e->getMessage();
-            $message_status = 'error';
+            return redirect()->route('ministerial-questions.index')
+                ->with('error', $e->getMessage());
         }
-
-        return redirect()->route('ministerial-questions.index')
-            ->with($message_status, $message);
     }
 
     /**
@@ -161,9 +210,7 @@ class MinisterialYearsQuestionController extends Controller
         ));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(Request $request, MinisterialYearsQuestion $ministerialQuestion)
     {
         $request->validate([
@@ -186,70 +233,217 @@ class MinisterialYearsQuestionController extends Controller
 
         DB::beginTransaction();
         try {
+            Log::info('Starting ministerial question update', [
+                'ministerial_id' => $ministerialQuestion->id,
+                'has_new_file' => $request->hasFile('pdf')
+            ]);
+
+            $oldFile = $ministerialQuestion->pdf; // Store old file path before update
+
             if ($request->hasFile('pdf')) {
-                $upload_response = BunnyHelper()->upload($request->pdf, MinisterialYearsQuestion::BUNNY_PATH . '/'. $ministerialQuestion->id);
+                Log::info('Processing new PDF upload for ministerial update', [
+                    'ministerial_id' => $ministerialQuestion->id,
+                    'file_name' => $request->file('pdf')->getClientOriginalName(),
+                    'file_size' => $request->file('pdf')->getSize()
+                ]);
+
+                $upload_response = BunnyHelper()->upload(
+                    $request->file('pdf'), 
+                    MinisterialYearsQuestion::BUNNY_PATH . '/' . $ministerialQuestion->id
+                );
+
+                if (!$upload_response) {
+                    Log::error('Upload response is null during ministerial update');
+                    DB::rollback();
+                    return redirect()->route('ministerial-questions.index')
+                        ->with('error', __('messages.file_upload_failed'));
+                }
+
                 $upload_response_data = $upload_response->getData();
                 
-                if($upload_response_data->success && $upload_response_data->file_path){
+                Log::info('Ministerial update upload response received', [
+                    'ministerial_id' => $ministerialQuestion->id,
+                    'success' => $upload_response_data->success ?? false,
+                    'file_path' => $upload_response_data->file_path ?? null
+                ]);
+
+                if (isset($upload_response_data->success) && $upload_response_data->success && isset($upload_response_data->file_path)) {
                     $data['pdf'] = $upload_response_data->file_path;
-                    $data['pdf_size'] = $upload_response_data->data?->file_size;
-                    
+                    $data['pdf_size'] = $upload_response_data->data->file_size ?? null;
+
                     // Keep existing display name if not provided in form and no new file name
                     if (!$data['display_name']) {
-                        $data['display_name'] = $upload_response_data->data?->original_name;
+                        $data['display_name'] = $upload_response_data->data->original_name ?? $ministerialQuestion->display_name;
                     }
-                    
-                    $oldFile = $ministerialQuestion->pdf;
-                    if($oldFile){ 
-                        BunnyHelper()->delete($oldFile); 
+
+                    // Verify the new file exists before proceeding
+                    if (!BunnyHelper()->exists($data['pdf'])) {
+                        Log::error('New file upload succeeded but verification failed during ministerial update', [
+                            'ministerial_id' => $ministerialQuestion->id,
+                            'pdf_path' => $data['pdf']
+                        ]);
+                        DB::rollback();
+                        return redirect()->route('ministerial-questions.index')
+                            ->with('error', __('messages.file_upload_verification_failed'));
                     }
+
+                    Log::info('New ministerial file uploaded and verified successfully', [
+                        'ministerial_id' => $ministerialQuestion->id,
+                        'new_file_path' => $data['pdf']
+                    ]);
+
+                } else {
+                    $error_message = $upload_response_data->message ?? __('messages.file_upload_failed');
+                    Log::error('Upload failed during ministerial update', [
+                        'ministerial_id' => $ministerialQuestion->id,
+                        'error_message' => $error_message
+                    ]);
+                    DB::rollback();
+                    return redirect()->route('ministerial-questions.index')
+                        ->with('error', $error_message);
+                }
+            } else {
+                // If no new file uploaded, keep existing display_name if not provided
+                if (!$data['display_name']) {
+                    $data['display_name'] = $ministerialQuestion->display_name;
                 }
             }
-            
-            $ministerialQuestion->update($data);
-            DB::commit();
-            $message_status = 'success';
-            $message = __('messages.ministerial_question_updated_successfully');
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            $message = $e->getMessage();
-            $message_status = 'error';
-        }
 
-        return redirect()->route('ministerial-questions.index')
-            ->with($message_status, $message);
+            // Update the ministerial question
+            $updateResult = $ministerialQuestion->update($data);
+
+            if (!$updateResult) {
+                Log::error('Failed to update ministerial question in database', [
+                    'ministerial_id' => $ministerialQuestion->id
+                ]);
+                DB::rollback();
+                return redirect()->route('ministerial-questions.index')
+                    ->with('error', __('messages.some_thing_wont_wrong'));
+            }
+
+            // Delete old file only after successful update and if new file was uploaded
+            if ($request->hasFile('pdf') && $oldFile && isset($data['pdf']) && $oldFile !== $data['pdf']) {
+                try {
+                    $deleteResult = BunnyHelper()->delete($oldFile);
+                    Log::info('Old ministerial file deletion result', [
+                        'ministerial_id' => $ministerialQuestion->id,
+                        'old_file_path' => $oldFile,
+                        'delete_result' => $deleteResult
+                    ]);
+                } catch (\Exception $deleteException) {
+                    // Log the error but don't fail the update
+                    Log::warning('Failed to delete old ministerial file during update', [
+                        'ministerial_id' => $ministerialQuestion->id,
+                        'old_file_path' => $oldFile,
+                        'error' => $deleteException->getMessage()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            Log::info('Ministerial question updated successfully', ['ministerial_id' => $ministerialQuestion->id]);
+
+            return redirect()->route('ministerial-questions.index')
+                ->with('success', __('messages.ministerial_question_updated_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Exception during ministerial question update', [
+                'ministerial_id' => $ministerialQuestion->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            DB::rollback();
+            
+            return redirect()->route('ministerial-questions.index')
+                ->with('error', $e->getMessage());
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(MinisterialYearsQuestion $ministerialQuestion)
     {
         DB::beginTransaction();
         try {
-            // Delete PDF file
-            if ($ministerialQuestion->pdf) {
-                $oldFile = $ministerialQuestion->pdf;
-                if($oldFile){ 
-                    BunnyHelper()->delete($oldFile); 
+            Log::info('Starting ministerial question deletion', [
+                'ministerial_id' => $ministerialQuestion->id,
+                'has_pdf' => !empty($ministerialQuestion->pdf),
+                'pdf_path' => $ministerialQuestion->pdf
+            ]);
+
+            $oldFile = $ministerialQuestion->pdf;
+
+            // Delete the ministerial question from database first
+            $deleteResult = $ministerialQuestion->delete();
+
+            if (!$deleteResult) {
+                Log::error('Failed to delete ministerial question from database', [
+                    'ministerial_id' => $ministerialQuestion->id
+                ]);
+                DB::rollback();
+                return redirect()->route('ministerial-questions.index')
+                    ->with('error', __('messages.some_thing_wont_wrong'));
+            }
+
+            // Delete PDF file after successful database deletion
+            if ($oldFile) {
+                try {
+                    // Check if file exists before attempting deletion
+                    if (BunnyHelper()->exists($oldFile)) {
+                        $fileDeleteResult = BunnyHelper()->delete($oldFile);
+                        Log::info('Ministerial PDF file deletion result', [
+                            'ministerial_id' => $ministerialQuestion->id,
+                            'file_path' => $oldFile,
+                            'delete_result' => $fileDeleteResult
+                        ]);
+                    } else {
+                        Log::info('Ministerial PDF file does not exist, skipping deletion', [
+                            'ministerial_id' => $ministerialQuestion->id,
+                            'file_path' => $oldFile
+                        ]);
+                    }
+                } catch (\Exception $fileDeleteException) {
+                    // Log the error but don't fail the deletion since DB record is already deleted
+                    Log::warning('Failed to delete ministerial PDF file during deletion', [
+                        'ministerial_id' => $ministerialQuestion->id,
+                        'file_path' => $oldFile,
+                        'error' => $fileDeleteException->getMessage()
+                    ]);
                 }
             }
-            
-            $ministerialQuestion->delete();
-            DB::commit();
-            
-            $message_status = 'success';
-            $message = __('messages.ministerial_question_deleted_successfully');
-            
-        } catch (\Exception $e) {
-            DB::rollback();
-            $message_status = 'error';
-            $message = $e->getMessage();
-        }
 
-        return redirect()->route('ministerial-questions.index')
-            ->with($message_status, $message);
+            // Also try to delete the entire folder for this ministerial question
+            try {
+                $folderPath = MinisterialYearsQuestion::BUNNY_PATH . '/' . $ministerialQuestion->id;
+                BunnyHelper()->deleteFiles($folderPath);
+                Log::info('Ministerial question folder cleaned up', [
+                    'ministerial_id' => $ministerialQuestion->id,
+                    'folder_path' => $folderPath
+                ]);
+            } catch (\Exception $folderDeleteException) {
+                Log::warning('Failed to clean up ministerial question folder', [
+                    'ministerial_id' => $ministerialQuestion->id,
+                    'error' => $folderDeleteException->getMessage()
+                ]);
+            }
+
+            DB::commit();
+            Log::info('Ministerial question deleted successfully', ['ministerial_id' => $ministerialQuestion->id]);
+
+            return redirect()->route('ministerial-questions.index')
+                ->with('success', __('messages.ministerial_question_deleted_successfully'));
+
+        } catch (\Exception $e) {
+            Log::error('Exception during ministerial question deletion', [
+                'ministerial_id' => $ministerialQuestion->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            DB::rollback();
+
+            return redirect()->route('ministerial-questions.index')
+                ->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -261,13 +455,42 @@ class MinisterialYearsQuestionController extends Controller
             abort(404, __('messages.file_not_found'));
         }
         
-        // Increment download count
-        $ministerialQuestion->increment('download_count');
-        
-        return response()->download(
-            $ministerialQuestion->pdf_path, 
-            $ministerialQuestion->display_name ?? 'ministerial-question.pdf'
-        );
+        try {
+            // Get file content from Bunny storage
+            $fileContent = BunnyHelper()->getFileContent($ministerialQuestion->pdf);
+            
+            if (!$fileContent) {
+                Log::error('Failed to get ministerial file content from Bunny', [
+                    'pdf_path' => $ministerialQuestion->pdf
+                ]);
+                abort(404, __('messages.file_not_found'));
+            }
+            
+            // Increment download count
+            $ministerialQuestion->increment('download_count');
+            
+            // Prepare filename
+            $filename = $ministerialQuestion->display_name ?? 'ministerial-question.pdf';
+            if (!str_ends_with(strtolower($filename), '.pdf')) {
+                $filename .= '.pdf';
+            }
+            
+            // Return file as download response
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+                
+        } catch (\Exception $e) {
+            Log::error('Error downloading ministerial PDF', [
+                'ministerial_id' => $ministerialQuestion->id,
+                'pdf_path' => $ministerialQuestion->pdf,
+                'error' => $e->getMessage()
+            ]);
+            abort(500, __('messages.download_error'));
+        }
     }
 
     /**
