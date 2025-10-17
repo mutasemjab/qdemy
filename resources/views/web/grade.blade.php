@@ -42,32 +42,35 @@
 </section>
 @endsection
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // تعريف الدالة
-    window.switchSemester = function(semester) {
-        // إخفاء جميع المحتويات
-        document.querySelectorAll('.semester-content').forEach(content => {
-            content.style.display = 'none';
-        });
+document.addEventListener('DOMContentLoaded',function(){
+  function switchSemester(semester){
+    var contents=document.querySelectorAll('.semester-content');
+    contents.forEach(function(c){c.style.display='none'});
+    var tabs=document.querySelectorAll('.semester-box');
+    tabs.forEach(function(t){t.classList.remove('light')});
+    var target=document.getElementById(semester+'_semester_content');
+    if(target){target.style.display='grid'}
+    var tab=document.querySelector('.semester-box[data-semester="'+semester+'"]');
+    if(tab){tab.classList.add('light')}
+  }
 
-        // إزالة الفئة النشطة من جميع التبويبات
-        document.querySelectorAll('.semester-box').forEach(tab => {
-            tab.classList.remove('light');
-        });
-
-        // إظهار المحتوى المحدد
-        document.getElementById(semester + '_semester_content').style.display = 'grid';
-
-        // إضافة الفئة النشطة للتبويب
-        document.querySelector(`.semester-box[data-semester="${semester}"]`).classList.add('light');
-    };
-
-    // إضافة Event Listeners للتبويبات
-    document.querySelectorAll('.semester-box').forEach(tab => {
-        tab.addEventListener('click', function() {
-            const semester = this.getAttribute('data-semester');
-            switchSemester(semester);
-        });
+  var row=document.querySelector('.semesters-row');
+  if(row){
+    row.addEventListener('click',function(e){
+      var t=e.target.closest('.semester-box');
+      if(!t)return;
+      var s=t.getAttribute('data-semester');
+      if(s!==null){switchSemester(s)}
     });
+  }
+
+  var active=document.querySelector('.semester-box.light')||document.querySelector('.semester-box');
+  if(active){
+    var s=active.getAttribute('data-semester');
+    switchSemester(s);
+  }
+
+  window.switchSemester=switchSemester;
 });
 </script>
+

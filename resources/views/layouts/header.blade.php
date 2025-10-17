@@ -28,8 +28,17 @@
     <li data-aos="fade"><a class="{{ request()->routeIs('exam.*') ? 'active' : '' }}" href="{{ route('exam.index') }}">{{ __('front.Exams') }}</a></li>
 
     <li data-aos="fade"><a class="{{ request()->routeIs('download*') ? 'active' : '' }}" href="{{ route('download') }}">{{ __('front.Our Apps') }}</a></li>
+                <!-- Auth Buttons -->
+            @if(!auth('user')?->user())
+              <a href="{{ route('user.register') }}" class="btn btn-primary hidden-disc">{{ __('front.create_account') }}</a>
+              <a href="{{ route('user.login') }}" class="btn btn-outline hidden-disc">{{ __('front.login') }}</a>
+            @else
+              <a href="{{ route('student.account') }}" class="btn btn-outline hidden-disc">{{ __('front.my_account') }}</a>
+              <form action="{{ route('user.logout') }}" method='post'>@csrf
+                <button style='border: 1px solid #0055D2;padding: 8px;' class="btn btn-primary hidden-disc">{{ __('front.logout') }}</button>
+              </form>
+            @endif
 
-    {{-- Auth in mobile menu ... (اترك باقي الكود كما هو) --}}
   </ul>
 </nav>
 
@@ -53,7 +62,7 @@
               </form>
             @endif
  </div>
- 
+
             <!-- Language Dropdown -->
 <div class="language-switch" id="languageSwitch">
   <button class="ls-btn" type="button" id="lsBtn"><i class="fas fa-globe"></i></button>
