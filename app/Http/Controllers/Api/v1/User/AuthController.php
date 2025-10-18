@@ -420,7 +420,7 @@ class AuthController extends Controller
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
-              $photoPath =  uploadImage('assets/admin/uploads',$request->hasFile('photo'));
+              $photoPath =  uploadImage('assets/admin/uploads',$request->photo);
                 $updateData['photo'] = $photoPath;
             }
 
