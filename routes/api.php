@@ -63,6 +63,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // ================================
 Route::group(['prefix' => 'v1/user'], function () {
 
+    Route::get('/payment-flag', [AuthController::class, 'flagPaymentForAppstore']);
 
     Route::get('/cards-order', [CardController::class, 'cards_order']);
     Route::get('/doseyat', [DoseyatController::class, 'doseyat']);

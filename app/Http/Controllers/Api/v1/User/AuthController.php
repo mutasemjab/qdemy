@@ -26,6 +26,16 @@ class AuthController extends Controller
         $this->otpService = $otpService;
     }
 
+    public function flagPaymentForAppstore()
+    {
+        $flag = 2;
+        return response()->json([
+            'status' => true,
+            'message' => $flag == 1 ? 'Payment visible' : 'Payment hidden',
+            'data' => $flag,
+        ]);
+    }
+
     public function getClasses()
     {
         try {
