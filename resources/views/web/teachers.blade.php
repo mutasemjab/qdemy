@@ -40,9 +40,9 @@
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tch-grid">
         @if($teachers->count() > 0)
             @foreach ($teachers as $teacher)
-                <div class="anim animate-tilt tch-item">
-                    <a href="{{ route('teacher', $teacher->id) }}">
-                        <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
+                <div class="tch-item">
+                    <a class="tch-item-a" href="{{ route('teacher', $teacher->id) }}">
+                        <img class="tch-img" data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
                     </a>
                 </div>
             @endforeach
@@ -56,3 +56,4 @@
     </div>
 </section>
 @endsection
+

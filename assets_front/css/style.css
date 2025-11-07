@@ -227,9 +227,8 @@ button.btn.btn-primary {
 }
 
 .logo img {
-    width: 130px;
-    height: 65px;
-    padding: 10px;
+    height: 70px;
+    width: 180px;
 }
 
 .btn-primary {
@@ -832,7 +831,7 @@ html[dir="rtl"] .footer-contact{
 }
 
 .blob-btn i {
-    font-size: 22px;
+    font-size: 32px;
     margin-bottom: 8px;
 }
 
@@ -1060,6 +1059,18 @@ background-color: #E7E7E780;
     padding-bottom: 20px;
 }
 
+a.blob-btn span {
+    font-size: 16px;
+}
+
+.tch-grid.aos-init.aos-animate {
+    position: relative!important;
+    z-index: -1!important;
+}
+
+.tch-item a:hover .tch-img {
+    animation: teacherFloat 1.5s ease-in-out infinite !important;
+}
 
 .media-video,
 .media-image {
@@ -1942,13 +1953,13 @@ a.ud-item.nav-link:hover {
 }
 
 .tawjihi-text h3 {
-    font-size: 33px;
+    font-size: 34px;
     font-weight: bold;
     margin-bottom: 5px;
 }
 
 .tawjihi-text p {
-    font-size: 16px;
+    font-size: 22px;
 }
 
 /* Responsive */
@@ -3639,10 +3650,10 @@ a.text-dark {
 /* bg switching per position */
 .examx-card:nth-child(6n+1),
 .examx-card:nth-child(6n+3),
-.examx-card:nth-child(6n+5){background-image:url('../images/exam-bg1.png')}
+.examx-card:nth-child(6n+5){background-image:url('assets_front/images/exam_card.png')}
 .examx-card:nth-child(6n+2),
 .examx-card:nth-child(6n+4),
-.examx-card:nth-child(6n+6){background-image:url('../images/exam-bg2.png')}
+.examx-card:nth-child(6n+6){background-image:url('assets_front/images/exam_card.png')}
 
 @media(max-width:1200px){.examx-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){
@@ -4521,17 +4532,17 @@ span.g-sub1 {
     display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:40px 107px 28px;width: 50%;}
 .tj2009__subtitle{position: relative;z-index: -1;font-size:30px;margin:80px 0 10px;color:#222;padding: 8px 71px 0px 20px;}
 
-.tj2009__item{
-  display:grid;
-  place-items:center;
-  width:183px;
-  height:190px;
-  border-radius:25px;
-  background-size:154px 179px;
-  background-repeat:no-repeat;
-  background-position:center;
-  text-decoration:none;
-  isolation:isolate;
+.tj2009__item {
+    display: grid;
+    place-items: center;
+    width: 183px;
+    height: 200px;
+    border-radius: 25px;
+    background-size: 168px 198px;
+    background-repeat: no-repeat;
+    background-position: center;
+    text-decoration: none;
+    isolation: isolate;
   transform:translateZ(0);
   transition:transform .2s ease, box-shadow .2s ease;
 }
@@ -4543,7 +4554,7 @@ span.g-sub1 {
 
 .tj2009__item span{
   font-weight:800;
-  font-size:15px;
+  font-size:17px;
   color:#0a55d6;
   max-width:80px;
   text-align:center;
@@ -4697,7 +4708,7 @@ header.tj2009__head {
 }
 
 .f08-title{
-  font-size:30px;
+  font-size:35px;
   font-weight:bold;
   margin-bottom:30px;
 }

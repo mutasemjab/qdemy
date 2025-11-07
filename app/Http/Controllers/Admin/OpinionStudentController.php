@@ -72,7 +72,7 @@ class OpinionStudentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'number_of_star' => 'required|numeric|min:0|max:5',
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
@@ -114,7 +114,7 @@ class OpinionStudentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'number_of_star' => 'required|numeric|min:0|max:5',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);

@@ -7,21 +7,19 @@
   <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--left">
     <img data-src="{{ asset('assets_front/images/tawjihi-left-bg.png') }}" alt="">
   </div>
-  <div data-aos="fade" data-aos-duration="1000" class="tj2009__decor tj2009__decor--right">
-    <img data-src="{{ asset('assets_front/images/tj-right.png') }}" alt="">
-  </div>
+ 
 
     <div class="tj2009__inner">
         <header data-aos="fade-up" data-aos-duration="1000" class="tj2009__head">
         <h2>{{$field?->localized_name}}</h2>
-        <h3 class="">{{translate_lang('Ministry Subjects')}}</h3>
+        <h3 class="">{{__('front.Ministry Subjects')}}</h3>
         </header>
 
         @if($ministrySubjects && $ministrySubjects->count())
         <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="tj2009__subjects">
             @foreach($ministrySubjects as $index => $ministrySubject)
             <div href="javascript:void(0)" class="tj2009__item"
-                style="background-image:url('{{ asset('images/subject-') }}{{$index % 2 ? 'bg.png' : 'bg2.png'}}')">
+                style="background-image:url('{{ asset('assets_front/images/subject-bg2.png') }}')">
                @if($ministrySubject->has_optional_subject)
                     <a class="text-decoration-none" href="javascript:void(0)">
                         <span> {{$ministrySubject->localized_name}} </span>
@@ -55,7 +53,7 @@
         </div>
         @endif
 
-        <h3 data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subtitle">{{translate_lang('School Subjects')}}</h3>
+        <h3 data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subtitle">{{__('front.School Subjects')}}</h3>
         @if($schoolSubjects && $schoolSubjects->count())
         <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tj2009__subjects">
             @foreach($schoolSubjects as $index => $schoolSubject)

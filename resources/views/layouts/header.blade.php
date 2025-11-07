@@ -3,14 +3,15 @@
     <div class="container">
         <a href="{{ route('home') }}">
             <div class="logo" data-aos="fade" >
-                <img src="{{ asset('assets_front/images/logo.png') }}" alt="Logo">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo">
             </div>
         </a>
 <nav class="nav" id="navMenu">
   <ul>
     <li data-aos="fade"><a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">{{ __('front.home') }}</a></li>
 
-    <li data-aos="fade"><a class="{{ request()->routeIs('contacts*') ? 'active' : '' }}" href="{{ route('contacts') }}">{{ __('front.about_us') }}</a></li>
+    <li data-aos="fade"><a class="{{ request()->routeIs('about*') ? 'active' : '' }}" href="{{ route('about') }}">{{ __('front.about_us') }}</a></li>
+    <li data-aos="fade"><a class="{{ request()->routeIs('contacts*') ? 'active' : '' }}" href="{{ route('contacts') }}">{{ __('front.contacts') }}</a></li>
 
     <li data-aos="fade"><a class="{{ request()->routeIs('courses*') ? 'active' : '' }}" href="{{ route('courses') }}">{{ __('front.courses') }}</a></li>
 

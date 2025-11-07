@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\AboutController;
 use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\BankQuestionController;
 use App\Http\Controllers\Web\CommunityController;
@@ -49,29 +50,11 @@ Route::get('/my-esspresso',function () {
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
 
-    Route::get('/test-moderation/{word}', function ($word) {
-    // مسح Cache
-    \Cache::forget('banned_words_active');
-    
-    // الكلمات المحظورة
-    $bannedWords = BannedWord::where('is_active', true)->get();
-    
-    // اختبار المحتوى
-    $service = new ContentModerationService();
-    $result = $service->moderate($word);
-    
-    return response()->json([
-        'test_word' => $word,
-        'banned_words_in_db' => $bannedWords->pluck('word'),
-        'banned_words_count' => $bannedWords->count(),
-        'moderation_result' => $result,
-        'should_be_blocked' => !$result['is_clean'],
-    ]);
-});
 
     Route::post('/process-payment', [CardController::class, 'processPayment'])->name('payment.process');// not use yet when get payment gatway we will use it
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/about', [AboutController::class, 'index'])->name('about');
     Route::get('/contacts', [ContactUsController::class, 'index'])->name('contacts');
     Route::post('/contacts/store', [ContactUsController::class, 'store'])->name('contacts.store');
 

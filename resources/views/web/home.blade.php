@@ -13,22 +13,19 @@
 
             <!-- العمود اليمين -->
           <div class="hero-column right-column">
-            <a href="{{route('courses')}}" class="blob-btn blob-btn-1" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('images/blob2.png') }}');">
-                <i class="fas fa-graduation-cap"></i>
-                <span>{{ __('front.courses') }}</span>
+            <a href="{{route('courses')}}" class="blob-btn blob-btn-1 blob-3d" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('assets_front/images/blob2.png') }}');">
+             
             </a>
 
-            <a href="{{route('user.register')}}" class="blob-btn blob-btn-2" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="350" style="background-image: url('{{ asset('images/blob3.png') }}');">
-                <i class="fas fa-user-plus"></i>
-                <span>{{ __('front.register_account') }}</span>
+            <a href="{{route('user.register')}}" class="blob-btn blob-btn-2 blob-3d" data-aos="fade-left" data-aos-duration="1200" data-aos-delay="350" style="background-image: url('{{ asset('assets_front/images/blob3.png') }}');">
+             
             </a>
         </div>
 
         <!-- العمود الشمال -->
         <div class="hero-column center-column">
-            <a href="{{route('card-order')}}" class="blob-btn blob-btn-3  anim animate-pulse" data-aos="fade" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('images/blob1.png') }}');">
-                <i class="fas fa-id-card"></i>
-                <span>{!! __('front.order_card') !!}</span>
+            <a href="{{route('card-order')}}" class="blob-btn blob-btn-3  anim animate-pulse blob-3d" data-aos="fade" data-aos-duration="1000" data-aos-delay="300" style="background-image: url('{{ asset('assets_front/images/blob1.png') }}');">
+           
             </a>
         </div>
         </div>
@@ -38,24 +35,23 @@
         <!-- Left Side: Person Image + Background Shape -->
         <div class="hero-left">
             <div class="hero-person">
-                <img data-src="{{ asset('assets_front/images/home/person.png') }}" alt="Person" class="person-img anim animate-tilt" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="800">
-                <img data-src="{{ asset('assets_front/images/home/blue-wave.png') }}" alt="Background Shape" class="bg-wave anim animate-glow" data-aos="fade" data-aos-duration="1000" data-aos-delay="600">
+                <img data-src="{{ asset('assets_front/images/home/person.png') }}" alt="Person" class="person-img" data-aos="fade-up">
             </div>
         </div>
     </div>
 
     <!-- Bottom Cards -->
   <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="hero-cards">
-    <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card1.png') }}');">
+    <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card1.png') }}');">
         <p class="card-t">{{ __('front.tawjihi_secondary_program') }}</p>
     </a>
-    <a href="{{ route('grades_basic-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card2.png') }}');">
+    <a href="{{ route('grades_basic-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card2.png') }}');">
         <p class="card-t">{{ __('front.basic_grades_program') }}</p>
     </a>
-    <a href="{{ route('universities-programm') }}" class="hero-card" style="background-image: url('{{ asset('images/card3.png') }}');">
+    <a href="{{ route('universities-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card3.png') }}');">
         <p class="card-t">{{ __('front.universities_colleges_program') }}</p>
     </a>
-    <a href="{{ route('international-programms') }}" class="hero-card" style="background-image: url('{{ asset('images/card4.png') }}');">
+    <a href="{{ route('international-programms') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card4.png') }}');">
         <p class="card-t">{{ __('front.international_program') }}</p>
     </a>
 </div>
@@ -65,26 +61,20 @@
 <section class="features" >
     <h2 data-aos="zoom-in-up" >{{ __('front.What Makes QDEMY Special') }}</h2>
 
-    <div class="features-wrapper" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300" >
-        <div class="features-box anim animate-glow">
-            @foreach($specialQdemies as $special)
-                <div class="feature-item">
-                    {{ app()->getLocale() == 'ar' ? $special->title_ar : $special->title_en }}
-                </div>
-            @endforeach
-        </div>
+    <div class="" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300" >
+         <img src="{{ asset('assets_front/images/specialist.png') }}" alt="">
     </div>
 </section>
 
 <section class="services">
     <h2 data-aos="zoom-in-up">{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
-        <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark">{{ __('front.QDEMY Community') }}</a>
-        <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light anim animate-glow">{{ __('front.Electronic Exams') }}</a>
-        <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark">{{ __('front.packages_offers') }}</a>
-        <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow">{{ __('front.Doseyat') }}</a>
-        <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark">{{ __('front.Ministry Years Questions') }}</a>
-        <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light anim animate-glow">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
+        <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.QDEMY Community') }}</a>
+        <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.packages_offers') }}</a>
+        <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Doseyat') }}</a>
+        <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.Ministry Years Questions') }}</a>
+        <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
@@ -218,21 +208,7 @@
             <div class="rvx-window">
                 <div class="rvx-track">
                     @foreach($opinionStudents as $index => $opinion)
-                        <article class="rvx-card {{ $index % 2 == 0 ? 'rvx-card--dark' : 'rvx-card--blue' }}">
                             <img class="rvx-card-img" data-src="{{ $opinion->photo ? asset('assets/admin/uploads/' . $opinion->photo) : asset('assets_front/images/social1.jpg') }}" alt="">
-                            <div class="rvx-card-body">
-                                <h4 class="rvx-card-title">{{ $opinion->title }}</h4>
-                                <p class="rvx-card-text">{{ $opinion->description }}</p>
-                                <div class="rvx-card-meta">
-                                    <span class="rvx-card-name">{{ $opinion->name }}</span>
-                                    <span class="rvx-card-stars" aria-label="{{ $opinion->number_of_star }} من 5">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            {{ $i <= $opinion->number_of_star ? '★' : '☆' }}
-                                        @endfor
-                                    </span>
-                                </div>
-                            </div>
-                        </article>
                     @endforeach
                 </div>
             </div>
