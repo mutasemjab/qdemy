@@ -5,7 +5,7 @@
 @section('content')
 <section class="grade-page">
     <!-- International -->
-    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed gprogram-card-main ">
+    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed0 gprogram-card-main0 ">
         <span data-aos="fade" data-aos-duration="1000">{{$programm->localized_name}}</span>
     </a>
 

@@ -5,8 +5,8 @@
 @section('content')
 <section class="gprograms-page">
     <!-- International -->
-    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed gprogram-card-main">
-        <span data-aos="fade" data-aos-duration="1000" data-aos-delay="200" >{{ __('messages.International Program')}}</span>
+    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed-1 gprogram-card-main">
+
     </a>
 
     @if($programms && $programms->count())

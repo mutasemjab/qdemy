@@ -43,41 +43,58 @@
     <!-- Bottom Cards -->
   <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="hero-cards">
     <a href="{{ route('tawjihi-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card1.png') }}');">
-        <p class="card-t">{{ __('front.tawjihi_secondary_program') }}</p>
     </a>
     <a href="{{ route('grades_basic-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card2.png') }}');">
-        <p class="card-t">{{ __('front.basic_grades_program') }}</p>
     </a>
     <a href="{{ route('universities-programm') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card3.png') }}');">
-        <p class="card-t">{{ __('front.universities_colleges_program') }}</p>
     </a>
     <a href="{{ route('international-programms') }}" class="hero-card" style="background-image: url('{{ asset('assets_front/images/card4.png') }}');">
-        <p class="card-t">{{ __('front.international_program') }}</p>
     </a>
 </div>
 
 </section>
 
-<section class="features" >
-    <h2 data-aos="zoom-in-up" >{{ __('front.What Makes QDEMY Special') }}</h2>
-
-    <div class="" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300" >
-         <img src="{{ asset('assets_front/images/specialist.png') }}" alt="">
+<section class="features">
+    <h2 data-aos="zoom-in-up">{{ __('front.What Makes QDEMY Special') }}</h2>
+    <div class="features__media" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300">
+        <img src="{{ asset('assets_front/images/specialist.png') }}" alt="" class="features__img" loading="lazy">
     </div>
 </section>
+
 
 <section class="services">
     <h2 data-aos="zoom-in-up">{{ __('front.QDEMY Services') }}</h2>
     <div class="services-box">
-        <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.QDEMY Community') }}</a>
-        <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Electronic Exams') }}</a>
-        <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.packages_offers') }}</a>
-        <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Doseyat') }}</a>
-        <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.Ministry Years Questions') }}</a>
-        <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
+        <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn dark  anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.QDEMY Community') }}</a>
+        <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light"  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Electronic Exams') }}</a>
+        <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn dark anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.packages_offers') }}</a>
+        <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light "  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Doseyat') }}</a>
+        <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn dark anim animate-glow"  style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.Ministry Years Questions') }}</a>
+        <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light "  style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Question Bank') }} <small>({{ __('front.Papers and Summaries') }})</small></a>
     </div>
 </section>
 
+
+
+
+
+<section data-aos="zoom-in-up" class="x3c-instructors">
+  <h2>{{ __('front.Teachers') }}</h2>
+  <div class="x3c-viewport">
+    <button class="x3c-arrow x3c-left">&#10094;</button>
+    <div class="x3c-rail">
+      @foreach($teachers as $teacher)
+        <div class="x3c-cell">
+          <div class="x3c-fig">
+            <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
+            
+          </div>
+        </div>
+      @endforeach
+    </div>
+    <button class="x3c-arrow x3c-right">&#10095;</button>
+  </div>
+</section>
 
 <section data-aos="zoom-in-up"  class="social-media">
     <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
@@ -129,26 +146,6 @@
     </div>
 </section>
 
-
-<section data-aos="zoom-in-up" class="x3c-instructors">
-  <h2>{{ __('front.Teachers') }}</h2>
-  <div class="x3c-viewport">
-    <button class="x3c-arrow x3c-left">&#10094;</button>
-    <div class="x3c-rail">
-      @foreach($teachers as $teacher)
-        <div class="x3c-cell">
-          <div class="x3c-fig">
-            <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
-            
-          </div>
-        </div>
-      @endforeach
-    </div>
-    <button class="x3c-arrow x3c-right">&#10095;</button>
-  </div>
-</section>
-
-
 <section data-aos="zoom-in-up" class="stats-section">
     <div class="stats-overlay">
         <div class="stat-item">
@@ -176,16 +173,18 @@
 <section class="faq-section">
     <h2 data-aos="zoom-in-up">{{ __('front.Most Frequently Asked Questions') }}</h2>
     <div class="faq-section-link">
-        <a href="#">{{ __('front.See More') }} ←</a>
+        <a href="{{route('faq.index')}}">{{ __('front.See More') }} ←</a>
     </div>
     <div data-aos="zoom-in" class="faq-container">
         @foreach($faqs as $index => $faq)
             <div class="faq-card {{ $index == 1 ? 'top-arrow faq-card-custom' : '' }}">
                 <div class="icon">
-                    <img data-src="../assets_front/images/ban-icon.png" alt="">
+                    <img data-src="{{asset('assets_front/images/ban-icon.png')}}" alt="">
                 </div>
+                <div>
                 <h3>{{ $faq->question }}</h3>
                 <p>{{ $faq->answer }}</p>
+                </div>
             </div>
         @endforeach
     </div>

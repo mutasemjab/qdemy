@@ -30,9 +30,11 @@ use App\Http\Controllers\Web\UniversityProgramController;
 use App\Http\Controllers\Web\ElementaryProgrammController;
 use App\Http\Controllers\Web\InternationalProgramController;
 use App\Http\Controllers\Web\MinisterialYearsQuestionController;
+use App\Http\Controllers\Web\FaqController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Models\BannedWord;
 use App\Services\ContentModerationService;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -57,6 +59,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/about', [AboutController::class, 'index'])->name('about');
     Route::get('/contacts', [ContactUsController::class, 'index'])->name('contacts');
     Route::post('/contacts/store', [ContactUsController::class, 'store'])->name('contacts.store');
+    Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+
 
     Route::get('/courses', [CourseController::class, 'index'])->name('courses');
 
@@ -189,4 +193,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/available-students', [AuthController::class, 'getAvailableStudents'])->name('user.available.students');
     });
 });
+
+
 

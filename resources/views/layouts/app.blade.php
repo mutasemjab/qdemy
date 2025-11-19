@@ -23,6 +23,45 @@
     @stack('styles')
     @yield('styles')
 
+<style>
+    @font-face {
+        font-family: 'Somar';
+        src: url('{{ asset('assets_front/fonts/Somar-Regular.woff2') }}') format('woff2'),
+             url('{{ asset('assets_front/fonts/Somar-Regular.woff') }}') format('woff');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    @font-face {
+        font-family: 'Somar';
+        src: url('{{ asset('assets_front/fonts/Somar-Bold.woff2') }}') format('woff2'),
+             url('{{ asset('assets_front/fonts/Somar-Bold.woff') }}') format('woff');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+    }
+
+    html, body {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
+    }
+
+    body,
+    button,
+    input,
+    textarea,
+    select,
+    p,
+    span,
+    a,
+    li,
+    label,
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
+    }
+</style>
+
+
 </head>
 
 <body>

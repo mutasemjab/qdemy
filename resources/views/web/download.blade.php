@@ -15,6 +15,9 @@
         <a data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="500"  href="#" class="dl-store"><img data-src="{{ asset('assets_front/images/store-apple.png') }}" alt="App Store"></a>
         <a data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="500"  href="#" class="dl-store"><img data-src="{{ asset('assets_front/images/store-google.png') }}" alt="Google Play"></a>
       </div>
+    <div class="dl0">
+        <a data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="500" href="#" class="dl-store0"><img data-src="{{ asset('assets_front/images/store-d.png') }}" alt="Download"></a>
+      </div>
     </div>
 
     <div data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="300"  class="anim animate-wiggle dl-visual">

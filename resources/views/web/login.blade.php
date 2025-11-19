@@ -15,7 +15,10 @@
         </div>
 
         <div class="auth-form-box">
-            <p class="welcome-text">{{ __('front.welcome_to') }} <strong>Qdemy</strong></p>
+                <p class="welcome-text">
+                  {{ __('front.welcome_to') }}
+                  <img src="{{ asset('images/logo.png') }}" alt="Qdemy" class="welcome-logo">
+                </p>
             <h3>{{ __('front.login') }}</h3>
 
             <form method='post' action="{{ route('user.login.submit') }}">

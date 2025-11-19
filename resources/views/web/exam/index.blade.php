@@ -72,7 +72,7 @@
 
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="examx-grid">
         @forelse($exams as $exam)
-        <div class="examx-card">
+        <div class="examx-card" style="background-image: url('{{ asset('assets_front/images/card-exam-1.png') }}')">
             <div class="examx-content">
                 <div class="examx-line">
                     <b>{{ translate_lang('subject') }}</b>

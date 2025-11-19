@@ -8,8 +8,8 @@
 @section('content')
 <section class="co-page">
   <div class="universities-header-wrapper" data-aos="fade-up" data-aos-duration="1000">
-    <div class="universities-header">
-      <h2>{{ str_replace('<br>', ' ', __('front.Doseyat')) }}</h2>
+    <div class="universities-header-d">
+      <!--<h2>{{ str_replace('<br>', ' ', __('front.Doseyat')) }}</h2>-->
     </div>
   </div>
 

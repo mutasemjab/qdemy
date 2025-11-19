@@ -5,8 +5,12 @@
 @section('content')
 <section class="grade-page">
     <!-- International -->
-    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed gprogram-card-main ">
-        <span>{{$programm->localized_name}}</span>
+    
+    <div data-aos="fade-up" data-aos-duration="1000" class="gprogram-card gprogram-card-mixed0 gprogram-card-main0">
+        <div class="universities-header">
+            <h2>الجامعات والكليات</h2> <br>
+        </div>
+    </div>
     </a>
 
     <!-- Subjects -->

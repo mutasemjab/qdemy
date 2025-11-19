@@ -5,12 +5,14 @@
 @section('content')
 <section class="grades-basic-page">
 
-<div data-aos="fade-up" data-aos-duration="1000" class="grades-header-wrapper">
-    <div class="grades-header">
+<div data-aos="fade-up" data-aos-duration="1000" class="grades-header-wrapper-basic">
+    <!-- <div class="grades-header">
         <img data-src="{{ asset('assets_front/images/booksframe.png') }}" class="header-icon">
         <h2>{{ translate_lang('basic_grades') }}</h2>
         <img data-src="{{ asset('assets_front/images/bookssearch.png') }}" class="header-icon">
     </div>
+    -->
+ 
     </div>
 
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="grades-grid-wrapper">
