@@ -8,14 +8,33 @@
     <div class="tawjihi2009__inner">
         <div class="tawjihi2009__layout">
             
-            
+            @php
+                $lastSegment = request()->segment(count(request()->segments()));
+            @endphp
+
             {{-- العمود اليمين (سنة 2009 + الكتب) --}}
             <div data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200" class="tawjihi2009__right">
-                <div class="tawjihi2009__year">2008</div>
+                <div class="tawjihi2009__year">
+                  @if ($lastSegment == 'alhkl-altby')
+                  {{__('front.Health field')}}
+                  @elseif($lastSegment == 'alhkl-alhndsy')
+                   {{__('front.Engineering field')}}
+                  @elseif($lastSegment == 'hkl-tknologya-almaalomat')
+                  {{__('front.IT field')}}
+                  @elseif($lastSegment == 'hkl-alaaamal')
+                  {{__('front.Business field')}}
+                  @elseif($lastSegment == 'hkl-allghat-oalaalom-alagtmaaay')
+                  {{__('front.Languages ​​and Translation Field')}}
+                  @elseif($lastSegment == 'hkl-alkanon-oalshryaa')
+                   {{__('front.The field of law and Sharia')}}
+                  @endif
+                </div>
+
                 <img class="tawjihi2009__image"
-                     src="{{ asset('assets_front/images/tawjihi-2009-books.png') }}"
-                     alt="Tawjihi 2009 Illustration">
+                    src="{{ asset('assets_front/images/' . $lastSegment . '.png') }}"
+                    alt="{{ $lastSegment }}">
             </div>
+
             
             {{-- العمود اليسار (العناوين + المواد) --}}
             <div class="tawjihi2009__left">

@@ -39,7 +39,7 @@
 
 @push('styles')
 <style>
-:root{--faq-bg:#f8f7f4;--card:#ffffff;--text:#0f172a;--muted:#6b7280;--line:#ece8df;--accent:#ff6a00;--chip:#fbe9dd}
+:root{--faq-bg:#f8f7f4;--card:#ffffff;--text:#0f172a;--muted:#6b7280;--line:#ece8df;--accent:#0055D2;--chip:#fbe9dd}
 .faq-page{padding:32px 0}
 .faq-hero{
     max-width: 1300px;
@@ -67,7 +67,7 @@
 .faq-item{border-bottom:1px solid var(--line)}
 .faq-item:last-child{border-bottom:0}
 .faq-q{width:100%;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:16px 18px;background:#fff;border:0;cursor:pointer}
-.faq-tag{width: 120px;background:#fee8d9;color:var(--accent);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.faq-tag{width: 120px;background:#d9d7d7;color:var(--accent);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
 .faq-title{color:var(--text);font-weight:700;text-align:right;}
 .faq-icon{color:#9aa1a9;transition:transform .2s}
 .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease}

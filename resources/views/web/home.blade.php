@@ -96,6 +96,7 @@
   </div>
 </section>
 
+
 <section data-aos="zoom-in-up"  class="social-media">
     <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
 

@@ -101,7 +101,7 @@
                     </a>
                     @if($question->pdfExists())
                         <a href="{{ route('ministerialQuestions.download', $question) }}" class="bq-btn bq-download">
-                            <i class="fa-solid fa-download"></i>
+                            <img src="{{ asset('assets_front/images/download.gif') }}" width="20px" height="20px">
                             <span>{{ __('front.download_file') }}</span>
                         </a>
                     @else

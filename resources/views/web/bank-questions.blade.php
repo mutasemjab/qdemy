@@ -7,7 +7,7 @@
 <section class="bq-page">
     <div class="universities-header-wrapper">
         <div class="universities-header">
-            <h2>{{ __('front.question_bank') }}</h2>
+            <h2>{{ __('front.Question Bank') }}</h2>
         </div>
     </div>
 
@@ -101,7 +101,7 @@
                     </a>
                     @if($question->pdfExists())
                         <a href="{{ route('bankQuestions.download', $question) }}" class="bq-btn bq-download">
-                            <i class="fa-solid fa-download"></i>
+                           <img src="{{ asset('assets_front/images/download.gif') }}" width="20px" height="20px">
                             <span>{{ __('front.download_file') }}</span>
                         </a>
                     @else
