@@ -5,35 +5,53 @@
 @section('content')
 <section class="tawjihi2009">
 
-    <div class="tawjihi2009__inner">
-        <div class="tawjihi2009__layout">
-            
-            @php
-                $lastSegment = request()->segment(count(request()->segments()));
-            @endphp
+        <div class="tawjihi2009__inner">
+            <div class="tawjihi2009__layout">
+                
+              @php
+        $fieldImages = [
+            6 => [
+                'image'     => 'alhkl-altby.png',
+                'title_key' => 'front.Health field'
+            ],
+            7 => [
+                'image'     => 'alhkl-alhndsy.png',
+                'title_key' => 'front.Engineering field'
+            ],
+            8 => [
+                'image'     => 'hkl-tknologya-almaalomat.png',
+                'title_key' => 'front.IT field'
+            ],
+            9 => [
+                'image'     => 'hkl-alaaamal.png',
+                'title_key' => 'front.Business field'
+            ],
+            10 => [
+                'image'     => 'hkl-allghat-oalaalom-alagtmaaay.png',
+                'title_key' => 'front.Languages ​​and Translation Field'
+            ],
+            11 => [
+                'image'     => 'hkl-alkanon-oalshryaa.png',
+                'title_key' => 'front.The field of law and Sharia'
+            ],
+        ];
 
-            {{-- العمود اليمين (سنة 2009 + الكتب) --}}
-            <div data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200" class="tawjihi2009__right">
-                <div class="tawjihi2009__year">
-                  @if ($lastSegment == 'alhkl-altby')
-                  {{__('front.Health field')}}
-                  @elseif($lastSegment == 'alhkl-alhndsy')
-                   {{__('front.Engineering field')}}
-                  @elseif($lastSegment == 'hkl-tknologya-almaalomat')
-                  {{__('front.IT field')}}
-                  @elseif($lastSegment == 'hkl-alaaamal')
-                  {{__('front.Business field')}}
-                  @elseif($lastSegment == 'hkl-allghat-oalaalom-alagtmaaay')
-                  {{__('front.Languages ​​and Translation Field')}}
-                  @elseif($lastSegment == 'hkl-alkanon-oalshryaa')
-                   {{__('front.The field of law and Sharia')}}
-                  @endif
-                </div>
+        $fieldData  = $fieldImages[$field->id] ?? null;
+        $imageFile  = $fieldData['image'] ?? 'default-field.png';
+        $titleText  = isset($fieldData['title_key']) ? __($fieldData['title_key']) : __('front.Field');
+    @endphp
 
-                <img class="tawjihi2009__image"
-                    src="{{ asset('assets_front/images/' . $lastSegment . '.png') }}"
-                    alt="{{ $lastSegment }}">
-            </div>
+
+    <div data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200" class="tawjihi2009__right">
+        <div class="tawjihi2009__year">
+            {{ $titleText }}
+        </div>
+
+        <img class="tawjihi2009__image"
+            src="{{ asset('assets_front/images/' . $imageFile) }}"
+            alt="{{ $titleText }}">
+    </div>
+
 
             
             {{-- العمود اليسار (العناوين + المواد) --}}
