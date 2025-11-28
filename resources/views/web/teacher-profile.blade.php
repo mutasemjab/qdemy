@@ -106,13 +106,9 @@
             </a>
             <div class="t-course__meta">
               <span>
-                <i class="fa-regular fa-clock"></i>
-                {{ $course->duration }} {{ __('front.hours') }}
+                {{ $course->description }}
               </span>
-              <span>
-                <i class="fa-regular fa-layer-group"></i>
-                {{ __('front.level_' . strtolower($course->level)) }}
-              </span>
+             
               <span>
                 <i class="fa-regular fa-calendar"></i>
                 {{ $course->created_at->format('d M Y') }}
@@ -144,7 +140,7 @@
 .t-hero{display:grid;grid-template-columns:360px 1fr;gap:28px;background:linear-gradient(135deg,#f7f9fb 0%,#fff 100%);border:1px solid var(--line);border-radius:20px;padding:24px;position:relative;overflow:hidden}
 .t-hero::after{content:"";position:absolute;inset:auto 0 0 0;height:9px;background:linear-gradient(90deg,var(--brand),var(--violet))}
 .t-hero__media{display:flex;align-items:center;justify-content:center}
-.t-hero__media img{width:100%;max-width:320px;aspect-ratio:1/1;border-radius:16px;object-fit:cover;box-shadow:0 20px 45px rgba(0,0,0,.1)}
+.t-hero__media img{width:100%;max-width:320px;border-radius:16px;object-fit:cover;}
 .t-hero__info{display:flex;flex-direction:column;justify-content:center}
 .t-name{margin:0 0 6px;font-weight:900;color:var(--ink);font-size:34px}
 .t-role{margin:0 0 12px;color:var(--violet);font-weight:700}
