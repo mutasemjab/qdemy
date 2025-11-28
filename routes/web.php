@@ -174,6 +174,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
     });
 
+
+
     // Community routes
     Route::get('/community', [CommunityController::class, 'index'])->name('community');
     // Public routes

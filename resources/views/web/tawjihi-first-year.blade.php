@@ -98,7 +98,7 @@
   position:relative;
   z-index:1;
   max-width:1200px;
-  padding:0 70px 0 0;
+  margin: auto;
 }
 
 .tawjihi2009__layout{
@@ -120,7 +120,7 @@
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  margin:57px 20px 0 90px;
+  margin:57px -105px 0 40px;
 }
 
 .tawjihi2009__year{
@@ -218,7 +218,7 @@
 .tawjihi2009__subjects-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:28px 227px;
+  gap:28px 205px;
 }
 
 .tawjihi2009__subject-wrapper{
@@ -311,7 +311,7 @@
     padding:40px 0 60px;
   }
   .tawjihi2009__subjects-grid{
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:20px;
   }
   .tawjihi2009__subject{

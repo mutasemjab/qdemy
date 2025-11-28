@@ -234,9 +234,11 @@
     content: "";
     position: absolute;
     left: 0;
-    right: 0;
+    right: 4px;
     bottom: 13px;
-    height: 20px;
+    height: 70px;
+    width: 63px;
+    border-radius: 50%;
     background: #ffd602;
     z-index: -1;
 }

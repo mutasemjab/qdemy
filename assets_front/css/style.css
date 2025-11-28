@@ -136,6 +136,7 @@ button,
   will-change: transform, box-shadow;
 }
 
+
 .hover-lift { transform: translateY(0) scale(1); }
 .hover-lift:hover { transform: translateY(-6px) scale(1.02); box-shadow: var(--shadow-1); }
 
@@ -992,7 +993,7 @@ background-color: #E7E7E780;
 .service-btn small {
     display: block;
     font-weight: normal;
-    font-size: 18px;
+    font-size: 25px;
     margin-top: 4px;
 }
 
@@ -1067,7 +1068,7 @@ background-color: #E7E7E780;
 .media-row {
     display: flex;
     gap: 20px;
-    max-width: 1200px;
+    max-width: 1300px;
     margin: auto;
     padding-bottom: 20px;
 }
@@ -1078,7 +1079,6 @@ a.blob-btn span {
 
 .tch-grid.aos-init.aos-animate {
     position: relative!important;
-    z-index: -1!important;
 }
 
 .tch-item a:hover .tch-img {
@@ -1355,17 +1355,17 @@ a.blob-btn span {
     justify-content: center;
     max-width: 1300px;
     margin: auto;
-    height: 299px;
+    height: 275px;
 }
 
 .stats-overlay {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px;
+    gap: 60px;
     color: #fff;
     font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 500;
 }
 
@@ -1397,7 +1397,7 @@ a.blob-btn span {
     }
 
     .stats-section {
-    background: url(../images/stats-bg.png) no-repeat center / contain;
+    background: url(../images/stats-bg.png) no-repeat center / cover;
     width: 95%;
 }
 
@@ -1876,13 +1876,13 @@ a.ud-item.nav-link:hover {
 /* ===== Stats Section ===== */
 @media (max-width: 768px) {
     .stats-section {
-        height: auto;
+        height: 85px;
         padding: 20px 0;
     }
     .stats-overlay {
         gap: 10px;
-        width: 80%;
-        font-size: 1px;
+        width: 90%;
+        font-size: 8px;
     }
     .divider {
         width: 40px;
@@ -2359,25 +2359,40 @@ a.ud-item.nav-link:hover {
 }
 
 /* Header */
-.universities-header-wrapper {
+.order-banner-shell {
     display: flex;
     justify-content: center;
-    align-items: center;
-    border-radius: 20px;
-    height: 315px;
-    margin-bottom: 40px;
-    margin-top: 55px;
-    background: url('../images/header-line.png') no-repeat center center / cover;
+    max-width: 1300px;
+    margin: 40px auto;
 }
 
-.universities-header {
+.order-banner-frame {
+    position: relative;
+    display: inline-block;
+}
+
+.order-banner-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+}
+
+.order-banner-title {
+    position: absolute;
+    inset: 0;
     display: flex;
-    border-radius: 20px;
-    padding: 20px 40px;
-    width: 100%;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
+
+.order-banner-title h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+}
+
 
 .universities-header-d {
     display: flex;
@@ -2558,6 +2573,11 @@ a.text-dark {
   .semesters-row {
     padding: 0 20px 0 20px;
 }
+.order-banner-frame {
+    padding: 0 10px;
+}
+
+
 .gprogram-card-main0 {
     height: 120px!important;
     font-size: 25px!important;
@@ -3360,7 +3380,7 @@ a.text-dark {
 
 .stat-item span {
     display: block;
-    font-size: 20px;
+    font-size: 27px;
     color: #ffffff;
 }
 
@@ -3585,6 +3605,11 @@ a.text-dark {
     gap: 30px;
   }
   
+  .stat-item span {
+    font-size: 15px!important;
+}
+
+
   .examx-card {
     margin: 10px;
 }
@@ -3770,9 +3795,31 @@ a.text-dark {
   position: relative;
 }
 
-.examx-dropdown{position:relative; display:inline-block}
+.examx-dropdown .examx-menu{
+  display:none!important;
+  position:absolute!important;
+  inset-inline-start:0!important;
+  top:100%!important;
+  min-width:240px!important;
+  background:#fff!important;
+  border:1px solid #e5e7eb!important;
+  border-radius:12px!important;
+  padding:8px!important;
+  box-shadow:0 18px 45px rgba(15,23,42,.2)!important;
+  z-index:999!important;
+}
+
+.examx-dropdown.is-open .examx-menu{
+  display:block!important;
+  position:static!important;   
+  box-shadow:none!important;   
+  margin-top:10px!important;
+}
+
+.tch-grid{transition:margin-top .2s ease}
+
 .examx-pill{
-  display:inline-flex; align-items:center; gap:8px;
+  display:inline-flex; align-items:center; gap:14px;
   padding:10px 14px; border:1px solid #e2e6ef; border-radius:12px;
   background:#fff; cursor:pointer; font-weight:700; min-width:220px;
   transition:box-shadow .2s ease, border-color .2s ease, background .2s ease;
@@ -3806,7 +3853,7 @@ a.text-dark {
 .examx-filters{width:100%}
 .examx-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .examx-dropdown{position:relative;display:block;width:100%}
-.examx-pill{display:flex;align-items:center;justify-content:space-between;width:100%}
+.examx-pill{display:flex;align-items:center;width:100%}
 .examx-menu{position:absolute;top:calc(100% + 8px);inset-inline-start:0;min-width:100%;width:100%}
 @media (max-width:640px){
   .examx-row{grid-template-columns:1fr}

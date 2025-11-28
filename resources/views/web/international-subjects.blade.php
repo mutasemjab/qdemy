@@ -4,10 +4,14 @@
 
 @section('content')
 <section class="grade-page">
-    <!-- International -->
-    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed0 gprogram-card-main0 ">
-        <span data-aos="fade" data-aos-duration="1000">{{$programm->localized_name}}</span>
-    </a>
+<div class="order-banner-shell" data-aos="fade-up" data-aos-duration="1000">
+    <div class="order-banner-frame">
+        <img src="{{ asset('assets_front/images/header-line.png') }}" alt="" class="order-banner-image">
+        <div class="order-banner-title">
+            <h2>{{ $programm->localized_name }}</h2>
+        </div>
+    </div>
+</div>
 
     <!-- Subjects -->
         <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="subjects-grid semester-content"  id="_semester_content">

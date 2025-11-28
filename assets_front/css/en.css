@@ -1,0 +1,18 @@
+.nav ul li {
+    margin: 0 5px!important;
+}
+
+.tj2009__item span {
+    font-weight: 800;
+    font-size: 16px!important;
+    color: #0a55d6;
+    max-width: 100px!important;
+    text-align: center !important;
+    transform: translateY(-14px)!important;
+}
+
+.order-banner-title h2 {
+    font-size: 30px!important;
+    font-weight: 700!important;
+    color: #fff;
+}

@@ -96,6 +96,7 @@
             </ul>
             <br><br>
             <div class="footer-block">
+                <!--
                 <h4 class="footer-title">{{ __('front.technical_support') }}</h4>
                 <ul class="footer-list">
                     @if ($privacyPolicy)
@@ -106,6 +107,7 @@
                         <li><a href="{{ route('page.terms-conditions') }}">{{ __('front.terms_conditions') }}</a></li>
                     @endif
                 </ul>
+                -->
             </div>
 
         </section>

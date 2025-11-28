@@ -7,11 +7,15 @@
 
 @section('content')
 <section class="co-page">
-  <div class="universities-header-wrapper" data-aos="fade-up" data-aos-duration="1000">
-    <div class="universities-header">
-      <h2>{{ str_replace('<br>', ' ', __('front.order_card')) }}</h2>
+<div class="order-banner-shell" data-aos="fade-up" data-aos-duration="1000">
+    <div class="order-banner-frame">
+        <img src="{{ asset('assets_front/images/header-line.png') }}" alt="" class="order-banner-image">
+        <div class="order-banner-title">
+            <h2>{{ str_replace('<br>', ' ', __('front.order_card')) }}</h2>
+        </div>
     </div>
-  </div>
+</div>
+
 
   <div class="co-chooser" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="200">
     <select id="coChooserSelect" class="co-chooser-select" aria-label="{{ __('front.choose_your_card') }}">

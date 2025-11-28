@@ -40,11 +40,13 @@
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="tch-grid">
         @if($teachers->count() > 0)
             @foreach ($teachers as $teacher)
+                <a href="{{route('teacher',$teacher->id)}}">
                 <div class="tch-item">
                     <a class="tch-item-a" href="{{ route('teacher', $teacher->id) }}">
                         <img class="tch-img" data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}" alt="{{ $teacher->name }}">
                     </a>
                 </div>
+                </a>
             @endforeach
         @else
             <div class="no-results">
@@ -56,4 +58,19 @@
     </div>
 </section>
 @endsection
+
+<script>
+document.addEventListener('click',function(e){
+  const btn = e.target.closest('.examx-dropdown .examx-pill');
+  if(btn){
+    const dd = btn.closest('.examx-dropdown');
+    document.querySelectorAll('.examx-dropdown').forEach(x=>{ if(x!==dd) x.classList.remove('is-open'); });
+    dd.classList.toggle('is-open');
+    return;
+  }
+  if(!e.target.closest('.examx-dropdown')){
+    document.querySelectorAll('.examx-dropdown').forEach(x=>x.classList.remove('is-open'));
+  }
+});
+</script>
 

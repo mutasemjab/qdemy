@@ -30,7 +30,10 @@ class TeacherController extends Controller
 
     public function show($id)
     {
-        $teacher = Teacher::with('courses.subject')->findOrFail($id);
+        $teacher = Teacher::with(['courses' => function($query) {
+            $query->with('subject')
+                ->orderBy('created_at', 'desc');
+        }, 'followers'])->findOrFail($id);
         
         // Check if current user is following this teacher
         $isFollowing = false;
@@ -38,9 +41,23 @@ class TeacherController extends Controller
             $isFollowing = Auth::user()->isFollowing($teacher->id);
         }
         
-        return view('web.teacher-profile', compact('teacher', 'isFollowing'));
+        // Get teacher statistics
+        $coursesCount = $teacher->courses()->count();
+        $studentsCount = $teacher->courses()->withCount('enrollments')->get()->sum('enrollments_count');
+        
+        // Get average rating
+        $averageRating = 5;
+        
+      
+        
+        return view('web.teacher-profile', compact(
+            'teacher', 
+            'isFollowing', 
+            'coursesCount', 
+            'studentsCount', 
+            'averageRating',
+        ));
     }
-
     public function toggleFollow(Request $request, $teacherId)
     {
         // Check if user is authenticated

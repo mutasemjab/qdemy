@@ -19,6 +19,10 @@
 
     <!-- Main CSS -->
     <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . (file_exists(public_path('assets_front/css/style.css')) ? filemtime(public_path('assets_front/css/style.css')) : time()) }}">
+    @if(app()->getLocale()==='en')
+    <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . (file_exists(public_path('assets_front/css/en.css')) ? filemtime(public_path('assets_front/css/en.css')) : time()) }}">
+    @endif
+
 
     @stack('styles')
     @yield('styles')
