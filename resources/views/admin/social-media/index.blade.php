@@ -15,8 +15,6 @@
         </div>
     </div>
 
- 
-
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
@@ -35,10 +33,11 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     @if($item->video)
-                                        <video width="200" height="150" controls>
-                                            <source src="{{ asset('assets/admin/uploads/' . $item->video) }}" type="video/mp4">
-                                            {{ __('messages.browser_not_support_video') }}
-                                        </video>
+                                        <a href="{{ $item->video }}" target="_blank" class="btn btn-sm btn-primary">
+                                            <i class="fab fa-youtube"></i> {{ __('messages.view_video') }}
+                                        </a>
+                                        <br>
+                                        <small class="text-muted">{{ Str::limit($item->video, 40) }}</small>
                                     @else
                                         <span class="text-muted">{{ __('messages.no_video') }}</span>
                                     @endif

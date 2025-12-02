@@ -8,12 +8,12 @@
 @section('content')
 <section class="co-page">
 <div class="order-banner-shell" data-aos="fade-up" data-aos-duration="1000">
-    <div class="order-banner-frame">
-        <img src="{{ asset('assets_front/images/header-line.png') }}" alt="" class="order-banner-image">
-        <div class="order-banner-title">
-            <h2>{{ str_replace('<br>', ' ', __('front.order_card')) }}</h2>
-        </div>
+  <div class="order-banner-frame">
+    <img src="{{ asset('assets_front/images/header-line.png') }}" alt="" class="order-banner-image">
+    <div class="order-banner-title">
+      <h2>{{ str_replace('<br>', ' ', __('front.order_card')) }}</h2>
     </div>
+  </div>
 </div>
 
 
@@ -511,6 +511,42 @@
     max-width: 80px;
   }
 }
+.order-banner-shell {
+  margin-bottom: 24px;
+}
+
+.order-banner-frame {
+  position: relative;
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.order-banner-image {
+  width: 100%;
+  height: 309px;
+  object-fit: cover;
+  display: block;
+}
+
+.order-banner-title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.order-banner-title h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 28px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.45);
+}
+
 </style>
 
 <script>

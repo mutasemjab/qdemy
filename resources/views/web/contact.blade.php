@@ -95,19 +95,25 @@
       
     <section data-aos="fade-up" data-aos-delay="200" class="qdemy-contact">
     <div class="qdemy-contact__inner">
-        <h2 class="qdemy-contact__title">تواصل معنا</h2>
+        <h2 class="qdemy-contact__title"> {{ __('front.Contact Us') }}</h2>
 
         <div class="qdemy-contact__cards">
             <a href="mailto:QDEMY@INFO.COM" class="qdemy-contact__card">
-                <img src="{{ asset('assets_front/images/demy-contact-email.png') }}" alt="إيميل">
+                <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/demy-contact-email.png") 
+                            : asset("assets_front/images/en/demy-contact-email.png") }}" alt="إيميل">
             </a>
 
             <a href="tel:+962796691306" class="qdemy-contact__card">
-                <img src="{{ asset('assets_front/images/qdemy-contact-phone.png') }}" alt="هاتف">
+                <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-contact-phone.png") 
+                            : asset("assets_front/images/en/qdemy-contact-phone.png") }}" alt="هاتف">
             </a>
 
             <a href="https://wa.me/962796691306" class="qdemy-contact__card" target="_blank" rel="noopener">
-                <img src="{{ asset('assets_front/images/qdemy-contact-whatsapp.png') }}" alt="واتس اب">
+                <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-contact-whatsapp.png") 
+                            : asset("assets_front/images/en/qdemy-contact-whatsapp.png") }}" alt="واتس اب">
             </a>
         </div>
     </div>

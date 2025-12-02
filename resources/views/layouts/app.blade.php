@@ -261,6 +261,257 @@
         });
     </script>
 
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const wrap=document.querySelector('.tch-wrap');
+  const grid=document.querySelector('.tch-grid');
+
+  function closeAll(){
+    document.querySelectorAll('.examx-dropdown.is-open').forEach(d=>d.classList.remove('is-open'));
+    if(grid) grid.style.marginTop='';
+  }
+
+  function adjustPush(dd){
+    const menu=dd?.querySelector('.examx-menu');
+    if(!grid||!menu) return;
+    requestAnimationFrame(()=>{
+      const h=menu.offsetHeight||0;
+      grid.style.marginTop = dd.classList.contains('is-open') ? (h+16)+'px' : '';
+    });
+  }
+
+  document.addEventListener('click',function(e){
+    const btn=e.target.closest('.examx-dropdown .examx-pill');
+    if(btn){
+      const dd=btn.closest('.examx-dropdown');
+      document.querySelectorAll('.examx-dropdown').forEach(x=>{ if(x!==dd) x.classList.remove('is-open'); });
+      dd.classList.toggle('is-open');
+      adjustPush(dd);
+      return;
+    }
+    if(!e.target.closest('.examx-dropdown')){
+      closeAll();
+    }
+  });
+
+  window.addEventListener('resize',function(){
+    const open=document.querySelector('.examx-dropdown.is-open');
+    if(open) adjustPush(open);
+  });
+
+  if(wrap){
+    new MutationObserver(()=> {
+      const open=document.querySelector('.examx-dropdown.is-open');
+      if(open) adjustPush(open);
+    }).observe(wrap,{subtree:true,childList:true});
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var block = document.querySelector(".fm3d-videos-block");
+    if (!block) return;
+
+    var cards = Array.prototype.slice.call(block.querySelectorAll(".fm3d-video-card"));
+    var dotsContainer = block.querySelector(".fm3d-videos-dots");
+    var prevBtn = block.querySelector(".fm3d-nav-prev");
+    var nextBtn = block.querySelector(".fm3d-nav-next");
+    var modal = document.getElementById("fm3dVideoModal");
+    var modalIframe = modal.querySelector(".fm3d-video-iframe");
+    var modalPrev = modal.querySelector(".fm3d-video-modal-prev");
+    var modalNext = modal.querySelector(".fm3d-video-modal-next");
+    var modalClose = modal.querySelector(".fm3d-video-modal-close");
+
+    var currentIndex = 0;
+    var autoplayDelay = 6000;
+    var autoplayTimer = null;
+    var dots = [];
+
+    if (cards.length === 0) return;
+
+    function extractYoutubeId(url) {
+        if (!url) return "";
+        url = url.trim();
+        var id = "";
+        var match;
+
+        if (url.indexOf("youtu.be/") !== -1) {
+            match = url.match(/youtu\.be\/([^?&\/]+)/);
+            if (match && match[1]) id = match[1];
+        } else if (url.indexOf("youtube.com") !== -1) {
+            match = url.match(/[?&]v=([^?&]+)/);
+            if (match && match[1]) id = match[1];
+
+            if (!id) {
+                match = url.match(/embed\/([^?&\/]+)/);
+                if (match && match[1]) id = match[1];
+            }
+
+            if (!id) {
+                match = url.match(/shorts\/([^?&\/]+)/);
+                if (match && match[1]) id = match[1];
+            }
+        }
+
+        return id;
+    }
+
+    function getYoutubeEmbed(url) {
+        var videoId = extractYoutubeId(url);
+        if (!videoId) return url || "";
+        return "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0";
+    }
+
+    cards.forEach(function (card, index) {
+        var dot = document.createElement("div");
+        dot.className = "fm3d-dot";
+        dot.dataset.index = String(index);
+        dotsContainer.appendChild(dot);
+        dots.push(dot);
+
+        var videoUrl = card.dataset.video || "";
+        var videoId = extractYoutubeId(videoUrl);
+        var cover = card.querySelector(".fm3d-video-cover");
+        if (cover && videoId) {
+            cover.style.backgroundImage =
+                "url('https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg')";
+        }
+    });
+
+    function normalizeIndex(index) {
+        var total = cards.length;
+        return (index + total) % total;
+    }
+
+    function applyPositions() {
+        var total = cards.length;
+        cards.forEach(function (card, index) {
+            card.classList.remove("fm3d-pos-center", "fm3d-pos-left", "fm3d-pos-right", "fm3d-pos-out");
+            var diff = normalizeIndex(index - currentIndex);
+            if (diff === 0) {
+                card.classList.add("fm3d-pos-center");
+            } else if (diff === 1) {
+                card.classList.add("fm3d-pos-right");
+            } else if (diff === total - 1) {
+                card.classList.add("fm3d-pos-left");
+            } else {
+                card.classList.add("fm3d-pos-out");
+            }
+        });
+        dots.forEach(function (dot, index) {
+            dot.classList.toggle("fm3d-dot-active", index === currentIndex);
+        });
+    }
+
+    function gotoIndex(index) {
+        currentIndex = normalizeIndex(index);
+        applyPositions();
+    }
+
+    function goNext() {
+        gotoIndex(currentIndex + 1);
+    }
+
+    function goPrev() {
+        gotoIndex(currentIndex - 1);
+    }
+
+    function startAutoplay() {
+        clearAutoplay();
+        autoplayTimer = setInterval(goNext, autoplayDelay);
+    }
+
+    function clearAutoplay() {
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    function openModalForIndex(index) {
+        currentIndex = normalizeIndex(index);
+        applyPositions();
+        var videoUrl = cards[currentIndex].dataset.video || "";
+        var embedUrl = getYoutubeEmbed(videoUrl);
+        modalIframe.src = embedUrl;
+        modal.classList.add("fm3d-modal-open");
+        clearAutoplay();
+    }
+
+    function closeModal() {
+        modal.classList.remove("fm3d-modal-open");
+        modalIframe.src = "";
+        startAutoplay();
+    }
+
+    cards.forEach(function (card, index) {
+        var trigger = card.querySelector(".fm3d-video-play");
+        if (trigger) {
+            trigger.addEventListener("click", function () {
+                openModalForIndex(index);
+            });
+        }
+    });
+
+    prevBtn.addEventListener("click", function () {
+        goPrev();
+        startAutoplay();
+    });
+
+    nextBtn.addEventListener("click", function () {
+        goNext();
+        startAutoplay();
+    });
+
+    dots.forEach(function (dot) {
+        dot.addEventListener("click", function () {
+            var index = parseInt(dot.dataset.index, 10);
+            gotoIndex(index);
+            startAutoplay();
+        });
+    });
+
+    modalPrev.addEventListener("click", function () {
+        goPrev();
+        openModalForIndex(currentIndex);
+    });
+
+    modalNext.addEventListener("click", function () {
+        goNext();
+        openModalForIndex(currentIndex);
+    });
+
+    modalClose.addEventListener("click", function () {
+        closeModal();
+    });
+
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener("keydown", function (e) {
+        if (!modal.classList.contains("fm3d-modal-open")) return;
+        if (e.key === "Escape") {
+            closeModal();
+        } else if (e.key === "ArrowLeft") {
+            goPrev();
+            openModalForIndex(currentIndex);
+        } else if (e.key === "ArrowRight") {
+            goNext();
+            openModalForIndex(currentIndex);
+        }
+    });
+
+    applyPositions();
+    startAutoplay();
+});
+
+</script>
+
+
     <script>
         document.querySelectorAll('.tab-btn').forEach((btn, index) => {
             btn.addEventListener('click', () => {

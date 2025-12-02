@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', __('front.Contact Us'))
+@section('title', __('front.about_us'))
 
 @section('content')
 <section class="qdemy-about">
@@ -7,7 +7,9 @@
 
         <div class="qdemy-about__hero">
             <div class="qdemy-about__hero-image">
-                <img src="{{ asset('assets_front/images/qdemy-hero-books.png') }}" alt="QDEMY Platform">
+                <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-hero-books.png") 
+                            : asset("assets_front/images/en/qdemy-hero-books.png") }}" alt="QDEMY Platform">
             </div>
         </div>
 
@@ -15,13 +17,19 @@
             <div class="qdemy-about__features-bg"></div>
             <div class="qdemy-about__features-grid">
                 <div class="qdemy-feature qdemy-feature--image">
-                    <img src="{{ asset('assets_front/images/qdemy-card-1.png') }}" alt="تعلم بذكاء">
+                    <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-card-1.png") 
+                            : asset("assets_front/images/en/qdemy-card-1.png") }}" alt="تعلم بذكاء">
                 </div>
                 <div class="qdemy-feature qdemy-feature--image">
-                    <img src="{{ asset('assets_front/images/qdemy-card-2.png') }}" alt="بنشرحها صح">
+                    <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-card-2.png") 
+                            : asset("assets_front/images/en/qdemy-card-2.png") }}" alt="بنشرحها صح">
                 </div>
                 <div class="qdemy-feature qdemy-feature--image">
-                    <img src="{{ asset('assets_front/images/qdemy-card-3.png') }}" alt="يوصلك للعلامة الكاملة">
+                    <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-card-3.png") 
+                            : asset("assets_front/images/en/qdemy-card-3.png") }}" alt="يوصلك للعلامة الكاملة">
                 </div>
             </div>
         </div>
@@ -29,13 +37,17 @@
 
         <div class="qdemy-about__founder">
                 <div class="qdemy-about__founder-circle">
-                    <img src="{{ asset('assets_front/images/qdemy-founder.png') }}" alt="Ahmed Khalil">
+                    <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-founder.png") 
+                            : asset("assets_front/images/en/qdemy-founder.png") }}" alt="Ahmed Khalil">
                 </div>
         </div>
 
         <div class="qdemy-about__identity">
                 <div class="qdemy-about__founder-id">
-                    <img src="{{ asset('assets_front/images/qdemy-iden.png') }}" alt="Ahmed Khalil">
+                    <img src="{{ app()->getLocale() == "ar" 
+                            ? asset("assets_front/images/qdemy-iden.png") 
+                            : asset("assets_front/images/en/qdemy-iden.png") }}" alt="Ahmed Khalil">
                 </div>
         </div>
 

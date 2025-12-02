@@ -8,7 +8,7 @@
     
     <div data-aos="fade-up" data-aos-duration="1000" class="gprogram-card gprogram-card-mixed0 gprogram-card-main0">
         <div class="universities-header">
-            <h2>الجامعات والكليات</h2> <br>
+            <h2>{{__('front.universities_colleges')}}</h2> <br>
         </div>
     </div>
     </a>

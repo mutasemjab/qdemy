@@ -9,20 +9,21 @@
                     <h4>{{ __('messages.add_social_media') }}</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('social-media.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('social-media.store') }}" method="POST">
                         @csrf
 
                         <div class="mb-3">
-                            <label for="video" class="form-label">{{ __('messages.video') }} <span class="text-danger">*</span></label>
-                            <input type="file" 
+                            <label for="video" class="form-label">{{ __('messages.YouTube') }} <span class="text-danger">*</span></label>
+                            <input type="url" 
                                    class="form-control @error('video') is-invalid @enderror" 
                                    id="video" 
                                    name="video" 
-                                   accept="video/*">
+                                   value="{{ old('video') }}"
+                                   placeholder="https://www.youtube.com/watch?v=...">
                             @error('video')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">{{ __('messages.video_formats') }}</small>
+                            <small class="text-muted">{{ __('messages.enter_youtube_url') }}</small>
                         </div>
 
                         <div class="mb-3">

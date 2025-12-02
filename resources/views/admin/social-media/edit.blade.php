@@ -9,32 +9,32 @@
                     <h4>{{ __('messages.edit_social_media') }}</h4>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('social-media.update', $socialMedia->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('social-media.update', $social_medium->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="mb-3">
-                            <label for="video" class="form-label">{{ __('messages.video') }}</label>
+                            <label for="video" class="form-label">{{ __('messages.youtube_link') }} <span class="text-danger">*</span></label>
                             
-                            @if($socialMedia->video)
+                            @if($social_medium->video)
                                 <div class="mb-2">
-                                    <video width="300" height="200" controls>
-                                        <source src="{{ asset('assets/admin/uploads/' . $socialMedia->video) }}" type="video/mp4">
-                                        {{ __('messages.browser_not_support_video') }}
-                                    </video>
-                                    <p class="text-muted small">{{ __('messages.current_video') }}</p>
+                                    <a href="{{ $social_medium->video }}" target="_blank" class="btn btn-sm btn-info">
+                                        {{ __('messages.view_current_video') }}
+                                    </a>
+                                    <p class="text-muted small mt-1">{{ __('messages.current_link') }}: {{ Str::limit($social_medium->video, 50) }}</p>
                                 </div>
                             @endif
 
-                            <input type="file" 
+                            <input type="url" 
                                    class="form-control @error('video') is-invalid @enderror" 
                                    id="video" 
                                    name="video" 
-                                   accept="video/*">
+                                   value="{{ old('video', $social_medium->video) }}"
+                                   placeholder="https://www.youtube.com/watch?v=...">
                             @error('video')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">{{ __('messages.leave_blank_keep_current') }}</small>
+                            <small class="text-muted">{{ __('messages.enter_youtube_url') }}</small>
                         </div>
 
                         <div class="mb-3">

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@php $title = $title ?? 'courses' @endphp
+@php $title = $title ?? __('front.courses') @endphp
 @section('title', translate_lang($title))
 
 @section('content')

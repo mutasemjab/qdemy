@@ -15,13 +15,17 @@
                 <div class="hero-column right-column">
                     <a href="{{ route('courses') }}" class="blob-btn blob-btn-1 blob-3d" data-aos="fade-left"
                         data-aos-duration="1000" data-aos-delay="300"
-                        style="background-image: url('{{ asset('assets_front/images/blob2.png') }}');">
+                        style="background-image: url('{{ app()->getLocale() == 'ar'
+                            ? asset('assets_front/images/blob2.png')
+                            : asset('assets_front/images/en/blob2.png') }}');">
 
                     </a>
 
                     <a href="{{ route('user.register') }}" class="blob-btn blob-btn-2 blob-3d" data-aos="fade-left"
                         data-aos-duration="1200" data-aos-delay="350"
-                        style="background-image: url('{{ asset('assets_front/images/blob3.png') }}');">
+                        style="background-image: url('{{ app()->getLocale() == 'ar'
+                            ? asset('assets_front/images/blob3.png')
+                            : asset('assets_front/images/en/blob3.png') }}');">
 
                     </a>
                 </div>
@@ -30,7 +34,9 @@
                 <div class="hero-column center-column">
                     <a href="{{ route('card-order') }}" class="blob-btn blob-btn-3  anim animate-pulse blob-3d"
                         data-aos="fade" data-aos-duration="1000" data-aos-delay="300"
-                        style="background-image: url('{{ asset('assets_front/images/blob1.png') }}');">
+                        style="background-image: url('{{ app()->getLocale() == 'ar'
+                            ? asset('assets_front/images/blob1.png')
+                            : asset('assets_front/images/en/blob1.png') }}');">
 
                     </a>
                 </div>
@@ -41,8 +47,10 @@
             <!-- Left Side: Person Image + Background Shape -->
             <div class="hero-left">
                 <div class="hero-person">
-                    <img data-src="{{ asset('assets_front/images/home/person.png') }}" alt="Person" class="person-img"
-                        data-aos="fade-up">
+                    <img data-src="{{ app()->getLocale() == 'ar'
+                        ? asset('assets_front/images/home/person.png')
+                        : asset('assets_front/images/en/person.png') }}"
+                        alt="Person" class="person-img" data-aos="fade-up">
                 </div>
             </div>
         </div>
@@ -50,16 +58,24 @@
         <!-- Bottom Cards -->
         <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="hero-cards">
             <a href="{{ route('tawjihi-programm') }}" class="hero-card"
-                style="background-image: url('{{ asset('assets_front/images/card1.png') }}');">
+                style="background-image: url('{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/card1.png')
+                    : asset('assets_front/images/en/card1.png') }}');">
             </a>
             <a href="{{ route('grades_basic-programm') }}" class="hero-card"
-                style="background-image: url('{{ asset('assets_front/images/card2.png') }}');">
+                style="background-image: url('{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/card2.png')
+                    : asset('assets_front/images/en/card2.png') }}');">
             </a>
             <a href="{{ route('universities-programm') }}" class="hero-card"
-                style="background-image: url('{{ asset('assets_front/images/card3.png') }}');">
+                style="background-image: url('{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/card3.png')
+                    : asset('assets_front/images/en/card3.png') }}');">
             </a>
             <a href="{{ route('international-programms') }}" class="hero-card"
-                style="background-image: url('{{ asset('assets_front/images/card4.png') }}');">
+                style="background-image: url('{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/card4.png')
+                    : asset('assets_front/images/en/card4.png') }}');">
             </a>
         </div>
 
@@ -68,8 +84,10 @@
     <section class="features">
         <h2 data-aos="zoom-in-up">{{ __('front.What Makes QDEMY Special') }}</h2>
         <div class="features__media" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300">
-            <img src="{{ asset('assets_front/images/specialist.png') }}" alt="" class="features__img"
-                loading="lazy">
+            <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/specialist.png')
+                : asset('assets_front/images/en/specialist.png') }}"
+                alt="" class="features__img" loading="lazy">
         </div>
     </section>
 
@@ -106,13 +124,13 @@
             <button class="x3c-arrow x3c-left">&#10094;</button>
             <div class="x3c-rail">
                 @foreach ($teachers as $teacher)
-                <a href="{{route('teacher',$teacher->id)}}">
-                    <div class="x3c-cell">
-                        <div class="x3c-fig">
-                            <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}"
-                                alt="{{ $teacher->name }}">
+                    <a href="{{ route('teacher', $teacher->id) }}">
+                        <div class="x3c-cell">
+                            <div class="x3c-fig">
+                                <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}"
+                                    alt="{{ $teacher->name }}">
+                            </div>
                         </div>
-                    </div>
                     </a>
                 @endforeach
             </div>
@@ -121,56 +139,49 @@
     </section>
 
 
-    <section data-aos="zoom-in-up" class="social-media">
-        <h2 data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
+    <section data-aos="zoom-in-up" class="fm3d-videos-block">
+        <div class="fm3d-videos-inner">
+            <h2 class="fm3d-videos-title" data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
+            <div class="fm3d-videos-shell">
+                <button class="fm3d-nav-arrow fm3d-nav-prev" type="button">
+                    <span class="fm3d-nav-chevron"></span>
+                </button>
 
-        @php $videoIndex = 0; @endphp
-        @for ($i = 0; $i < min(2, ceil($socialMediaVideos->count() / 2)); $i++)
-            <div class="media-row">
-                @if ($videoIndex < $socialMediaVideos->count())
-                    <div class="media-video"
-                        data-video="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}">
-                        <video muted loop playsinline preload="metadata">
-                            <source src="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}"
-                                type="video/mp4">
-                        </video>
-                        <div class="overlay">
-                            <i class="fas fa-play"></i>
+                <div class="fm3d-videos-strip">
+                    @foreach ($socialMediaVideos as $item)
+                        <div class="fm3d-video-card" data-video="{{ $item->video }}">
+                            <div class="fm3d-video-cover"></div>
+                            <button class="fm3d-video-play" type="button">
+                                <span class="fm3d-play-ring"></span>
+                                <span class="fm3d-play-triangle"></span>
+                            </button>
                         </div>
-                    </div>
-                    @php $videoIndex++; @endphp
-                @endif
+                    @endforeach
+                </div>
 
-                @if ($videoIndex < $socialMediaVideos->count())
-                    <div class="media-video"
-                        data-video="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}">
-                        <video muted loop playsinline preload="metadata">
-                            <source src="{{ asset('assets/admin/uploads/' . $socialMediaVideos[$videoIndex]->video) }}"
-                                type="video/mp4">
-                        </video>
-                        <div class="overlay">
-                            <i class="fas fa-play"></i>
-                        </div>
-                    </div>
-                    @php $videoIndex++; @endphp
-                @endif
+                <button class="fm3d-nav-arrow fm3d-nav-next" type="button">
+                    <span class="fm3d-nav-chevron"></span>
+                </button>
             </div>
-        @endfor
 
-        <div class="video-popup">
-            <div class="popup-content">
-                <span class="close-btn">&times;</span>
-                <video controls controlsList="nodownload">
-                    <source src="" type="video/mp4">
-                    {{ __('front.browser_not_support_video') }}
-                </video>
-            </div>
+            <div class="fm3d-videos-dots"></div>
         </div>
 
-        <div class="image-popup">
-            <div class="popup-content">
-                <span class="close-btn">&times;</span>
-                <img data-src="" alt="">
+        <div class="fm3d-video-modal" id="fm3dVideoModal">
+            <div class="fm3d-video-modal-layer">
+                <button class="fm3d-video-modal-close" type="button">&times;</button>
+                <div class="fm3d-video-modal-layout">
+                    <button class="fm3d-video-modal-arrow fm3d-video-modal-prev" type="button">
+                        <span class="fm3d-modal-chevron"></span>
+                    </button>
+                    <div class="fm3d-video-modal-frame">
+                        <iframe class="fm3d-video-iframe" src="" allow="autoplay; encrypted-media"
+                            allowfullscreen></iframe>
+                    </div>
+                    <button class="fm3d-video-modal-arrow fm3d-video-modal-next" type="button">
+                        <span class="fm3d-modal-chevron"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </section>
@@ -268,16 +279,16 @@
             <div class="blog-slider__track">
                 @foreach ($blogs as $blog)
                     <article class="blog-card">
-                        <a href="#">
+                        <a href="{{ route('frontBlog.show', $blog->id) }}">
                             <div class="blog-card__image">
                                 <img data-src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}"
-                                    alt="">
+                                    alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}">
                             </div>
                             <h3 class="blog-card__title">
                                 {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
                             </h3>
                             <p class="blog-card__excerpt">
-                                {{ app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) }}
+                                {!! app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) !!}
                             </p>
                         </a>
                     </article>

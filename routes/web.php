@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Web\BlogController;
 use App\Http\Controllers\Web\AboutController;
 use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\BankQuestionController;
@@ -54,6 +55,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
 
     Route::post('/process-payment', [CardController::class, 'processPayment'])->name('payment.process');// not use yet when get payment gatway we will use it
+    Route::get('/blog/{id}', [BlogController::class, 'show'])->name('frontBlog.show');
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/about', [AboutController::class, 'index'])->name('about');
