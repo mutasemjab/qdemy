@@ -166,7 +166,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('banners', BannerController::class);
         Route::resource('settings', SettingController::class);
         Route::resource('teachers', TeacherController::class);
-        Route::resource('questionWebsites', QuestionWebsiteController::class);
+        Route::resource('questionWebsites', QuestionWebsiteController::class)
+        ->parameters(['questionWebsites' => 'question']);
         Route::resource('opinions', OpinionStudentController::class);
         Route::resource('parents', ParentController::class);
         Route::delete('parents/{parent}/students/{student}', [ParentController::class, 'removeStudent'])->name('parents.remove-student');
