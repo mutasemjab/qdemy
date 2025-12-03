@@ -2385,6 +2385,78 @@ return [
   'BannedWord_Deleted_Successfully' => 'Word deleted successfully',
   'No_Permission' => 'You do not have permission to perform this action',
   'Activity Logs' => 'Activity Logs',
+   'FAQ Management' => 'FAQ Management',
+    'Create FAQ' => 'Create FAQ',
+    'Edit FAQ' => 'Edit FAQ',
+    'View FAQ' => 'View FAQ',
+    
+    // Buttons
+    'Add FAQ' => 'Add FAQ',
+    'Update FAQ' => 'Update FAQ',
+    'Create FAQ' => 'Create FAQ',
+    'Delete FAQ' => 'Delete FAQ',
+    'Edit FAQ' => 'Edit FAQ',
+    'Back to FAQs' => 'Back to FAQs',
+    'Back to List' => 'Back to List',
+    'View' => 'View',
+    'Edit' => 'Edit',
+    'Delete' => 'Delete',
+    'Cancel' => 'Cancel',
+    'Search' => 'Search',
+    'Reset' => 'Reset',
+    
+    // Form Labels
+    'Question' => 'Question',
+    'Answer' => 'Answer',
+    'Category' => 'Category',
+    'Question (English)' => 'Question (English)',
+    'Question (Arabic)' => 'Question (Arabic)',
+    'Answer (English)' => 'Answer (English)',
+    'Answer (Arabic)' => 'Answer (Arabic)',
+    
+    // Language Sections
+    'English Version' => 'English Version',
+    'Arabic Version' => 'Arabic Version',
+    'English' => 'English',
+    'Arabic' => 'Arabic',
+    
+    // Categories
+    'All Categories' => 'All Categories',
+    'Select Category' => 'Select Category',
+    'Registration' => 'Registration',
+    'Payment' => 'Payment',
+    'Card' => 'Card',
+    'Courses' => 'Courses',
+    'Technical' => 'Technical',
+    'Privacy' => 'Privacy',
+    'Account' => 'Account',
+    
+    // Placeholders
+    'Enter the frequently asked question' => 'Enter the frequently asked question',
+    'Enter the frequently asked question in English' => 'Enter the frequently asked question in English',
+    'Enter the frequently asked question in Arabic' => 'Enter the frequently asked question in Arabic',
+    'Provide a detailed and helpful answer' => 'Provide a detailed and helpful answer',
+    'Provide a detailed and helpful answer in English' => 'Provide a detailed and helpful answer in English',
+    'Provide a detailed and helpful answer in Arabic' => 'Provide a detailed and helpful answer in Arabic',
+    'Search questions and answers...' => 'Search questions and answers...',
+    
+    // Help Text
+    'Make it clear and concise' => 'Make it clear and concise',
+    'Be thorough and helpful in your response' => 'Be thorough and helpful in your response',
+    
+    // Messages
+    'Current FAQ' => 'Current FAQ',
+    'No FAQs found' => 'No FAQs found',
+    'Create your first FAQ' => 'Create your first FAQ',
+    'FAQ created successfully' => 'FAQ created successfully',
+    'FAQ updated successfully' => 'FAQ updated successfully',
+    'FAQ deleted successfully' => 'FAQ deleted successfully',
+    'Are you sure you want to delete this FAQ?' => 'Are you sure you want to delete this FAQ?',
+    
+    // Metadata
+    'Information' => 'Information',
+    'Created At' => 'Created At',
+    'Updated At' => 'Updated At',
   '' => '',
   '' => '',
   '' => '',

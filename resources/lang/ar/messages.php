@@ -2339,6 +2339,78 @@ return [
     'BannedWord_Deleted_Successfully' => 'تم حذف الكلمة بنجاح',
     'No_Permission' => 'ليس لديك صلاحية للقيام بهذا الإجراء',
     'Activity Logs' => 'تسجيل حركات النظام',
+       'FAQ Management' => 'إدارة الأسئلة الشائعة',
+    'Create FAQ' => 'إنشاء سؤال شائع',
+    'Edit FAQ' => 'تعديل السؤال الشائع',
+    'View FAQ' => 'عرض السؤال الشائع',
+    
+    // Buttons
+    'Add FAQ' => 'إضافة سؤال شائع',
+    'Update FAQ' => 'تحديث السؤال الشائع',
+    'Create FAQ' => 'إنشاء السؤال الشائع',
+    'Delete FAQ' => 'حذف السؤال الشائع',
+    'Edit FAQ' => 'تعديل السؤال الشائع',
+    'Back to FAQs' => 'العودة للأسئلة الشائعة',
+    'Back to List' => 'العودة للقائمة',
+    'View' => 'عرض',
+    'Edit' => 'تعديل',
+    'Delete' => 'حذف',
+    'Cancel' => 'إلغاء',
+    'Search' => 'بحث',
+    'Reset' => 'إعادة تعيين',
+    
+    // Form Labels
+    'Question' => 'السؤال',
+    'Answer' => 'الإجابة',
+    'Category' => 'التصنيف',
+    'Question (English)' => 'السؤال (بالإنجليزية)',
+    'Question (Arabic)' => 'السؤال (بالعربية)',
+    'Answer (English)' => 'الإجابة (بالإنجليزية)',
+    'Answer (Arabic)' => 'الإجابة (بالعربية)',
+    
+    // Language Sections
+    'English Version' => 'النسخة الإنجليزية',
+    'Arabic Version' => 'النسخة العربية',
+    'English' => 'الإنجليزية',
+    'Arabic' => 'العربية',
+    
+    // Categories
+    'All Categories' => 'جميع التصنيفات',
+    'Select Category' => 'اختر التصنيف',
+    'Registration' => 'التسجيل',
+    'Payment' => 'الدفع',
+    'Card' => 'البطاقة',
+    'Courses' => 'الدورات',
+    'Technical' => 'التقنية',
+    'Privacy' => 'الخصوصية',
+    'Account' => 'الحساب',
+    
+    // Placeholders
+    'Enter the frequently asked question' => 'أدخل السؤال الشائع',
+    'Enter the frequently asked question in English' => 'أدخل السؤال الشائع بالإنجليزية',
+    'Enter the frequently asked question in Arabic' => 'أدخل السؤال الشائع بالعربية',
+    'Provide a detailed and helpful answer' => 'قدم إجابة مفصلة ومفيدة',
+    'Provide a detailed and helpful answer in English' => 'قدم إجابة مفصلة ومفيدة بالإنجليزية',
+    'Provide a detailed and helpful answer in Arabic' => 'قدم إجابة مفصلة ومفيدة بالعربية',
+    'Search questions and answers...' => 'ابحث في الأسئلة والأجوبة...',
+    
+    // Help Text
+    'Make it clear and concise' => 'اجعله واضحاً ومختصراً',
+    'Be thorough and helpful in your response' => 'كن شاملاً ومفيداً في إجابتك',
+    
+    // Messages
+    'Current FAQ' => 'السؤال الشائع الحالي',
+    'No FAQs found' => 'لم يتم العثور على أسئلة شائعة',
+    'Create your first FAQ' => 'أنشئ سؤالك الشائع الأول',
+    'FAQ created successfully' => 'تم إنشاء السؤال الشائع بنجاح',
+    'FAQ updated successfully' => 'تم تحديث السؤال الشائع بنجاح',
+    'FAQ deleted successfully' => 'تم حذف السؤال الشائع بنجاح',
+    'Are you sure you want to delete this FAQ?' => 'هل أنت متأكد من حذف هذا السؤال الشائع؟',
+    
+    // Metadata
+    'Information' => 'المعلومات',
+    'Created At' => 'تاريخ الإنشاء',
+    'Updated At' => 'تاريخ التحديث',
   '' => '',
   '' => '',
 ];
