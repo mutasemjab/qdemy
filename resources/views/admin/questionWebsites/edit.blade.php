@@ -8,7 +8,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">{{ __('messages.Edit FAQ') }}</h3>
                     <div>
-                        <a href="{{ route('questionWebsites.show', $question) }}" class="btn btn-info">
+                        <a href="{{ route('questionWebsites.show', $question->id) }}" class="btn btn-info">
                             <i class="fas fa-eye"></i> {{ __('messages.View') }}
                         </a>
                         <a href="{{ route('questionWebsites.index') }}" class="btn btn-secondary">
