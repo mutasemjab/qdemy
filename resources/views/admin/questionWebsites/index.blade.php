@@ -14,16 +14,29 @@
                     @endcan
                 </div>
 
-                <!-- Search -->
+                <!-- Search and Filter -->
                 <div class="card-body">
                     <form method="GET" action="{{ route('questionWebsites.index') }}" class="mb-4">
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <input type="text" name="search" class="form-control" 
                                        placeholder="{{ __('messages.Search questions and answers...') }}" 
                                        value="{{ request('search') }}">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                                <select name="type" class="form-control">
+                                    <option value="">{{ __('messages.All Categories') }}</option>
+                                    <option value="all" {{ request('type') == 'all' ? 'selected' : '' }}>{{ __('messages.All Categories') }}</option>
+                                    <option value="register" {{ request('type') == 'register' ? 'selected' : '' }}>{{ __('messages.Registration') }}</option>
+                                    <option value="payment" {{ request('type') == 'payment' ? 'selected' : '' }}>{{ __('messages.Payment') }}</option>
+                                    <option value="card" {{ request('type') == 'card' ? 'selected' : '' }}>{{ __('messages.Card') }}</option>
+                                    <option value="courses" {{ request('type') == 'courses' ? 'selected' : '' }}>{{ __('messages.Courses') }}</option>
+                                    <option value="technical" {{ request('type') == 'technical' ? 'selected' : '' }}>{{ __('messages.Technical') }}</option>
+                                    <option value="privacy" {{ request('type') == 'privacy' ? 'selected' : '' }}>{{ __('messages.Privacy') }}</option>
+                                    <option value="account" {{ request('type') == 'account' ? 'selected' : '' }}>{{ __('messages.Account') }}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
                                 <button type="submit" class="btn btn-info">
                                     <i class="fas fa-search"></i> {{ __('messages.Search') }}
                                 </button>
@@ -40,28 +53,83 @@
                             <div class="faq-card">
                                 <div class="faq-header" data-toggle="collapse" data-target="#faq-{{ $question->id }}" 
                                      aria-expanded="false" aria-controls="faq-{{ $question->id }}">
-                                    <h5 class="faq-question">
-                                        <i class="fas fa-question-circle text-primary"></i>
-                                        {{ $question->question }}
-                                    </h5>
-                                   
+                                    <div class="faq-question-wrapper">
+                                        <h5 class="faq-question">
+                                            <i class="fas fa-question-circle text-primary"></i>
+                                            @if(app()->getLocale() == 'ar')
+                                                {{ $question->question_ar }}
+                                            @else
+                                                {{ $question->question_en }}
+                                            @endif
+                                        </h5>
+                                        <div class="faq-meta">
+                                            <span class="badge badge-info">
+                                                <i class="fas fa-tag"></i> {{ ucfirst($question->type) }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-chevron-down toggle-icon"></i>
                                 </div>
                                 
                                 <div class="collapse" id="faq-{{ $question->id }}">
                                     <div class="faq-body">
-                                        <div class="faq-answer">
-                                            <i class="fas fa-reply text-success"></i>
-                                            <div class="answer-content">
-                                                {{ $question->answer }}
+                                        <!-- English Version -->
+                                        <div class="language-version">
+                                            <h6 class="language-title">
+                                                <i class="fas fa-flag text-primary"></i> {{ __('messages.English') }}
+                                            </h6>
+                                            <div class="faq-answer">
+                                                <div class="answer-label">
+                                                    <i class="fas fa-question-circle text-primary"></i>
+                                                    <strong>{{ __('messages.Question') }}:</strong>
+                                                </div>
+                                                <div class="answer-content">
+                                                    {{ $question->question_en }}
+                                                </div>
+                                            </div>
+                                            <div class="faq-answer">
+                                                <div class="answer-label">
+                                                    <i class="fas fa-reply text-success"></i>
+                                                    <strong>{{ __('messages.Answer') }}:</strong>
+                                                </div>
+                                                <div class="answer-content">
+                                                    {{ $question->answer_en }}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <hr>
+
+                                        <!-- Arabic Version -->
+                                        <div class="language-version">
+                                            <h6 class="language-title">
+                                                <i class="fas fa-flag text-danger"></i> {{ __('messages.Arabic') }}
+                                            </h6>
+                                            <div class="faq-answer" dir="rtl">
+                                                <div class="answer-label">
+                                                    <i class="fas fa-question-circle text-primary"></i>
+                                                    <strong>{{ __('messages.Question') }}:</strong>
+                                                </div>
+                                                <div class="answer-content">
+                                                    {{ $question->question_ar }}
+                                                </div>
+                                            </div>
+                                            <div class="faq-answer" dir="rtl">
+                                                <div class="answer-label">
+                                                    <i class="fas fa-reply text-success"></i>
+                                                    <strong>{{ __('messages.Answer') }}:</strong>
+                                                </div>
+                                                <div class="answer-content">
+                                                    {{ $question->answer_ar }}
+                                                </div>
                                             </div>
                                         </div>
                                         
                                         <div class="faq-actions">
-                                           
                                             @can('questionWebsite-edit')
                                                 <a href="{{ route('questionWebsites.edit', $question) }}" 
                                                    class="btn btn-sm btn-warning" title="{{ __('messages.Edit') }}">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit"></i> {{ __('messages.Edit') }}
                                                 </a>
                                             @endcan
                                             @can('questionWebsite-delete')
@@ -72,7 +140,7 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-sm btn-danger" 
                                                             title="{{ __('messages.Delete') }}">
-                                                        <i class="fas fa-trash"></i>
+                                                        <i class="fas fa-trash"></i> {{ __('messages.Delete') }}
                                                     </button>
                                                 </form>
                                             @endcan
@@ -136,12 +204,17 @@
     background-color: #f8f9fa;
 }
 
+.faq-question-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .faq-question {
     margin: 0;
     color: #333;
     font-weight: 600;
-    flex: 1;
-    padding-right: 15px;
     font-size: 1.1rem;
 }
 
@@ -152,12 +225,18 @@
 .faq-meta {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 10px;
+}
+
+.badge {
+    font-size: 0.85rem;
+    padding: 5px 10px;
 }
 
 .toggle-icon {
     transition: transform 0.3s ease;
     color: #6c757d;
+    font-size: 1.2rem;
 }
 
 .faq-header[aria-expanded="true"] .toggle-icon {
@@ -169,26 +248,44 @@
     background: #f8f9fa;
 }
 
-.faq-answer {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 15px;
+.language-version {
+    margin-bottom: 20px;
 }
 
-.faq-answer i {
-    margin-right: 10px;
-    margin-top: 3px;
+.language-title {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.faq-answer {
+    margin-bottom: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    border-left: 3px solid #007bff;
+}
+
+.answer-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.answer-label i {
+    margin-right: 5px;
 }
 
 .answer-content {
-    flex: 1;
-    color: #555;
+    color: #333;
     line-height: 1.6;
 }
 
 .faq-actions {
     display: flex;
-    gap: 5px;
+    gap: 10px;
     justify-content: flex-end;
     padding-top: 15px;
     border-top: 1px solid #dee2e6;
@@ -205,14 +302,16 @@
         align-items: flex-start;
     }
     
-    .faq-meta {
-        margin-top: 10px;
+    .faq-question-wrapper {
         width: 100%;
-        justify-content: space-between;
+    }
+    
+    .toggle-icon {
+        align-self: flex-end;
+        margin-top: 10px;
     }
     
     .faq-question {
-        padding-right: 0;
         font-size: 1rem;
     }
 }

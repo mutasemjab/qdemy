@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Banner;
+
 use App\Models\QuestionWebsite;
+use Illuminate\Http\Request;
 
 class QuestionWebsiteController extends Controller
 {
@@ -28,9 +28,16 @@ class QuestionWebsiteController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('question', 'like', "%{$search}%")
-                  ->orWhere('answer', 'like', "%{$search}%");
+                $q->where('question_en', 'like', "%{$search}%")
+                  ->orWhere('question_ar', 'like', "%{$search}%")
+                  ->orWhere('answer_en', 'like', "%{$search}%")
+                  ->orWhere('answer_ar', 'like', "%{$search}%");
             });
+        }
+
+        // Filter by type
+        if ($request->filled('type') && $request->type !== 'all') {
+            $query->where('type', $request->type);
         }
 
         $questions = $query->orderBy('created_at', 'desc')->paginate(15);
@@ -52,8 +59,11 @@ class QuestionWebsiteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
+            'question_en' => 'required|string|max:255',
+            'question_ar' => 'required|string|max:255',
+            'answer_en' => 'required|string',
+            'answer_ar' => 'required|string',
+            'type' => 'required|in:all,register,payment,card,courses,technical,privacy,account',
         ]);
 
         QuestionWebsite::create($request->all());
@@ -84,8 +94,11 @@ class QuestionWebsiteController extends Controller
     public function update(Request $request, QuestionWebsite $question)
     {
         $request->validate([
-            'question' => 'required|string|max:255',
-            'answer' => 'required|string',
+            'question_en' => 'required|string|max:255',
+            'question_ar' => 'required|string|max:255',
+            'answer_en' => 'required|string',
+            'answer_ar' => 'required|string',
+            'type' => 'required|in:all,register,payment,card,courses,technical,privacy,account',
         ]);
 
         $question->update($request->all());
@@ -103,5 +116,22 @@ class QuestionWebsiteController extends Controller
 
         return redirect()->route('questionWebsites.index')
             ->with('success', __('messages.FAQ deleted successfully'));
+    }
+
+    /**
+     * Get the FAQ type options
+     */
+    private function getTypeOptions()
+    {
+        return [
+            'all' => __('messages.All Categories'),
+            'register' => __('messages.Registration'),
+            'payment' => __('messages.Payment'),
+            'card' => __('messages.Card'),
+            'courses' => __('messages.Courses'),
+            'technical' => __('messages.Technical'),
+            'privacy' => __('messages.Privacy'),
+            'account' => __('messages.Account'),
+        ];
     }
 }

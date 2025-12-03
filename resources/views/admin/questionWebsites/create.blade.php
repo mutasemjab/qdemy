@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">{{ __('messages.Create FAQ') }}</h3>
@@ -15,35 +15,100 @@
                 </div>
 
                 <div class="card-body">
-                    <!-- Create Form -->
                     <form action="{{ route('questionWebsites.store') }}" method="POST">
                         @csrf
                         
+                        <!-- Type Selection -->
                         <div class="form-group">
-                            <label for="question" class="required">
-                                <i class="fas fa-question-circle text-primary"></i> {{ __('messages.Question') }}
+                            <label for="type" class="required">
+                                <i class="fas fa-tag text-info"></i> {{ __('messages.Category') }}
                             </label>
-                            <input type="text" class="form-control @error('question') is-invalid @enderror" 
-                                   id="question" name="question" value="{{ old('question') }}" 
-                                   placeholder="{{ __('messages.Enter the frequently asked question') }}" required>
-                            @error('question')
+                            <select class="form-control @error('type') is-invalid @enderror" 
+                                    id="type" name="type" required>
+                                <option value="">{{ __('messages.Select Category') }}</option>
+                                <option value="all" {{ old('type') == 'all' ? 'selected' : '' }}>{{ __('messages.All Categories') }}</option>
+                                <option value="register" {{ old('type') == 'register' ? 'selected' : '' }}>{{ __('messages.Registration') }}</option>
+                                <option value="payment" {{ old('type') == 'payment' ? 'selected' : '' }}>{{ __('messages.Payment') }}</option>
+                                <option value="card" {{ old('type') == 'card' ? 'selected' : '' }}>{{ __('messages.Card') }}</option>
+                                <option value="courses" {{ old('type') == 'courses' ? 'selected' : '' }}>{{ __('messages.Courses') }}</option>
+                                <option value="technical" {{ old('type') == 'technical' ? 'selected' : '' }}>{{ __('messages.Technical') }}</option>
+                                <option value="privacy" {{ old('type') == 'privacy' ? 'selected' : '' }}>{{ __('messages.Privacy') }}</option>
+                                <option value="account" {{ old('type') == 'account' ? 'selected' : '' }}>{{ __('messages.Account') }}</option>
+                            </select>
+                            @error('type')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">{{ __('messages.Make it clear and concise') }}</small>
                         </div>
 
-                        <div class="form-group">
-                            <label for="answer" class="required">
-                                <i class="fas fa-reply text-success"></i> {{ __('messages.Answer') }}
-                            </label>
-                            <textarea class="form-control @error('answer') is-invalid @enderror" 
-                                      id="answer" name="answer" rows="6" 
-                                      placeholder="{{ __('messages.Provide a detailed and helpful answer') }}" required>{{ old('answer') }}</textarea>
-                            @error('answer')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="form-text text-muted">{{ __('messages.Be thorough and helpful in your response') }}</small>
+                        <hr class="my-4">
+
+                        <!-- English Version -->
+                        <div class="language-section">
+                            <h5 class="section-title">
+                                <i class="fas fa-flag text-primary"></i> {{ __('messages.English Version') }}
+                            </h5>
+                            
+                            <div class="form-group">
+                                <label for="question_en" class="required">
+                                    <i class="fas fa-question-circle text-primary"></i> {{ __('messages.Question (English)') }}
+                                </label>
+                                <input type="text" class="form-control @error('question_en') is-invalid @enderror" 
+                                       id="question_en" name="question_en" value="{{ old('question_en') }}" 
+                                       placeholder="{{ __('messages.Enter the frequently asked question in English') }}" required>
+                                @error('question_en')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="answer_en" class="required">
+                                    <i class="fas fa-reply text-success"></i> {{ __('messages.Answer (English)') }}
+                                </label>
+                                <textarea class="form-control @error('answer_en') is-invalid @enderror" 
+                                          id="answer_en" name="answer_en" rows="6" 
+                                          placeholder="{{ __('messages.Provide a detailed and helpful answer in English') }}" required>{{ old('answer_en') }}</textarea>
+                                @error('answer_en')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
                         </div>
+
+                        <hr class="my-4">
+
+                        <!-- Arabic Version -->
+                        <div class="language-section">
+                            <h5 class="section-title">
+                                <i class="fas fa-flag text-danger"></i> {{ __('messages.Arabic Version') }}
+                            </h5>
+                            
+                            <div class="form-group">
+                                <label for="question_ar" class="required">
+                                    <i class="fas fa-question-circle text-primary"></i> {{ __('messages.Question (Arabic)') }}
+                                </label>
+                                <input type="text" class="form-control @error('question_ar') is-invalid @enderror" 
+                                       id="question_ar" name="question_ar" value="{{ old('question_ar') }}" 
+                                       placeholder="{{ __('messages.Enter the frequently asked question in Arabic') }}" 
+                                       dir="rtl" required>
+                                @error('question_ar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label for="answer_ar" class="required">
+                                    <i class="fas fa-reply text-success"></i> {{ __('messages.Answer (Arabic)') }}
+                                </label>
+                                <textarea class="form-control @error('answer_ar') is-invalid @enderror" 
+                                          id="answer_ar" name="answer_ar" rows="6" 
+                                          placeholder="{{ __('messages.Provide a detailed and helpful answer in Arabic') }}" 
+                                          dir="rtl" required>{{ old('answer_ar') }}</textarea>
+                                @error('answer_ar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
 
                         <div class="form-group">
                             <button type="submit" class="btn btn-primary">
@@ -83,6 +148,25 @@
 textarea.form-control {
     resize: vertical;
     min-height: 120px;
+}
+
+.language-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.section-title {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.section-title i {
+    margin-right: 8px;
 }
 </style>
 @endsection
