@@ -19,7 +19,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $specialQdemies = SpecialQdemy::all();
+       
         $socialMediaVideos = SocialMedia::all();
         $teachers = Teacher::all();
         $settings = Setting::first(); // Assuming single settings record
@@ -28,7 +28,6 @@ class HomeController extends Controller
         $blogs = Blog::take(4)->get(); // Get first 4 blogs
 
         return view('web.home', compact(
-            'specialQdemies',
             'socialMediaVideos',
             'teachers',
             'settings',
