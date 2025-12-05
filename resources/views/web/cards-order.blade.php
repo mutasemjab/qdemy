@@ -510,6 +510,10 @@
   .doseyat-item span {
     max-width: 80px;
   }
+  
+  .order-banner-image {
+    object-fit: contain!important;
+}
 }
 .order-banner-shell {
   margin-bottom: 24px;
@@ -541,7 +545,7 @@
 
 .order-banner-title h2 {
   margin: 0;
-  font-size: clamp(20px, 2.4vw, 28px);
+  font-size: clamp(20px, 2.4vw, 35px);
   font-weight: 800;
   color: #fff;
   text-shadow: 0 2px 6px rgba(0,0,0,.45);

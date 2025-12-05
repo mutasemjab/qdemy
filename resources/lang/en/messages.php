@@ -2457,6 +2457,67 @@ return [
     'Information' => 'Information',
     'Created At' => 'Created At',
     'Updated At' => 'Updated At',
+    'question_details' => 'Question Details',
+'back' => 'Back',
+'edit' => 'Edit',
+'delete' => 'Delete',
+'confirm_delete_question' => 'Are you sure you want to delete this question?',
+
+// Question Fields
+'question_title_en' => 'Question Title (English)',
+'question_title_ar' => 'Question Title (Arabic)',
+'question_text_en' => 'Question Text (English)',
+'question_text_ar' => 'Question Text (Arabic)',
+'explanation_en' => 'Explanation (English)',
+'explanation_ar' => 'Explanation (Arabic)',
+
+// Question Metadata
+'course' => 'Course',
+'question_type' => 'Question Type',
+'multiple_choice' => 'Multiple Choice',
+'true_false' => 'True/False',
+'essay' => 'Essay',
+'grade' => 'Grade',
+'points' => 'Points',
+'created_by' => 'Created By',
+'system' => 'System',
+'created_at' => 'Created At',
+'updated_at' => 'Updated At',
+
+// Options
+'answer_options' => 'Answer Options',
+'option' => 'Option',
+'correct' => 'Correct',
+'english' => 'English',
+'arabic' => 'Arabic',
+'no_options_found' => 'No options found for this question',
+
+// Essay Questions
+'essay_question' => 'Essay Question',
+'essay_question_grading_note' => 'This is an essay question. Students will provide a written answer that requires manual grading.',
+'essay_answer_area' => 'Essay Answer Area',
+'student_will_type_answer_here' => 'Student will type their answer here...',
+
+// Exams Usage
+'used_in_exams' => 'Used in Exams',
+'exam_title' => 'Exam Title',
+'order' => 'Order',
+'grade_in_exam' => 'Grade in Exam',
+'exam_status' => 'Exam Status',
+'actions' => 'Actions',
+'active' => 'Active',
+'inactive' => 'Inactive',
+'view_exam' => 'View Exam',
+
+// Footer Actions
+'back_to_questions' => 'Back to Questions',
+'edit_question' => 'Edit Question',
+'add_new_question' => 'Add New Question',
+
+// Preview Modal
+'question_preview' => 'Question Preview',
+'close' => 'Close',
+'explanation' => 'Explanation',
   '' => '',
   '' => '',
   '' => '',

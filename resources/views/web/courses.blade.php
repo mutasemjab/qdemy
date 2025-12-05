@@ -8,7 +8,15 @@
 
     <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow courses-header-wrapper">
         <div class="courses-header-1">
-            <span class="grade-number">{{mb_substr( $title,0,1)}}</span>
+            <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/courses-header-line-new.png')
+                    : asset('assets_front/images/en/courses-header-line-new.png') }}"
+                alt=""
+                class="courses-header-img"
+                loading="lazy"
+            >
+            <span class="grade-number">{{ mb_substr($title, 0, 1) }}</span>
         </div>
     </div>
 

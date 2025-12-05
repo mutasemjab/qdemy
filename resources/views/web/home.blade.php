@@ -265,13 +265,13 @@
         </div>
     </section>
 
-    <section class="blog-slider" dir="rtl">
-        <h2 data-aos="zoom-in-up" class="blog-slider__title">{{ __('front.Blogs') }}</h2>
+<section class="blog-slider">
+    <h2 data-aos="zoom-in-up" class="blog-slider__title">
+        {{ __('front.Blogs') }}
+    </h2>
 
-        <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}" disabled>
-            <span>&rsaquo;</span>
-        </button>
-        <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="{{ __('front.Next') }}">
+    <div class="blog-slider__shell">
+        <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}">
             <span>&lsaquo;</span>
         </button>
 
@@ -281,14 +281,19 @@
                     <article class="blog-card">
                         <a href="{{ route('frontBlog.show', $blog->id) }}">
                             <div class="blog-card__image">
-                                <img data-src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}"
-                                    alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}">
+                                <img
+                                    src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}"
+                                    alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}"
+                                    loading="lazy"
+                                >
                             </div>
                             <h3 class="blog-card__title">
                                 {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
                             </h3>
                             <p class="blog-card__excerpt">
-                                {!! app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) !!}
+                                {!! app()->getLocale() == 'ar'
+                                    ? Str::limit($blog->description_ar, 100)
+                                    : Str::limit($blog->description_en, 100) !!}
                             </p>
                         </a>
                     </article>
@@ -296,6 +301,12 @@
             </div>
         </div>
 
-        <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
-    </section>
+        <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="{{ __('front.Next') }}">
+            <span>&rsaquo;</span>
+        </button>
+    </div>
+
+    <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
+</section>
+
 @endsection

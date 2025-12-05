@@ -631,202 +631,144 @@ document.addEventListener("DOMContentLoaded", function () {
     </script>
 
 <script>
-(() => {
-  const root = document.querySelector('.blog-slider');
-  if (!root) return;
+document.addEventListener('DOMContentLoaded', function () {
+    const root = document.querySelector('section.blog-slider');
+    if (!root) return;
 
-  const viewport = root.querySelector('.blog-slider__viewport');
-  const track = root.querySelector('.blog-slider__track');
-  const dotsWrap = root.querySelector('.blog-slider__dots');
-  const prevBtn = root.querySelector('.blog-slider__arrow--prev');
-  const nextBtn = root.querySelector('.blog-slider__arrow--next');
+    const track = root.querySelector('.blog-slider__track');
+    const dotsWrap = root.querySelector('.blog-slider__dots');
 
-  let originals = Array.from(track.children);
-  if (!originals.length) return;
+    if (!track) return;
 
-  let perView = 3, cloneN = 3, index = 0, step = 0, gap = 0, timer, dragging = false, startX = 0, curX = 0, started = false;
+    const cards = Array.from(track.querySelectorAll('.blog-card'));
+    const total = cards.length;
+    if (!total) return;
 
-  function dirRTL(){ return getComputedStyle(root).direction === 'rtl'; }
-  function computePerView(){
-    const w = root.clientWidth;
-    if (w <= 600) return 1;
-    if (w <= 992) return 2;
-    return 3;
-  }
-
-  function enableArrows(){
-    [prevBtn, nextBtn].forEach(b=>{
-      if(!b) return;
-      b.disabled = false;
-      b.removeAttribute('disabled');
-      b.style.pointerEvents = 'auto';
-    });
-  }
-
-  function eagerLoad(){
-    const nodes = Array.from(track.children).slice(0, (perView*2)+(cloneN*2));
-    nodes.forEach(n=>{
-      const img = n.querySelector('img[data-src]');
-      if (img){ img.src = img.getAttribute('data-src'); img.removeAttribute('data-src'); }
-    });
-  }
-
-  function build(){
-    perView = computePerView();
-    cloneN = perView;
-    track.innerHTML = '';
-    const head = originals.slice(0, cloneN).map(n=>n.cloneNode(true));
-    const tail = originals.slice(-cloneN).map(n=>n.cloneNode(true));
-    tail.forEach(n=>track.appendChild(n));
-    originals.forEach(n=>track.appendChild(n));
-    head.forEach(n=>track.appendChild(n));
-    index = cloneN;
-    measure(true);
-    eagerLoad();
-    buildDots();
-    updateDots();
-    enableArrows();
-    ensureStart();
-  }
-
-  function measure(jumpToPos=false){
-    gap = parseFloat(getComputedStyle(track).gap) || 0;
-    const first = track.children[0];
-    let cardW = first ? first.getBoundingClientRect().width : 0;
-    if (!cardW) cardW = viewport.clientWidth / perView;
-    step = cardW + gap;
-    if (jumpToPos) applyTransform(false);
-  }
-
-  function applyTransform(animated=true){
-    const sign = dirRTL() ? 1 : -1;
-    if (!animated){
-      track.style.transition = 'none';
-      track.style.transform = `translateX(${sign * index * step}px)`;
-      void track.offsetWidth;
-      track.style.transition = 'transform .6s cubic-bezier(.22,.61,.36,1)';
-    } else {
-      track.style.transform = `translateX(${sign * index * step}px)`;
+    function getPerView() {
+        const w = window.innerWidth;
+        if (w <= 600) return 1;
+        if (w <= 992) return 2;
+        return 3;
     }
-  }
 
-  function normalize(){
-    if (index >= originals.length + cloneN){
-      index = cloneN;
-      applyTransform(false);
-    } else if (index < cloneN){
-      index = originals.length + cloneN - 1;
-      applyTransform(false);
+    let perView = getPerView();
+    const prevBtn = root.querySelector('.blog-slider__arrow--prev');
+    const nextBtn = root.querySelector('.blog-slider__arrow--next');
+
+    if (total <= perView) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (dotsWrap) dotsWrap.style.display = 'none';
+        return;
     }
-    enableArrows();
-  }
 
-  function buildDots(){
-    const pages = Math.max(1, originals.length - perView + 1);
-    dotsWrap.innerHTML = '';
-    for (let i=0;i<pages;i++){
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.addEventListener('click', () => {
-        const target = i + cloneN;
-        index = Math.min(cloneN + originals.length - perView, target);
-        applyTransform(true);
-        updateDots();
-      });
-      dotsWrap.appendChild(b);
-    }
-  }
+    let index = 0;
+    let timer = null;
+    let pages = Math.ceil(total / perView);
 
-  function updateDots(){
-    const pages = Math.max(1, originals.length - perView + 1);
-    const curRaw = (index - cloneN + originals.length) % originals.length;
-    const cur = Math.min(curRaw, originals.length - perView);
-    [...dotsWrap.children].forEach((d,k)=>d.setAttribute('aria-current', k===cur ? 'true':'false'));
-    if (dotsWrap.children.length !== pages) buildDots();
-  }
-
-  function next(){
-    index += 1;
-    applyTransform(true);
-    updateDots();
-    enableArrows();
-  }
-
-  function prev(){
-    index -= 1;
-    applyTransform(true);
-    updateDots();
-    enableArrows();
-  }
-
-  function start(){ stop(); timer = setInterval(next, 5000); started = true; }
-  function stop(){ if (timer) clearInterval(timer); }
-  function ensureStart(){
-    if (started) return;
-    if (step > 0){ start(); return; }
-    setTimeout(()=>{ measure(true); if (step > 0) start(); }, 60);
-  }
-
-  track.addEventListener('transitionend', () => { normalize(); });
-
-  root.addEventListener('click', (e) => {
-    const prevHit = e.target.closest('.blog-slider__arrow--prev');
-    const nextHit = e.target.closest('.blog-slider__arrow--next');
-    if (prevHit) prev();
-    else if (nextHit) next();
-  });
-
-  viewport.addEventListener('pointerdown', e => {
-    dragging = true; startX = curX = e.clientX; viewport.setPointerCapture(e.pointerId);
-  });
-  viewport.addEventListener('pointermove', e => { if (!dragging) return; curX = e.clientX; });
-  viewport.addEventListener('pointerup', () => {
-    if (!dragging) return; dragging = false;
-    const dx = curX - startX, rtl = dirRTL();
-    if (Math.abs(dx) > 40){
-      const swipeLeft = dx < 0;
-      if ((swipeLeft && !rtl) || (!swipeLeft && rtl)) next(); else prev();
-    }
-  });
-
-  viewport.addEventListener('mouseenter', stop);
-  viewport.addEventListener('mouseleave', start);
-
-  window.addEventListener('resize', () => {
-    const oldPer = perView;
-    const newPer = computePerView();
-    if (newPer !== oldPer){
-      originals = Array.from(track.children).slice(cloneN, cloneN + originals.length);
-      build();
-    } else {
-      measure(true);
-      updateDots();
-      enableArrows();
-      ensureStart();
-    }
-  });
-
-  const ro = new ResizeObserver(()=>{ measure(true); enableArrows(); ensureStart(); });
-  ro.observe(track);
-
-  window.addEventListener('load', ()=>{ measure(true); eagerLoad(); enableArrows(); ensureStart(); });
-
-  const lazies = track.querySelectorAll('img[data-src]');
-  if (lazies.length){
-    const io = new IntersectionObserver(es=>{
-      es.forEach(e=>{
-        if(e.isIntersecting){
-          const img=e.target; img.src=img.getAttribute('data-src'); img.removeAttribute('data-src'); io.unobserve(img);
-          setTimeout(()=>{ measure(true); enableArrows(); ensureStart(); }, 50);
+    function buildDots() {
+        if (!dotsWrap) return;
+        dotsWrap.innerHTML = '';
+        for (let i = 0; i < pages; i++) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.addEventListener('click', function () {
+                index = i * perView;
+                updateVisible();
+                restartAuto();
+            });
+            dotsWrap.appendChild(b);
         }
-      })
-    },{root:viewport,rootMargin:'200px'});
-    lazies.forEach(img=>io.observe(img));
-  }
+    }
 
-  build();
-})();
+    function updateDots() {
+        if (!dotsWrap) return;
+        const currentPage = Math.floor(index / perView) % pages;
+        Array.from(dotsWrap.children).forEach(function (btn, i) {
+            btn.setAttribute('aria-current', i === currentPage ? 'true' : 'false');
+        });
+    }
+
+    function updateVisible() {
+        perView = getPerView();
+        pages = Math.ceil(total / perView);
+
+        cards.forEach(function (card) {
+            card.classList.add('blog-card--hidden');
+        });
+
+        for (let i = 0; i < perView; i++) {
+            const current = (index + i) % total;
+            cards[current].classList.remove('blog-card--hidden');
+        }
+
+        updateDots();
+    }
+
+    function nextSlide() {
+        perView = getPerView();
+        index = (index + perView) % total;
+        updateVisible();
+    }
+
+    function prevSlide() {
+        perView = getPerView();
+        index = (index - perView) % total;
+        if (index < 0) index = ((pages - 1) * perView) % total;
+        updateVisible();
+    }
+
+    function startAuto() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(nextSlide, 10000);
+    }
+
+    function stopAuto() {
+        if (timer) {
+            clearInterval(timer);
+            timer = null;
+        }
+    }
+
+    function restartAuto() {
+        stopAuto();
+        startAuto();
+    }
+
+    buildDots();
+    updateVisible();
+    startAuto();
+
+    root.addEventListener('click', function (e) {
+        const nextHit = e.target.closest('.blog-slider__arrow--next');
+        const prevHit = e.target.closest('.blog-slider__arrow--prev');
+
+        if (nextHit) {
+            nextSlide();
+            restartAuto();
+        } else if (prevHit) {
+            prevSlide();
+            restartAuto();
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        const newPerView = getPerView();
+        if (newPerView !== perView) {
+            perView = newPerView;
+            pages = Math.ceil(total / perView);
+            index = 0;
+            buildDots();
+            updateVisible();
+            restartAuto();
+        }
+    });
+
+    root.addEventListener('mouseenter', stopAuto);
+    root.addEventListener('mouseleave', startAuto);
+});
 </script>
+
 
 
 <script>

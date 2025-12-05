@@ -5,9 +5,21 @@
 @section('content')
 <section class="gprograms-page">
     <!-- International -->
-    <a data-aos="fade-up" data-aos-duration="1000" href="#" class="gprogram-card gprogram-card-mixed-1 gprogram-card-main">
-
-    </a>
+        <a
+            data-aos="fade-up"
+            data-aos-duration="1000"
+            href="#"
+            class="gprogram-card gprogram-card-mixed gprogram-card-main"
+        >
+            <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/flagsbg.png')
+                    : asset('assets_front/images/en/flagsbg.png') }}"
+                alt=""
+                class="gprogram-card-img"
+                loading="lazy"
+            >
+        </a>
 
     @if($programms && $programms->count())
     @foreach($programms as $programm)

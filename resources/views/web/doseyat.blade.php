@@ -7,9 +7,17 @@
 
 @section('content')
 <section class="co-page">
-  <div class="universities-header-wrapper" data-aos="fade-up" data-aos-duration="1000">
-    <div class="universities-header-d">
-    </div>
+  <div class="universities-header-wrapper00" data-aos="fade-up" data-aos-duration="1000">
+        <div class="universities-header-d">
+            <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/header-line-d.png')
+                    : asset('assets_front/images/en/header-line-d.png') }}"
+                alt=""
+                class="universities-header-img"
+                loading="lazy"
+            >
+        </div>
   </div>
 
   <div class="co-chooser" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="200">

@@ -2411,6 +2411,68 @@ return [
     'Information' => 'المعلومات',
     'Created At' => 'تاريخ الإنشاء',
     'Updated At' => 'تاريخ التحديث',
+    // تفاصيل السؤال
+'question_details' => 'تفاصيل السؤال',
+'back' => 'رجوع',
+'edit' => 'تعديل',
+'delete' => 'حذف',
+'confirm_delete_question' => 'هل أنت متأكد من حذف هذا السؤال؟',
+
+// حقول السؤال
+'question_title_en' => 'عنوان السؤال (إنجليزي)',
+'question_title_ar' => 'عنوان السؤال (عربي)',
+'question_text_en' => 'نص السؤال (إنجليزي)',
+'question_text_ar' => 'نص السؤال (عربي)',
+'explanation_en' => 'الشرح (إنجليزي)',
+'explanation_ar' => 'الشرح (عربي)',
+
+// بيانات السؤال
+'course' => 'المادة',
+'question_type' => 'نوع السؤال',
+'multiple_choice' => 'اختيار من متعدد',
+'true_false' => 'صح/خطأ',
+'essay' => 'مقالي',
+'grade' => 'الدرجة',
+'points' => 'نقاط',
+'created_by' => 'أنشئ بواسطة',
+'system' => 'النظام',
+'created_at' => 'تاريخ الإنشاء',
+'updated_at' => 'تاريخ التحديث',
+
+// الخيارات
+'answer_options' => 'خيارات الإجابة',
+'option' => 'خيار',
+'correct' => 'صحيح',
+'english' => 'الإنجليزية',
+'arabic' => 'العربية',
+'no_options_found' => 'لم يتم العثور على خيارات لهذا السؤال',
+
+// الأسئلة المقالية
+'essay_question' => 'سؤال مقالي',
+'essay_question_grading_note' => 'هذا سؤال مقالي. سيقوم الطلاب بتقديم إجابة مكتوبة تتطلب تصحيحًا يدويًا.',
+'essay_answer_area' => 'منطقة الإجابة المقالية',
+'student_will_type_answer_here' => 'سيكتب الطالب إجابته هنا...',
+
+// استخدام الأسئلة في الامتحانات
+'used_in_exams' => 'مستخدم في الامتحانات',
+'exam_title' => 'عنوان الامتحان',
+'order' => 'الترتيب',
+'grade_in_exam' => 'الدرجة في الامتحان',
+'exam_status' => 'حالة الامتحان',
+'actions' => 'الإجراءات',
+'active' => 'نشط',
+'inactive' => 'غير نشط',
+'view_exam' => 'عرض الامتحان',
+
+// إجراءات التذييل
+'back_to_questions' => 'العودة إلى الأسئلة',
+'edit_question' => 'تعديل السؤال',
+'add_new_question' => 'إضافة سؤال جديد',
+
+// نافذة المعاينة
+'question_preview' => 'معاينة السؤال',
+'close' => 'إغلاق',
+'explanation' => 'الشرح',
   '' => '',
   '' => '',
 ];

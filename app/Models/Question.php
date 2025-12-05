@@ -64,6 +64,11 @@ class Question extends Model
                     ->withTimestamps();
     }
 
+    public function examQuestions()
+    {
+        return $this->hasMany(ExamQuestion::class);
+    }
+
     /**
      * Get question title based on current locale
      */

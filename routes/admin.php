@@ -25,7 +25,6 @@ use App\Http\Controllers\Admin\CardNumberController;
 use App\Http\Controllers\Admin\OnBoardingController;
 use App\Http\Controllers\Admin\BankQuestionController;
 use App\Http\Controllers\Admin\BannedWordController;
-use App\Http\Controllers\Admin\SpecialQdemyController;
 use App\Http\Controllers\Admin\CourseSectionController;
 use App\Http\Controllers\Admin\CourseUserController;
 use App\Http\Controllers\Admin\DoseyatController;
@@ -161,7 +160,6 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::resource('pages', PageController::class);
         Route::resource('contactUs', ContactUsController::class);
         Route::resource('onboardings', OnBoardingController::class);
-        Route::resource('special-qdemies', SpecialQdemyController::class);
         Route::resource('users', UserController::class);
         Route::resource('banners', BannerController::class);
         Route::resource('settings', SettingController::class);

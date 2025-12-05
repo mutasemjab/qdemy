@@ -422,20 +422,7 @@
                                 </li>
                             @endif
 
-                            @if (
-                                $user->can('special-qdemie-table') ||
-                                    $user->can('special-qdemie-add') ||
-                                    $user->can('special-qdemie-edit') ||
-                                    $user->can('special-qdemie-delete'))
-                                <li class="nav-item">
-                                    <a href="{{ route('special-qdemies.index') }}"
-                                        class="nav-link {{ request()->routeIs('special-qdemies.*') ? 'active' : '' }}">
-                                        <i class="far fa-image nav-icon"></i>
-                                        <p>{{ __('messages.special_qdemies') }}</p>
-                                    </a>
-                                </li>
-                            @endif
-
+                        
                             @if ($user->can('blog-table') || $user->can('blog-add') || $user->can('blog-edit') || $user->can('blog-delete'))
                                 <li class="nav-item">
                                     <a href="{{ route('blogs.index') }}"

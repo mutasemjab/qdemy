@@ -2033,7 +2033,7 @@ a.blob-btn span {
 
 .faq-card {
   position: relative;
-  background-color: #e0e0e0;
+  background-color: #f4f4f4;
   border-radius: 20px;
   width: 300px;
   padding: 30px 20px 50px;
@@ -2050,11 +2050,11 @@ a.blob-btn span {
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-top: 15px solid #e0e0e0;
+  border-top: 15px solid #f4f4f4;
 }
 
 .icon {
-  background-color: var(--main-color);
+  background-color: #fff;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -2088,8 +2088,8 @@ p.welcome-text {
 }
 
 .icon img {
-  width: 24px;
-  height: 24px;
+  width: 46px;
+  height: 44px;
 }
 
 .faq-card h3 {
@@ -2109,7 +2109,7 @@ p.welcome-text {
   top: -15px;
   bottom: auto;
   border-top: none;
-  border-bottom: 15px solid #e0e0e0;
+  border-bottom: 15px solid #f4f4f4;
 }
 
 .faq-card.top-arrow {
@@ -2687,9 +2687,16 @@ a.ud-item.nav-link:hover {
 }
 
 .gprogram-card-mixed {
-  background: url('../images/flagsbg.png') no-repeat center/cover;
   background-color: #0055d3;
 }
+
+.gprogram-card-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
 
 .gprogram-card-mixed-1 {
   background: url('../images/flagsbg1.png') no-repeat center/contain;
@@ -2757,7 +2764,7 @@ a.ud-item.nav-link:hover {
 }
 
 .grades-header-wrapper-basic {
-  background: url(../images/rec-bg-basic.png) no-repeat center / contain;
+  position: relative;
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -2765,6 +2772,15 @@ a.ud-item.nav-link:hover {
   height: 200px;
   max-width: 1300px;
   margin: 0 auto 45px auto;
+  overflow: hidden;
+}
+
+.grades-header-basic-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .grades-header {
@@ -2930,6 +2946,15 @@ a.ud-item.nav-link:hover {
   background: url('../images/header-line.png') no-repeat center center / cover;
 }
 
+.universities-header-wrapper00 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    margin-bottom: 40px; 
+    margin-top: 55px; 
+}
+
 .universities-header {
   display: flex;
   border-radius: 20px;
@@ -2941,13 +2966,18 @@ a.ud-item.nav-link:hover {
 
 .universities-header-d {
   display: flex;
-  padding: 20px 40px;
+  padding: 20px 20px;
   width: 100%;
-  height: 140px;
   justify-content: center;
   align-items: center;
-  background: url('../images/header-line-d.png') no-repeat center center / contain;
 }
+
+.universities-header-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 
 .universities-header h2 {
   color: #fff;
@@ -3114,11 +3144,58 @@ a.text-dark {
   color: #fff
 }
 
+.order-banner-shell {
+  margin-bottom: 24px;
+}
+
+.order-banner-frame {
+  position: relative;
+  display: block;
+  max-width: 1300px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.order-banner-image {
+  width: 100%;
+  height: 309px;
+  object-fit: cover;
+  display: block;
+}
+
+.order-banner-title {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 16px;
+}
+
+.order-banner-title h2 {
+  margin: 0;
+  font-size: clamp(20px, 2.4vw, 35px);
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.45);
+}
+
 @media (max-width: 768px) {
   .semester-box {
     width: 100%;
     padding: 20px;
   }
+  
+  .grades-header-wrapper-basic {
+    height: 105px;
+    margin: 0 auto 0px auto;
+}
+  
+  .universities-header-wrapper00 {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    }
 
   .semesters-row {
     padding: 0 20px 0 20px;
@@ -3191,6 +3268,10 @@ a.text-dark {
     font-size: 20px;
     height: 62px;
   }
+  
+   .order-banner-image {
+    object-fit: contain!important;
+    }
 
   .grade-number {
     font-size: 40px;
@@ -4255,12 +4336,20 @@ a.text-dark {
 }
 
 .courses-header-1 {
+  position: relative;
   display: flex;
   width: 100%;
   max-width: 1300px;
   justify-content: center;
   align-items: center;
-  background: url('../images/courses-header-line-new.png') no-repeat center center / contain;
+}
+
+.courses-header-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .courses-header h2 {
@@ -4413,6 +4502,11 @@ a.text-dark {
   .examx-row {
     grid-template-columns: 1fr
   }
+  
+  .courses-header-wrapper {
+    height: 0px;
+    margin-bottom: 20px;
+    }
   
   .stat-item span {
     font-size: 19px!important;
@@ -6951,43 +7045,57 @@ a.dl-store0 img {
   position: relative;
   max-width: 1200px;
   margin: 40px auto;
-  padding: 0 24px
 }
 
 .blog-slider__title {
   font-size: 28px;
   font-weight: 800;
   text-align: center;
-  margin-bottom: 22px
+  margin-bottom: 22px;
+  color: #0e1b3d;
+  margin-top: 70px;
+}
+
+.blog-slider__shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 16px;
 }
 
 .blog-slider__viewport {
-  overflow: hidden
+  overflow: hidden;
+  flex: 1;
 }
 
 .blog-slider__track {
   display: flex;
+  flex-wrap: wrap;
   gap: 28px;
-  will-change: transform;
-  transition: transform .45s ease
+  justify-content: center;
+  margin-bottom: 30px;
 }
 
 .blog-card {
   flex: 0 0 calc((100% - 56px)/3);
   background: #fff;
   border-radius: 20px;
-  padding: 0 0 14px
+  padding: 0 0 14px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .blog-card a {
   text-decoration: none;
   color: #1a1a1a;
-  display: block
+  display: block;
 }
 
 .blog-card__image {
   border-radius: 18px;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .blog-card__image img {
@@ -6995,7 +7103,8 @@ a.dl-store0 img {
   height: 250px;
   object-fit: cover;
   display: block;
-  filter: saturate(.9)
+  filter: saturate(.9);
+  transition: transform .35s ease;
 }
 
 .blog-card__title {
@@ -7003,102 +7112,111 @@ a.dl-store0 img {
   line-height: 1.5;
   margin: 14px 8px 6px;
   color: #0e1b3d;
-  font-weight: 800
+  font-weight: 800;
 }
 
 .blog-card__excerpt {
   font-size: 12px;
   line-height: 1.6;
   margin: 0 8px 6px;
-  color: #4b5162
+  color: #4b5162;
+}
+
+.blog-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.08);
+}
+
+.blog-card:hover .blog-card__image img {
+  transform: scale(1.04);
+}
+
+.blog-card--hidden {
+  display: none;
 }
 
 .blog-slider__arrow {
-  position: absolute;
-  top: 170px;
-  transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 50%;
   background: #e9eef6;
-  opacity: .8;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: opacity .2s
-}
-
-.blog-slider__arrow--prev {
-  left: -28px
-}
-
-.blog-slider__arrow--next {
-  right: -28px
-}
-
-.blog-slider__arrow[disabled] {
-  opacity: .35;
-  pointer-events: none
+  transition: background .2s ease, transform .2s ease, opacity .2s ease;
+  opacity: .9;
+  flex-shrink: 0;
 }
 
 .blog-slider__arrow span {
-  font-size: 28px;
+  font-size: 24px;
   line-height: 1;
-  color: #1b2c57
+  color: #1b2c57;
+}
+
+.blog-slider__arrow:hover {
+  background: #d5e0f5;
+  transform: translateY(-2px);
+}
+
+.blog-slider__arrow:disabled {
+  opacity: .35;
+  pointer-events: none;
 }
 
 .blog-slider__dots {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  margin-top: 12px
+  margin-top: 16px;
 }
 
 .blog-slider__dots button {
-  width: 10px;
+  width: 9px;
   height: 11px;
   border-radius: 50%;
   border: none;
   background: #cdd6ea;
   cursor: pointer;
-  transition: transform .2s, background .2s
+  transition: transform .2s, background .2s;
 }
 
 .blog-slider__dots button[aria-current="true"] {
   background: var(--main-color);
-  transform: scale(1.15)
+  transform: scale(1.2);
 }
 
-@media (max-width:992px) {
+@media (max-width: 992px) {
   .blog-card {
-    flex: 0 0 calc((100% - 28px)/2)
+    flex: 0 0 calc((100% - 28px)/2);
   }
 
-  .blog-slider__arrow--prev {
-    left: 8px
-  }
-
-  .blog-slider__arrow--next {
-    right: 8px
-  }
-}
-
-@media (max-width:600px) {
-  .blog-card {
-    flex: 0 0 100%
-  }
-
-  .blog-card__image img {
-    height: 200px
+  .blog-slider__shell {
+    gap: 8px;
   }
 
   .blog-slider__arrow {
-    top: 160px
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-slider {
+    padding: 0 12px;
   }
 
-  .blog-slider {
-    padding: 0 63px
+  .blog-slider__shell {
+    gap: 6px;
+  }
+
+  .blog-card {
+    flex: 0 0 100%;
+  }
+
+  .blog-card__image img {
+    height: 200px;
   }
 }
 

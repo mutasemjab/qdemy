@@ -199,64 +199,64 @@
                     @endif
 
                     <!-- Usage in Exams -->
-                    @if($question->examQuestions->isNotEmpty())
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header bg-warning text-dark">
-                                    <h5 class="mb-0">
-                                        <i class="fas fa-clipboard-list"></i> {{ __('messages.used_in_exams') }}
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th>{{ __('messages.exam_title') }}</th>
-                                                    <th>{{ __('messages.order') }}</th>
-                                                    <th>{{ __('messages.grade_in_exam') }}</th>
-                                                    <th>{{ __('messages.exam_status') }}</th>
-                                                    <th>{{ __('messages.actions') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($question->examQuestions as $examQuestion)
-                                                <tr>
-                                                    <td>
-                                                        <strong>{{ $examQuestion->exam->title_en }}</strong><br>
-                                                        <small class="text-muted">{{ $examQuestion->exam->title_ar }}</small>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-info">{{ $examQuestion->order }}</span>
-                                                    </td>
-                                                    <td>
-                                                        <span class="badge bg-success">{{ $examQuestion->grade }} {{ __('messages.points') }}</span>
-                                                    </td>
-                                                    <td>
-                                                        @if($examQuestion->exam->is_active)
-                                                            <span class="badge bg-success">{{ __('messages.active') }}</span>
-                                                        @else
-                                                            <span class="badge bg-danger">{{ __('messages.inactive') }}</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @can('exam-view')
-                                                        <a href="{{ route('exams.show', $examQuestion->exam) }}" class="btn btn-sm btn-info">
-                                                            <i class="fas fa-eye"></i> {{ __('messages.view_exam') }}
-                                                        </a>
-                                                        @endcan
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                  @if($question->exams->isNotEmpty())
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list"></i> {{ __('messages.used_in_exams') }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>{{ __('messages.exam_title') }}</th>
+                                    <th>{{ __('messages.order') }}</th>
+                                    <th>{{ __('messages.grade_in_exam') }}</th>
+                                    <th>{{ __('messages.exam_status') }}</th>
+                                    <th>{{ __('messages.actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($question->exams as $exam)
+                                <tr>
+                                    <td>
+                                        <strong>{{ $exam->title_en }}</strong><br>
+                                        <small class="text-muted">{{ $exam->title_ar }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ $exam->pivot->order }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">{{ $exam->pivot->grade }} {{ __('messages.points') }}</span>
+                                    </td>
+                                    <td>
+                                        @if($exam->is_active)
+                                            <span class="badge bg-success">{{ __('messages.active') }}</span>
+                                        @else
+                                            <span class="badge bg-danger">{{ __('messages.inactive') }}</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @can('exam-view')
+                                        <a href="{{ route('exams.show', $exam) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> {{ __('messages.view_exam') }}
+                                        </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
                 </div>
 
                 <div class="card-footer">

@@ -90,7 +90,7 @@ class QuestionController extends Controller
      */
     public function show(Question $question)
     {
-        $question->load(['course.subject', 'creator', 'options']);
+        $question->load(['course.subject', 'creator', 'options', 'exams']);
         return view('admin.questions.show', compact('question'));
     }
 
