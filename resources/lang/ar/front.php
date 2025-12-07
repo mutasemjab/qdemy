@@ -268,6 +268,8 @@ return array (
   'confirm_submit_exam_incomplete' => 'تأكيد تسليم الامتحان غير المكتمل',
   'you_can_submit_even_incomplete' => 'يمكنك التسليم حتى لو لم تكتمل الإجابات',
   'previous_attempts_history' => 'تاريخ المحاولات السابقة',
+  'قيد التصحيح' => 'قيد التصحيح',
+  'رسب' => 'رسب',
   'attempt' => 'محاولة',
   'date' => 'التاريخ',
   'score' => 'النتيجة',

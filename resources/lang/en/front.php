@@ -403,6 +403,8 @@ return array (
   'الدرجة' => 'Score',
   'حفظ الإجابة والمتابعة' => 'Save Answer & Continue',
   'تاريخ المحاولات السابقة' => 'Previous Attempts Date',
+  'قيد التصحيح' => 'Under Review',
+  'رسب' => 'Failed',
   'محاولة' => 'Attempt',
   'مراجعة' => 'Review',
   'السؤال السابق' => 'Previous Question',
