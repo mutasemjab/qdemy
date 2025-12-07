@@ -9,7 +9,6 @@
 
     <div class="auth-content-wrapper">
         <div class="auth-info-box">
-            <img data-src="{{ asset('assets_front/images/logo-white.png') }}" alt="Qdemy Logo">
             <h2>{{ __('front.start_building_future') }}</h2>
             <p>{{ __('front.learning_platform_desc') }}</p>
         </div>
