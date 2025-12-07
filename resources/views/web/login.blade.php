@@ -9,6 +9,9 @@
 
     <div class="auth-content-wrapper">
         <div class="auth-info-box">
+           <br>
+           <br>
+           <br>
             <h2>{{ __('front.start_building_future') }}</h2>
             <p>{{ __('front.learning_platform_desc') }}</p>
         </div>
