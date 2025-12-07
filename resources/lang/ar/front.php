@@ -80,7 +80,7 @@ return array (
   'final_cost' => 'التكلفة النهائية',
   'sub_total' => 'المجموع الفرعي',
   'total' => 'الإجمالي',
-  'card_qdemy' => 'بطاقة قديمي',
+  'card_qdemy' => 'بطاقة',
   'enter_card_qdemy' => 'أدخل رقم بطاقة قديمي لتفعيل الكورسات',
   'enter_card_here' => 'أدخل رقم البطاقة هنا',
   'activate_card' => 'تفعيل البطاقة',

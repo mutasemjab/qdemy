@@ -80,7 +80,7 @@ return array (
   'final_cost' => 'Final Cost',
   'sub_total' => 'Sub Total',
   'total' => 'Total',
-  'card_qdemy' => 'Qdemy Card',
+  'card_qdemy' => 'Card',
   'enter_card_qdemy' => 'Enter your Qdemy card number to activate courses',
   'enter_card_here' => 'Enter card number here',
   'activate_card' => 'Activate Card',

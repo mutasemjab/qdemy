@@ -274,18 +274,7 @@
             </article>
         @endif
 
-        <!-- @if(!$exam->is_available())
-            <article class="cmty-post cmty-post--outlined" style="border-color: #ffc107;">
-                <div style="color: #856404; text-align: center; padding: 20px;">
-                    <strong>{{ translate_lang('الامتحان غير متاح حاليا') }}</strong>
-                    @if($exam->start_date && now() < $exam->start_date)
-                        <br>{{ translate_lang('يبدأ في') }}: {{ $exam->start_date->format('Y-m-d H:i') }}
-                    @elseif($exam->end_date && now() > $exam->end_date)
-                        <br>{{ translate_lang('انتهى في') }}: {{ $exam->end_date->format('Y-m-d H:i') }}
-                    @endif
-                </div>
-            </article>
-        @endif -->
+  
 
     </div>
 </section>

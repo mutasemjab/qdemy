@@ -7,7 +7,7 @@
 
     @if($tawjihiLastYearFields && $tawjihiLastYearFields->count())
     @foreach($tawjihiLastYearFields as $index => $tawjihiLastYearField)
-    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="f08-section" style="background-image: url('{{ asset('images') }}{{$index % 2 ? '/literature-box.png' : '/science-box.png'}}');">
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="f08-section" style="background-image: url('{{ asset('assets_front/images') }}{{$index % 2 ? '/literature-box.png' : '/science-box.png'}}');">
 
         <h2 class="f08-title">{{$tawjihiLastYearField->localized_name}}</h2>
 
