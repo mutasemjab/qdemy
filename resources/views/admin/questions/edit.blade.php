@@ -61,6 +61,33 @@
                                 </div>
                             </div>
 
+                               @if($question->photo)
+                                <div class="col-12 mb-3">
+                                    <div class="form-group">
+                                        <label>{{ __('messages.Current Photo') }}</label>
+                                        <div>
+                                            <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}"
+                                                 alt="{{ $question->title_ar }}"
+                                                 class="img-thumbnail"
+                                                 style="max-width: 150px; max-height: 150px;">
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                                <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="photo">{{ __('messages.New Photo') }}</label>
+                                    <input type="file" class="form-control-file @error('photo') is-invalid @enderror"
+                                           id="photo" name="photo" accept="image/*">
+                                    @error('photo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">{{ __('messages.Accepted formats: jpeg, png, jpg, gif. Max size: 2MB') }}</small>
+                                </div>
+                            </div>
+
+
                             <!-- Question Text English -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">

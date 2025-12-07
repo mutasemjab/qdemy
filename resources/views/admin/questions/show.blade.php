@@ -54,6 +54,7 @@
                                 </div>
                             </div>
                         </div>
+                        
 
                         <div class="col-md-6">
                             <div class="card border-left-success h-100">
@@ -77,6 +78,17 @@
                         </div>
                     </div>
 
+                     @if($question->photo)
+                                <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}" 
+                                     alt="{{ $question->name }}" 
+                                     class="img-fluid rounded-circle shadow" 
+                                     style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                    @else
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-circle shadow mx-auto" 
+                                     style="width: 200px; height: 200px; font-size: 4rem;">
+                                    {{ substr($question->name, 0, 1) }}
+                                </div>
+                    @endif
                     <!-- Question Metadata -->
                     <div class="row mb-4">
                         <div class="col-md-12">
