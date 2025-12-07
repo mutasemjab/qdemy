@@ -147,7 +147,7 @@
                         <div style="margin: 15px 0; text-align: center;">
                             <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}" 
                                 alt="{{ $question->title }}" 
-                                style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                style="max-width: 50%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         </div>
                     @endif
 
