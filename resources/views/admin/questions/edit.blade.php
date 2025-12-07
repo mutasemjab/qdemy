@@ -19,7 +19,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('questions.update', $question) }}" method="POST" id="questionForm">
+                <form action="{{ route('questions.update', $question) }}" method="POST" id="questionForm" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="card-body">

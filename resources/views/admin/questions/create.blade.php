@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('questions.store') }}" method="POST" id="questionForm">
+                <form action="{{ route('questions.store') }}" method="POST" id="questionForm" enctype="multipart/form-data">
                     @csrf
                     <div class="card-body">
                         <div class="row">
