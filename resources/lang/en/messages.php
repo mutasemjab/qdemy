@@ -784,6 +784,7 @@ return [
   'contents' => 'Contents',
   'content_type' => 'Content Type',
   'is_free' => 'Access Type',
+  'is it main video?' => 'Is it main video?',
   'free' => 'Free',
   'paid' => 'Paid',
   'order' => 'Order',

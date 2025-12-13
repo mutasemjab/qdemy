@@ -111,6 +111,26 @@
                                     @enderror
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="is_main_video" class="form-label">
+                                        {{ __('messages.is it main video?') }} <span class="text-danger">*</span>
+                                    </label>
+                                    <select class="form-control @error('is_main_video') is-invalid @enderror"
+                                            id="is_main_video"
+                                            name="is_main_video">
+                                        <option value="2" {{ old('is_main_video', $content->is_main_video) == '2' ? 'selected' : '' }}>
+                                            {{ __('messages.paid') }}
+                                        </option>
+                                         <option value="1" {{ old('is_main_video', $content->is_main_video) == '1' ? 'selected' : '' }}>
+                                            {{ __('messages.free') }}
+                                        </option>
+                                    </select>
+                                    @error('is_main_video')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
                             <!-- Order -->
                             <div class="col-md-4">

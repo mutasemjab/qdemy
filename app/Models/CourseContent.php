@@ -14,6 +14,7 @@ class CourseContent extends Model
 
      protected $casts = [
         'is_free' => 'integer',
+        'is_main_video' => 'integer',
         'order' => 'integer',
         'video_duration' => 'integer',
     ];

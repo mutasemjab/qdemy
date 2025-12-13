@@ -91,6 +91,13 @@
               </select>
             </div>
             <div class="form-group">
+              <label for="is_main_video">{{ __('messages.is it main video?') }} *</label>
+              <select id="is_main_video" name="is_main_video" required>
+                <option value="2" {{ old('is_main_video', $content->is_main_video) == '2' ? 'selected' : '' }}>{{ __('panel.no') }}</option>
+                <option value="1" {{ old('is_main_video', $content->is_main_video) == '1' ? 'selected' : '' }}>{{ __('panel.yes') }}</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label for="order">{{ __('panel.order') }}</label>
               <input type="number" id="order" name="order" value="{{ old('order', $content->order) }}" min="1">
             </div>

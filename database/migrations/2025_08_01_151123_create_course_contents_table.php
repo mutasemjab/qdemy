@@ -22,6 +22,7 @@ return new class extends Migration
 
             // Common fields
             $table->tinyInteger('is_free')->default(1); // 1 FREE  // 2 Paid
+            $table->tinyInteger('is_main_video')->default(2); // 1 yes  // 2 no
             $table->integer('order')->default(0); // order in course
 
             // Video specific

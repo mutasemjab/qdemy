@@ -129,6 +129,7 @@
                                                                         <th>{{ __('messages.title') }}</th>
                                                                         <th>{{ __('messages.content_type') }}</th>
                                                                         <th>{{ __('messages.is_free') }}</th>
+                                                                        <th>{{ __('messages.is it main video?') }}</th>
                                                                         <th>{{ __('messages.order') }}</th>
                                                                     </tr>
                                                                 </thead>
@@ -150,6 +151,13 @@
                                                                                     <span class="badge bg-success">{{ __('messages.free') }}</span>
                                                                                 @else
                                                                                     <span class="badge bg-warning">{{ __('messages.paid') }}</span>
+                                                                                @endif
+                                                                            </td>
+                                                                            <td>
+                                                                                @if($content->is_main_video == 1)
+                                                                                    <span class="badge bg-success">{{ __('messages.yes') }}</span>
+                                                                                @else
+                                                                                    <span class="badge bg-warning">{{ __('messages.no') }}</span>
                                                                                 @endif
                                                                             </td>
                                                                             <td>{{ $content->order }}</td>

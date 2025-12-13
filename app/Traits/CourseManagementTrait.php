@@ -225,7 +225,7 @@ trait CourseManagementTrait
         
         try {
             $contentData = $request->only([
-                'title_en', 'title_ar', 'content_type', 'is_free', 
+                'title_en', 'title_ar', 'content_type', 'is_free','is_main_video',
                 'order', 'video_type', 'video_url', 'video_duration', 
                 'pdf_type', 'section_id'
             ]);
@@ -289,7 +289,7 @@ trait CourseManagementTrait
         
         try {
             $contentData = $request->only([
-                'title_en', 'title_ar', 'content_type', 'is_free', 
+                'title_en', 'title_ar', 'content_type', 'is_free','is_main_video',
                 'order', 'video_type', 'video_url', 'video_duration', 
                 'pdf_type', 'section_id'
             ]);
@@ -635,6 +635,7 @@ trait CourseManagementTrait
             'title_ar' => 'required|string|max:255',
             'content_type' => 'required|in:video,pdf,quiz,assignment',
             'is_free' => 'required|in:1,2',
+            'is_main_video' => 'required|in:1,2',
             'order' => 'required|integer|min:0',
             'section_id' => 'sometimes|exists:course_sections,id'
         ];

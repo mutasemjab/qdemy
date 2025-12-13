@@ -766,6 +766,7 @@ return [
   'contents' => 'المحتويات',
   'content_type' => 'نوع المحتوى',
   'is_free' => 'نوع الوصول',
+  'is it main video?' => 'هل هو فيديو رئيسي ؟',
   'free' => 'مجاني',
   'paid' => 'مدفوع',
   'order' => 'الترتيب',

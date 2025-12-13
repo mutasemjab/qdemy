@@ -118,6 +118,7 @@ class CourseTeacherController extends Controller
                                 'title_ar' => $content->title_ar,
                                 'content_type' => $content->content_type,
                                 'is_free' => $content->is_free,
+                                'is_main_video' => $content->is_main_video,
                                 'order' => $content->order,
                                 'video_duration' => $content->video_duration,
                                 'created_at' => $content->created_at
