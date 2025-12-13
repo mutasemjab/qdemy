@@ -81,25 +81,91 @@ class Course extends Model
     {
         $user_id = $userId ? $userId : auth_student()?->id;
         
-        // Get all video contents for the course
+        if (!$user_id) {
+            return [
+                'total_progress' => 0,
+                'video_progress' => 0,
+                'exam_progress' => 0,
+                'completed_videos' => 0,
+                'watching_videos' => 0,
+                'total_videos' => 0,
+                'completed_exams' => 0,
+                'total_exams' => 0,
+            ];
+        }
+        
+        // Get total videos for this course
         $totalVideos = CourseContent::where('course_id', $this->id)
             ->where('content_type', 'video')
             ->count();
         
-        // Return 0 if no videos exist
-        if ($totalVideos == 0) {
-            return 0;
+        // Get completed videos
+        $completedVideos = 0;
+        $watchingVideos = 0;
+        
+        if ($totalVideos > 0) {
+            $completedVideos = ContentUserProgress::where('user_id', $user_id)
+                ->whereIn('course_content_id', 
+                    CourseContent::where('course_id', $this->id)
+                        ->where('content_type', 'video')
+                        ->pluck('id')
+                )
+                ->whereNull('exam_id') // Only video progress
+                ->where('completed', true)
+                ->count();
+            
+            $watchingVideos = ContentUserProgress::where('user_id', $user_id)
+                ->whereIn('course_content_id', 
+                    CourseContent::where('course_id', $this->id)
+                        ->where('content_type', 'video')
+                        ->pluck('id')
+                )
+                ->whereNull('exam_id')
+                ->where('completed', false)
+                ->where('watch_time', '>', 0)
+                ->count();
         }
         
-        // Get user progress for this course
-        $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
-            ->where('content_user_progress.user_id', $user_id)
-            ->where('course_contents.course_id', $this->id)
-            ->where('course_contents.content_type', 'video')
-            ->where('content_user_progress.completed', true)
-            ->count();
+        $videoProgress = $totalVideos > 0 ? ($completedVideos / $totalVideos) * 100 : 0;
         
-        return ($completedVideos / $totalVideos) * 100;
+        // Get total exams for this course
+        $totalExams = $this->exams()->where('is_active', 1)->count();
+        
+        // Get completed exams
+        $completedExams = 0;
+        
+        if ($totalExams > 0) {
+            $completedExams = ContentUserProgress::where('user_id', $user_id)
+                ->whereIn('exam_id', $this->exams()->pluck('id'))
+                ->whereNull('course_content_id') // Only exam progress
+                ->where('completed', true)
+                ->count();
+        }
+        
+        $examProgress = $totalExams > 0 ? ($completedExams / $totalExams) * 100 : 0;
+        
+        // Calculate total progress (weighted average)
+        // If course has both videos and exams, give 60% weight to videos, 40% to exams
+        // If only videos or only exams, use 100% of that component
+        $totalProgress = 0;
+        if ($totalVideos > 0 && $totalExams > 0) {
+            $totalProgress = ($videoProgress * 0.6) + ($examProgress * 0.4);
+        } elseif ($totalVideos > 0) {
+            $totalProgress = $videoProgress;
+        } elseif ($totalExams > 0) {
+            $totalProgress = $examProgress;
+        }
+        
+        return [
+            'total_progress' => round($totalProgress, 2),
+            'video_progress' => round($videoProgress, 2),
+            'exam_progress' => round($examProgress, 2),
+            'completed_videos' => $completedVideos,
+            'watching_videos' => $watchingVideos,
+            'total_videos' => $totalVideos,
+            'completed_exams' => $completedExams,
+            'total_exams' => $totalExams,
+        ];
     }
 
     /**

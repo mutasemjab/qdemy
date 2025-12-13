@@ -82,18 +82,16 @@
     </section>
 
     <section class="features">
-        <h2 data-aos="zoom-in-up">{{ __('front.What Makes QDEMY Special') }}</h2>
-        <div class="features__media" data-aos="zoom-in" data-aos-duration="1500" data-aos-delay="300">
-            <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/specialist.png')
-                : asset('assets_front/images/en/specialist.png') }}"
-                alt="" class="features__img" loading="lazy">
-        </div>
+       
     </section>
 
 
     <section class="services">
-        <h2 data-aos="zoom-in-up">{{ __('front.QDEMY Services') }}</h2>
+           <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/our_service.png')
+                : asset('assets_front/images/en/our_service.png') }}"
+                 loading="lazy" width="400px;" height="auto">
+            
         <div class="services-box">
             <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200"
                 class="service-btn dark  anim animate-glow"
@@ -119,7 +117,11 @@
 
 
     <section data-aos="zoom-in-up" class="x3c-instructors">
-        <h2>{{ __('front.Teachers') }}</h2>
+        <h2> <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/teacher.png')
+                : asset('assets_front/images/en/teacher.png') }}"
+                 loading="lazy" width="400px;" height="auto">
+                </h2>
         <div class="x3c-viewport">
             <button class="x3c-arrow x3c-left">&#10094;</button>
             <div class="x3c-rail">
@@ -141,7 +143,12 @@
 
     <section data-aos="zoom-in-up" class="fm3d-videos-block">
         <div class="fm3d-videos-inner">
-            <h2 class="fm3d-videos-title" data-aos="zoom-in-up">{{ __('front.Social Media') }}</h2>
+            <h2 class="fm3d-videos-title" data-aos="zoom-in-up">
+                 <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/social_media.png')
+                : asset('assets_front/images/en/social_media.png') }}"
+                 loading="lazy" width="400px;" height="auto">
+                </h2>
             <div class="fm3d-videos-shell">
                 <button class="fm3d-nav-arrow fm3d-nav-prev" type="button">
                     <span class="fm3d-nav-chevron"></span>
@@ -211,7 +218,11 @@
     </section>
 
     <section class="faq-section">
-        <h2 data-aos="zoom-in-up">{{ __('front.Most Frequently Asked Questions') }}</h2>
+        <h2 data-aos="zoom-in-up">  <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/fre_question.png')
+                : asset('assets_front/images/en/fre_question.png') }}"
+                 loading="lazy" width="400px;" height="auto">
+                </h2>
         <div class="faq-section-link">
             <a href="{{ route('faq.index') }}">{{ __('front.See More') }} ←</a>
         </div>
@@ -231,7 +242,10 @@
     </section>
 
     <section class="rvx" dir="rtl">
-        <h2 data-aos="zoom-in-up" class="rvx-title">{{ __('front.Some Students Reviews') }}</h2>
+        <h2 data-aos="zoom-in-up" class="rvx-title"> <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/student_opinion.png')
+                : asset('assets_front/images/en/student_opinion.png') }}"
+                 loading="lazy" width="400px;" height="auto"></h2>
 
         <div class="rvx-wrap">
             <!-- Blue side panel -->
@@ -267,7 +281,10 @@
 
 <section class="blog-slider">
     <h2 data-aos="zoom-in-up" class="blog-slider__title">
-        {{ __('front.Blogs') }}
+       <img src="{{ app()->getLocale() == 'ar'
+                ? asset('assets_front/images/blogs.png')
+                : asset('assets_front/images/en/blogs.png') }}"
+                 loading="lazy" width="400px;" height="auto">
     </h2>
 
     <div class="blog-slider__shell">

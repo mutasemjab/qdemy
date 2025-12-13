@@ -25,9 +25,24 @@ return new class extends Migration
             // For PDF or quizzes: mark as viewed/completed
             $table->timestamp('viewed_at')->nullable();
 
+            // new for exam progress
+            $table->unsignedBigInteger('exam_id')->nullable();
+            $table->unsignedBigInteger('exam_attempt_id')->nullable();
+            
+            // Exam results
+            $table->decimal('score', 5, 2)->nullable();
+            $table->decimal('percentage', 5, 2)->nullable();
+            $table->boolean('is_passed')->default(false);
+            
+            // Add foreign keys
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
+            $table->foreign('exam_attempt_id')->references('id')->on('exam_attempts')->onDelete('set null');
+            
+        
             $table->timestamps();
 
-            $table->unique(['user_id', 'course_content_id']);
+            $table->index(['user_id', 'course_content_id']);
+            $table->index(['user_id', 'exam_id']);
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('course_content_id')->references('id')->on('course_contents')->onDelete('cascade');
         });

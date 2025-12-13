@@ -84,7 +84,6 @@
                 @if(($course->is_pinned ?? false))
                     <span class="course-card__ribbon">{{ translate_lang('pinned_course') }}</span>
                 @endif
-                <div class="course-card__teacher">{{ $course->teacher?->name }}</div>
 
             </div>
 

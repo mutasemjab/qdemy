@@ -105,8 +105,21 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::get('/pos', [PosController::class, 'index']);
     Route::get('/home', HomeController::class);
 
-    // Protected routes (all users use the same auth middleware)
-    Route::group(['middleware' => ['auth:user-api']], function () {
+
+         Route::prefix('progress')->group(function () {
+            // Get progress for a specific course
+            Route::get('/courses/{courseId}', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseProgress']);
+            
+            // Get detailed progress (videos + exams breakdown)
+            Route::get('/courses/{courseId}/detailed', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseDetailedProgress']);
+
+            // Update video watch progress
+            Route::post('/video/update', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'updateVideoProgress']);
+            
+            // Mark content (PDF, etc.) as completed
+            Route::post('/content/complete', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'markContentCompleted']);
+        });
+        
 
         Route::prefix('notifications')->group(function () {
             // Send notification to a single user

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use App\Traits\Responses;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\ContentUserProgress;
 
 class ExamController extends Controller
 {
@@ -37,6 +38,15 @@ class ExamController extends Controller
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             if($request->hasHeader('UserId')){
                 auth()->loginUsingId($request->header('UserId'));
+            }
+        }
+
+         // Set language from header (default to 'ar' if not provided)
+        if ($request->hasHeader('Lang') || $request->hasHeader('Language')) {
+            $lang = $request->header('Lang') ?? $request->header('Language');
+            if (in_array($lang, ['en', 'ar'])) {
+                app()->setLocale($lang);
+                session(['locale' => $lang]);
             }
         }
     }
@@ -384,7 +394,7 @@ class ExamController extends Controller
     // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
     // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
     // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
-    public function submit_exam(ExamAttempt $attempt)
+   public function submit_exam(ExamAttempt $attempt)
     {
         if ($attempt->status !== 'in_progress') {
             return abort(403,'unavailable exam');
@@ -398,6 +408,7 @@ class ExamController extends Controller
         $total_possible = (int)$exam->total_grade ? (int)$exam->total_grade : (int)$exam->questions_sum_grade;
         $percentage     = $total_possible > 0 ? (($total_score / $total_possible) * 100) : 0;
         $is_passed      = $percentage >= $exam->passing_grade;
+        
         // Update attempt
         if($exam->show_results_immediately == true){
             $attempt->update([
@@ -407,7 +418,25 @@ class ExamController extends Controller
                 'is_passed'    => $is_passed,
                 'status'       => 'completed',
             ]);
-        }else{
+            
+            // Track exam progress in content_user_progress table
+            ContentUserProgress::updateOrCreate(
+                [
+                    'user_id' => $attempt->user_id,
+                    'exam_id' => $exam->id,
+                    'course_content_id' => null, // Important: null for exam progress
+                ],
+                [
+                    'exam_attempt_id' => $attempt->id,
+                    'completed' => true,
+                    'score' => $total_score,
+                    'percentage' => round($percentage, 2),
+                    'is_passed' => $is_passed,
+                    'viewed_at' => now(),
+                    'watch_time' => null,
+                ]
+            );
+        } else {
             $attempt->update([
                 'submitted_at' => now(),
             ]);
