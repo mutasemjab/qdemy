@@ -16,7 +16,7 @@ class OtpService
     public function __construct()
     {
         // Load from config or .env
-        $this->senderid = config('otp.sender_id', 'HabibaStore');
+        $this->senderid = config('otp.sender_id', 'QdemyJo');
         $this->accname = config('otp.account_name', 'aliencode');
         $this->accpass = config('otp.account_password', 'jU0nH9pI6mD4vQ2s');
         $this->otpLength = config('otp.length', 4);
