@@ -105,26 +105,25 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::get('/pos', [PosController::class, 'index']);
     Route::get('/home', HomeController::class);
 
-
-         Route::prefix('progress')->group(function () {
+    Route::group(['middleware' => ['auth:user-api']], function () {
+        Route::prefix('progress')->group(function () {
             // Get progress for a specific course
             Route::get('/courses/{courseId}', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseProgress']);
-            
+
             // Get detailed progress (videos + exams breakdown)
             Route::get('/courses/{courseId}/detailed', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseDetailedProgress']);
 
             // Update video watch progress
             Route::post('/video/update', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'updateVideoProgress']);
-            
+
             // Mark content (PDF, etc.) as completed
             Route::post('/content/complete', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'markContentCompleted']);
         });
-        
+
 
         Route::prefix('notifications')->group(function () {
             // Send notification to a single user
             Route::post('/send-to-user', [NotificationController::class, 'sendToUser']);
-
         });
 
         Route::post('/follow/toggle', [FollowController::class, 'toggleFollow']);
@@ -165,8 +164,8 @@ Route::group(['prefix' => 'v1/user'], function () {
 
         // Packages
         Route::prefix('packages')->group(function () {
-           Route::get('/', [PackageAndOfferController::class, 'index'])->name('api.packages.index');
-           Route::get('/{package}/details', [PackageAndOfferController::class, 'show'])->name('api.packages.show');
+            Route::get('/', [PackageAndOfferController::class, 'index'])->name('api.packages.index');
+            Route::get('/{package}/details', [PackageAndOfferController::class, 'show'])->name('api.packages.show');
         });
 
 
@@ -176,9 +175,8 @@ Route::group(['prefix' => 'v1/user'], function () {
             Route::post('/{notification}/read', [NotificationUserController::class, 'markAsRead']);
             Route::post('/mark-all-read', [NotificationUserController::class, 'markAllAsRead']);
         });
-
-
     });
+});
 
 // ================================
 // TEACHER ROUTES
@@ -207,7 +205,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
         Route::get('/Teacherdashboard', [DashboardTeacherController::class, 'index']);
 
         // Course Management
-         Route::prefix('courses')->group(function () {
+        Route::prefix('courses')->group(function () {
             Route::get('/', [CourseTeacherController::class, 'index']);
             Route::post('/', [CourseTeacherController::class, 'store']);
             Route::get('/{course}', [CourseTeacherController::class, 'show']);
@@ -260,7 +258,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
 
 
         // Notifications
-         Route::prefix('notifications')->group(function () {
+        Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationTeacherController::class, 'index']);
             Route::get('/unread-count', [NotificationTeacherController::class, 'getUnreadCount']);
             Route::post('/{notification}/read', [NotificationTeacherController::class, 'markAsRead']);
@@ -313,23 +311,21 @@ Route::group(['prefix' => 'v1/parent'], function () {
 
 
         // Notifications
-         Route::prefix('notifications')->group(function () {
+        Route::prefix('notifications')->group(function () {
             Route::get('/', [NotificationParentController::class, 'index']);
             Route::get('/unread-count', [NotificationParentController::class, 'getUnreadCount']);
             Route::post('/{notification}/read', [NotificationParentController::class, 'markAsRead']);
             Route::post('/mark-all-read', [NotificationParentController::class, 'markAllAsRead']);
         });
-
-
     });
 });
 
 
 // exam routes starts
 // عرض قائمة الامتحانات
-Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX.'exam.index');
+Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exam.index');
 // عرض الامتحان
-Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX.'exam');
+Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam');
 
 // middleware(['auth:user-api'])->
 Route::prefix('v1/exam')->name(API_ROUTE_PREFIX)->group(function () {
