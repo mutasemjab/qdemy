@@ -46,7 +46,7 @@ class AuthController extends Controller
         }
     }
 
-      private function formatUserData($user)
+    private function formatUserData($user)
     {
         return [
             'id' => $user->id,
@@ -66,7 +66,7 @@ class AuthController extends Controller
     /**
      * Register a new student
      */
-     public function register(Request $request)
+    public function register(Request $request)
     {
         try {
             // Validation
@@ -130,7 +130,7 @@ class AuthController extends Controller
             // Send OTP to phone if provided
             if ($request->phone) {
                 $result = $this->otpService->generateAndSendOtp($request->phone);
-                
+
                 if (!$result['success']) {
                     return response()->json([
                         'status' => false,
@@ -150,7 +150,6 @@ class AuthController extends Controller
                     'requires_otp' => (bool) $user->phone
                 ]
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
@@ -180,7 +179,7 @@ class AuthController extends Controller
         // Check for test OTP
         // if ($this->otpService->isTestOtp($request->phone, $request->otp)) {
         //     $user = User::where('phone', $request->phone)->first();
-            
+
         //     if (!$user) {
         //         return response()->json([
         //             'status' => false,
@@ -203,7 +202,7 @@ class AuthController extends Controller
 
         // Verify OTP
         $user = User::where('phone', $request->phone)->first();
-        
+
         if (!$user) {
             return response()->json([
                 'status' => false,
@@ -226,7 +225,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Register successful', 
+                'message' => 'Register successful',
                 'data' => [
                     'user' => $this->formatUserData($user),
                     'token' => $token,
@@ -294,8 +293,8 @@ class AuthController extends Controller
 
             // Find user by email or phone and ensure they are a student
             $user = User::where($fieldType, $loginField)
-                       ->where('role_name', 'student')
-                       ->first();
+                ->where('role_name', 'student')
+                ->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return $this->error_response('Invalid credentials', null);
@@ -336,7 +335,6 @@ class AuthController extends Controller
             ];
 
             return $this->success_response('Login successful', $userData);
-
         } catch (\Exception $e) {
             return $this->error_response('Login failed: ' . $e->getMessage(), null);
         }
@@ -350,8 +348,13 @@ class AuthController extends Controller
         try {
             $user = $request->user();
 
+            // Check if user is authenticated
+            if (!$user) {
+                return $this->error_response('Unauthenticated. Please login.', null, 401);
+            }
+
             if ($user->role_name !== 'student') {
-                return $this->error_response('Access denied. Students only.', null);
+                return $this->error_response('Access denied. Students only.', null, 403);
             }
 
             $userData = [
@@ -371,7 +374,6 @@ class AuthController extends Controller
             ];
 
             return $this->success_response('Profile retrieved successfully', $userData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve profile: ' . $e->getMessage(), null);
         }
@@ -430,7 +432,7 @@ class AuthController extends Controller
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
-              $photoPath =  uploadImage('assets/admin/uploads',$request->photo);
+                $photoPath =  uploadImage('assets/admin/uploads', $request->photo);
                 $updateData['photo'] = $photoPath;
             }
 
@@ -453,7 +455,6 @@ class AuthController extends Controller
             ];
 
             return $this->success_response('Profile updated successfully', $userData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to update profile: ' . $e->getMessage(), null);
         }
@@ -502,12 +503,8 @@ class AuthController extends Controller
             $user->delete();
 
             return $this->success_response('Account deleted successfully', $deletedUserInfo);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to delete account: ' . $e->getMessage(), null);
         }
     }
-
-
 }
-
