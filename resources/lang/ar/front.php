@@ -512,4 +512,34 @@ return array (
   'no_reviews_yet' => 'لا توجد مراجعات بعد',
   '{{__(front.courses)}}' => '{{__(front.courses)}}',
   'الدورات' => 'الدورات',
+    // Forgot Password Translations
+    'forgot_password' => 'نسيت كلمة المرور',
+    'reset_password' => 'إعادة تعيين كلمة المرور',
+    'verify_otp' => 'تحقق من الرمز',
+    'send_otp' => 'إرسال الرمز',
+    'enter_otp' => 'أدخل رمز التحقق',
+    'new_password' => 'كلمة المرور الجديدة',
+    'confirm_password' => 'تأكيد كلمة المرور',
+    'remember_password' => 'هل تتذكر كلمة المرور؟',
+    'did_not_receive_otp' => 'لم تستلم الرمز؟',
+    'resend_otp' => 'إعادة إرسال الرمز',
+    'otp_sent_to' => 'تم إرسال رمز التحقق إلى',
+    
+    // Success Messages
+    'otp_sent_successfully' => 'تم إرسال رمز التحقق بنجاح. يرجى التحقق من هاتفك.',
+    'otp_verified' => 'تم التحقق من الرمز بنجاح. يمكنك الآن إعادة تعيين كلمة المرور.',
+    'password_reset_success' => 'تم إعادة تعيين كلمة المرور بنجاح. يرجى تسجيل الدخول بكلمة المرور الجديدة.',
+    
+    // Error Messages
+    'phone_not_found_or_not_student' => 'رقم الهاتف غير موجود أو غير مرتبط بحساب طالب.',
+    'account_deactivated' => 'الحساب معطل. يرجى التواصل مع الدعم الفني.',
+    'failed_to_send_otp' => 'فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.',
+    'phone_verification_failed' => 'فشل التحقق من رقم الهاتف',
+    'session_expired' => 'انتهت صلاحية الجلسة. يرجى البدء من جديد.',
+    'user_not_found' => 'المستخدم غير موجود.',
+    'otp_expired' => 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.',
+    'invalid_otp' => 'رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.',
+    'otp_verification_failed' => 'فشل التحقق من الرمز',
+    'password_reset_failed' => 'فشل إعادة تعيين كلمة المرور',
+    'failed_to_resend_otp' => 'فشل إعادة إرسال رمز التحقق',
 );

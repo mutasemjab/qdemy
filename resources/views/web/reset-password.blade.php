@@ -1,7 +1,7 @@
 @php $hideFooter = true; @endphp
 @extends('layouts.app')
 
-@section('title', __('front.login'))
+@section('title', __('front.reset_password'))
 
 @section('content')
 <section class="auth-page">
@@ -21,26 +21,24 @@
                   {{ __('front.welcome_to') }}
                   <img src="{{ asset('images/logo.png') }}" alt="Qdemy" class="welcome-logo">
                 </p>
-            <h3>{{ __('front.login') }}</h3>
+            <h3>{{ __('front.reset_password') }}</h3>
 
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
-            <form method='post' action="{{ route('user.login.submit') }}">
+            <form method='post' action="{{ route('user.forgot-password.reset.submit') }}">
                 @csrf
-                <input  value="{{old('phone') }}" name="phone" type="phone" placeholder="{{ __('front.phone_number') }}">
-                @error('phone')<span class="text-danger">{{ $message }}</span>@enderror
-
-                <input  value="{{old('password') }}" name="password" type="password" placeholder="{{ __('front.password') }}">
+                <input value="{{ old('password') }}" name="password" type="password" placeholder="{{ __('front.new_password') }}">
                 @error('password')<span class="text-danger">{{ $message }}</span>@enderror
 
-                <p class="forgot-password-link"><a href="{{ route('user.forgot-password.forget') }}">{{ __('front.forgot_password') }}?</a></p>
+                <input value="{{ old('password_confirmation') }}" name="password_confirmation" type="password" placeholder="{{ __('front.confirm_password') }}">
+                @error('password_confirmation')<span class="text-danger">{{ $message }}</span>@enderror
 
-                <button class="submit-btn" type="submit">{{ __('front.login') }}</button>
+                <button class="submit-btn" type="submit">{{ __('front.reset_password') }}</button>
             </form>
 
-            <p class="login-link">{{ __('front.no_account') }} <a href="{{route('user.register')}}">{{ __('front.create_account') }}</a></p>
+            <p class="login-link">{{ __('front.remember_password') }} <a href="{{ route('user.login') }}">{{ __('front.login') }}</a></p>
         </div>
     </div>
 </section>

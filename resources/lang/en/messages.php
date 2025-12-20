@@ -2386,139 +2386,140 @@ return [
   'BannedWord_Deleted_Successfully' => 'Word deleted successfully',
   'No_Permission' => 'You do not have permission to perform this action',
   'Activity Logs' => 'Activity Logs',
-   'FAQ Management' => 'FAQ Management',
-    'Create FAQ' => 'Create FAQ',
-    'Edit FAQ' => 'Edit FAQ',
-    'View FAQ' => 'View FAQ',
-    
-    // Buttons
-    'Add FAQ' => 'Add FAQ',
-    'Update FAQ' => 'Update FAQ',
-    'Create FAQ' => 'Create FAQ',
-    'Delete FAQ' => 'Delete FAQ',
-    'Edit FAQ' => 'Edit FAQ',
-    'Back to FAQs' => 'Back to FAQs',
-    'Back to List' => 'Back to List',
-    'View' => 'View',
-    'Edit' => 'Edit',
-    'Delete' => 'Delete',
-    'Cancel' => 'Cancel',
-    'Search' => 'Search',
-    'Reset' => 'Reset',
-    
-    // Form Labels
-    'Question' => 'Question',
-    'Answer' => 'Answer',
-    'Category' => 'Category',
-    'Question (English)' => 'Question (English)',
-    'Question (Arabic)' => 'Question (Arabic)',
-    'Answer (English)' => 'Answer (English)',
-    'Answer (Arabic)' => 'Answer (Arabic)',
-    
-    // Language Sections
-    'English Version' => 'English Version',
-    'Arabic Version' => 'Arabic Version',
-    'English' => 'English',
-    'Arabic' => 'Arabic',
-    
-    // Categories
-    'All Categories' => 'All Categories',
-    'Select Category' => 'Select Category',
-    'Registration' => 'Registration',
-    'Payment' => 'Payment',
-    'Card' => 'Card',
-    'Courses' => 'Courses',
-    'Technical' => 'Technical',
-    'Privacy' => 'Privacy',
-    'Account' => 'Account',
-    
-    // Placeholders
-    'Enter the frequently asked question' => 'Enter the frequently asked question',
-    'Enter the frequently asked question in English' => 'Enter the frequently asked question in English',
-    'Enter the frequently asked question in Arabic' => 'Enter the frequently asked question in Arabic',
-    'Provide a detailed and helpful answer' => 'Provide a detailed and helpful answer',
-    'Provide a detailed and helpful answer in English' => 'Provide a detailed and helpful answer in English',
-    'Provide a detailed and helpful answer in Arabic' => 'Provide a detailed and helpful answer in Arabic',
-    'Search questions and answers...' => 'Search questions and answers...',
-    
-    // Help Text
-    'Make it clear and concise' => 'Make it clear and concise',
-    'Be thorough and helpful in your response' => 'Be thorough and helpful in your response',
-    
-    // Messages
-    'Current FAQ' => 'Current FAQ',
-    'No FAQs found' => 'No FAQs found',
-    'Create your first FAQ' => 'Create your first FAQ',
-    'FAQ created successfully' => 'FAQ created successfully',
-    'FAQ updated successfully' => 'FAQ updated successfully',
-    'FAQ deleted successfully' => 'FAQ deleted successfully',
-    'Are you sure you want to delete this FAQ?' => 'Are you sure you want to delete this FAQ?',
-    
-    // Metadata
-    'Information' => 'Information',
-    'Created At' => 'Created At',
-    'Updated At' => 'Updated At',
-    'question_details' => 'Question Details',
-'back' => 'Back',
-'edit' => 'Edit',
-'delete' => 'Delete',
-'confirm_delete_question' => 'Are you sure you want to delete this question?',
+  'FAQ Management' => 'FAQ Management',
+  'Create FAQ' => 'Create FAQ',
+  'Edit FAQ' => 'Edit FAQ',
+  'View FAQ' => 'View FAQ',
 
-// Question Fields
-'question_title_en' => 'Question Title (English)',
-'question_title_ar' => 'Question Title (Arabic)',
-'question_text_en' => 'Question Text (English)',
-'question_text_ar' => 'Question Text (Arabic)',
-'explanation_en' => 'Explanation (English)',
-'explanation_ar' => 'Explanation (Arabic)',
+  // Buttons
+  'Add FAQ' => 'Add FAQ',
+  'Update FAQ' => 'Update FAQ',
+  'Create FAQ' => 'Create FAQ',
+  'Delete FAQ' => 'Delete FAQ',
+  'Edit FAQ' => 'Edit FAQ',
+  'Back to FAQs' => 'Back to FAQs',
+  'Back to List' => 'Back to List',
+  'View' => 'View',
+  'Edit' => 'Edit',
+  'Delete' => 'Delete',
+  'Cancel' => 'Cancel',
+  'Search' => 'Search',
+  'Reset' => 'Reset',
 
-// Question Metadata
-'course' => 'Course',
-'question_type' => 'Question Type',
-'multiple_choice' => 'Multiple Choice',
-'true_false' => 'True/False',
-'essay' => 'Essay',
-'grade' => 'Grade',
-'points' => 'Points',
-'created_by' => 'Created By',
-'system' => 'System',
-'created_at' => 'Created At',
-'updated_at' => 'Updated At',
+  // Form Labels
+  'Question' => 'Question',
+  'Answer' => 'Answer',
+  'Category' => 'Category',
+  'Question (English)' => 'Question (English)',
+  'Question (Arabic)' => 'Question (Arabic)',
+  'Answer (English)' => 'Answer (English)',
+  'Answer (Arabic)' => 'Answer (Arabic)',
 
-// Options
-'answer_options' => 'Answer Options',
-'option' => 'Option',
-'correct' => 'Correct',
-'english' => 'English',
-'arabic' => 'Arabic',
-'no_options_found' => 'No options found for this question',
+  // Language Sections
+  'English Version' => 'English Version',
+  'Arabic Version' => 'Arabic Version',
+  'English' => 'English',
+  'Arabic' => 'Arabic',
 
-// Essay Questions
-'essay_question' => 'Essay Question',
-'essay_question_grading_note' => 'This is an essay question. Students will provide a written answer that requires manual grading.',
-'essay_answer_area' => 'Essay Answer Area',
-'student_will_type_answer_here' => 'Student will type their answer here...',
+  // Categories
+  'All Categories' => 'All Categories',
+  'Select Category' => 'Select Category',
+  'Registration' => 'Registration',
+  'Payment' => 'Payment',
+  'Card' => 'Card',
+  'Courses' => 'Courses',
+  'Technical' => 'Technical',
+  'Privacy' => 'Privacy',
+  'Account' => 'Account',
 
-// Exams Usage
-'used_in_exams' => 'Used in Exams',
-'exam_title' => 'Exam Title',
-'order' => 'Order',
-'grade_in_exam' => 'Grade in Exam',
-'exam_status' => 'Exam Status',
-'actions' => 'Actions',
-'active' => 'Active',
-'inactive' => 'Inactive',
-'view_exam' => 'View Exam',
+  // Placeholders
+  'Enter the frequently asked question' => 'Enter the frequently asked question',
+  'Enter the frequently asked question in English' => 'Enter the frequently asked question in English',
+  'Enter the frequently asked question in Arabic' => 'Enter the frequently asked question in Arabic',
+  'Provide a detailed and helpful answer' => 'Provide a detailed and helpful answer',
+  'Provide a detailed and helpful answer in English' => 'Provide a detailed and helpful answer in English',
+  'Provide a detailed and helpful answer in Arabic' => 'Provide a detailed and helpful answer in Arabic',
+  'Search questions and answers...' => 'Search questions and answers...',
 
-// Footer Actions
-'back_to_questions' => 'Back to Questions',
-'edit_question' => 'Edit Question',
-'add_new_question' => 'Add New Question',
+  // Help Text
+  'Make it clear and concise' => 'Make it clear and concise',
+  'Be thorough and helpful in your response' => 'Be thorough and helpful in your response',
 
-// Preview Modal
-'question_preview' => 'Question Preview',
-'close' => 'Close',
-'explanation' => 'Explanation',
+  // Messages
+  'Current FAQ' => 'Current FAQ',
+  'No FAQs found' => 'No FAQs found',
+  'Create your first FAQ' => 'Create your first FAQ',
+  'FAQ created successfully' => 'FAQ created successfully',
+  'FAQ updated successfully' => 'FAQ updated successfully',
+  'FAQ deleted successfully' => 'FAQ deleted successfully',
+  'Are you sure you want to delete this FAQ?' => 'Are you sure you want to delete this FAQ?',
+
+  // Metadata
+  'Information' => 'Information',
+  'Created At' => 'Created At',
+  'Updated At' => 'Updated At',
+  'question_details' => 'Question Details',
+  'back' => 'Back',
+  'edit' => 'Edit',
+  'delete' => 'Delete',
+  'confirm_delete_question' => 'Are you sure you want to delete this question?',
+
+  // Question Fields
+  'question_title_en' => 'Question Title (English)',
+  'question_title_ar' => 'Question Title (Arabic)',
+  'question_text_en' => 'Question Text (English)',
+  'question_text_ar' => 'Question Text (Arabic)',
+  'explanation_en' => 'Explanation (English)',
+  'explanation_ar' => 'Explanation (Arabic)',
+
+  // Question Metadata
+  'course' => 'Course',
+  'question_type' => 'Question Type',
+  'multiple_choice' => 'Multiple Choice',
+  'true_false' => 'True/False',
+  'essay' => 'Essay',
+  'grade' => 'Grade',
+  'points' => 'Points',
+  'created_by' => 'Created By',
+  'system' => 'System',
+  'created_at' => 'Created At',
+  'updated_at' => 'Updated At',
+
+  // Options
+  'answer_options' => 'Answer Options',
+  'option' => 'Option',
+  'correct' => 'Correct',
+  'english' => 'English',
+  'arabic' => 'Arabic',
+  'no_options_found' => 'No options found for this question',
+
+  // Essay Questions
+  'essay_question' => 'Essay Question',
+  'essay_question_grading_note' => 'This is an essay question. Students will provide a written answer that requires manual grading.',
+  'essay_answer_area' => 'Essay Answer Area',
+  'student_will_type_answer_here' => 'Student will type their answer here...',
+
+  // Exams Usage
+  'used_in_exams' => 'Used in Exams',
+  'exam_title' => 'Exam Title',
+  'order' => 'Order',
+  'grade_in_exam' => 'Grade in Exam',
+  'exam_status' => 'Exam Status',
+  'actions' => 'Actions',
+  'active' => 'Active',
+  'inactive' => 'Inactive',
+  'view_exam' => 'View Exam',
+
+  // Footer Actions
+  'back_to_questions' => 'Back to Questions',
+  'edit_question' => 'Edit Question',
+  'add_new_question' => 'Add New Question',
+
+  // Preview Modal
+  'question_preview' => 'Question Preview',
+  'close' => 'Close',
+  'explanation' => 'Explanation',
+
   '' => '',
   '' => '',
   '' => '',

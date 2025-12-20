@@ -25,27 +25,6 @@ class AuthController extends Controller
         $this->otpService = $otpService;
     }
 
-    public function resetPassword(Request $request)
-    {
-        $request->validate([
-            'phone' => 'required|string',
-            'password' => 'required|string|confirmed',
-        ]);
-
-        // Find the user
-        $user = User::where('phone', $request->phone)
-            ->first();
-
-        if (!$user) {
-            return redirect()->route('user.login')->with('error', 'User Not found with these phone number');
-        }
-
-        // Update the user's password
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return redirect()->route('user.login')->with('success', 'Password Change Successfully');
-    }
 
     public function showLogin()
     {

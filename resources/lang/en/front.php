@@ -512,4 +512,34 @@ return array (
   'no_reviews_yet' => 'No reviews yet',
   '{{__(front.courses)}}' => '{{__(front.courses)}}',
   'الدورات' => 'الدورات',
+    // Forgot Password Translations
+  'forgot_password' => 'Forgot Password',
+  'reset_password' => 'Reset Password',
+  'verify_otp' => 'Verify OTP',
+  'send_otp' => 'Send OTP',
+  'enter_otp' => 'Enter OTP Code',
+  'new_password' => 'New Password',
+  'confirm_password' => 'Confirm Password',
+  'remember_password' => 'Remember your password?',
+  'did_not_receive_otp' => 'Didn\'t receive OTP?',
+  'resend_otp' => 'Resend OTP',
+  'otp_sent_to' => 'OTP has been sent to',
+
+  // Success Messages
+  'otp_sent_successfully' => 'OTP sent successfully. Please check your phone.',
+  'otp_verified' => 'OTP verified successfully. You can now reset your password.',
+  'password_reset_success' => 'Password reset successfully. Please login with your new password.',
+
+  // Error Messages
+  'phone_not_found_or_not_student' => 'Phone number not found or not associated with a student account.',
+  'account_deactivated' => 'Account is deactivated. Please contact support.',
+  'failed_to_send_otp' => 'Failed to send OTP. Please try again.',
+  'phone_verification_failed' => 'Phone verification failed',
+  'session_expired' => 'Session expired. Please start again.',
+  'user_not_found' => 'User not found.',
+  'otp_expired' => 'OTP has expired. Please request a new one.',
+  'invalid_otp' => 'Invalid OTP. Please try again.',
+  'otp_verification_failed' => 'OTP verification failed',
+  'password_reset_failed' => 'Password reset failed',
+  'failed_to_resend_otp' => 'Failed to resend OTP',
 );

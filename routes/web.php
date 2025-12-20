@@ -32,6 +32,7 @@ use App\Http\Controllers\Web\ElementaryProgrammController;
 use App\Http\Controllers\Web\InternationalProgramController;
 use App\Http\Controllers\Web\MinisterialYearsQuestionController;
 use App\Http\Controllers\Web\FaqController;
+use App\Http\Controllers\Web\ForgotPasswordController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Models\BannedWord;
 use App\Services\ContentModerationService;
@@ -188,14 +189,38 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/register', [AuthController::class, 'showRegister'])->name('user.register');
         Route::post('/login', [AuthController::class, 'login'])->name('user.login.submit');
         Route::post('/register', [AuthController::class, 'register'])->name('user.register.submit');
-        Route::post('/password/reset', [AuthController::class, 'resetPassword'])->name('password.reset');
         Route::get('verify-otp', [AuthController::class, 'showOtpVerification'])->name('otp.verify');
         Route::post('verify-otp', [AuthController::class, 'verifyOtp'])->name('otp.verify.submit');
         Route::get('resend-otp', [AuthController::class, 'resendOtp'])->name('otp.resend');
           // AJAX routes for parent registration
         Route::post('/search-student', [AuthController::class, 'searchStudent'])->name('user.search.student');
         Route::get('/available-students', [AuthController::class, 'getAvailableStudents'])->name('user.available.students');
+
+        // Forgot Password Routes
+        Route::prefix('forgot-password')->name('user.forgot-password.')->group(function () {
+            // Step 1: Show forgot password form
+            Route::get('/', [ForgotPasswordController::class, 'showForgotPasswordForm'])->name('forget');
+            
+            // Step 2: Check phone and send OTP
+            Route::post('/check-phone', [ForgotPasswordController::class, 'checkPhoneForReset'])->name('check-phone');
+            
+            // Step 3: Show OTP verification form
+            Route::get('/verify-otp', [ForgotPasswordController::class, 'showVerifyOtpForm'])->name('verify-otp');
+            
+            // Step 4: Verify OTP
+            Route::post('/verify-otp', [ForgotPasswordController::class, 'verifyOtp'])->name('verify-otp.submit');
+            
+            // Step 5: Show reset password form
+            Route::get('/reset', [ForgotPasswordController::class, 'showResetPasswordForm'])->name('reset');
+            
+            // Step 6: Reset password
+            Route::post('/reset', [ForgotPasswordController::class, 'resetPassword'])->name('reset.submit');
+            
+            // Resend OTP
+            Route::post('/resend-otp', [ForgotPasswordController::class, 'resendOtp'])->name('resend-otp');
+        });
     });
+
 });
 
 
