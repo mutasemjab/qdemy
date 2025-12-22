@@ -31,7 +31,7 @@ class AuthController extends Controller
         $flag = 2;
         return response()->json([
             'status' => true,
-            'message' => $flag == 1 ? 'Payment visible' : 'Payment hidden',
+            'message' => $flag == 1 ? 'الدفع مرئي' : 'الدفع مخفي',
             'data' => $flag,
         ]);
     }
@@ -40,9 +40,9 @@ class AuthController extends Controller
     {
         try {
             $classes = Clas::get();
-            return $this->success_response('Classes retrieved successfully', $classes);
+            return $this->success_response('تم استرجاع الصفوف بنجاح', $classes);
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve classes', $e->getMessage());
+            return $this->error_response('فشل استرجاع الصفوف', $e->getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
             if (!$request->email && !$request->phone) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Either email or phone is required'
+                    'message' => 'البريد الإلكتروني أو رقم الهاتف مطلوب'
                 ], 422);
             }
 
@@ -134,7 +134,7 @@ class AuthController extends Controller
                 if (!$result['success']) {
                     return response()->json([
                         'status' => false,
-                        'message' => 'Registration successful but failed to send OTP. Please try again.',
+                        'message' => 'تم التسجيل بنجاح ولكن فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.',
                         'user_id' => $user->id
                     ], 500);
                 }
@@ -142,7 +142,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'User registered successfully. Please verify OTP.',
+                'message' => 'تم تسجيل المستخدم بنجاح. يرجى التحقق من رمز التحقق.',
                 'data' => [
                     'user_id' => $user->id,
                     'phone' => $user->phone,
@@ -153,7 +153,7 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Registration failed: ' . $e->getMessage()
+                'message' => 'فشل التسجيل: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -171,7 +171,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation failed',
+                'message' => 'فشل التحقق من الصحة',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -183,7 +183,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'User not found'
+                    'message' => 'المستخدم غير موجود'
                 ], 404);
             }
 
@@ -194,7 +194,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Register successful',
+                'message' => 'تم التسجيل بنجاح',
                 'data' => [
                     'user' => $this->formatUserData($user),
                     'token' => $token,
@@ -208,14 +208,14 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'status' => false,
-                'message' => 'User not found'
+                'message' => 'المستخدم غير موجود'
             ], 404);
         }
 
         if (!$this->otpService->otpExists($request->phone)) {
             return response()->json([
                 'status' => false,
-                'message' => 'OTP has expired. Please request a new one.'
+                'message' => 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.'
             ], 400);
         }
 
@@ -227,7 +227,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => 'Register successful',
+                'message' => 'تم التسجيل بنجاح',
                 'data' => [
                     'user' => $this->formatUserData($user),
                     'token' => $token,
@@ -237,7 +237,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => false,
-            'message' => 'Invalid OTP. Please try again.'
+            'message' => 'رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.'
         ], 400);
     }
 
@@ -253,7 +253,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
-                'message' => 'Validation failed',
+                'message' => 'فشل التحقق من الصحة',
                 'errors' => $validator->errors()
             ], 422);
         }
@@ -263,13 +263,13 @@ class AuthController extends Controller
         if ($result['success']) {
             return response()->json([
                 'status' => true,
-                'message' => 'OTP sent successfully'
+                'message' => 'تم إرسال رمز التحقق بنجاح'
             ], 200);
         }
 
         return response()->json([
             'status' => false,
-            'message' => 'Failed to send OTP. Please try again.'
+            'message' => 'فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.'
         ], 500);
     }
 
@@ -287,7 +287,7 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->error_response('Validation failed', $validator->errors());
+                return $this->error_response('فشل التحقق من الصحة', $validator->errors());
             }
 
             $loginField = $request->login;
@@ -299,12 +299,12 @@ class AuthController extends Controller
                 ->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
-                return $this->error_response('Invalid credentials', null);
+                return $this->error_response('بيانات الاعتماد غير صحيحة', null);
             }
 
             // Check if account is activated
             if ($user->activate != 1) {
-                return $this->error_response('Account is deactivated. Please contact support.', null);
+                return $this->error_response('الحساب معطل. يرجى الاتصال بالدعم.', null);
             }
 
             // Update FCM token and login info
@@ -336,9 +336,9 @@ class AuthController extends Controller
                 'token' => $token,
             ];
 
-            return $this->success_response('Login successful', $userData);
+            return $this->success_response('تم تسجيل الدخول بنجاح', $userData);
         } catch (\Exception $e) {
-            return $this->error_response('Login failed: ' . $e->getMessage(), null);
+            return $this->error_response('فشل تسجيل الدخول: ' . $e->getMessage(), null);
         }
     }
 
@@ -352,11 +352,11 @@ class AuthController extends Controller
 
             // Check if user is authenticated
             if (!$user) {
-                return $this->error_response('Unauthenticated. Please login.', null, 401);
+                return $this->error_response('غير مصرح. يرجى تسجيل الدخول.', null, 401);
             }
 
             if ($user->role_name !== 'student') {
-                return $this->error_response('Access denied. Students only.', null, 403);
+                return $this->error_response('تم رفض الوصول. للطلاب فقط.', null, 403);
             }
 
             $userData = [
@@ -375,9 +375,9 @@ class AuthController extends Controller
                 'updated_at' => $user->updated_at
             ];
 
-            return $this->success_response('Profile retrieved successfully', $userData);
+            return $this->success_response('تم استرجاع الملف الشخصي بنجاح', $userData);
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve profile: ' . $e->getMessage(), null);
+            return $this->error_response('فشل استرجاع الملف الشخصي: ' . $e->getMessage(), null);
         }
     }
 
@@ -390,7 +390,7 @@ class AuthController extends Controller
             $user = $request->user();
 
             if ($user->role_name !== 'student') {
-                return $this->error_response('Access denied. Students only.', null);
+                return $this->error_response('تم رفض الوصول. للطلاب فقط.', null);
             }
 
             // Validation rules
@@ -405,7 +405,7 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->error_response('Validation failed', $validator->errors());
+                return $this->error_response('فشل التحقق من الصحة', $validator->errors());
             }
 
             $updateData = [];
@@ -456,9 +456,9 @@ class AuthController extends Controller
                 'updated_at' => $user->updated_at
             ];
 
-            return $this->success_response('Profile updated successfully', $userData);
+            return $this->success_response('تم تحديث الملف الشخصي بنجاح', $userData);
         } catch (\Exception $e) {
-            return $this->error_response('Failed to update profile: ' . $e->getMessage(), null);
+            return $this->error_response('فشل تحديث الملف الشخصي: ' . $e->getMessage(), null);
         }
     }
 
@@ -471,7 +471,7 @@ class AuthController extends Controller
             $user = $request->user();
 
             if ($user->role_name !== 'student') {
-                return $this->error_response('Access denied. Students only.', null);
+                return $this->error_response('تم رفض الوصول. للطلاب فقط.', null);
             }
 
             // Validation for password confirmation
@@ -480,12 +480,12 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->error_response('Password confirmation required', $validator->errors());
+                return $this->error_response('تأكيد كلمة المرور مطلوب', $validator->errors());
             }
 
             // Verify password
             if (!Hash::check($request->password, $user->password)) {
-                return $this->error_response('Invalid password confirmation', null);
+                return $this->error_response('تأكيد كلمة المرور غير صحيح', null);
             }
 
 
@@ -504,9 +504,9 @@ class AuthController extends Controller
             // Delete user account
             $user->delete();
 
-            return $this->success_response('Account deleted successfully', $deletedUserInfo);
+            return $this->success_response('تم حذف الحساب بنجاح', $deletedUserInfo);
         } catch (\Exception $e) {
-            return $this->error_response('Failed to delete account: ' . $e->getMessage(), null);
+            return $this->error_response('فشل حذف الحساب: ' . $e->getMessage(), null);
         }
     }
 }
