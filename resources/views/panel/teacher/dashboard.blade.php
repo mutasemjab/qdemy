@@ -102,6 +102,32 @@
                 <div class="ud-title">{{ __('panel.account_settings') }}</div>
                 <form method="POST" action="{{ route('teacher.update.account') }}" enctype="multipart/form-data">
                     @csrf
+
+                    <!-- Add this error/success messages section -->
+                    @if (session('success'))
+                        <div class="alert alert-success"
+                            style="background: #d4edda; color: #155724; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    @if (session('error'))
+                        <div class="alert alert-danger"
+                            style="background: #f8d7da; color: #721c24; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    @if ($errors->any())
+                        <div class="alert alert-danger"
+                            style="background: #f8d7da; color: #721c24; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f5c6cb;">
+                            <ul style="margin: 0; padding-right: 20px;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="ud-profile-head">
                         <div class="ud-ava-wrap">
                             <!-- صورة البروفايل -->

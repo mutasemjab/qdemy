@@ -448,58 +448,78 @@ class TeacherController extends Controller
 
    public function updateAccount(Request $request)
     {
-        $user = Auth::guard('user')->user();
+        try {
+            $user = Auth::guard('user')->user();
 
-        $request->validate([
-            'name'           => 'required|string|max:255',
-            'email'          => 'required|email|unique:users,email,'.$user->id,
-            'phone'          => 'nullable|string|max:20',
-            'photo'          => 'nullable|image|mimes:jpg,jpeg,png',
-            'name_of_lesson' => 'nullable|string|max:255',
-            'description_en' => 'nullable|string',
-            'description_ar' => 'nullable|string',
-            'facebook'       => 'nullable|url',
-            'instagram'      => 'nullable|url',
-            'youtube'        => 'nullable|url',
-            'whatsapp'       => 'nullable|string|max:20',
-        ]);
+            $request->validate([
+                'name'           => 'required|string|max:255',
+                'email'          => 'required|email|unique:users,email,'.$user->id,
+                'phone'          => 'nullable|string|max:20|unique:users,phone,'.$user->id,
+                'photo'          => 'nullable|image|mimes:jpg,jpeg,png',
+                'name_of_lesson' => 'nullable|string|max:255',
+                'description_en' => 'nullable|string',
+                'description_ar' => 'nullable|string',
+                'facebook'       => 'nullable|url',
+                'instagram'      => 'nullable|url',
+                'youtube'        => 'nullable|url',
+                'whatsapp'       => 'nullable|string|max:20',
+            ], [
+                'name.required' => 'الاسم مطلوب',
+                'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
+                'email.required' => 'البريد الإلكتروني مطلوب',
+                'email.email' => 'البريد الإلكتروني غير صحيح',
+                'email.unique' => 'البريد الإلكتروني مستخدم من قبل',
+                'phone.unique' => 'رقم الهاتف مستخدم من قبل',
+                'phone.max' => 'رقم الهاتف يجب أن لا يتجاوز 20 رقم',
+                'photo.image' => 'الملف يجب أن يكون صورة',
+                'photo.mimes' => 'الصورة يجب أن تكون من نوع: jpg, jpeg, png',
+                'facebook.url' => 'رابط فيسبوك غير صحيح',
+                'instagram.url' => 'رابط انستقرام غير صحيح',
+                'youtube.url' => 'رابط يوتيوب غير صحيح',
+            ]);
 
-        // Update user basic info
-        $user->name  = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
+            // Update user basic info
+            $user->name  = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
 
-        // Handle photo upload
-        if ($request->hasFile('photo')) {
-            $filename = uploadImage('assets/admin/uploads', $request->photo);
-            $user->photo = $filename;
+            // Handle photo upload
+            if ($request->hasFile('photo')) {
+                $filename = uploadImage('assets/admin/uploads', $request->photo);
+                $user->photo = $filename;
+            }
+
+            $user->save();
+
+            // Update or create teacher record
+            $teacherData = [
+                'name'           => $request->name,
+                'name_of_lesson' => $request->name_of_lesson,
+                'description_en' => $request->description_en,
+                'description_ar' => $request->description_ar,
+                'facebook'       => $request->facebook,
+                'instagram'      => $request->instagram,
+                'youtube'        => $request->youtube,
+                'whataspp'       => $request->whatsapp, // Note: keeping your typo "whataspp" to match your schema
+                'photo'          => $user->photo,
+                'user_id'        => $user->id,
+            ];
+
+            // Update or create teacher record
+            $user->teacher()->updateOrCreate(
+                ['user_id' => $user->id],
+                $teacherData
+            );
+
+            return back()->with('success', 'تم تحديث الحساب بنجاح');
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء تحديث الحساب: ' . $e->getMessage())->withInput();
         }
-
-        $user->save();
-
-        // Update or create teacher record
-        $teacherData = [
-            'name'           => $request->name,
-            'name_of_lesson' => $request->name_of_lesson,
-            'description_en' => $request->description_en,
-            'description_ar' => $request->description_ar,
-            'facebook'       => $request->facebook,
-            'instagram'      => $request->instagram,
-            'youtube'        => $request->youtube,
-            'whataspp'       => $request->whatsapp, // Note: keeping your typo "whataspp" to match your schema
-            'photo'          => $user->photo,
-            'user_id'        => $user->id,
-        ];
-
-        // Update or create teacher record
-        $user->teacher()->updateOrCreate(
-            ['user_id' => $user->id],
-            $teacherData
-        );
-
-        return back()->with('success', __('panel.account_updated'));
-}
-    
+    }
+        
    
       // Community methods
      public function createPost(Request $request)

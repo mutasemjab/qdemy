@@ -22,7 +22,7 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $notifications = $this->getUserNotifications();
-        
+
         // Get parent profile
         $parentProfile = $user->parentt;
 
@@ -33,18 +33,18 @@ class ParentController extends Controller
         // Get overview statistics
         $overviewStats = $this->getOverviewStats($children);
         $availableStudents = $user->getAvailableStudentsToAdd();
-    
+
         // Add course data for each child
-        $children = $children->map(function($child) {
+        $children = $children->map(function ($child) {
             $child->courses = $this->getChildCourses($child->user_id)->take(3);
             $child->recentExams = $this->getChildExamsProgress($child->user_id)->take(3);
             return $child;
         });
 
         return view('panel.parent.dashboard', compact(
-            'user', 
-            'children', 
-            'childrenSummary', 
+            'user',
+            'children',
+            'childrenSummary',
             'notifications',
             'overviewStats',
             'availableStudents'
@@ -55,9 +55,9 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $parentProfile = $user->parentt;
-        
+
         $children = $this->getChildrenWithProgress($parentProfile);
-        
+
         return view('panel.parent.children.index', compact('children'));
     }
 
@@ -65,12 +65,12 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $parentProfile = $user->parentt;
-        
+
         // Verify this child belongs to this parent
         $isMyChild = ParentStudent::where('parentt_id', $parentProfile->id)
             ->where('user_id', $childId)
             ->exists();
-        
+
         if (!$isMyChild) {
             abort(404, 'Child not found');
         }
@@ -81,9 +81,9 @@ class ParentController extends Controller
         $overallStats = $this->getChildOverallStats($childId);
 
         return view('panel.parent.children.detail', compact(
-            'childUser', 
-            'courses', 
-            'examsProgress', 
+            'childUser',
+            'courses',
+            'examsProgress',
             'overallStats'
         ));
     }
@@ -92,12 +92,12 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $parentProfile = $user->parentt;
-        
+
         // Verify this child belongs to this parent
         $isMyChild = ParentStudent::where('parentt_id', $parentProfile->id)
             ->where('user_id', $childId)
             ->exists();
-        
+
         if (!$isMyChild) {
             abort(404, 'Child not found');
         }
@@ -112,12 +112,12 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $parentProfile = $user->parentt;
-        
+
         // Verify this child belongs to this parent
         $isMyChild = ParentStudent::where('parentt_id', $parentProfile->id)
             ->where('user_id', $childId)
             ->exists();
-        
+
         if (!$isMyChild) {
             abort(404, 'Child not found');
         }
@@ -132,7 +132,7 @@ class ParentController extends Controller
     {
         $user = Auth::user();
         $parentProfile = $user->parentt;
-        
+
         $children = $this->getChildrenWithProgress($parentProfile);
         $reportData = $this->generateChildrenReports($children);
 
@@ -153,18 +153,18 @@ class ParentController extends Controller
             ->with(['student'])
             ->get();
 
-        return $parentStudents->filter(function($parentStudent) {
+        return $parentStudents->filter(function ($parentStudent) {
             return $parentStudent->student !== null;
         })->map(function ($parentStudent) {
             $child = $parentStudent->student;
-            
+
             // Get course count and average progress
             $enrolledCourses = CourseUser::where('user_id', $child->id)->with('course')->get();
             $totalCourses = $enrolledCourses->count();
-            
+
             $averageProgress = 0;
             if ($totalCourses > 0) {
-                $totalProgress = $enrolledCourses->sum(function($enrollment) use ($child) {
+                $totalProgress = $enrolledCourses->sum(function ($enrollment) use ($child) {
                     return $enrollment->course ? $enrollment->course->calculateCourseProgress($child->id) : 0;
                 });
                 $averageProgress = $totalProgress / $totalCourses;
@@ -175,10 +175,10 @@ class ParentController extends Controller
                 ->where('status', 'completed')
                 ->with(['exam'])
                 ->get();
-                
+
             $totalExams = $examResults->count();
             $averageScore = $examResults->avg('percentage') ?? 0;
-            $passedExams = $examResults->filter(function($attempt) {
+            $passedExams = $examResults->filter(function ($attempt) {
                 return $attempt->percentage >= ($attempt->exam->passing_grade ?? 50);
             })->count();
 
@@ -264,7 +264,7 @@ class ParentController extends Controller
         $examResults = ExamAttempt::where('user_id', $childId)
             ->where('status', 'completed')
             ->with(['exam.course', 'exam.subject'])
-            ->whereIn('id', function($query) use ($childId) {
+            ->whereIn('id', function ($query) use ($childId) {
                 $query->selectRaw('MAX(id)')
                     ->from('exam_attempts as ea')
                     ->where('ea.user_id', $childId)
@@ -305,20 +305,20 @@ class ParentController extends Controller
     {
         // Get enrolled courses count
         $totalCourses = CourseUser::where('user_id', $childId)->count();
-        
+
         // Get completed exams count
         $completedExams = ExamAttempt::where('user_id', $childId)
             ->where('status', 'completed')->count();
-        
+
         // Get all exam results for average
         $allExamResults = ExamAttempt::where('user_id', $childId)
             ->where('status', 'completed')
             ->with(['exam'])
             ->get();
-            
+
         $averageScore = $allExamResults->avg('percentage') ?? 0;
         $totalAttempts = $allExamResults->count();
-        
+
         return [
             'total_courses' => $totalCourses,
             'completed_exams' => $completedExams,
@@ -354,7 +354,7 @@ class ParentController extends Controller
             ->orderBy('submitted_at', 'desc')
             ->take(5)
             ->get()
-            ->map(function($attempt) {
+            ->map(function ($attempt) {
                 return [
                     'type' => 'exam',
                     'title' => $attempt->exam->title,
@@ -372,10 +372,10 @@ class ParentController extends Controller
 
     private function generateChildrenReports($children)
     {
-        return $children->map(function($child) {
+        return $children->map(function ($child) {
             $courses = $this->getChildCourses($child->user_id);
             $exams = $this->getChildExamsProgress($child->user_id);
-            
+
             return [
                 'child' => $child,
                 'courses_count' => $courses->count(),
@@ -394,37 +394,53 @@ class ParentController extends Controller
 
     public function updateAccount(Request $request)
     {
-        $user = Auth::guard('user')->user();
+        try {
+            $user = Auth::guard('user')->user();
 
-        $request->validate([
-            'name'   => 'required|string|max:255',
-            'email'  => 'required|email|unique:users,email,' . $user->id,
-            'phone'  => 'nullable|string|max:20',
-            'photo' => 'nullable|image|mimes:jpg,jpeg,png',
-        ]);
+            $request->validate([
+                'name'   => 'required|string|max:255',
+                'email'  => 'required|email|unique:users,email,' . $user->id,
+                'phone'  => 'nullable|string|max:20|unique:users,phone,' . $user->id,
+                'photo'  => 'nullable|image|mimes:jpg,jpeg,png',
+            ], [
+                'name.required' => 'الاسم مطلوب',
+                'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
+                'email.required' => 'البريد الإلكتروني مطلوب',
+                'email.email' => 'البريد الإلكتروني غير صحيح',
+                'email.unique' => 'البريد الإلكتروني مستخدم من قبل',
+                'phone.unique' => 'رقم الهاتف مستخدم من قبل',
+                'phone.max' => 'رقم الهاتف يجب أن لا يتجاوز 20 رقم',
+                'photo.image' => 'الملف يجب أن يكون صورة',
+                'photo.mimes' => 'الصورة يجب أن تكون من نوع: jpg, jpeg, png',
+            ]);
 
-        $user->name  = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
+            $user->name  = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
 
-        // Upload photo
-        if ($request->hasFile('photo')) {
-            $filename = uploadImage('assets/admin/uploads', $request->photo);
-            $user->photo = $filename;
-        }
-
-        // Update parent profile
-        if ($request->name) {
-            $parent = Parentt::where('user_id', $user->id)->first();
-            if ($parent) {
-                $parent->name = $request->name;
-                $parent->save();
+            // Upload photo
+            if ($request->hasFile('photo')) {
+                $filename = uploadImage('assets/admin/uploads', $request->photo);
+                $user->photo = $filename;
             }
+
+            $user->save();
+
+            // Update parent profile
+            if ($request->name) {
+                $parent = Parentt::where('user_id', $user->id)->first();
+                if ($parent) {
+                    $parent->name = $request->name;
+                    $parent->save();
+                }
+            }
+
+            return back()->with('success', 'تم تحديث الحساب بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء تحديث الحساب: ' . $e->getMessage())->withInput();
         }
-
-        $user->save();
-
-        return back()->with('success', __('panel.account_updated'));
     }
 
     public function addChild()
@@ -442,7 +458,7 @@ class ParentController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Get or create parent profile - same logic as API
         $parentProfile = $user->parentt;
         if (!$parentProfile) {
