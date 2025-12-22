@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('content_user_progress', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('course_content_id');
+            $table->unsignedBigInteger('course_content_id')->nullable();
 
             // For video watch tracking
             $table->integer('watch_time')->nullable(); // seconds watched
