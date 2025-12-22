@@ -2,6 +2,12 @@
 @section('title', __('front.Contact Us'))
 
 @section('content')
+@php
+    use App\Models\Setting;
+    // Get settings data
+    $footerSettings = Setting::getSettings();
+@endphp
+
 <section class="ct-page">
   <div class="ct-wrap">
 
@@ -17,7 +23,7 @@
 
       <h3 data-aos="fade-up" class="ct-sec">{{ __('front.Join Our Team') }}</h3>
       <p data-aos="fade-up" data-aos-delay="200" class="ct-note">{{ __('front.To join our team, submit your information and qualifications via the following email:') }}<br>
-        <span class="ct-mail">Qdemy@info.com</span>
+        <span class="ct-mail">{{ $footerSettings->email }}</span>
       </p>
     </div>
 
@@ -95,7 +101,6 @@
       
     <section data-aos="fade-up" data-aos-delay="200" class="qdemy-contact">
     <div class="qdemy-contact__inner">
-        <h2 class="qdemy-contact__title"> {{ __('front.Contact Us') }}</h2>
 
         <div class="qdemy-contact__cards">
             <a href="mailto:QDEMY@INFO.COM" class="qdemy-contact__card">
@@ -117,7 +122,40 @@
             </a>
         </div>
     </div>
+  </section>
 </section>
+<style>
+  /* Center the whole section */
+.qdemy-contact {
+    display: flex;
+    justify-content: center;
+    margin: 60px 0;
+}
 
-</section>
+/* Limit width and center content */
+.qdemy-contact__inner {
+    max-width: 500px;   /* controls how small it is */
+    width: 100%;
+}
+
+/* Center cards horizontally */
+.qdemy-contact__cards {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+/* Make cards smaller */
+.qdemy-contact__card img {
+    width: 200px;        /* adjust size here */
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Optional hover effect */
+.qdemy-contact__card:hover img {
+    transform: scale(1.05);
+}
+
+  </style>
 @endsection

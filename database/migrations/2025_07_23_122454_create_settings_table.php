@@ -19,6 +19,10 @@ return new class extends Migration
             $table->text('text_under_logo_in_footer');
             $table->string('email');
             $table->string('phone');
+            $table->string('facebook')->nullable();
+            $table->string('instagram')->nullable();
+            $table->string('youtube')->nullable();
+            $table->string('tiktok')->nullable();
             $table->string('address')->nullable();
             $table->string('google_play_link')->nullable();
             $table->string('app_store_link')->nullable();

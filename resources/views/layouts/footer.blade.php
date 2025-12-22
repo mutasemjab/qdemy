@@ -33,7 +33,7 @@
                 @php
                     $fb = $footerSettings->facebook ?? '#';
                     $ig = $footerSettings->instagram ?? '#';
-                    $tw = $footerSettings->twitter ?? '#';
+                    $tw = $footerSettings->tiktok ?? '#';
                     $yt = $footerSettings->youtube ?? '#';
                 @endphp
 
@@ -43,9 +43,9 @@
                 <a href="{{ $ig }}" class="social-btn" aria-label="Instagram" target="_blank" rel="noopener">
                     <i class="fab fa-instagram" aria-hidden="true"></i>
                 </a>
-                <a href="{{ $tw }}" class="social-btn" aria-label="X (Twitter)" target="_blank"
+                <a href="{{ $tw }}" class="social-btn" aria-label="Tiktok" target="_blank"
                     rel="noopener">
-                    <i class="fab fa-x-twitter" aria-hidden="true"></i>
+                    <i class="fab fa-tiktok" aria-hidden="true"></i>
                 </a>
                 <a href="{{ $yt }}" class="social-btn" aria-label="YouTube" target="_blank" rel="noopener">
                     <i class="fab fa-youtube" aria-hidden="true"></i>

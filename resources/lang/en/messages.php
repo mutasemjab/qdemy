@@ -2520,7 +2520,7 @@ return [
   'close' => 'Close',
   'explanation' => 'Explanation',
 
-  '' => '',
+  'TikTok' => 'TikTok',
   '' => '',
   '' => '',
   '' => '',
