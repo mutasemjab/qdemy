@@ -494,10 +494,10 @@ class ExamController extends Controller
     {
         $user = auth_student();
 
-        // Check if user owns this attempt
-        if ($attempt->user_id !== $user?->id) {
-            abort(403);
-        }
+        // // Check if user owns this attempt
+        // if ($attempt->user_id !== $user?->id) {
+        //     abort(403);
+        // }
 
         $answers = $attempt->answers()->with(['question', 'question.options'])->get();
 
