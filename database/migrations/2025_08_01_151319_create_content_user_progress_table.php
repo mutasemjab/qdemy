@@ -26,7 +26,7 @@ return new class extends Migration
             $table->timestamp('viewed_at')->nullable();
 
             // new for exam progress
-            $table->unsignedBigInteger('exam_id')->nullable();
+            $table->unsignedBigInteger('exam_id')->nullable(); 
             $table->unsignedBigInteger('exam_attempt_id')->nullable();
             
             // Exam results
