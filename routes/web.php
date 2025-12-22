@@ -166,7 +166,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     });
 
     Route::group(['middleware' => 'auth:user'], function () {
-        Route::get('/logout', [AuthController::class, 'logout'])->name('user.logout');
+        //Route::get('/logout', [AuthController::class, 'logout'])->name('user.logout');
 
 
 

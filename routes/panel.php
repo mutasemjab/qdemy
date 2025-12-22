@@ -174,6 +174,6 @@ Route::group([
     
     // General panel route that redirects based on role
     Route::get('/', [App\Http\Controllers\Panel\PanelController::class, 'index'])->name('panel.index');
-    Route::get('/logout', [App\Http\Controllers\Panel\PanelController::class, 'logout'])->name('user.logout');
+    Route::post('/logout', [App\Http\Controllers\Panel\PanelController::class, 'logout'])->name('panel.user.logout');
     
 });

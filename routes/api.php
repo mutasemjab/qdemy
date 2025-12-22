@@ -198,7 +198,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
         Route::get('/profile', [AuthTeacherController::class, 'profile']);
         Route::post('/update-profile', [AuthTeacherController::class, 'updateProfile']);
         Route::post('/change-password', [AuthTeacherController::class, 'changePassword']);
-        Route::get('/logout', [AuthTeacherController::class, 'logout']);
+        Route::post('/logout', [AuthTeacherController::class, 'logout']);
         Route::delete('/delete-account', [AuthTeacherController::class, 'deleteAccount']);
 
         // Dashboard
@@ -288,7 +288,7 @@ Route::group(['prefix' => 'v1/parent'], function () {
         Route::get('/profile', [AuthParentController::class, 'profile']);
         Route::post('/update-profile', [AuthParentController::class, 'updateProfile']);
         Route::post('/change-password', [AuthParentController::class, 'changePassword']);
-        Route::get('/logout', [AuthParentController::class, 'logout']);
+        Route::post('/logout', [AuthParentController::class, 'logout']);
         Route::delete('/delete-account', [AuthParentController::class, 'deleteAccount']);
 
         // Children Management

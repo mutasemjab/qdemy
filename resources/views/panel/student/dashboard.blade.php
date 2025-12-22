@@ -23,18 +23,19 @@
                     class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
 
-            <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}"  href="{{ route('chat.index') }}">
-                    <i class="fa-solid fa-comments"></i><span>{{ __('panel.messages') }}</span>
-                    {{-- Unread messages badge (optional - you can implement this later) --}}
-                    <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
-                    <i class="fa-solid fa-angle-left"></i>
-                </a>
+            <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" href="{{ route('chat.index') }}">
+                <i class="fa-solid fa-comments"></i><span>{{ __('panel.messages') }}</span>
+                {{-- Unread messages badge (optional - you can implement this later) --}}
+                <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
+                <i class="fa-solid fa-angle-left"></i>
+            </a>
             <button class="ud-item" data-target="courses">
                 <i class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span>
                 <i class="fa-solid fa-angle-left"></i>
-                </button>
-                
-            <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول الزمني</span><i class="fa-solid fa-angle-left"></i></button>
+            </button>
+
+            <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول
+                    الزمني</span><i class="fa-solid fa-angle-left"></i></button>
 
             <button class="ud-item" data-target="results"><i
                     class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
@@ -47,8 +48,14 @@
                     class="fa-brands fa-whatsapp"></i><span>{{ __('panel.technical_support') }}</span><i
                     class="fa-solid fa-angle-left"></i></button>
 
-            <a href="{{ route('user.logout') }}" class="ud-logout"><i
-                    class="fa-solid fa-arrow-left-long"></i><span>{{ __('panel.logout') }}</span></a>
+            <form action="{{ route('panel.user.logout') }}" method="POST" style="display: inline; width: 100%;">
+                @csrf
+                <button type="submit" class="ud-logout"
+                    style="background: none; border: none; cursor: pointer; width: 100%; text-align: inherit; display: flex; align-items: center; padding: 0;">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <span>{{ __('panel.logout') }}</span>
+                </button>
+            </form>
         </aside>
 
         <div class="ud-content">
@@ -129,9 +136,9 @@
 
             <!-- Include other panels (notifications, inbox, courses, schedule, results, offers, wallet, community, support) -->
             @include('panel.common.notifications')
-            @include('panel.student.courses',['userCourses' => $userCourses])
-            @include('panel.student.results',['userCourses' => $userCourses])
-            @include('panel.student.schedule',['userExamsResults' => $userExamsResults])
+            @include('panel.student.courses', ['userCourses' => $userCourses])
+            @include('panel.student.results', ['userCourses' => $userCourses])
+            @include('panel.student.schedule', ['userExamsResults' => $userExamsResults])
             @include('panel.student.community')
             @include('panel.common.support')
 
@@ -140,53 +147,53 @@
 @endsection
 
 @push('scripts')
-  <!-- JavaScript لمعاينة الصورة -->
- <script>
-     document.getElementById('avatarInput').addEventListener('change', function(event) {
-         const file = event.target.files[0];
-         if (file) {
-             const reader = new FileReader();
+    <!-- JavaScript لمعاينة الصورة -->
+    <script>
+        document.getElementById('avatarInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
 
-             reader.onload = function(e) {
-                 document.getElementById('preview-image').setAttribute('src', e.target.result);
-             };
+                reader.onload = function(e) {
+                    document.getElementById('preview-image').setAttribute('src', e.target.result);
+                };
 
-             reader.readAsDataURL(file);
-         }
-     });
- </script>
-
- <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Function to update unread count in navigation
-    async function updateUnreadCount() {
-        try {
-            const response = await fetch('{{ route("chat.list") }}');
-            const chats = await response.json();
-            
-            let totalUnread = 0;
-            chats.forEach(chat => {
-                const userChatUid = '{{ Auth::user()->role_name }}|{{ Auth::user()->id }}';
-                totalUnread += chat.unread[userChatUid] || 0;
-            });
-            
-            const badge = document.getElementById('unreadCount');
-            if (totalUnread > 0) {
-                badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
-                badge.style.display = 'inline-block';
-            } else {
-                badge.style.display = 'none';
+                reader.readAsDataURL(file);
             }
-        } catch (error) {
-            console.error('Error updating unread count:', error);
-        }
-    }
-    
-    // Update unread count every 30 seconds (only if not on chat page)
-    if (!window.location.pathname.includes('/chat')) {
-        updateUnreadCount();
-        setInterval(updateUnreadCount, 30000);
-    }
-});
-</script>
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to update unread count in navigation
+            async function updateUnreadCount() {
+                try {
+                    const response = await fetch('{{ route('chat.list') }}');
+                    const chats = await response.json();
+
+                    let totalUnread = 0;
+                    chats.forEach(chat => {
+                        const userChatUid = '{{ Auth::user()->role_name }}|{{ Auth::user()->id }}';
+                        totalUnread += chat.unread[userChatUid] || 0;
+                    });
+
+                    const badge = document.getElementById('unreadCount');
+                    if (totalUnread > 0) {
+                        badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+                        badge.style.display = 'inline-block';
+                    } else {
+                        badge.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error updating unread count:', error);
+                }
+            }
+
+            // Update unread count every 30 seconds (only if not on chat page)
+            if (!window.location.pathname.includes('/chat')) {
+                updateUnreadCount();
+                setInterval(updateUnreadCount, 30000);
+            }
+        });
+    </script>
 @endpush

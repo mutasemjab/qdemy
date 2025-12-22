@@ -75,7 +75,7 @@
                         <a href="{{ route('student.account') }}" class="btn btn-outline mobile-btn">
                             {{ __('front.my_account') }}
                         </a>
-                        <form action="{{ route('user.logout') }}" method="post" class="mobile-logout-form">
+                       <form action="{{ route('panel.user.logout') }}" method="post" class="mobile-logout-form">
                             @csrf
                             <button type="submit" class="btn btn-primary mobile-btn" style="border: 1px solid #0055D2;">
                                 {{ __('front.logout') }}
@@ -103,12 +103,12 @@
                     <a href="{{ route('student.account') }}" class="btn btn-outline">
                         {{ __('front.my_account') }}
                     </a>
-                    <form action="{{ route('user.logout') }}" method="post">
-                        @csrf
-                        <button type="submit" class="btn btn-primary" style="border: 1px solid #0055D2; padding: 8px;">
-                            {{ __('front.logout') }}
-                        </button>
-                    </form>
+                     <form action="{{ route('panel.user.logout') }}" method="post" class="mobile-logout-form">
+                            @csrf
+                            <button type="submit" class="btn btn-primary mobile-btn" style="border: 1px solid #0055D2;">
+                                {{ __('front.logout') }}
+                            </button>
+                        </form>
                 @endif
             </div>
 
