@@ -330,11 +330,11 @@ class AuthController extends Controller
     {
         switch ($user->role_name) {
             case 'student':
-                return redirect()->route('student.dashboard');
+                return redirect()->route('home');
             case 'parent':
-                return redirect()->route('parent.dashboard');
+                return redirect()->route('home');
             case 'teacher':
-                return redirect()->route('teacher.dashboard');
+                return redirect()->route('home');
             default:
                 return redirect()->route('home');
         }

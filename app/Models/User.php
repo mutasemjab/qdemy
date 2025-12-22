@@ -149,7 +149,7 @@ class User extends Authenticatable
 
      public function getPhotoUrlAttribute()
     {
-       return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/Profile-picture.png');
+       return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/Profile-picture.jpg');
     }
 
 

@@ -21,13 +21,20 @@
 
                     </a>
 
-                    <a href="{{ route('user.register') }}" class="blob-btn blob-btn-2 blob-3d" data-aos="fade-left"
-                        data-aos-duration="1200" data-aos-delay="350"
-                        style="background-image: url('{{ app()->getLocale() == 'ar'
-                            ? asset('assets_front/images/blob3.png')
-                            : asset('assets_front/images/en/blob3.png') }}');">
+                    @if (auth()->user())
+                     <a href="" class="blob-btn blob-btn-2 blob-3d" data-aos="fade-left"
+                            data-aos-duration="1200" data-aos-delay="350">
+                        </a>
+                    @else
+                        <a href="{{ route('user.register') }}" class="blob-btn blob-btn-2 blob-3d" data-aos="fade-left"
+                            data-aos-duration="1200" data-aos-delay="350"
+                            style="background-image: url('{{ app()->getLocale() == 'ar'
+                                ? asset('assets_front/images/blob3.png')
+                                : asset('assets_front/images/en/blob3.png') }}');">
 
-                    </a>
+                        </a>
+                    @endif
+
                 </div>
 
                 <!-- العمود الشمال -->
@@ -82,16 +89,16 @@
     </section>
 
     <section class="features">
-       
+
     </section>
 
 
     <section class="services">
-           <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/our_service.png')
-                : asset('assets_front/images/en/our_service.png') }}"
-                 loading="lazy" width="400px;" height="auto">
-            
+        <img src="{{ app()->getLocale() == 'ar'
+            ? asset('assets_front/images/our_service.png')
+            : asset('assets_front/images/en/our_service.png') }}"
+            loading="lazy" width="400px;" height="auto">
+
         <div class="services-box">
             <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200"
                 class="service-btn dark  anim animate-glow"
@@ -117,11 +124,12 @@
 
 
     <section data-aos="zoom-in-up" class="x3c-instructors">
-        <h2> <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/teacher.png')
-                : asset('assets_front/images/en/teacher.png') }}"
-                 loading="lazy" width="400px;" height="auto">
-                </h2>
+        <h2> <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/teacher.png')
+                    : asset('assets_front/images/en/teacher.png') }}"
+                loading="lazy" width="400px;" height="auto">
+        </h2>
         <div class="x3c-viewport">
             <button class="x3c-arrow x3c-left">&#10094;</button>
             <div class="x3c-rail">
@@ -144,11 +152,11 @@
     <section data-aos="zoom-in-up" class="fm3d-videos-block">
         <div class="fm3d-videos-inner">
             <h2 class="fm3d-videos-title" data-aos="zoom-in-up">
-                 <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/social_media.png')
-                : asset('assets_front/images/en/social_media.png') }}"
-                 loading="lazy" width="400px;" height="auto">
-                </h2>
+                <img src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/social_media.png')
+                    : asset('assets_front/images/en/social_media.png') }}"
+                    loading="lazy" width="400px;" height="auto">
+            </h2>
             <div class="fm3d-videos-shell">
                 <button class="fm3d-nav-arrow fm3d-nav-prev" type="button">
                     <span class="fm3d-nav-chevron"></span>
@@ -218,11 +226,12 @@
     </section>
 
     <section class="faq-section">
-        <h2 data-aos="zoom-in-up">  <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/fre_question.png')
-                : asset('assets_front/images/en/fre_question.png') }}"
-                 loading="lazy" width="400px;" height="auto">
-                </h2>
+        <h2 data-aos="zoom-in-up"> <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/fre_question.png')
+                    : asset('assets_front/images/en/fre_question.png') }}"
+                loading="lazy" width="400px;" height="auto">
+        </h2>
         <div class="faq-section-link">
             <a href="{{ route('faq.index') }}">{{ __('front.See More') }} ←</a>
         </div>
@@ -242,10 +251,11 @@
     </section>
 
     <section class="rvx" dir="rtl">
-        <h2 data-aos="zoom-in-up" class="rvx-title"> <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/student_opinion.png')
-                : asset('assets_front/images/en/student_opinion.png') }}"
-                 loading="lazy" width="400px;" height="auto"></h2>
+        <h2 data-aos="zoom-in-up" class="rvx-title"> <img
+                src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/student_opinion.png')
+                    : asset('assets_front/images/en/student_opinion.png') }}"
+                loading="lazy" width="400px;" height="auto"></h2>
 
         <div class="rvx-wrap">
             <!-- Blue side panel -->
@@ -255,7 +265,6 @@
                     <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}"
                         alt="Qdemy">
                     <p class="rvx-panel-sub"></p>
-                    <a href="#" class="rvx-panel-link">{{ __('front.Read More') }} ←</a>
                 </div>
 
                 <!-- Carousel -->
@@ -279,51 +288,47 @@
         </div>
     </section>
 
-<section class="blog-slider">
-    <h2 data-aos="zoom-in-up" class="blog-slider__title">
-       <img src="{{ app()->getLocale() == 'ar'
+    <section class="blog-slider">
+        <h2 data-aos="zoom-in-up" class="blog-slider__title">
+            <img src="{{ app()->getLocale() == 'ar'
                 ? asset('assets_front/images/blogs.png')
                 : asset('assets_front/images/en/blogs.png') }}"
-                 loading="lazy" width="400px;" height="auto">
-    </h2>
+                loading="lazy" width="400px;" height="auto">
+        </h2>
 
-    <div class="blog-slider__shell">
-        <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}">
-            <span>&lsaquo;</span>
-        </button>
+        <div class="blog-slider__shell">
+            <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}">
+                <span>&lsaquo;</span>
+            </button>
 
-        <div data-aos="zoom-in" class="blog-slider__viewport">
-            <div class="blog-slider__track">
-                @foreach ($blogs as $blog)
-                    <article class="blog-card">
-                        <a href="{{ route('frontBlog.show', $blog->id) }}">
-                            <div class="blog-card__image">
-                                <img
-                                    src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}"
-                                    alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}"
-                                    loading="lazy"
-                                >
-                            </div>
-                            <h3 class="blog-card__title">
-                                {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
-                            </h3>
-                            <p class="blog-card__excerpt">
-                                {!! app()->getLocale() == 'ar'
-                                    ? Str::limit($blog->description_ar, 100)
-                                    : Str::limit($blog->description_en, 100) !!}
-                            </p>
-                        </a>
-                    </article>
-                @endforeach
+            <div data-aos="zoom-in" class="blog-slider__viewport">
+                <div class="blog-slider__track">
+                    @foreach ($blogs as $blog)
+                        <article class="blog-card">
+                            <a href="{{ route('frontBlog.show', $blog->id) }}">
+                                <div class="blog-card__image">
+                                    <img src="{{ $blog->photo ? asset('assets/admin/uploads/' . $blog->photo) : asset('assets_front/images/blog1.png') }}"
+                                        alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}"
+                                        loading="lazy">
+                                </div>
+                                <h3 class="blog-card__title">
+                                    {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
+                                </h3>
+                                <p class="blog-card__excerpt">
+                                    {!! app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) !!}
+                                </p>
+                            </a>
+                        </article>
+                    @endforeach
+                </div>
             </div>
+
+            <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="{{ __('front.Next') }}">
+                <span>&rsaquo;</span>
+            </button>
         </div>
 
-        <button class="blog-slider__arrow blog-slider__arrow--next" aria-label="{{ __('front.Next') }}">
-            <span>&rsaquo;</span>
-        </button>
-    </div>
-
-    <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
-</section>
+        <div class="blog-slider__dots" role="tablist" aria-label="{{ __('front.Slider Indicator') }}"></div>
+    </section>
 
 @endsection

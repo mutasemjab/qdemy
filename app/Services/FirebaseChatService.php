@@ -265,7 +265,7 @@ class FirebaseChatService
                 'id' => $teacher->user_id,
                 'name' => $teacher->user->name,
                 'subject' => $teacher->name_of_lesson,
-                'avatar' => $teacher->photo_url ?? asset('assets_front/images/Profile-picture.png')
+                'avatar' => $teacher->photo_url ?? asset('assets_front/images/Profile-picture.jpg')
             ];
         })->toArray();
     }
@@ -290,7 +290,7 @@ class FirebaseChatService
                 'id' => $student->id,
                 'name' => $student->name,
                 'class' => $student->clas->name ?? 'Unknown',
-                'avatar' => $student->photo_url ?? asset('assets_front/images/Profile-picture.png')
+                'avatar' => $student->photo_url ?? asset('assets_front/images/Profile-picture.jpg')
             ];
         })->toArray();
     }
@@ -315,7 +315,7 @@ class FirebaseChatService
                 'id' => $teacher->user_id,
                 'name' => $teacher->user->name,
                 'subject' => $teacher->name_of_lesson,
-                'avatar' => $teacher->photo_url ?? asset('assets_front/images/Profile-picture.png'),
+                'avatar' => $teacher->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
                 'student_id' => $studentId
             ];
         })->toArray();

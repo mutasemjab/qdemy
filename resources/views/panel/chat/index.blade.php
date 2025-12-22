@@ -33,7 +33,7 @@
                                         @if($otherParticipant)
                                         <div class="chat-thread {{ $loop->first ? 'active' : '' }}" data-chat-id="{{ $chat['id'] }}">
                                             <div class="thread-avatar-container">
-                                                <img src="{{ $otherParticipant['avatarUrl'] ?? asset('assets_front/images/Profile-picture.png') }}" 
+                                                <img src="{{ $otherParticipant['avatarUrl'] ?? asset('assets_front/images/Profile-picture.jpg') }}" 
                                                      alt="{{ $otherParticipant['name'] }}" class="thread-avatar">
                                                 @if($chat['unreadCount'] > 0)
                                                     <span class="unread-indicator">{{ $chat['unreadCount'] }}</span>
@@ -114,7 +114,7 @@
                                     <div class="teacher-item" data-teacher-id="{{ $teacher['id'] }}" 
                                          @if($user->role_name === 'parent') data-student-id="{{ $teacher['student_id'] }}" @endif>
                                         <div class="teacher-avatar-container">
-                                            <img src="{{ $teacher['avatar'] ?? asset('assets_front/images/Profile-picture.png') }}" 
+                                            <img src="{{ $teacher['avatar'] ?? asset('assets_front/images/Profile-picture.jpg') }}" 
                                                  alt="{{ $teacher['name'] }}" class="teacher-avatar">
                                         </div>
                                         <div class="teacher-details">

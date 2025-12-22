@@ -21,7 +21,7 @@
                         <div>
                             <h4>{{ Auth::user()->name }}</h4>
                         </div>
-                        <img src="{{ Auth::user()->photo_url ?? asset('assets_front/images/Profile-picture.png') }}" alt="">
+                        <img src="{{ Auth::user()->photo_url ?? asset('assets_front/images/Profile-picture.jpg') }}" alt="">
                     </div>
                 </header>
                 
@@ -44,7 +44,7 @@
                     <div>
                         <h4>{{ $post->user->name }}</h4>
                     </div>
-                    <img src="{{ $post->user->photo_url ?? asset('assets_front/images/Profile-picture.png') }}" alt="">
+                    <img src="{{ $post->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg') }}" alt="">
                 </div>
             </header>
 
@@ -88,7 +88,7 @@
                 @if($post->approvedComments->count() > 0)
                     @foreach($post->approvedComments->take(2) as $comment)
                     <div class="cmty-comment">
-                        <img src="{{ $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.png') }}" alt="">
+                        <img src="{{ $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg') }}" alt="">
                         <div>
                             <b>{{ $comment->user->name }}</b>
                             <p>{{ $comment->content }}</p>

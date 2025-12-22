@@ -93,7 +93,7 @@ class CommunityController extends Controller
                     'id' => $comment->id,
                     'content' => $comment->content,
                     'user_name' => $comment->user->name,
-                    'user_avatar' => $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.png'),
+                    'user_avatar' => $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
                     'created_at' => $comment->created_at->diffForHumans(),
                 ];
             })

@@ -190,7 +190,7 @@ class ParentController extends Controller
                 'name' => $child->name,
                 'email' => $child->email,
                 'phone' => $child->phone,
-                'photo_url' => $child->photo ? asset('assets/admin/uploads/' . $child->photo) : asset('assets_front/images/Profile-picture.png'),
+                'photo_url' => $child->photo ? asset('assets/admin/uploads/' . $child->photo) : asset('assets_front/images/Profile-picture.jpg'),
                 'clas' => $child->clas,
                 'enrolledCoursesCount' => $totalCourses,
                 'completedExamsCount' => $totalExams,
