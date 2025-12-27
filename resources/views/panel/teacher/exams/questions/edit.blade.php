@@ -47,7 +47,7 @@
         </a>
     </div>
 
-    <form action="{{ route('teacher.exams.exam_questions.update', [$exam, $question]) }}" method="POST" id="questionForm">
+    <form action="{{ route('teacher.exams.exam_questions.update', [$exam, $question]) }}" method="POST" id="questionForm" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -159,17 +159,38 @@
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label for="grade" class="form-label required">{{ __('panel.grade') }}</label>
-                            <input type="number" 
-                                   class="form-control @error('grade') is-invalid @enderror" 
-                                   id="grade" 
-                                   name="grade" 
-                                   value="{{ old('grade', $question->grade) }}" 
-                                   step="0.25" 
+                            <input type="number"
+                                   class="form-control @error('grade') is-invalid @enderror"
+                                   id="grade"
+                                   name="grade"
+                                   value="{{ old('grade', $question->grade) }}"
+                                   step="0.25"
                                    min="0.25"
                                    placeholder="1.00">
                             @error('grade')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
+                        </div>
+                    </div>
+
+                    <!-- Photo -->
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="photo" class="form-label">{{ __('panel.photo') ?? __('messages.photo') }}</label>
+                            @if($question->photo)
+                                <div class="mb-2">
+                                    <p class="text-muted small"><strong>{{ __('panel.current_photo') ?? __('messages.current_photo') }}:</strong></p>
+                                    <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}"
+                                         alt="{{ $question->title_en }}"
+                                         style="max-width: 100px; max-height: 100px; border-radius: 5px;">
+                                </div>
+                            @endif
+                            <input type="file" class="form-control @error('photo') is-invalid @enderror"
+                                   id="photo" name="photo" accept="image/*">
+                            @error('photo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">{{ __('panel.supported_formats_jpg_png_gif') ?? __('messages.supported_formats_jpg_png_gif') }}</small>
                         </div>
                     </div>
 

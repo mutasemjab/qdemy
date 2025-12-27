@@ -34,6 +34,14 @@ class VideoProgressController extends Controller
             return response()->json(['success' => false, 'message' => 'Content not found']);
         }
 
+        // Check sequential course restriction
+        if ($content->course->is_sequential && !$this->isPreviousContentCompleted($user->id, $content)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.must_complete_previous_lesson')
+            ], 403);
+        }
+
         // لان الفيديو قد يسجل كمكتمل قبل انتهاء مدته حسب ال .env.COMPLETED_WATCHING_COURSES
         $watchTime  = ($completed && $content->video_duration > $request->watch_time) ? $content->video_duration : $request->watch_time;
 
@@ -88,6 +96,14 @@ class VideoProgressController extends Controller
             return response()->json(['success' => false, 'message' => 'Content not found']);
         }
 
+        // Check sequential course restriction
+        if ($content->course->is_sequential && !$this->isPreviousContentCompleted($user->id, $content)) {
+            return response()->json([
+                'success' => false,
+                'message' => __('messages.must_complete_previous_lesson')
+            ], 403);
+        }
+
         // Check if user is enrolled
         $isEnrolled = $this->checkUserEnrollment($user->id, $content->course_id);
         if (!$isEnrolled && $content->is_free != 1) {
@@ -114,6 +130,26 @@ class VideoProgressController extends Controller
             'success' => true,
             'progress' => $courseProgress
         ]);
+    }
+
+    private function isPreviousContentCompleted($userId, CourseContent $currentContent)
+    {
+        // Get previous content based on order
+        $previousContent = CourseContent::where('course_id', $currentContent->course_id)
+            ->where('order', '<', $currentContent->order)
+            ->orderBy('order', 'desc')
+            ->first();
+
+        // If there's no previous content, current content is allowed (it's the first one)
+        if (!$previousContent) {
+            return true;
+        }
+
+        // Check if previous content is completed
+        return ContentUserProgress::where('user_id', $userId)
+            ->where('course_content_id', $previousContent->id)
+            ->where('completed', true)
+            ->exists();
     }
 
     private function checkUserEnrollment($userId, $courseId)

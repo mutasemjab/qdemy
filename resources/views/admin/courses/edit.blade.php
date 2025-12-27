@@ -159,6 +159,22 @@
                                 </div>
                             </div>
 
+                            <!-- Sequential Course -->
+                            <div class="col-md-4">
+                                <div class="form-group mb-3">
+                                    <label for="is_sequential" class="form-label">{{ __('messages.sequential_course') }}</label>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="checkbox" id="is_sequential" name="is_sequential" {{ old('is_sequential', $course->is_sequential) ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="is_sequential">
+                                            {{ __('messages.must_complete_in_order') }}
+                                        </label>
+                                    </div>
+                                    <small class="form-text text-muted d-block mt-2">
+                                        {{ __('messages.sequential_help_text') }}
+                                    </small>
+                                </div>
+                            </div>
+
                             <!-- Parent Category -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">

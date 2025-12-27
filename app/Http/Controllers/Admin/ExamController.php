@@ -387,4 +387,138 @@ class ExamController extends Controller
         $attempt->load(['user', 'answers.question.options']);
         return view('admin.exams.view-attempt', compact('exam', 'attempt'));
     }
+
+    /**
+     * Get attempt answers as JSON for AJAX modal
+     */
+    public function getAttemptAnswers(Exam $exam, ExamAttempt $attempt)
+    {
+        if ($attempt->exam_id !== $exam->id) {
+            abort(404);
+        }
+
+        $attempt->load(['answers.question.options', 'user']);
+
+        // Build HTML for modal
+        $html = '<div class="answers-list">';
+
+        if ($attempt->answers->count() === 0) {
+            $html .= '<div class="alert alert-info">' . __('messages.no_answers') . '</div>';
+        } else {
+            foreach ($attempt->answers as $answer) {
+                $question = $answer->question;
+                $status = $answer->is_correct === null ? 'pending' : ($answer->is_correct ? 'correct' : 'incorrect');
+                $statusBadge = $status === 'pending' ? 'warning' : ($status === 'correct' ? 'success' : 'danger');
+
+                $html .= '<div class="answer-item mb-3 pb-3 border-bottom">';
+                $html .= '<div class="d-flex justify-content-between align-items-start mb-2">';
+                $html .= '<h6 class="mb-0">' . htmlspecialchars($question->question) . '</h6>';
+                $html .= '<span class="badge badge-' . $statusBadge . '">';
+
+                if ($status === 'pending') {
+                    $html .= '<i class="fas fa-hourglass-half"></i> ' . __('messages.pending');
+                } elseif ($status === 'correct') {
+                    $html .= '<i class="fas fa-check"></i> ' . __('messages.correct');
+                } else {
+                    $html .= '<i class="fas fa-times"></i> ' . __('messages.incorrect');
+                }
+
+                $html .= '</span>';
+                $html .= '</div>';
+
+                // Answer content based on type
+                if ($question->type === 'multiple_choice') {
+                    $selectedOptions = $answer->selected_options ?? [];
+                    $html .= '<div class="answer-content">';
+                    foreach ($question->options as $option) {
+                        $isSelected = in_array($option->id, (array)$selectedOptions);
+                        $html .= '<div class="form-check">';
+                        $html .= '<input class="form-check-input" type="checkbox" disabled ' . ($isSelected ? 'checked' : '') . '>';
+                        $html .= '<label class="form-check-label">';
+                        $html .= htmlspecialchars($option->option) . ($option->is_correct ? ' <strong class="text-success">(✓)</strong>' : '');
+                        $html .= '</label>';
+                        $html .= '</div>';
+                    }
+                    $html .= '</div>';
+                } elseif ($question->type === 'true_false') {
+                    $selectedAnswer = $answer->selected_options[0] ?? null;
+                    $correctOption = $question->options()->where('is_correct', true)->first();
+                    $correctAnswer = strtolower($correctOption?->option_en ?? '') === 'true';
+
+                    $html .= '<div class="answer-content">';
+                    $html .= '<p><strong>' . __('messages.student_answer') . ':</strong> ' . ($selectedAnswer ? __('messages.true') : __('messages.false')) . '</p>';
+                    $html .= '<p><strong>' . __('messages.correct_answer') . ':</strong> ' . ($correctAnswer ? __('messages.true') : __('messages.false')) . '</p>';
+                    $html .= '</div>';
+                } elseif ($question->type === 'essay') {
+                    $html .= '<div class="answer-content">';
+                    $html .= '<p><strong>' . __('messages.student_answer') . ':</strong></p>';
+                    $html .= '<div class="p-2 bg-light rounded">';
+                    $html .= htmlspecialchars($answer->essay_answer ?? __('messages.no_answer'));
+                    $html .= '</div>';
+                    $html .= '</div>';
+                }
+
+                // Score info
+                $html .= '<div class="mt-2">';
+                $html .= '<small class="text-muted">';
+                $html .= __('messages.score') . ': <strong>' . number_format($answer->score, 2) . '</strong> / ' . number_format($question->pivot->grade ?? $question->grade, 2);
+                $html .= '</small>';
+                $html .= '</div>';
+
+                $html .= '</div>';
+            }
+        }
+
+        $html .= '</div>';
+
+        return response()->json([
+            'html' => $html,
+            'success' => true
+        ]);
+    }
+
+    /**
+     * Grade an essay answer
+     */
+    public function gradeAnswer(Exam $exam, ExamAttempt $attempt, ExamAnswer $answer)
+    {
+        if ($attempt->exam_id !== $exam->id || $answer->exam_attempt_id !== $attempt->id) {
+            abort(404);
+        }
+
+        $request = request();
+        $score = (float)$request->input('score', 0);
+        $isCorrect = (int)$request->input('is_correct', 0) === 1;
+
+        // Update the answer
+        $answer->update([
+            'score' => $score,
+            'is_correct' => $isCorrect
+        ]);
+
+        // Recalculate attempt score and percentage
+        $totalScore = (float)$attempt->answers()->sum('score');
+        $totalPossible = (float)$exam->total_grade;
+        if ($totalPossible <= 0) {
+            $totalPossible = (float)$exam->questions()->sum('exam_questions.grade');
+        }
+
+        $percentage = $totalPossible > 0 ? (($totalScore / $totalPossible) * 100) : 0;
+        $isPassed = $percentage >= $exam->passing_grade;
+
+        // Update attempt
+        $attempt->update([
+            'score' => $totalScore,
+            'percentage' => round($percentage, 2),
+            'is_passed' => $isPassed
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => __('messages.graded_successfully'),
+            'score' => $totalScore,
+            'percentage' => round($percentage, 2),
+            'isPassed' => $isPassed
+        ]);
+    }
 }

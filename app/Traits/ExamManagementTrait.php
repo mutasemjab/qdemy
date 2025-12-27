@@ -11,6 +11,7 @@ use App\Models\CourseSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 
 trait ExamManagementTrait
 {
@@ -318,19 +319,23 @@ trait ExamManagementTrait
         // Debug: Log the incoming request data
         \Log::info('Exam validation request data:', $request->all());
 
+        // For updates, get the current exam to check if subject_id is required
+        $currentExam = $examId ? Exam::find($examId) : null;
+        $subjectIdRequired = !$examId || $currentExam->subject_id !== null;
+
         $rules = [
             'title_en' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
             'description_en' => 'nullable|string',
             'description_ar' => 'nullable|string',
-            'subject_id' => 'required|exists:subjects,id',
+            'subject_id' => ($subjectIdRequired ? 'required' : 'nullable') . '|exists:subjects,id',
             'course_id' => 'nullable|exists:courses,id',
             'section_id' => 'nullable|exists:course_sections,id',
             'duration_minutes' => 'nullable|integer|min:1',
             'attempts_allowed' => 'required|integer|min:1|max:10',
             'passing_grade' => 'required|numeric|min:0|max:100',
-            'start_date' => 'nullable|date|after_or_equal:today',
-            'end_date' => 'nullable|date|after:start_date',
+            'start_date' => $examId ? 'nullable|date' : 'nullable|date|after_or_equal:today',
+            'end_date' => 'nullable|date|required_with:start_date|after:start_date',
             'shuffle_questions' => 'boolean',
             'shuffle_options' => 'boolean',
             'show_results_immediately' => 'boolean',
@@ -365,6 +370,10 @@ trait ExamManagementTrait
             'course_id' => 'nullable|exists:courses,id',
             'explanation_en' => 'nullable|string',
             'explanation_ar' => 'nullable|string',
+            'correct_feedback_en' => 'nullable|string',
+            'correct_feedback_ar' => 'nullable|string',
+            'incorrect_feedback_en' => 'nullable|string',
+            'incorrect_feedback_ar' => 'nullable|string',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ];
 
@@ -400,6 +409,15 @@ trait ExamManagementTrait
         $data['show_results_immediately'] = $request->has('show_results_immediately') ? true : false;
         $data['is_active'] = $request->has('is_active') ? true : false;
 
+        // Initialize total_grade: For updates, keep current; for creates, start at 0
+        if ($exam) {
+            // On update: calculate from current questions, don't override
+            $data['total_grade'] = $exam->questions()->sum('exam_questions.grade') ?: $exam->total_grade;
+        } else {
+            // On create: start with 0, will be updated when questions are added
+            $data['total_grade'] = 0;
+        }
+
         // Set creator based on user type
         if ($isAdmin) {
             $data['created_by_admin'] = auth('admin')->user()?->id;
@@ -419,7 +437,8 @@ trait ExamManagementTrait
     {
         $data = $request->only([
             'title_en', 'title_ar', 'question_en', 'question_ar',
-            'type', 'grade', 'course_id', 'explanation_en', 'explanation_ar'
+            'type', 'grade', 'course_id', 'explanation_en', 'explanation_ar',
+            'correct_feedback_en', 'correct_feedback_ar', 'incorrect_feedback_en', 'incorrect_feedback_ar'
         ]);
 
         // Handle photo deletion

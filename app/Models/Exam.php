@@ -88,7 +88,12 @@ class Exam extends Model
     // exam current attempt for current login student
     public function current_user_attempt()
     {
-        return $this->user_attempts()->where('status', 'in_progress')->where('submitted_at', null)?->first();
+        $user_id = auth_student()?->id;
+        return $this->attempts()
+            ->where('user_id', $user_id)
+            ->where('status', 'in_progress')
+            ->whereNull('submitted_at')
+            ->first();
     }
 
     // exam last submited attempt for current login student

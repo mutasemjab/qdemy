@@ -158,6 +158,23 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Question Photo -->
+                                    @if($question->photo)
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="form-group">
+                                                <label class="form-label font-weight-bold">{{ __('messages.photo') }}</label>
+                                                <div class="bg-light p-3 rounded text-center">
+                                                    <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}"
+                                                         alt="{{ $question->title_en }}"
+                                                         class="img-fluid"
+                                                         style="max-width: 400px; max-height: 300px; border-radius: 5px;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>

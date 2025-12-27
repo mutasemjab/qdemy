@@ -286,6 +286,9 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             // Exam Results
             Route::get('results', [ExamController::class, 'results'])->name('results');
             Route::get('attempts/{attempt}', [ExamController::class, 'viewAttempt'])->name('attempts.view');
+            Route::get('attempts/{attempt}/answers', [ExamController::class, 'getAttemptAnswers'])->name('attempts.answers');
+            Route::post('attempts/{attempt}/grade-answer/{answer}', [ExamController::class, 'gradeAnswer'])->name('attempts.grade-answer');
+            Route::get('attempts/{attempt}/download', [ExamController::class, 'downloadAttempt'])->name('attempts.download');
         });
 
         // Add this route for question details

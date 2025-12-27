@@ -33,11 +33,6 @@ class ExamAnswer extends Model
         return $this->belongsTo(Question::class);
     }
 
-    public function getSelectedOptionsAttribute()
-    {
-        return json_decode($this->attributes['selected_options']);
-    }
-
     // Relationships
     public function attempt()
     {

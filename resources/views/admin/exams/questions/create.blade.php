@@ -23,7 +23,7 @@
                     </div>
                 </div>
 
-                <form action="{{ route('exams.exam_questions.store', $exam) }}" method="POST" id="questionForm">
+                <form action="{{ route('exams.exam_questions.store', $exam) }}" method="POST" id="questionForm" enctype="multipart/form-data">
                     @csrf
                     <div class="card-body">
                         <div class="row">
@@ -146,17 +146,32 @@
                                     <label for="grade" class="form-label">
                                         {{ __('messages.grade') }} <span class="text-danger">*</span>
                                     </label>
-                                    <input type="number" 
-                                           class="form-control @error('grade') is-invalid @enderror" 
-                                           id="grade" 
-                                           name="grade" 
-                                           value="{{ old('grade', 1) }}" 
-                                           step="0.25" 
+                                    <input type="number"
+                                           class="form-control @error('grade') is-invalid @enderror"
+                                           id="grade"
+                                           name="grade"
+                                           value="{{ old('grade', 1) }}"
+                                           step="0.25"
                                            min="0.25"
                                            placeholder="1.00">
                                     @error('grade')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+                            </div>
+
+                            <!-- Photo -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="photo" class="form-label">
+                                        {{ __('messages.photo') }}
+                                    </label>
+                                    <input type="file" class="form-control @error('photo') is-invalid @enderror"
+                                           id="photo" name="photo" accept="image/*">
+                                    @error('photo')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="form-text text-muted">{{ __('messages.supported_formats_jpg_png_gif') }}</small>
                                 </div>
                             </div>
 
@@ -183,13 +198,83 @@
                                     <label for="explanation_ar" class="form-label">
                                         {{ __('messages.explanation_ar') }}
                                     </label>
-                                    <textarea class="form-control @error('explanation_ar') is-invalid @enderror" 
-                                              id="explanation_ar" 
-                                              name="explanation_ar" 
-                                              rows="3" 
+                                    <textarea class="form-control @error('explanation_ar') is-invalid @enderror"
+                                              id="explanation_ar"
+                                              name="explanation_ar"
+                                              rows="3"
                                               placeholder="{{ __('messages.optional_explanation_ar') }}"
                                               dir="rtl">{{ old('explanation_ar') }}</textarea>
                                     @error('explanation_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Correct Feedback English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="correct_feedback_en" class="form-label">
+                                        {{ __('messages.correct_feedback_en') }}
+                                    </label>
+                                    <textarea class="form-control @error('correct_feedback_en') is-invalid @enderror"
+                                              id="correct_feedback_en"
+                                              name="correct_feedback_en"
+                                              rows="3"
+                                              placeholder="{{ __('messages.optional_correct_feedback_en') }}">{{ old('correct_feedback_en') }}</textarea>
+                                    @error('correct_feedback_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Correct Feedback Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="correct_feedback_ar" class="form-label">
+                                        {{ __('messages.correct_feedback_ar') }}
+                                    </label>
+                                    <textarea class="form-control @error('correct_feedback_ar') is-invalid @enderror"
+                                              id="correct_feedback_ar"
+                                              name="correct_feedback_ar"
+                                              rows="3"
+                                              placeholder="{{ __('messages.optional_correct_feedback_ar') }}"
+                                              dir="rtl">{{ old('correct_feedback_ar') }}</textarea>
+                                    @error('correct_feedback_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Incorrect Feedback English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="incorrect_feedback_en" class="form-label">
+                                        {{ __('messages.incorrect_feedback_en') }}
+                                    </label>
+                                    <textarea class="form-control @error('incorrect_feedback_en') is-invalid @enderror"
+                                              id="incorrect_feedback_en"
+                                              name="incorrect_feedback_en"
+                                              rows="3"
+                                              placeholder="{{ __('messages.optional_incorrect_feedback_en') }}">{{ old('incorrect_feedback_en') }}</textarea>
+                                    @error('incorrect_feedback_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Incorrect Feedback Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="incorrect_feedback_ar" class="form-label">
+                                        {{ __('messages.incorrect_feedback_ar') }}
+                                    </label>
+                                    <textarea class="form-control @error('incorrect_feedback_ar') is-invalid @enderror"
+                                              id="incorrect_feedback_ar"
+                                              name="incorrect_feedback_ar"
+                                              rows="3"
+                                              placeholder="{{ __('messages.optional_incorrect_feedback_ar') }}"
+                                              dir="rtl">{{ old('incorrect_feedback_ar') }}</textarea>
+                                    @error('incorrect_feedback_ar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -304,13 +389,13 @@ function addOption() {
             <div class="row">
                 <div class="col-md-5">
                     <label class="form-label">{{ __('messages.option_text_en') }}</label>
-                    <input type="text" class="form-control" name="options[${optionCount-1}][option_en]" 
-                           placeholder="{{ __('messages.enter_option_en') }}" required>
+                    <input type="text" class="form-control" name="options[${optionCount-1}][option_en]"
+                           placeholder="{{ __('messages.enter_option_en') }}">
                 </div>
                 <div class="col-md-5">
                     <label class="form-label">{{ __('messages.option_text_ar') }}</label>
-                    <input type="text" class="form-control" name="options[${optionCount-1}][option_ar]" 
-                           placeholder="{{ __('messages.enter_option_ar') }}" dir="rtl" required>
+                    <input type="text" class="form-control" name="options[${optionCount-1}][option_ar]"
+                           placeholder="{{ __('messages.enter_option_ar') }}" dir="rtl">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">{{ __('messages.correct') }}</label>

@@ -28,6 +28,8 @@ return new class extends Migration
             $table->unsignedBigInteger('subject_id')->nullable();
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
 
+            $table->boolean('is_sequential')->default(true);
+
             $table->timestamps();
         });
     }

@@ -140,7 +140,7 @@ class ExamController extends Controller
 
         $exams = $query->paginate(PGN)->withQueryString();
 
-        return view('web.exam.index', [
+        return view('web.exam.exams', [
             'exams' => $exams,
             'programms' => $programms,
             'grades' => $grades,
@@ -211,7 +211,7 @@ class ExamController extends Controller
             }
         }
 
-        return view('web.exam.exam',[
+        return view('web.exam.exam-details',[
             'exam'            => $exam,
             'questions'       => $pgQquestions,
             'question'        => $question,
@@ -263,7 +263,9 @@ class ExamController extends Controller
             'question_order' => $question_order,
             'status' => 'in_progress'
         ]);
-        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+
+        // Redirect to exam taking page
+        return redirect()->route($this->apiRoutePrefix.'exam.take', ['exam' => $exam->id]);
     }
 
     // تصحيح سؤال
@@ -298,7 +300,7 @@ class ExamController extends Controller
         } elseif ($question->type === 'true_false') {
             $rules['answer'] = 'required|in:true,false';
         } elseif ($question->type === 'essay') {
-            $rules['answer'] = 'required|string|min:10';
+            $rules['answer'] = 'nullable|string';
         }
 
         if($this->isApi){
@@ -365,7 +367,7 @@ class ExamController extends Controller
             $exam_answer->save();
 
             // Check if this is the last question
-            $total_questions = count($current_attempt->question_order, true);
+            $total_questions = count($current_attempt->question_order);
             $answered_questions = ExamAnswer::where('exam_attempt_id', $current_attempt->id)->count();
 
             if ($answered_questions >= $total_questions) {
@@ -383,9 +385,8 @@ class ExamController extends Controller
             $message_status = 'error';
         }
         // Redirect to next question
-        $page      = $request->get('page', 1) ?? 1;
-        $next_page = $page + 1;
-        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $next_page])
+        $next_page = $request->get('next_page', $request->get('page', 1) + 1);
+        return redirect()->route($this->apiRoutePrefix.'exam.take', ['exam' => $exam->id, 'page' => $next_page])
               ->with($error ?? '',$message_status ?? '');
     }
 
@@ -404,11 +405,18 @@ class ExamController extends Controller
         $answers = $attempt->answers;
 
         // Calculate total score
-        $total_score    = (int)$answers->sum('score');
-        $total_possible = (int)$exam->total_grade ? (int)$exam->total_grade : (int)$exam->questions_sum_grade;
+        $total_score = (float)$answers->sum('score');
+
+        // Get total possible score: use exam->total_grade, or calculate from questions if not set
+        $total_possible = (float)$exam->total_grade;
+        if ($total_possible <= 0) {
+            // Fallback: calculate from actual questions in exam
+            $total_possible = (float)$exam->questions()->sum('exam_questions.grade');
+        }
+
         $percentage     = $total_possible > 0 ? (($total_score / $total_possible) * 100) : 0;
         $is_passed      = $percentage >= $exam->passing_grade;
-        
+
         // Update attempt
         if($exam->show_results_immediately == true){
             $attempt->update([
@@ -418,7 +426,7 @@ class ExamController extends Controller
                 'is_passed'    => $is_passed,
                 'status'       => 'completed',
             ]);
-            
+
             // Track exam progress in content_user_progress table
             ContentUserProgress::updateOrCreate(
                 [
@@ -485,11 +493,193 @@ class ExamController extends Controller
 
         $this->submit_exam($current_attempt);
 
-        return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+        return redirect()->route($this->apiRoutePrefix.'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])
             ->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
-    // review attempts answers
+    /**
+     * Show exam taking page
+     */
+    public function take(Exam $exam)
+    {
+        $user = auth_student();
+
+        if (!$exam->is_available()) {
+            return redirect()->route('exams')->with('error', __('front.unavailable'));
+        }
+
+        // Get current attempt
+        $current_attempt = $exam->current_user_attempt();
+
+        if (!$current_attempt) {
+            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+                ->with('error', __('front.no_ongoing_attempt'));
+        }
+
+        // Check time limit
+        if ($exam->duration_minutes) {
+            $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
+            if ($elapsed_minutes >= $exam->duration_minutes) {
+                $this->auto_submit_exam($current_attempt);
+                return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+            }
+        }
+
+        // Get questions
+        $question_order = $current_attempt->question_order;
+        $questions = Question::whereIn('id', $question_order)
+            ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')');
+
+        // Get all questions for the navigator
+        $allQuestions = (clone $questions)->get();
+        $total_questions = $allQuestions->count();
+
+        // Get page number with validation
+        $question_nm = (int)request()->get('page', 1);
+
+        // If page exceeds total questions, submit exam and redirect to results
+        if ($question_nm > $total_questions) {
+            $this->submit_exam($current_attempt);
+            return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])
+                ->with('success', __('front.exam_submitted_successfully'));
+        }
+
+        $pgQuestions = (clone $questions)->paginate(1);
+        $question = $pgQuestions->first();
+
+        // Ensure we have a valid question
+        if (!$question) {
+            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+                ->with('error', __('front.question_not_found'));
+        }
+
+        // Get previous answer for current question
+        $previousAnswer = null;
+        if ($question) {
+            $previousAnswer = $current_attempt->answers()
+                ->where('question_id', $question->id)
+                ->first();
+        }
+
+        // Calculate remaining time in seconds
+        $remainingSeconds = 0;
+        if ($exam->duration_minutes) {
+            $elapsed_seconds = $current_attempt->started_at->diffInSeconds(now());
+            $total_seconds = $exam->duration_minutes * 60;
+            $remainingSeconds = max(0, $total_seconds - $elapsed_seconds);
+        }
+
+        return view('web.exam.exam-taking', [
+            'exam' => $exam,
+            'questions' => $pgQuestions,
+            'allQuestions' => $allQuestions,
+            'question' => $question,
+            'current_attempt' => $current_attempt,
+            'question_nm' => $question_nm,
+            'previousAnswer' => $previousAnswer,
+            'remainingSeconds' => $remainingSeconds,
+            'isApi' => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
+        ]);
+    }
+
+    /**
+     * Show exam result
+     */
+    public function result(Exam $exam, ExamAttempt $attempt)
+    {
+        $user = auth_student();
+
+        // Check if user owns this attempt
+        if ($attempt->user_id !== $user?->id) {
+            abort(403);
+        }
+
+        // Get all questions in the order they were presented
+        $question_order = $attempt->question_order;
+        $allQuestions = Question::whereIn('id', $question_order)
+            ->with('options')
+            ->get()
+            ->keyBy('id');
+
+        // Get all answers
+        $answersList = $attempt->answers()->with(['question', 'question.options'])->get();
+        $answersMap = $answersList->keyBy('question_id');
+
+        // Build complete list of all questions with their answers
+        $answers = [];
+        foreach ($question_order as $question_id) {
+            if (isset($allQuestions[$question_id])) {
+                $answer = $answersMap[$question_id] ?? null;
+
+                if (!$answer) {
+                    // Create a dummy answer object for unanswered questions
+                    $answer = new ExamAnswer([
+                        'question_id' => $question_id,
+                        'is_correct' => false,
+                        'score' => 0,
+                        'answered_at' => null,
+                    ]);
+                    $answer->question = $allQuestions[$question_id];
+                }
+
+                $answers[] = $answer;
+            }
+        }
+
+        // Calculate stats (only count actually answered questions)
+        $correctCount = $answersList->where('is_correct', true)->count();
+        $wrongCount = $answersList->where('is_correct', false)->count();
+        $passed = $attempt->is_passed ?? false;
+        $canRetake = $exam->can_add_attempt($user?->id);
+
+        return view('web.exam.exam-result', [
+            'exam' => $exam,
+            'attempt' => $attempt,
+            'answers' => collect($answers),
+            'correctCount' => $correctCount,
+            'wrongCount' => $wrongCount,
+            'passed' => $passed,
+            'canRetake' => $canRetake,
+            'isApi' => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
+        ]);
+    }
+
+    /**
+     * Show exam history for authenticated user
+     */
+    public function history(Request $request)
+    {
+        $user = auth_student();
+
+        // Get all exam attempts for the user
+        $attempts = ExamAttempt::where('user_id', $user?->id)
+            ->where('submitted_at', '!=', null)
+            ->with(['exam'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        // Calculate statistics
+        $totalExams = $attempts->count();
+        $passedExams = $attempts->where('is_passed', true)->count();
+        $failedExams = $attempts->where('is_passed', false)->count();
+        $overallPercentage = $totalExams > 0
+            ? round(($passedExams / $totalExams) * 100, 1)
+            : 0;
+
+        return view('web.exam.exam-history', [
+            'attempts' => $attempts,
+            'totalExams' => $totalExams,
+            'passedExams' => $passedExams,
+            'failedExams' => $failedExams,
+            'overallPercentage' => $overallPercentage,
+            'isApi' => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
+        ]);
+    }
+
+    // review attempts answers (قديم)
     public function review_attempt(Exam $exam, ExamAttempt $attempt)
     {
         $user = auth_student();

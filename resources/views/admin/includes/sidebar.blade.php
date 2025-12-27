@@ -112,20 +112,6 @@
                                 </li>
                             @endif
 
-                            @if (
-                                $user->can('question-table') ||
-                                    $user->can('question-add') ||
-                                    $user->can('question-edit') ||
-                                    $user->can('question-delete'))
-                                <li class="nav-item">
-                                    <a href="{{ route('questions.index') }}"
-                                        class="nav-link {{ request()->routeIs('questions.*') ? 'active' : '' }}">
-                                        <i class="far fa-question-circle nav-icon"></i>
-                                        <p>{{ __('messages.questions') }}</p>
-                                    </a>
-                                </li>
-                            @endif
-
                             @if ($user->can('exam-table') || $user->can('exam-add') || $user->can('exam-edit') || $user->can('exam-delete'))
                                 <li class="nav-item">
                                     <a href="{{ route('exams.index') }}"

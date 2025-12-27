@@ -14,6 +14,7 @@ class Course extends Model
 
      protected $casts = [
         'selling_price' => 'decimal:2',
+        'is_sequential' => 'boolean',
     ];
        /**
      * Get content title based on current locale

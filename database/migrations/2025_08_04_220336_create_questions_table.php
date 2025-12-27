@@ -23,6 +23,10 @@ return new class extends Migration
             $table->decimal('grade', 5, 2)->default(1.00); // Grade for this question
             $table->text('explanation_en')->nullable(); // Optional explanation
             $table->text('explanation_ar')->nullable();
+            $table->text('correct_feedback_en')->nullable(); // Feedback when answer is correct
+            $table->text('correct_feedback_ar')->nullable();
+            $table->text('incorrect_feedback_en')->nullable(); // Feedback when answer is incorrect
+            $table->text('incorrect_feedback_ar')->nullable();
             $table->string('photo')->nullable();
 
             // Foreign keys

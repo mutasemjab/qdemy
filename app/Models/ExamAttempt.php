@@ -96,7 +96,7 @@ class ExamAttempt extends Model
             return '<span class="text-warning">'.__('front.قيد').' التصحيح</span>';
         }elseif ($this->status == 'abandoned') {
             return '<span class="text-warning">'.__('front.متروك').'</span>';
-        }elseif($this->status = 'completed'){
+        }elseif($this->status == 'completed'){
             return $this->is_passed
                 ? '<span class="text-success">'.__('front.نجح').'</span>'
                 : '<span class="text-danger">'.__('front.رسب').'</span>';

@@ -197,13 +197,83 @@
                                     <label for="explanation_ar" class="form-label">
                                         {{ __('messages.explanation_ar') }}
                                     </label>
-                                    <textarea class="form-control @error('explanation_ar') is-invalid @enderror" 
-                                              id="explanation_ar" 
-                                              name="explanation_ar" 
-                                              rows="3" 
+                                    <textarea class="form-control @error('explanation_ar') is-invalid @enderror"
+                                              id="explanation_ar"
+                                              name="explanation_ar"
+                                              rows="3"
                                               placeholder="{{ __('messages.optional_explanation_ar') }}"
                                               dir="rtl">{{ old('explanation_ar') }}</textarea>
                                     @error('explanation_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Correct Feedback English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="correct_feedback_en" class="form-label">
+                                        {{ __('messages.correct_feedback_en') }}
+                                    </label>
+                                    <textarea class="form-control @error('correct_feedback_en') is-invalid @enderror"
+                                              id="correct_feedback_en"
+                                              name="correct_feedback_en"
+                                              rows="3"
+                                              placeholder="e.g., Excellent! That's correct">{{ old('correct_feedback_en') }}</textarea>
+                                    @error('correct_feedback_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Correct Feedback Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="correct_feedback_ar" class="form-label">
+                                        {{ __('messages.correct_feedback_ar') }}
+                                    </label>
+                                    <textarea class="form-control @error('correct_feedback_ar') is-invalid @enderror"
+                                              id="correct_feedback_ar"
+                                              name="correct_feedback_ar"
+                                              rows="3"
+                                              placeholder="مثال: عاش يا بطل"
+                                              dir="rtl">{{ old('correct_feedback_ar') }}</textarea>
+                                    @error('correct_feedback_ar')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Incorrect Feedback English -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="incorrect_feedback_en" class="form-label">
+                                        {{ __('messages.incorrect_feedback_en') }}
+                                    </label>
+                                    <textarea class="form-control @error('incorrect_feedback_en') is-invalid @enderror"
+                                              id="incorrect_feedback_en"
+                                              name="incorrect_feedback_en"
+                                              rows="3"
+                                              placeholder="e.g., That's not quite right, try again">{{ old('incorrect_feedback_en') }}</textarea>
+                                    @error('incorrect_feedback_en')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Incorrect Feedback Arabic -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="incorrect_feedback_ar" class="form-label">
+                                        {{ __('messages.incorrect_feedback_ar') }}
+                                    </label>
+                                    <textarea class="form-control @error('incorrect_feedback_ar') is-invalid @enderror"
+                                              id="incorrect_feedback_ar"
+                                              name="incorrect_feedback_ar"
+                                              rows="3"
+                                              placeholder="مثال: ليش هيك يا حمار"
+                                              dir="rtl">{{ old('incorrect_feedback_ar') }}</textarea>
+                                    @error('incorrect_feedback_ar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

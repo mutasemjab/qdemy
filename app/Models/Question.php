@@ -94,6 +94,22 @@ class Question extends Model
     }
 
     /**
+     * Get correct feedback based on current locale
+     */
+    public function getCorrectFeedbackAttribute()
+    {
+        return app()->getLocale() === 'ar' ? $this->attributes['correct_feedback_ar'] : $this->attributes['correct_feedback_en'];
+    }
+
+    /**
+     * Get incorrect feedback based on current locale
+     */
+    public function getIncorrectFeedbackAttribute()
+    {
+        return app()->getLocale() === 'ar' ? $this->attributes['incorrect_feedback_ar'] : $this->attributes['incorrect_feedback_en'];
+    }
+
+    /**
      * Check if question is multiple choice
      */
     public function isMultipleChoice()

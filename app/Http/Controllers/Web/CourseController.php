@@ -112,11 +112,17 @@ class CourseController extends Controller
         $user_enrollment_courses = CourseRepository()->getUserCoursesIds($user?->id);
         $is_enrolled = in_array($course->id,$user_enrollment_courses) ? 1 : 0;
 
+        // Prepare locked content information for sequential courses
+        $lockedContents = [];
+        if($is_enrolled && $user && $course->is_sequential) {
+            $lockedContents = $this->getLockedContentsInfo($course, $user->id);
+        }
+
         if($is_enrolled && $user){
             $exams = $course->exams;
             $calculateCourseProgress = $course->calculateCourseProgress($user->id);
         }
-        
+
         return view('web.course',[
             'user'         => $user,
             'course'       => $course,
@@ -127,6 +133,7 @@ class CourseController extends Controller
             'user_courses' => $user_courses,
             'user_enrollment_courses' => $user_enrollment_courses,
             'is_enrolled'  => $is_enrolled,
+            'lockedContents' => $lockedContents,
 
             'course_progress'     => $calculateCourseProgress['total_progress'] ?? 0,
             'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,
@@ -135,6 +142,40 @@ class CourseController extends Controller
             'completed_exams'     => $calculateCourseProgress['completed_exams'] ?? 0,
             'total_exams'         => $calculateCourseProgress['total_exams'] ?? 0,
         ]);
+    }
+
+    /**
+     * Get information about locked contents in a sequential course
+     */
+    private function getLockedContentsInfo(Course $course, $userId)
+    {
+        $lockedInfo = [];
+
+        foreach($course->contents as $content) {
+            // Find the previous content by order
+            $previousContent = CourseContent::where('course_id', $course->id)
+                ->where('order', '<', $content->order)
+                ->orderBy('order', 'desc')
+                ->first();
+
+            if($previousContent) {
+                // Check if previous content is completed
+                $isPreviousCompleted = ContentUserProgress::where('user_id', $userId)
+                    ->where('course_content_id', $previousContent->id)
+                    ->where('completed', true)
+                    ->exists();
+
+                if(!$isPreviousCompleted) {
+                    $lockedInfo[$content->id] = [
+                        'is_locked' => true,
+                        'previous_content_id' => $previousContent->id,
+                        'previous_content_title' => $previousContent->title,
+                    ];
+                }
+            }
+        }
+
+        return $lockedInfo;
     }
 
 

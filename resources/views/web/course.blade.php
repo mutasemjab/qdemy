@@ -172,41 +172,60 @@
 
                                     {{-- Video Content --}}
                                     @if($content->video_url)
+                                        @php
+                                            $isContentLocked = isset($lockedContents[$content->id]) && $lockedContents[$content->id]['is_locked'];
+                                        @endphp
                                         @if($content->is_free === 1 || $is_enrolled)
-                                        <div class="crs2-resource crs2-resource--video">
-                                            <div class="crs2-resource-main lesson-video" 
-                                                 data-video="{{ $content->video_url }}"
-                                                 data-is-completed="{{ $content->is_completed }}" 
-                                                 data-content-id="{{ $content->id }}" 
-                                                 data-watched-time="{{ $content->watched_time }}" 
-                                                 data-duration="{{ $content->video_duration }}">
-                                                <span class="crs2-resource-icon">
-                                                    <i class="fa fa-play-circle"></i>
-                                                </span>
-                                                <span class="crs2-resource-title">{{ $content->title }}</span>
-                                                
-                                                @if($content->is_completed)
-                                                    <span class="completion-badge">✓</span>
-                                                @elseif($content->watched_time > 0)
-                                                    <span class="progress-badge">{{ round($progressPercent) }}%</span>
-                                                @endif
-                                                
-                                                @if(!$is_enrolled)
-                                                    <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
-                                                @endif
+                                            @if($isContentLocked)
+                                            <div class="crs2-resource crs2-resource--locked">
+                                                <div class="crs2-resource-main">
+                                                    <span class="crs2-resource-icon">
+                                                        <i class="fa fa-lock"></i>
+                                                    </span>
+                                                    <div class="crs2-resource-content">
+                                                        <span class="crs2-resource-title">{{ $content->title }}</span>
+                                                        <span class="crs2-resource-locked-message">
+                                                            {{ translate_lang('complete_lesson_first') }}: {{ $lockedContents[$content->id]['previous_content_title'] }}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="crs2-resource-actions">
-                                                <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
-                                                    {{ translate_lang('watch') }}
-                                                </a>
-                                            </div>
-                                            
-                                            @if($content->content_type === 'video' && $is_enrolled)
-                                            <div class="crs2-video-progress-bar">
-                                                <div class="crs2-progress-fill" style="width: {{ $progressPercent }}%"></div>
+                                            @else
+                                            <div class="crs2-resource crs2-resource--video">
+                                                <div class="crs2-resource-main lesson-video"
+                                                     data-video="{{ $content->video_url }}"
+                                                     data-is-completed="{{ $content->is_completed }}"
+                                                     data-content-id="{{ $content->id }}"
+                                                     data-watched-time="{{ $content->watched_time }}"
+                                                     data-duration="{{ $content->video_duration }}">
+                                                    <span class="crs2-resource-icon">
+                                                        <i class="fa fa-play-circle"></i>
+                                                    </span>
+                                                    <span class="crs2-resource-title">{{ $content->title }}</span>
+
+                                                    @if($content->is_completed)
+                                                        <span class="completion-badge">✓</span>
+                                                    @elseif($content->watched_time > 0)
+                                                        <span class="progress-badge">{{ round($progressPercent) }}%</span>
+                                                    @endif
+
+                                                    @if(!$is_enrolled)
+                                                        <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
+                                                    @endif
+                                                </div>
+                                                <div class="crs2-resource-actions">
+                                                    <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
+                                                        {{ translate_lang('watch') }}
+                                                    </a>
+                                                </div>
+
+                                                @if($content->content_type === 'video' && $is_enrolled)
+                                                <div class="crs2-video-progress-bar">
+                                                    <div class="crs2-progress-fill" style="width: {{ $progressPercent }}%"></div>
+                                                </div>
+                                                @endif
                                             </div>
                                             @endif
-                                        </div>
                                         @else
                                         <div class="crs2-resource crs2-resource--locked">
                                             <div class="crs2-resource-main">
@@ -1196,6 +1215,19 @@
 
 .crs2-resource--locked .crs2-resource-title {
     color: #9ca3af;
+}
+
+.crs2-resource-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.crs2-resource-locked-message {
+    font-size: 12px;
+    color: #ef4444;
+    font-weight: 600;
 }
 
 .completion-badge {

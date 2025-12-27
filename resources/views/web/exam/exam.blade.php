@@ -78,7 +78,7 @@
 
                 @if(!$result && !$current_attempts->count() && $can_add_attempt)
                     <div class="cmty-actions">
-                        <form action="{{route($apiRoutePrefix.'start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
+                        <form action="{{route('exam.start',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
                             @csrf
                             <button type='submit' class="cmty-like">
                                 @if($attempts->count()) {{ translate_lang('محاولة جديدة') }} @else {{ translate_lang('بدء الامتحان') }} @endif
@@ -117,7 +117,7 @@
 
                 @if(!$current_attempts->count() && $can_add_attempt)
                 <div class="cmty-actions">
-                    <form action="{{route($apiRoutePrefix.'start.exam',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
+                    <form action="{{route('exam.start',['exam'=>$exam->id,'slug'=>$exam->slug])}}" method='post'>
                         @csrf
                         <button type='submit' class="cmty-like">{{ translate_lang('محاولة جديدة') }}</button>
                     </form>
