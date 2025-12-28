@@ -444,6 +444,27 @@ class ExamController extends Controller
                     'watch_time' => null,
                 ]
             );
+
+            // If exam is linked to a course content (lesson), also track course content progress
+            // This ensures the lesson is marked as completed when the exam is passed
+            if ($exam->course_content_id) {
+                ContentUserProgress::updateOrCreate(
+                    [
+                        'user_id' => $attempt->user_id,
+                        'course_content_id' => $exam->course_content_id,
+                        'exam_id' => $exam->id,
+                    ],
+                    [
+                        'exam_attempt_id' => $attempt->id,
+                        'completed' => $is_passed, // Only mark as completed if passed
+                        'score' => $total_score,
+                        'percentage' => round($percentage, 2),
+                        'is_passed' => $is_passed,
+                        'viewed_at' => now(),
+                        'watch_time' => null,
+                    ]
+                );
+            }
         } else {
             $attempt->update([
                 'submitted_at' => now(),

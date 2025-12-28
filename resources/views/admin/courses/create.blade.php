@@ -99,7 +99,7 @@
                                         {{ __('messages.selling_price') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
-                                        <span class="input-group-text">JD</span>
+                                        <span class="input-group-text">{{ __('messages.currency_jd') }}</span>
                                         <input type="number"
                                                class="form-control @error('selling_price') is-invalid @enderror"
                                                id="selling_price"
@@ -121,7 +121,7 @@
                                         {{ __('messages.commission_of_admin') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
-                                        <span class="input-group-text">%</span>
+                                        <span class="input-group-text">{{ __('messages.percent') }}</span>
                                         <input type="number"
                                                class="form-control @error('commission_of_admin') is-invalid @enderror"
                                                id="commission_of_admin"
@@ -174,46 +174,26 @@
                                 </div>
                             </div>
 
-                            <!-- Parent Category -->
-                            <div class="col-md-6">
+                            <!-- Course Status -->
+                            <div class="col-md-4">
                                 <div class="form-group mb-3">
-                                    <label for="parent_category" class="form-label">
-                                        {{ __('messages.parent_category') }} <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-control @error('parent_category') is-invalid @enderror"
-                                            id="parent_category" name="parent_category">
-                                        <option value="">{{ __('messages.select_parent_category') }}</option>
-                                        @foreach($parentCategories as $category)
-                                            <option value="{{ $category->id }}" {{ old('parent_category') == $category->id ? 'selected' : '' }}>
-                                                @if($category->icon)
-                                                    <i class="{{ $category->icon }}"></i>
-                                                @endif
-                                                {{ $category->localized_name }}
-                                            </option>
-                                        @endforeach
+                                    <label for="status" class="form-label">{{ __('messages.course_status') }} <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('status') is-invalid @enderror"
+                                            id="status" name="status" required>
+                                        <option value="">{{ __('messages.select_status') }}</option>
+                                        <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>
+                                            {{ __('messages.status_pending') }}
+                                        </option>
+                                        <option value="accepted" {{ old('status', 'accepted') == 'accepted' ? 'selected' : '' }}>
+                                            {{ __('messages.status_accepted') }}
+                                        </option>
+                                        <option value="rejected" {{ old('status') == 'rejected' ? 'selected' : '' }}>
+                                            {{ __('messages.status_rejected') }}
+                                        </option>
                                     </select>
-                                    @error('parent_category')
+                                    @error('status')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                </div>
-                            </div>
-
-                            <!-- Child Category -->
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label for="category_id" class="form-label">
-                                        {{ __('messages.child_category') }} <span class="text-danger">*</span>
-                                    </label>
-                                    <select class="form-control @error('category_id') is-invalid @enderror"
-                                            id="category_id" name="category_id" disabled>
-                                        <option value="">{{ __('messages.select_child_category') }}</option>
-                                    </select>
-                                    @error('category_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="form-text text-muted">
-                                        {{ __('messages.select_parent_first') }}
-                                    </small>
                                 </div>
                             </div>
 
@@ -224,15 +204,17 @@
                                         {{ __('messages.subject') }} <span class="text-danger">*</span>
                                     </label>
                                     <select class="form-control @error('subject_id') is-invalid @enderror"
-                                            id="subject_id" name="subject_id" disabled>
+                                            id="subject_id" name="subject_id" required>
                                         <option value="">{{ __('messages.select_subject') }}</option>
+                                        @foreach($subjects as $subject)
+                                            <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
+                                                {{ $subject->localized_name }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     @error('subject_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                    <small class="form-text text-muted">
-                                        {{ __('messages.select_category_first') }}
-                                    </small>
                                 </div>
                             </div>
 
@@ -274,128 +256,3 @@
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-$(document).ready(function() {
-    // Handle parent category change
-    $('#parent_category').change(function() {
-        var parentId = $(this).val();
-        var childSelect = $('#category_id');
-        var subjectSelect = $('#subject_id');
-        
-        // Reset child category and subject
-        childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
-        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
-        childSelect.prop('disabled', true);
-        subjectSelect.prop('disabled', true);
-        
-        if (parentId) {
-            // Show loading state
-            childSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
-            
-            // Fetch child categories
-            $.ajax({
-                url: '{{ route('courses.get-children', ':id') }}'.replace(':id', parentId),
-                type: 'GET',
-                success: function(data) {
-                    // Reset the select with default option
-                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
-                    
-                    // Add option to use parent category itself
-                    childSelect.append('<option value="' + parentId + '">{{ __('messages.use_parent_category') }}</option>');
-                    
-                    // Add child categories if any exist
-                    if (data.length > 0) {
-                        $.each(data, function(key, category) {
-                            childSelect.append('<option value="' + category.id + '">' + 
-                                (category.name_ar || category.name_en) + '</option>');
-                        });
-                    }
-                    
-                    // Enable the child select
-                    childSelect.prop('disabled', false);
-                },
-                error: function() {
-                    alert('{{ __('messages.error_loading_categories') }}');
-                    childSelect.html('<option value="">{{ __('messages.select_child_category') }}</option>');
-                    childSelect.prop('disabled', false);
-                }
-            });
-        }
-    });
-
-    // Handle child category change - this is where we load subjects
-    $('#category_id').change(function() {
-        var categoryId = $(this).val();
-        var subjectSelect = $('#subject_id');
-        
-        // Reset subjects
-        subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
-        subjectSelect.prop('disabled', true);
-        
-        if (categoryId) {
-            loadSubjects(categoryId);
-        }
-    });
-
-    // Function to load subjects based on selected category
-    function loadSubjects(categoryId) {
-        var subjectSelect = $('#subject_id');
-        
-        // Show loading state
-        subjectSelect.html('<option value="">{{ __('messages.loading') }}...</option>');
-        subjectSelect.prop('disabled', true);
-        
-        $.ajax({
-            url: '{{ route('courses.subjects-by-category') }}',
-            type: 'GET',
-            data: { category_id: categoryId },
-            success: function(data) {
-                // Reset with default option
-                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
-                
-                if (data.length > 0) {
-                    $.each(data, function(key, subject) {
-                        subjectSelect.append('<option value="' + subject.id + '">' + subject.name + '</option>');
-                    });
-                    subjectSelect.prop('disabled', false);
-                } else {
-                    subjectSelect.append('<option value="" disabled>{{ __('messages.no_subjects_found') }}</option>');
-                    subjectSelect.prop('disabled', true);
-                }
-            },
-            error: function() {
-                alert('{{ __('messages.error_loading_subjects') }}');
-                subjectSelect.html('<option value="">{{ __('messages.select_subject') }}</option>');
-                subjectSelect.prop('disabled', false);
-            }
-        });
-    }
-
-    // Handle photo preview
-    $('#photo').change(function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                // You can add image preview here if needed
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-
-    // Restore old values if validation fails
-    @if(old('parent_category'))
-        $('#parent_category').trigger('change');
-        setTimeout(function() {
-            $('#category_id').val('{{ old('category_id') }}');
-            $('#category_id').trigger('change');
-            setTimeout(function() {
-                $('#subject_id').val('{{ old('subject_id') }}');
-            }, 500);
-        }, 500);
-    @endif
-});
-</script>
-@endpush

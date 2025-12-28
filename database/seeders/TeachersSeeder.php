@@ -5,11 +5,36 @@ namespace Database\Seeders;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class TeachersSeeder extends Seeder
 {
     public function run()
     {
+        // Create a teacher user first
+        $teacherUser = User::create([
+            'name' => 'Dr. Hassan Ahmed',
+            'role_name' => 'teacher',
+            'phone' => '01099999999',
+            'email' => 'hassan@example.com',
+            'password' => Hash::make('password123'),
+            'activate' => 1,
+        ]);
+
+        // Create teacher profile linked to user
+        Teacher::create([
+            'name' => 'Dr. Hassan Ahmed',
+            'name_of_lesson' => 'Web Development',
+            'description_en' => 'Expert in Laravel and modern web technologies',
+            'description_ar' => 'خبير في Laravel والتقنيات الحديثة',
+            'facebook' => 'https://facebook.com/hassan.web',
+            'instagram' => 'https://instagram.com/hassan.web',
+            'youtube' => 'https://youtube.com/hassan.web',
+            'whataspp' => 'https://wa.me/201099999999',
+            'photo' => 'teacher1.png',
+            'user_id' => $teacherUser->id
+        ]);
+
         $users = User::pluck('id')->toArray();
 
         $teachers = [

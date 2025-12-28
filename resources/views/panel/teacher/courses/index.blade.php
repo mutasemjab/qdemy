@@ -19,28 +19,30 @@
         <div class="alert alert-danger">{{ session('error') }}</div>
       @endif
 
-      @if($courses->count() > 0)
+      @if($courses->count() > 0 || request()->filled('status') || request()->filled('subject_id') || request()->filled('search'))
         @php
           $subjects = $courses->pluck('subject.name_ar','subject_id')->filter()->unique();
         @endphp
 
         <div class="ud-toolbar">
           <div class="ud-search">
-            <input type="text" id="courseSearch" placeholder="{{ __('panel.search') }}…">
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <form method="GET" class="d-flex gap-2" style="width: 100%;">
+              <input type="text" name="search" id="courseSearch" placeholder="{{ __('panel.search') }}…" value="{{ request('search') }}" style="flex: 1;">
+              <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+            </form>
           </div>
           <div class="ud-filters">
-            <select id="subjectFilter">
-              <option value="all">{{ __('panel.all_subjects') }}</option>
-              @foreach($subjects as $sid => $sname)
-                <option value="{{ $sid }}">{{ $sname }}</option>
-              @endforeach
+            <select id="statusFilter" name="status" onchange="applyFilters()">
+              <option value="all" {{ request('status', 'all') === 'all' ? 'selected' : '' }}>{{ __('panel.all_status') }}</option>
+              <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('messages.status_pending') }}</option>
+              <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>{{ __('messages.status_accepted') }}</option>
+              <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>{{ __('messages.status_rejected') }}</option>
             </select>
-            <select id="sortBy">
-              <option value="new">{{ __('panel.latest') }}</option>
-              <option value="old">{{ __('panel.oldest') }}</option>
-              <option value="price_high">{{ __('panel.price_high_low') }}</option>
-              <option value="price_low">{{ __('panel.price_low_high') }}</option>
+            <select id="subjectFilter" name="subject_id" onchange="applyFilters()">
+              <option value="all" {{ request('subject_id', 'all') === 'all' ? 'selected' : '' }}>{{ __('panel.all_subjects') }}</option>
+              @foreach($subjects as $sid => $sname)
+                <option value="{{ $sid }}" {{ request('subject_id') == $sid ? 'selected' : '' }}>{{ $sname }}</option>
+              @endforeach
             </select>
           </div>
         </div>
@@ -66,6 +68,15 @@
                   </button>
                 </div>
                 <span class="course-badge">{{ $course->subject->name_ar ?? __('panel.no_subject') }}</span>
+                <span class="course-status-badge status-{{ $course->status }}">
+                  @if($course->status === 'pending')
+                    <i class="fa-solid fa-clock"></i> {{ __('messages.status_pending') }}
+                  @elseif($course->status === 'accepted')
+                    <i class="fa-solid fa-check-circle"></i> {{ __('messages.status_accepted') }}
+                  @else
+                    <i class="fa-solid fa-times-circle"></i> {{ __('messages.status_rejected') }}
+                  @endif
+                </span>
               </div>
 
               <div class="course-content">
@@ -149,6 +160,10 @@
 .ud-scope .btn-action:hover{border-color:#0055D2!important;color:#0055D2!important}
 .ud-scope .btn-action.btn-danger:hover{border-color:#dc2626!important;color:#dc2626!important}
 .ud-scope .course-badge{position:absolute!important;left:10px!important;top:10px!important;background:#0ea5e9!important;color:#fff!important;border-radius:999px!important;padding:6px 10px!important;font-size:12px!important;font-weight:700!important}
+.ud-scope .course-status-badge{position:absolute!important;right:10px!important;bottom:10px!important;border-radius:6px!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:inline-flex!important;align-items:center!important;gap:4px!important}
+.ud-scope .course-status-badge.status-pending{background:#fef3c7!important;color:#92400e!important}
+.ud-scope .course-status-badge.status-accepted{background:#d1fae5!important;color:#065f46!important}
+.ud-scope .course-status-badge.status-rejected{background:#fee2e2!important;color:#991b1b!important}
 
 .ud-scope .course-content{padding:16px 16px 18px!important}
 .ud-scope .course-title{margin:0 0 6px!important;font-size:18px!important;font-weight:800!important;color:#0f172a!important}
@@ -372,6 +387,34 @@ function deleteCourse(courseId){
   const form=document.getElementById('deleteForm');
   form.action=`/teacher/courses/${courseId}`;
   openDeleteModal();
+}
+
+function applyFilters(){
+  const status = document.getElementById('statusFilter').value;
+  const subject = document.getElementById('subjectFilter').value;
+  const search = document.getElementById('courseSearch').value;
+
+  let url = new URL(window.location.href);
+
+  if (status && status !== 'all') {
+    url.searchParams.set('status', status);
+  } else {
+    url.searchParams.delete('status');
+  }
+
+  if (subject && subject !== 'all') {
+    url.searchParams.set('subject_id', subject);
+  } else {
+    url.searchParams.delete('subject_id');
+  }
+
+  if (search) {
+    url.searchParams.set('search', search);
+  } else {
+    url.searchParams.delete('search');
+  }
+
+  window.location.href = url.toString();
 }
 
 document.addEventListener('DOMContentLoaded',function(){

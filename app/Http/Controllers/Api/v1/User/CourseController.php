@@ -116,6 +116,11 @@ class CourseController extends Controller
                             $sectionContents = $contents?->where('section_id', $child->id);
                             if ($sectionContents) {
                                 foreach ($sectionContents as $content) {
+                                    $locked = false;
+                                    if ($is_enrolled && $user) {
+                                        $locked = $this->isContentLocked($course, $content, $user->id);
+                                    }
+
                                     $childData['contents'][] = [
                                         'id' => $content->id,
                                         'title_ar' => $content->title_ar,
@@ -128,7 +133,8 @@ class CourseController extends Controller
                                         'video_type' => $content->video_type,
                                         'video_url' => $content->video_url,
                                         'file_path' => $content->file_path,
-                                        'pdf_type' => $content->pdf_type
+                                        'pdf_type' => $content->pdf_type,
+                                        'locked' => $locked
                                     ];
                                 }
                             }
@@ -163,6 +169,11 @@ class CourseController extends Controller
                     if ($directContents && $directContents->isNotEmpty()) {
                         $sectionData['contents'] = [];
                         foreach ($directContents as $content) {
+                            $locked = false;
+                            if ($is_enrolled && $user) {
+                                $locked = $this->isContentLocked($course, $content, $user->id);
+                            }
+
                             $sectionData['contents'][] = [
                                 'id' => $content->id,
                                 'title_ar' => $content->title_ar,
@@ -175,7 +186,8 @@ class CourseController extends Controller
                                 'video_type' => $content->video_type,
                                 'video_url' => $content->video_url,
                                 'file_path' => $content->file_path,
-                                'pdf_type' => $content->pdf_type
+                                'pdf_type' => $content->pdf_type,
+                                'locked' => $locked
                             ];
                         }
                     }
@@ -235,6 +247,53 @@ class CourseController extends Controller
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve course details: ' . $e->getMessage(), null);
         }
+    }
+
+    /**
+     * Check if content is locked for user
+     * Returns true if locked, false if unlocked
+     */
+    private function isContentLocked($course, $content, $userId)
+    {
+        // If course is not sequential, all content is unlocked
+        if (!$course->is_sequential) {
+            return false;
+        }
+
+        // If content is free, it's not locked
+        if ($content->is_free) {
+            return false;
+        }
+
+        // First content in order is always unlocked
+        if ($content->order <= 1) {
+            return false;
+        }
+
+        // Get the previous content (highest order less than current order) in the same section
+        $previousContent = CourseContent::where('course_id', $course->id)
+            ->where('section_id', $content->section_id)
+            ->where('order', '<', $content->order)
+            ->orderBy('order', 'desc')
+            ->first();
+
+        // If no previous content, current content is unlocked
+        if (!$previousContent) {
+            return false;
+        }
+
+        // Check if user has completed the previous content
+        $previousProgress = ContentUserProgress::where('user_id', $userId)
+            ->where('course_content_id', $previousContent->id)
+            ->first();
+
+        // If no progress record or not completed, content is locked
+        if (!$previousProgress || !$previousProgress->completed) {
+            return true;
+        }
+
+        // Previous content is completed, so current content is unlocked
+        return false;
     }
 
     /**

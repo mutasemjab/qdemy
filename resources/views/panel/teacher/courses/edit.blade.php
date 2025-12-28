@@ -79,34 +79,16 @@
                     <textarea id="description_en" name="description_en" rows="4" required>{{ old('description_en', $course->description_en) }}</textarea>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="parent_category">{{ __('panel.select_program') }} *</label>
-                        <select id="parent_category" name="parent_category" required>
-                            <option value="">{{ __('panel.select_program') }}</option>
-                            @foreach($parentCategories as $category)
-                                <option value="{{ $category->id }}" {{ old('parent_category', $course->subject->programm_id ?? '') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name_ar }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="category_id">{{ __('panel.select_grade') }} *</label>
-                        <select id="category_id" name="category_id" disabled required>
-                            <option value="">{{ __('panel.select_grade_first') }}</option>
-                        </select>
-                        <small class="form-text">{{ __('panel.select_parent_first') }}</small>
-                    </div>
-                </div>
-
                 <div class="form-group">
                     <label for="subject_id">{{ __('panel.select_subject') }} *</label>
-                    <select id="subject_id" name="subject_id" disabled required>
-                        <option value="">{{ __('panel.select_category_first') }}</option>
+                    <select id="subject_id" name="subject_id" required>
+                        <option value="">{{ __('panel.select_subject') }}</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject->id }}" {{ old('subject_id', $course->subject_id) == $subject->id ? 'selected' : '' }}>
+                                {{ $subject->localized_name }}
+                            </option>
+                        @endforeach
                     </select>
-                    <small class="form-text">{{ __('panel.select_category_first') }}</small>
                 </div>
 
                 <div class="form-group">
@@ -116,6 +98,15 @@
                         <span class="currency">{{ __('panel.currency') }}</span>
                     </div>
                     <small class="form-text">{{ __('panel.enter_zero_for_free') }}</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="is_sequential" class="checkbox-label">
+                        <input type="hidden" name="is_sequential" value="0">
+                        <input type="checkbox" id="is_sequential" name="is_sequential" value="1" {{ old('is_sequential', $course->is_sequential) ? 'checked' : '' }}>
+                        <span>{{ __('panel.sequential_course') }}</span>
+                    </label>
+                    <small class="form-text">{{ __('panel.sequential_course_help') }}</small>
                 </div>
 
                 <div class="form-actions">
@@ -166,6 +157,10 @@
 .price-input-wrapper .currency{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#6b7280;font-weight:800}
 .price-input-wrapper input{padding-right:70px}
 
+.checkbox-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;color:#0f172a}
+.checkbox-label input[type="checkbox"]{margin:0;cursor:pointer;width:18px;height:18px}
+.checkbox-label span{margin:0}
+
 .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px;padding-top:16px;border-top:1px solid #eef0f3}
 .btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
 .btn:hover{transform:translateY(-1px)}
@@ -193,9 +188,6 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded',function(){
-  const parentCategorySelect=document.getElementById('parent_category');
-  const childCategorySelect=document.getElementById('category_id');
-  const subjectSelect=document.getElementById('subject_id');
   const photoInput=document.getElementById('photo');
   const photoPreview=document.getElementById('photo-preview');
   const submitBtn=document.getElementById('submitBtn');
@@ -216,96 +208,6 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   });
 
-  parentCategorySelect.addEventListener('change',function(){
-    const parentId=this.value;
-    resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
-    resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
-    childCategorySelect.disabled=true;
-    subjectSelect.disabled=true;
-    if(parentId){
-      setLoadingState(childCategorySelect,'{{ __("panel.loading") }}...');
-      const childrenUrl="{{ route('teacher.categories.children', ':id') }}".replace(':id',parentId);
-      fetch(childrenUrl)
-        .then(r=>r.json())
-        .then(data=>{
-          resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
-          addOption(childCategorySelect,parentId,'{{ __("panel.use_parent_category") }}');
-          if(data&&data.length>0){
-            data.forEach(function(category){
-              const name=category.name_ar||category.name_en||'';
-              addOption(childCategorySelect,category.id,name);
-            });
-          }
-          childCategorySelect.disabled=false;
-          @if(old('category_id', $course->subject->grade_id ?? ''))
-            setTimeout(function(){
-              childCategorySelect.value='{{ old("category_id", $course->subject->grade_id ?? "") }}';
-              childCategorySelect.dispatchEvent(new Event('change'));
-            },100);
-          @endif
-        })
-        .catch(()=>{
-          resetSelect(childCategorySelect,'{{ __("panel.select_grade_first") }}');
-          childCategorySelect.disabled=false;
-        });
-    }
-  });
-
-  childCategorySelect.addEventListener('change',function(){
-    const categoryId=this.value;
-    resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
-    subjectSelect.disabled=true;
-    if(categoryId){
-      loadSubjects(categoryId);
-    }
-  });
-
-  function loadSubjects(categoryId){
-    setLoadingState(subjectSelect,'{{ __("panel.loading") }}...');
-    subjectSelect.disabled=true;
-    const subjectsUrl="{{ route('teacher.subjects.by-category') }}?category_id="+categoryId;
-    fetch(subjectsUrl)
-      .then(r=>r.json())
-      .then(data=>{
-        resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
-        if(data&&data.length>0){
-          data.forEach(function(subject){
-            const nm=subject.name_ar||subject.name_en||subject.name||'';
-            addOption(subjectSelect,subject.id,nm);
-          });
-          subjectSelect.disabled=false;
-          @if(old('subject_id', $course->subject_id))
-            setTimeout(function(){
-              subjectSelect.value='{{ old("subject_id", $course->subject_id) }}';
-            },100);
-          @endif
-        }else{
-          addOption(subjectSelect,'','{{ __("panel.no_subjects_available") }}',true);
-          subjectSelect.disabled=true;
-        }
-      })
-      .catch(()=>{
-        resetSelect(subjectSelect,'{{ __("panel.select_subject") }}');
-        subjectSelect.disabled=false;
-      });
-  }
-
-  function resetSelect(sel,txt){
-    sel.innerHTML='';
-    addOption(sel,'',txt);
-  }
-  function setLoadingState(sel,txt){
-    sel.innerHTML='';
-    addOption(sel,'',txt);
-  }
-  function addOption(sel,val,txt,disabled=false){
-    const o=document.createElement('option');
-    o.value=val;
-    o.textContent=txt;
-    if(disabled) o.disabled=true;
-    sel.appendChild(o);
-  }
-
   courseForm.addEventListener('submit',function(){
     submitBtn.disabled=true;
     submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
@@ -314,11 +216,6 @@ document.addEventListener('DOMContentLoaded',function(){
       submitBtn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.update_course") }}';
     },10000);
   });
-
-  @if(old('parent_category', $course->subject->programm_id ?? ''))
-    parentCategorySelect.value='{{ old("parent_category", $course->subject->programm_id ?? "") }}';
-    parentCategorySelect.dispatchEvent(new Event('change'));
-  @endif
 });
 </script>
 @endsection

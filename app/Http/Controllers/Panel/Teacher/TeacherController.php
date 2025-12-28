@@ -85,13 +85,35 @@ class TeacherController extends Controller
     /**
      * Display teacher's courses
      */
-    public function courses()
+    public function courses(Request $request)
     {
         $user = Auth::user();
-        
-        $courses = Course::where('teacher_id', $user->id)
-            ->with(['subject:id,name_ar,name_en'])
-            ->paginate(10);
+
+        $query = Course::where('teacher_id', $user->id)
+            ->with(['subject:id,name_ar,name_en']);
+
+        // Filter by status
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by subject
+        if ($request->filled('subject_id') && $request->subject_id !== 'all') {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('title_ar', 'like', "%{$search}%")
+                  ->orWhere('title_en', 'like', "%{$search}%")
+                  ->orWhere('description_ar', 'like', "%{$search}%")
+                  ->orWhere('description_en', 'like', "%{$search}%");
+            });
+        }
+
+        $courses = $query->latest()->paginate(10)->withQueryString();
 
         return view('panel.teacher.courses.index', compact('courses'));
     }
@@ -1113,6 +1135,50 @@ class TeacherController extends Controller
             // Recursively add children
             $this->addChildSectionsForExam($allSections, $child->id, $formattedSections, $level + 1);
         }
+    }
+
+    /**
+     * Get section contents (lessons) for exam creation
+     */
+    public function getSectionContentsForExam(CourseSection $section)
+    {
+        // Get the course to verify teacher owns it
+        $course = Course::find($section->course_id);
+
+        if (!$course || $course->teacher_id !== Auth::id()) {
+            return response()->json([]);
+        }
+
+        $contents = CourseContent::where('section_id', $section->id)
+            ->select('id', 'title_ar', 'title_en')
+            ->orderBy('order')
+            ->get();
+
+        return response()->json($contents);
+    }
+
+    /**
+     * Get attempt answers as JSON for AJAX modal
+     */
+    public function getAttemptAnswers(Exam $exam, ExamAttempt $attempt)
+    {
+        // Check if teacher owns this exam
+        if ($exam->created_by !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => __('messages.unauthorized_access')], 403);
+        }
+
+        if ($attempt->exam_id !== $exam->id) {
+            return response()->json(['success' => false, 'message' => 'Not found'], 404);
+        }
+
+        $attempt->load(['answers.question.options', 'user']);
+
+        $html = view('panel.teacher.exams.partials.attempt-answers', compact('attempt'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'success' => true
+        ]);
     }
 
 }

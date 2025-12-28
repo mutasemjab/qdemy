@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call(AdminSeeder::class);
         $this->call(BannedWordsSeeder::class);
 
-      // $this->call(TeachersSeeder::class);
+       $this->call(TeachersSeeder::class);
      //  $this->call(CoursesSeeder::class);
       // $this->call(CoursesSeeder::class);
       // $this->call(QuestionSeeder::class);

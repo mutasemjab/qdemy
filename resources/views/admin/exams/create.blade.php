@@ -148,11 +148,31 @@
                                     <select class="form-select form-control @error('section_id') is-invalid @enderror"
                                             id="section_id"
                                             name="section_id"
+                                            onchange="loadSectionContents(this.value)"
                                             disabled>
                                         <option value="">{{ __('messages.select_section_optional') }}</option>
                                     </select>
                                     <small class="form-text text-muted">{{ __('messages.select_course_first') }}</small>
                                     @error('section_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Course Content (Lesson) -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="course_content_id" class="form-label">
+                                        {{ __('messages.lesson') }}
+                                    </label>
+                                    <select class="form-select form-control @error('course_content_id') is-invalid @enderror"
+                                            id="course_content_id"
+                                            name="course_content_id"
+                                            disabled>
+                                        <option value="">{{ __('messages.select_lesson_optional') }}</option>
+                                    </select>
+                                    <small class="form-text text-muted">{{ __('messages.select_section_first') }}</small>
+                                    @error('course_content_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -397,9 +417,12 @@ function loadSubjectCourses(subjectId) {
 // Function to load sections when course is selected
 function loadCourseSections(courseId) {
     const sectionSelect = document.getElementById('section_id');
+    const contentSelect = document.getElementById('course_content_id');
 
     // Clear current options
     sectionSelect.innerHTML = '<option value="">{{ __('messages.select_section_optional') }}</option>';
+    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
+    contentSelect.disabled = true;
 
     if (!courseId) {
         sectionSelect.disabled = true;
@@ -427,6 +450,43 @@ function loadCourseSections(courseId) {
         .catch(error => {
             console.error('Error loading sections:', error);
             sectionSelect.disabled = true;
+        });
+}
+
+// Function to load contents (lessons) when section is selected
+function loadSectionContents(sectionId) {
+    const contentSelect = document.getElementById('course_content_id');
+
+    // Clear current options
+    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
+
+    if (!sectionId) {
+        contentSelect.disabled = true;
+        return;
+    }
+
+    // Enable the content select
+    contentSelect.disabled = false;
+
+    // Fetch contents via AJAX using named route
+    fetch(`{{ route('admin.sections.contents', ':section') }}`.replace(':section', sectionId), {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+        })
+        .then(response => response.json())
+        .then(contents => {
+            contents.forEach(content => {
+                const title = content.title_en || content.title_ar;
+                const option = new Option(title, content.id);
+                contentSelect.add(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading contents:', error);
+            contentSelect.disabled = true;
         });
 }
 

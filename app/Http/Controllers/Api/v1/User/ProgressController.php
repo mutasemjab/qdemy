@@ -70,6 +70,11 @@ class ProgressController extends Controller
             }
 
             $courseContent = CourseContent::findOrFail($request->course_content_id);
+
+            // Validate watch_time doesn't exceed video duration
+            if ($courseContent->video_duration && $request->watch_time > $courseContent->video_duration) {
+                return $this->error_response('Watch time cannot exceed video duration', null, 422);
+            }
             
             // Check if user is enrolled in the course
             $isEnrolled = $courseContent->course->enrollments()

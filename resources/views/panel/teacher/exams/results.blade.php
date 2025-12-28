@@ -15,9 +15,12 @@
   --danger:#d33a2c;
   --warning:#c28100;
 }
-.page-wrap{background:var(--bg)}
+.ud-scope{width:100%;background:var(--bg)}
+.ud-content{max-width:1300px;margin:0 auto;padding:30px}
+.page-wrap{background:var(--bg);padding:0}
 .head-bar{display:flex;justify-content:space-between;gap:12px;align-items:end;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
 .head-bar h2{margin:0;font-size:22px;color:var(--ink);font-weight:900}
+.cardx-h h6{margin:0;font-size:18px;color:var(--ink);font-weight:900}
 .subtle{margin:4px 0 0 0;color:var(--muted);font-size:13px}
 .head-actions{display:flex;gap:8px;flex-wrap:wrap}
 .btnx{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;font-weight:800;font-size:14px;text-decoration:none;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);transition:box-shadow .16s,transform .16s,border-color .16s}
@@ -72,12 +75,26 @@
 .row-inline{display:flex;align-items:center;gap:10px}
 .w-100{width:100%}
 .hidden{display:none}
+/* Modal Styles */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;padding:20px}
+.modal.show{display:flex;align-items:flex-start;justify-content:center}
+.modal-dialog{background:#fff;border-radius:14px;width:100%;max-width:900px;margin:40px auto;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25)}
+.modal-content{border:none;border-radius:14px;overflow:hidden}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line);background:#f8fafc}
+.modal-header .modal-title{margin:0;font-size:18px;font-weight:800;color:var(--ink)}
+.modal-header .btn-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.modal-header .btn-close:hover{color:var(--ink)}
+.modal-body{padding:20px;max-height:70vh;overflow-y:auto}
+.modal-footer{display:flex;justify-content:flex-end;padding:16px 20px;border-top:1px solid var(--line);background:#f8fafc}
+.modal-backdrop{display:none}
 </style>
 @endsection
 
 @section('content')
-<div class="container-fluid page-wrap">
-  <div class="head-bar">
+<section class="ud-scope">
+  <div class="ud-content">
+    <div class="page-wrap">
+      <div class="head-bar">
     <div>
       <h2>{{ __('panel.exam_results') }}</h2>
       <p class="subtle">
@@ -293,7 +310,6 @@
                       >
                         <i class="fas fa-eye"></i>
                       </a>
-
                       <button
                         type="button"
                         class="btn-ghost js-answers"
@@ -302,28 +318,6 @@
                       >
                         <i class="fas fa-list"></i>
                       </button>
-
-                      <button
-                        type="button"
-                        class="btn-ghost js-download"
-                        data-attempt="{{ $attempt->id }}"
-                        title="{{ __('panel.download_result') }}"
-                      >
-                        <i class="fas fa-download"></i>
-                      </button>
-
-                      @if(auth()->user()->can('grade_manually'))
-                        <button
-                          type="button"
-                          class="btn-ghost js-manual"
-                          data-attempt="{{ $attempt->id }}"
-                          data-student="{{ $attempt->user->name }}"
-                          data-score="{{ number_format($attempt->score,2) }}"
-                          title="{{ __('panel.manual_grade') }}"
-                        >
-                          <i class="fas fa-edit"></i>
-                        </button>
-                      @endif
                     </div>
                   </td>
                 </tr>
@@ -385,14 +379,17 @@
       </div>
     </div>
   @endif
-</div>
+    </div>
+  </div>
+</section>
 
+<!-- Answers Modal -->
 <div class="modal fade" id="answersModal" tabindex="-1">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">{{ __('panel.student_answers') }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body" id="answersContent">
         <div class="modal-loading">
@@ -408,51 +405,9 @@
     </div>
   </div>
 </div>
-
-<div class="modal fade" id="manualGradeModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ __('panel.manual_grading') }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form id="manualGradeForm">
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">{{ __('panel.student_name') }}</label>
-            <input type="text" class="form-control" id="studentName" readonly>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">{{ __('panel.current_score') }}</label>
-            <input type="text" class="form-control" id="currentScore" readonly>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">{{ __('panel.new_score') }}</label>
-            <input type="number" class="form-control" id="newScore" step="0.01" min="0" required>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">{{ __('panel.grade_reason') }}</label>
-            <textarea class="form-control" id="gradeReason" rows="3" placeholder="{{ __('panel.enter_reason_for_grade_change') }}"></textarea>
-          </div>
-          <div id="manualError" class="meta-muted hidden"></div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btnx btnx-outline" data-bs-dismiss="modal">
-            {{ __('panel.cancel') }}
-          </button>
-          <button type="submit" class="btnx btnx-primary" id="manualSubmit">
-            {{ __('panel.update_grade') }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -467,134 +422,119 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  document.querySelectorAll('.js-answers').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var attemptId = this.dataset.attempt;
-      var modal = new bootstrap.Modal(document.getElementById('answersModal'));
-      var content = document.getElementById('answersContent');
-      content.innerHTML =
-        '<div class="modal-loading"><div class="spinner"></div><div style="margin-top:10px">{{ __('panel.loading') }}...</div></div>';
-      modal.show();
-
-      fetch(`{{ route('teacher.exams.index') }}/{{ $exam->id }}/attempts/${attemptId}/answers`)
-        .then(r => r.ok ? r.json() : Promise.reject())
-        .then(d => {
-          content.innerHTML = d.html || '<div class="meta-muted">{{ __("panel.error_loading_answers") }}</div>';
-        })
-        .catch(() => {
-          content.innerHTML = '<div class="meta-muted">{{ __("panel.error_loading_answers") }}</div>';
-        });
-    });
-  });
-
-  document.querySelectorAll('.js-download').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var attemptId = this.dataset.attempt;
-      this.disabled = true;
-      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-      window.location.href = `{{ route('teacher.exams.index') }}/{{ $exam->id }}/attempts/${attemptId}/download`;
-      setTimeout(() => {
-        this.disabled = false;
-        this.innerHTML = '<i class="fas fa-download"></i>';
-      }, 2000);
-    });
-  });
-
-  var manualForm = document.getElementById('manualGradeForm');
-  var manualModalEl = document.getElementById('manualGradeModal');
-  var manualModal = new bootstrap.Modal(manualModalEl);
-  var manualSubmit = document.getElementById('manualSubmit');
-
-  document.querySelectorAll('.js-manual').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      document.getElementById('studentName').value = this.dataset.student || '';
-      document.getElementById('currentScore').value = this.dataset.score || '';
-      manualForm.dataset.attemptId = this.dataset.attempt;
-      document.getElementById('newScore').value = '';
-      document.getElementById('gradeReason').value = '';
-      document.getElementById('manualError').classList.add('hidden');
-      manualModal.show();
-    });
-  });
-
-  manualForm && manualForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var attemptId = this.dataset.attemptId;
-    var newScore = document.getElementById('newScore').value;
-    var reason = document.getElementById('gradeReason').value;
-
-    manualSubmit.disabled = true;
-    manualSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-    fetch(`{{ route('teacher.exams.index') }}/{{ $exam->id }}/attempts/${attemptId}/manual-grade`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-      },
-      body: JSON.stringify({ score: newScore, reason: reason })
-    })
-      .then(r => r.json())
-      .then(d => {
-        if (d.success) {
-          window.location.reload();
-        } else {
-          document.getElementById('manualError').textContent = d.message || '{{ __("panel.error_updating_grade") }}';
-          document.getElementById('manualError').classList.remove('hidden');
-          manualSubmit.disabled = false;
-          manualSubmit.textContent = '{{ __("panel.update_grade") }}';
-        }
-      })
-      .catch(() => {
-        document.getElementById('manualError').textContent = '{{ __("panel.error_updating_grade") }}';
-        document.getElementById('manualError').classList.remove('hidden');
-        manualSubmit.disabled = false;
-        manualSubmit.textContent = '{{ __("panel.update_grade") }}';
-      });
-  });
-
   @if($stats['total_attempts'] > 0)
-    var scoreCtx = document.getElementById('scoreChart').getContext('2d');
-    new Chart(scoreCtx, {
-      type: 'bar',
-      data: {
-        labels: ['0-20%','21-40%','41-60%','61-80%','81-100%'],
-        datasets: [{
-          data: [
-            {{ $attempts->where('percentage','<=',20)->count() }},
-            {{ $attempts->whereBetween('percentage',[21,40])->count() }},
-            {{ $attempts->whereBetween('percentage',[41,60])->count() }},
-            {{ $attempts->whereBetween('percentage',[61,80])->count() }},
-            {{ $attempts->where('percentage','>=',81)->count() }}
-          ],
-          backgroundColor: ['#ef4444','#f59e0b','#fb923c','#3b82f6','#10b981']
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+    var scoreChartEl = document.getElementById('scoreChart');
+    if (scoreChartEl) {
+      var scoreCtx = scoreChartEl.getContext('2d');
+      new Chart(scoreCtx, {
+        type: 'bar',
+        data: {
+          labels: ['0-20%','21-40%','41-60%','61-80%','81-100%'],
+          datasets: [{
+            data: [
+              {{ $attempts->where('percentage','<=',20)->count() }},
+              {{ $attempts->whereBetween('percentage',[21,40])->count() }},
+              {{ $attempts->whereBetween('percentage',[41,60])->count() }},
+              {{ $attempts->whereBetween('percentage',[61,80])->count() }},
+              {{ $attempts->where('percentage','>=',81)->count() }}
+            ],
+            backgroundColor: ['#ef4444','#f59e0b','#fb923c','#3b82f6','#10b981']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+      });
+    }
+
+    var passFailChartEl = document.getElementById('passFailChart');
+    if (passFailChartEl) {
+      var pfCtx = passFailChartEl.getContext('2d');
+      new Chart(pfCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['{{ __("panel.passed") }}','{{ __("panel.failed") }}'],
+          datasets: [{
+            data: [{{ $stats['passed_attempts'] }}, {{ $stats['total_attempts'] - $stats['passed_attempts'] }}],
+            backgroundColor: ['#10b981','#ef4444']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
+  @endif
+
+  // Answers Modal Handler
+  var answersModalEl = document.getElementById('answersModal');
+  var answersContentEl = document.getElementById('answersContent');
+
+  // Custom modal functions
+  function openModal() {
+    answersModalEl.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    answersModalEl.classList.remove('show');
+    document.body.style.overflow = '';
+  }
+
+  if (answersModalEl && answersContentEl) {
+    // Open modal on button click
+    document.querySelectorAll('.js-answers').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var attemptId = this.dataset.attempt;
+
+        // Show loading state and open modal
+        answersContentEl.innerHTML = '<div class="modal-loading"><div class="spinner"></div><div style="margin-top:10px">{{ __("panel.loading") }}...</div></div>';
+        openModal();
+
+        // Fetch answers
+        fetch('{{ route("teacher.exams.results", $exam) }}/attempts/' + attemptId + '/answers')
+          .then(function(response) {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+          })
+          .then(function(data) {
+            if (data.success) {
+              answersContentEl.innerHTML = data.html;
+            } else {
+              answersContentEl.innerHTML = '<div class="meta-muted text-center">{{ __("panel.error_loading_answers") }}</div>';
+            }
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+            answersContentEl.innerHTML = '<div class="meta-muted text-center">{{ __("panel.error_loading_answers") }}</div>';
+          });
+      });
+    });
+
+    // Close modal on close button click
+    answersModalEl.querySelectorAll('[data-bs-dismiss="modal"], .btn-close').forEach(function(btn) {
+      btn.addEventListener('click', closeModal);
+    });
+
+    // Close modal on backdrop click
+    answersModalEl.addEventListener('click', function(e) {
+      if (e.target === answersModalEl) {
+        closeModal();
       }
     });
 
-    var pfCtx = document.getElementById('passFailChart').getContext('2d');
-    new Chart(pfCtx, {
-      type: 'doughnut',
-      data: {
-        labels: ['{{ __("panel.passed") }}','{{ __("panel.failed") }}'],
-        datasets: [{
-          data: [{{ $stats['passed_attempts'] }}, {{ $stats['total_attempts'] - $stats['passed_attempts'] }}],
-          backgroundColor: ['#10b981','#ef4444']
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } }
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && answersModalEl.classList.contains('show')) {
+        closeModal();
       }
     });
-  @endif
+  }
 });
 </script>
-@endpush
+@endsection

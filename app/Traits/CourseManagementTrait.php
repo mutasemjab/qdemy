@@ -605,9 +605,24 @@ trait CourseManagementTrait
             'selling_price' => 'required|numeric|min:0',
             'commission_of_admin' => 'nullable|numeric',
             'subject_id' => 'required|exists:subjects,id',
-            'is_sequential' => 'sometimes|boolean',
-            'photo' => $courseId ? 'sometimes|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'is_sequential' => 'nullable|boolean',
+            'photo' => $courseId ? 'sometimes|image|mimes:jpeg,png,jpg' : 'required|image|mimes:jpeg,png,jpg'
         ];
+
+        $data = [
+            'title_en' => $request->input('title_en'),
+            'title_ar' => $request->input('title_ar'),
+            'description_en' => $request->input('description_en'),
+            'description_ar' => $request->input('description_ar'),
+            'selling_price' => $request->input('selling_price'),
+            'commission_of_admin' => $request->input('commission_of_admin'),
+            'subject_id' => $request->input('subject_id'),
+            'is_sequential' => $request->boolean('is_sequential'),
+        ];
+
+        if ($request->hasFile('photo')) {
+            $data['photo'] = $request->file('photo');
+        }
 
         if ($isAdmin) {
             // Admin can assign teacher - validate that user exists and has role_name = 'teacher'
@@ -621,9 +636,14 @@ trait CourseManagementTrait
                     }
                 }
             ];
+            // Admin can set course status
+            $rules['status'] = 'required|in:pending,accepted,rejected';
+
+            $data['teacher_id'] = $request->input('teacher_id');
+            $data['status'] = $request->input('status');
         }
 
-        return Validator::make($request->all(), $rules);
+        return Validator::make($data, $rules);
     }
 
     /**
@@ -698,15 +718,22 @@ trait CourseManagementTrait
     {
         $data = $request->only([
             'title_en', 'title_ar', 'description_en',
-            'description_ar','commission_of_admin' ,'selling_price', 'subject_id', 'is_sequential'
+            'description_ar','commission_of_admin' ,'selling_price', 'subject_id'
         ]);
+
+        // Handle boolean checkbox properly
+        $data['is_sequential'] = $request->boolean('is_sequential');
 
         if ($isAdmin) {
             // Admin can assign any teacher (teacher_id should refer to users.id where role_name = 'teacher')
             $data['teacher_id'] = $request->teacher_id;
+            // Admin can set status explicitly
+            $data['status'] = $request->status;
         } else {
             // For teacher users, use their own user ID
             $data['teacher_id'] = auth()->user()->id;
+            // When teacher edits a course, it goes back to pending for admin review
+            $data['status'] = 'pending';
         }
 
         return $data;

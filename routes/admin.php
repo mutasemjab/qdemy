@@ -357,6 +357,10 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         Route::get('admin/courses/{course}/sections', [ExamController::class, 'getCourseSections'])
             ->name('admin.courses.sections');
+
+        Route::get('admin/sections/{section}/contents', [ExamController::class, 'getSectionContents'])
+            ->name('admin.sections.contents');
+
         Route::get('admin/users/search', [CardNumberController::class, 'searchUsers'])->name('admin.users.search');
 
         Route::name('admin.')->group(function () {

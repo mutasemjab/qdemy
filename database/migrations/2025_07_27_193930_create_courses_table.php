@@ -30,6 +30,8 @@ return new class extends Migration
 
             $table->boolean('is_sequential')->default(true);
 
+            $table->enum('status', ['pending', 'accepted', 'rejected'])->default('pending');
+
             $table->timestamps();
         });
     }

@@ -31,22 +31,22 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $word->word }}</td>
                         <td>
-                            @if($word->language === 'ar') العربية
-                            @elseif($word->language === 'en') English
-                            @else كلاهما @endif
+                            @if($word->language === 'ar') {{ __('messages.language_ar') }}
+                            @elseif($word->language === 'en') {{ __('messages.language_en') }}
+                            @else {{ __('messages.language_both') }} @endif
                         </td>
                         <td>
                             @switch($word->type)
-                                @case('profanity') بذيئة @break
-                                @case('political') سياسية @break
-                                @case('spam') مزعجة @break
-                                @default أخرى
+                                @case('profanity') {{ __('messages.type_profanity') }} @break
+                                @case('political') {{ __('messages.type_political') }} @break
+                                @case('spam') {{ __('messages.type_spam') }} @break
+                                @default {{ __('messages.type_other') }}
                             @endswitch
                         </td>
                         <td>{{ $word->severity }}</td>
                         <td>
                             @can('bannedWord-delete')
-                                <form action="{{ route('banned-words.destroy', $word->id) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من حذف هذه الكلمة؟')" style="display:inline-block;">
+                                <form action="{{ route('banned-words.destroy', $word->id) }}" method="POST" onsubmit="return confirm('{{ __('messages.confirm_delete_word') }}')" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-danger">

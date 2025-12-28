@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة التعليم - تسجيل الدخول</title>
+    <title>{{ __('messages.login_page_title') }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
@@ -69,15 +70,20 @@
         }
 
         @keyframes float {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0px) rotate(0deg);
             }
+
             25% {
                 transform: translateY(-20px) rotate(90deg);
             }
+
             50% {
                 transform: translateY(0px) rotate(180deg);
             }
+
             75% {
                 transform: translateY(-10px) rotate(270deg);
             }
@@ -102,6 +108,7 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -132,9 +139,12 @@
         }
 
         @keyframes pulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: scale(1);
             }
+
             50% {
                 transform: scale(1.05);
             }
@@ -217,8 +227,8 @@
             padding: 0 5px;
         }
 
-        .form-input:focus + .floating-label,
-        .form-input:not(:placeholder-shown) + .floating-label {
+        .form-input:focus+.floating-label,
+        .form-input:not(:placeholder-shown)+.floating-label {
             top: -10px;
             font-size: 12px;
             color: #667eea;
@@ -296,8 +306,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Footer */
@@ -344,10 +359,12 @@
                 transform: scale(1);
                 box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
             }
+
             70% {
                 transform: scale(1.05);
                 box-shadow: 0 0 0 10px rgba(46, 204, 113, 0);
             }
+
             100% {
                 transform: scale(1);
                 box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
@@ -360,6 +377,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Animated background -->
     <div class="bg-animation">
@@ -382,8 +400,8 @@
             <div class="logo">
                 <i class="fas fa-graduation-cap"></i>
             </div>
-            <h1 class="login-title">مرحباً بك</h1>
-            <p class="login-subtitle">قم بتسجيل الدخول للوصول إلى منصة Qdemy</p>
+            <h1 class="login-title">{{ __('messages.welcome') }}</h1>
+            <p class="login-subtitle">{{ __('messages.login_subtitle') }}</p>
         </div>
 
         <form id="loginForm" action="{{route('admin.login')}}" method="post">
@@ -391,7 +409,7 @@
             <div class="form-group">
                 <div class="input-wrapper">
                     <input type="text" name="username" class="form-input" placeholder=" " required>
-                    <label class="floating-label">اسم المستخدم</label>
+                    <label class="floating-label">{{ __('messages.username') }}</label>
                     <i class="fas fa-user input-icon"></i>
                 </div>
                 @error('username')
@@ -403,7 +421,7 @@
             <div class="form-group">
                 <div class="input-wrapper">
                     <input type="password" name="password" class="form-input" placeholder=" " required>
-                    <label class="floating-label">كلمة المرور</label>
+                    <label class="floating-label">{{ __('messages.Password') }}</label>
                     <i class="fas fa-lock input-icon"></i>
                 </div>
                 @error('password')
@@ -413,7 +431,7 @@
             </div>
 
             <button type="submit" class="submit-btn" id="submitBtn">
-                <span class="btn-text">دخول</span>
+                <span class="btn-text">{{ __('messages.login_button') }}</span>
                 <div class="btn-loading">
                     <div class="spinner"></div>
                 </div>
@@ -421,29 +439,29 @@
         </form>
 
         <div class="login-footer">
-            <p>  Qdemy © 2025</p>
+            <p> Qdemy © 2025</p>
         </div>
     </div>
 
     <script>
         // Form animation and validation
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('loginForm');
             const submitBtn = document.getElementById('submitBtn');
             const inputs = document.querySelectorAll('.form-input');
 
             // Add input animation effects
             inputs.forEach(input => {
-                input.addEventListener('focus', function() {
+                input.addEventListener('focus', function () {
                     this.parentElement.style.transform = 'scale(1.02)';
                 });
 
-                input.addEventListener('blur', function() {
+                input.addEventListener('blur', function () {
                     this.parentElement.style.transform = 'scale(1)';
                 });
 
                 // Real-time validation feedback
-                input.addEventListener('input', function() {
+                input.addEventListener('input', function () {
                     const errorElement = document.getElementById(this.name + 'Error');
                     if (this.value.length > 0) {
                         errorElement.classList.remove('show');
@@ -455,7 +473,7 @@
             });
 
             // Form submission with animation
-            form.addEventListener('submit', function(e) {
+            form.addEventListener('submit', function (e) {
                 const username = form.username.value.trim();
                 const password = form.password.value.trim();
 
@@ -468,12 +486,12 @@
 
                 // Basic validation
                 if (!username) {
-                    showError('usernameError', 'يرجى إدخال اسم المستخدم');
+                    showError('usernameError', '{{ __('messages.please_enter_username') }}');
                     hasError = true;
                 }
 
                 if (!password) {
-                    showError('passwordError', 'يرجى إدخال كلمة المرور');
+                    showError('passwordError', '{{ __('messages.please_enter_password') }}');
                     hasError = true;
                 }
 
@@ -495,12 +513,12 @@
             // Add some interactive hover effects to floating shapes
             const shapes = document.querySelectorAll('.floating-shape');
             shapes.forEach(shape => {
-                shape.addEventListener('mouseenter', function() {
+                shape.addEventListener('mouseenter', function () {
                     this.style.opacity = '0.3';
                     this.style.transform = 'scale(1.2)';
                 });
 
-                shape.addEventListener('mouseleave', function() {
+                shape.addEventListener('mouseleave', function () {
                     this.style.opacity = '0.1';
                     this.style.transform = 'scale(1)';
                 });
@@ -508,4 +526,5 @@
         });
     </script>
 </body>
+
 </html>

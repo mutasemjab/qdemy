@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 @section('title')
-    Contact Us
+    {{ __('messages.contact_us') }}
 @endsection
 
 
 @section('contentheaderactive')
-    show
+    {{ __('messages.View') }}
 @endsection
 
 
@@ -13,7 +13,7 @@
 @section('content')
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title card_title_center"> Contact US </h3>
+            <h3 class="card-title card_title_center"> {{ __('messages.contact_us') }} </h3>
 
 
         </div>
@@ -30,11 +30,11 @@
                 <table id="example2" class="table table-bordered table-hover">
                     <thead class="custom_thead">
 
-                        <th>name </th>
-                        <th> email </th>
-                        <th> mobile </th>
-                        <th>subject</th>
-                        <th>message</th>
+                        <th>{{ __('messages.Name') }} </th>
+                        <th> {{ __('messages.Email') }} </th>
+                        <th> {{ __('messages.Phone') }} </th>
+                        <th>{{ __('messages.subject') }}</th>
+                        <th>{{ __('messages.message') }}</th>
 
                     </thead>
                     <tbody>
@@ -56,7 +56,8 @@
                 {{ $data->links() }}
             @else
                 <div class="alert alert-danger">
-                    there is no data found !! </div>
+                    {{ __('messages.No_data') }}
+                </div>
             @endif
 
         </div>

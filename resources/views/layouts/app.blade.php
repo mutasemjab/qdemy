@@ -86,9 +86,13 @@
 
     <!-- <script src="{{ asset('assets_front/js/app.js') }}"></script> -->
     <script>
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            document.getElementById('navMenu').classList.toggle('active');
-        });
+        var menuToggle = document.getElementById('menuToggle');
+        var navMenu = document.getElementById('navMenu');
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+        }
     </script>
 
     <script>
@@ -104,115 +108,142 @@
         document.querySelectorAll('.media-video').forEach(video => {
             video.addEventListener('click', () => {
                 const popup = document.querySelector('.video-popup');
-                const iframe = popup.querySelector('iframe');
-                iframe.src = video.getAttribute('data-video') + "?autoplay=1";
-                popup.classList.add('active');
+                if (popup) {
+                    const iframe = popup.querySelector('iframe');
+                    if (iframe) {
+                        iframe.src = video.getAttribute('data-video') + "?autoplay=1";
+                        popup.classList.add('active');
+                    }
+                }
             });
         });
 
         // غلق الفيديو
-        document.querySelector('.video-popup .close-btn').addEventListener('click', () => {
-            const popup = document.querySelector('.video-popup');
-            const iframe = popup.querySelector('iframe');
-            iframe.src = '';
-            popup.classList.remove('active');
-        });
-
-        document.querySelector('.video-popup').addEventListener('click', (e) => {
-            if (e.target.classList.contains('video-popup')) {
+        var videoPopupCloseBtn = document.querySelector('.video-popup .close-btn');
+        if (videoPopupCloseBtn) {
+            videoPopupCloseBtn.addEventListener('click', () => {
                 const popup = document.querySelector('.video-popup');
-                const iframe = popup.querySelector('iframe');
-                iframe.src = '';
-                popup.classList.remove('active');
-            }
-        });
+                if (popup) {
+                    const iframe = popup.querySelector('iframe');
+                    if (iframe) iframe.src = '';
+                    popup.classList.remove('active');
+                }
+            });
+        }
+
+        var videoPopup = document.querySelector('.video-popup');
+        if (videoPopup) {
+            videoPopup.addEventListener('click', (e) => {
+                if (e.target.classList.contains('video-popup')) {
+                    const iframe = videoPopup.querySelector('iframe');
+                    if (iframe) iframe.src = '';
+                    videoPopup.classList.remove('active');
+                }
+            });
+        }
 
         // فتح الصورة
         document.querySelectorAll('.media-image img').forEach(img => {
             img.addEventListener('click', () => {
                 const popup = document.querySelector('.image-popup');
-                const popupImg = popup.querySelector('img');
-                popupImg.src = img.src;
-                popup.classList.add('active');
+                if (popup) {
+                    const popupImg = popup.querySelector('img');
+                    if (popupImg) {
+                        popupImg.src = img.src;
+                        popup.classList.add('active');
+                    }
+                }
             });
         });
 
         // غلق الصورة
-        document.querySelector('.image-popup .close-btn').addEventListener('click', () => {
-            document.querySelector('.image-popup').classList.remove('active');
-        });
+        var imagePopupCloseBtn = document.querySelector('.image-popup .close-btn');
+        if (imagePopupCloseBtn) {
+            imagePopupCloseBtn.addEventListener('click', () => {
+                const popup = document.querySelector('.image-popup');
+                if (popup) popup.classList.remove('active');
+            });
+        }
 
-        document.querySelector('.image-popup').addEventListener('click', (e) => {
-            if (e.target.classList.contains('image-popup')) {
-                document.querySelector('.image-popup').classList.remove('active');
-            }
-        });
+        var imagePopup = document.querySelector('.image-popup');
+        if (imagePopup) {
+            imagePopup.addEventListener('click', (e) => {
+                if (e.target.classList.contains('image-popup')) {
+                    imagePopup.classList.remove('active');
+                }
+            });
+        }
     </script>
 
     <script>
         const track = document.querySelector('.carousel-track');
-        let slides = Array.from(document.querySelectorAll('.carousel-slide'));
-        const prevBtn = document.querySelector('.carousel-btn.prev');
-        const nextBtn = document.querySelector('.carousel-btn.next');
-        let autoSlide;
+        if (track) {
+            let slides = Array.from(document.querySelectorAll('.carousel-slide'));
+            const prevBtn = document.querySelector('.carousel-btn.prev');
+            const nextBtn = document.querySelector('.carousel-btn.next');
+            let autoSlide;
 
-        function setActive() {
-            slides.forEach(slide => slide.classList.remove('active'));
-            slides[1].classList.add('active'); // العنصر الأوسط دايمًا
-        }
+            function setActive() {
+                slides.forEach(slide => slide.classList.remove('active'));
+                if (slides[1]) slides[1].classList.add('active');
+            }
 
-        function moveNext() {
-            track.style.transition = 'transform 0.5s ease';
-            track.style.transform = 'translateX(-33.33%)';
+            function moveNext() {
+                track.style.transition = 'transform 0.5s ease';
+                track.style.transform = 'translateX(-33.33%)';
 
-            track.addEventListener('transitionend', () => {
-                track.style.transition = 'none'; // نوقف الأنيميشن
-                track.appendChild(slides[0]); // أول عنصر يروح آخر التراك
+                track.addEventListener('transitionend', () => {
+                    track.style.transition = 'none';
+                    track.appendChild(slides[0]);
+                    slides = Array.from(document.querySelectorAll('.carousel-slide'));
+                    track.style.transform = 'translateX(0)';
+                    requestAnimationFrame(() => {
+                        setActive();
+                    });
+                }, {
+                    once: true
+                });
+            }
+
+            function movePrev() {
+                track.style.transition = 'none';
+                track.insertBefore(slides[slides.length - 1], slides[0]);
                 slides = Array.from(document.querySelectorAll('.carousel-slide'));
-                track.style.transform = 'translateX(0)'; // نرجع للوضع الطبيعي
-                requestAnimationFrame(() => { // نضمن تحديث الـ DOM قبل إضافة الأنيميشن من جديد
+                track.style.transform = 'translateX(-33.33%)';
+
+                requestAnimationFrame(() => {
+                    track.style.transition = 'transform 0.5s ease';
+                    track.style.transform = 'translateX(0)';
                     setActive();
                 });
-            }, {
-                once: true
-            });
-        }
+            }
 
-        function movePrev() {
-            track.style.transition = 'none';
-            track.insertBefore(slides[slides.length - 1], slides[0]); // آخر عنصر ييجي الأول
-            slides = Array.from(document.querySelectorAll('.carousel-slide'));
-            track.style.transform = 'translateX(-33.33%)';
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    moveNext();
+                    resetAutoSlide();
+                });
+            }
 
-            requestAnimationFrame(() => {
-                track.style.transition = 'transform 0.5s ease';
-                track.style.transform = 'translateX(0)';
-                setActive();
-            });
-        }
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    movePrev();
+                    resetAutoSlide();
+                });
+            }
 
+            function startAutoSlide() {
+                autoSlide = setInterval(moveNext, 5000);
+            }
 
-        nextBtn.addEventListener('click', () => {
-            moveNext();
-            resetAutoSlide();
-        });
+            function resetAutoSlide() {
+                clearInterval(autoSlide);
+                startAutoSlide();
+            }
 
-        prevBtn.addEventListener('click', () => {
-            movePrev();
-            resetAutoSlide();
-        });
-
-        function startAutoSlide() {
-            autoSlide = setInterval(moveNext, 5000);
-        }
-
-        function resetAutoSlide() {
-            clearInterval(autoSlide);
+            setActive();
             startAutoSlide();
         }
-
-        setActive();
-        startAutoSlide();
     </script>
 
     <script>
@@ -226,37 +257,47 @@
 
         // Video Popup
         const popup = document.querySelector('.video-popup');
-        const iframe = popup.querySelector('iframe');
-        const closeBtn = popup.querySelector('.close-popup');
+        if (popup) {
+            const iframe = popup.querySelector('iframe');
+            const closeBtn = popup.querySelector('.close-popup');
 
-        document.querySelectorAll('.lesson-video').forEach(video => {
-            video.addEventListener('click', () => {
-                iframe.src = video.dataset.video + "?autoplay=1";
-                popup.classList.add('active');
+            document.querySelectorAll('.lesson-video').forEach(video => {
+                video.addEventListener('click', () => {
+                    if (iframe) iframe.src = video.dataset.video + "?autoplay=1";
+                    popup.classList.add('active');
+                });
             });
-        });
 
-        closeBtn.addEventListener('click', () => {
-            iframe.src = '';
-            popup.classList.remove('active');
-        });
-
-        popup.addEventListener('click', (e) => {
-            if (e.target === popup) {
-                iframe.src = '';
-                popup.classList.remove('active');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (iframe) iframe.src = '';
+                    popup.classList.remove('active');
+                });
             }
-        });
+
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    if (iframe) iframe.src = '';
+                    popup.classList.remove('active');
+                }
+            });
+        }
 
         const accordionItems = document.querySelectorAll('.accordion-item');
-        accordionItems[accordionItems.length - 1].classList.add('active');
+        if (accordionItems.length > 0) {
+            accordionItems[accordionItems.length - 1].classList.add('active');
+        }
 
         document.querySelectorAll('.playable').forEach(video => {
             video.addEventListener('click', () => {
                 const popup = document.querySelector('.video-popup');
-                const iframe = popup.querySelector('iframe');
-                iframe.src = video.getAttribute('data-video') + "?autoplay=1";
-                popup.classList.add('active');
+                if (popup) {
+                    const iframe = popup.querySelector('iframe');
+                    if (iframe) {
+                        iframe.src = video.getAttribute('data-video') + "?autoplay=1";
+                        popup.classList.add('active');
+                    }
+                }
             });
         });
     </script>
@@ -318,6 +359,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var prevBtn = block.querySelector(".fm3d-nav-prev");
     var nextBtn = block.querySelector(".fm3d-nav-next");
     var modal = document.getElementById("fm3dVideoModal");
+
+    if (!modal) return;
+
     var modalIframe = modal.querySelector(".fm3d-video-iframe");
     var modalPrev = modal.querySelector(".fm3d-video-modal-prev");
     var modalNext = modal.querySelector(".fm3d-video-modal-next");
@@ -919,9 +963,13 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   const viewport=document.querySelector('.x3c-viewport');
+  if(!viewport)return;
+
   const rail=viewport.querySelector('.x3c-rail');
   const left=viewport.querySelector('.x3c-left');
   const right=viewport.querySelector('.x3c-right');
+
+  if(!rail)return;
 
   let baseCells=Array.from(rail.children);
   if(!baseCells.length)return;

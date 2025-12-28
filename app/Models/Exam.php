@@ -46,6 +46,14 @@ class Exam extends Model
     }
 
     /**
+     * Get the course content (lesson) that owns the exam
+     */
+    public function courseContent()
+    {
+        return $this->belongsTo(CourseContent::class);
+    }
+
+    /**
      * Get the user who created this exam (teacher)
      */
     public function creator()

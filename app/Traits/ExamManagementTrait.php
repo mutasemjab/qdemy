@@ -331,6 +331,7 @@ trait ExamManagementTrait
             'subject_id' => ($subjectIdRequired ? 'required' : 'nullable') . '|exists:subjects,id',
             'course_id' => 'nullable|exists:courses,id',
             'section_id' => 'nullable|exists:course_sections,id',
+            'course_content_id' => 'nullable|exists:course_contents,id',
             'duration_minutes' => 'nullable|integer|min:1',
             'attempts_allowed' => 'required|integer|min:1|max:10',
             'passing_grade' => 'required|numeric|min:0|max:100',
@@ -343,6 +344,20 @@ trait ExamManagementTrait
         ];
 
         $validator = Validator::make($request->all(), $rules);
+
+        // Custom validation: If course_content_id is provided, ensure it belongs to the selected section
+        $validator->after(function ($validator) use ($request) {
+            if ($request->filled('course_content_id') && $request->filled('section_id')) {
+                $contentExists = DB::table('course_contents')
+                    ->where('id', $request->course_content_id)
+                    ->where('section_id', $request->section_id)
+                    ->exists();
+
+                if (!$contentExists) {
+                    $validator->errors()->add('course_content_id', __('messages.lesson_must_belong_to_selected_section'));
+                }
+            }
+        });
 
         // Debug: Log validation errors if any
         if ($validator->fails()) {
@@ -397,7 +412,7 @@ trait ExamManagementTrait
     {
         $data = $request->only([
             'title_en', 'title_ar', 'description_en', 'description_ar',
-            'subject_id', 'course_id', 'section_id', 'duration_minutes',
+            'subject_id', 'course_id', 'section_id', 'course_content_id', 'duration_minutes',
             'attempts_allowed', 'passing_grade', 'start_date', 'end_date',
             'shuffle_questions', 'shuffle_options', 'show_results_immediately',
             'is_active'

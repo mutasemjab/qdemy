@@ -1,33 +1,40 @@
 <?php
+
 namespace App\Services;
+
 use Bunny\Storage\Client;
-use GuzzleHttp\Client as HttpClient;
-use Bunny\Storage\Region;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
-class Bunny{
+class Bunny
+{
 
     private $storageClient;
     private $bunny_storage_password;
-    private $bunny_account_api_key;
-    private $bunny_storage_zone;
-    private $bunny_region;
+    private $secret;
+    private $storage_zone;
+    private $region;
+    private $baseUrl;
+    public $client;
 
     public function __construct()
     {
         $this->bunny_storage_password = env('BUNNY_STORAGE_PASSWORD');
-        $this->bunny_account_api_key  = env('BUNNY_ACCOUNT_API_KEY','2627243e-e4e8-442d-9bb4-9a708a61538309b0bdec-1361-44f8-9dc0-05c1f22d3b77');
-        $this->bunny_storage_zone     = env('BUNNY_STORAGE_ZONE');
-        $this->bunny_region           = env('BUNNY_REGION');
-       
-        // Make sure region is properly set - use Region enum if available
-        $region = $this->bunny_region;
-        
+        $this->secret  = config('bunny.secret');
+        $this->storage_zone     = config('bunny.storage_zone');
+        $this->region           = config('bunny.region');
+        $this->baseUrl = config('bunny.base_url');
+
+        $this->client = Http::baseUrl($this->baseUrl)->withToken($this->secret)->withHeaders([
+            'accept' => 'application/json',
+            'content-type' => 'application/json',
+        ]);
+
         $this->storageClient = new Client(
             $this->bunny_storage_password,
-            $this->bunny_storage_zone,
-            $region,
+            $this->storage_zone,
+            $this->region,
         );
     }
 
@@ -45,8 +52,8 @@ class Bunny{
      * رفع وحفظ الفيديو لمسار محدد
      * @param $file   = the file to upload
      * @param $folder = the path to save to - default = upload
-    */
-    public function upload($file,$folder = 'upload',$options = [])
+     */
+    public function upload($file, $folder = 'upload', $options = [])
     {
         $originalName = $file->getClientOriginalName();
         $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
@@ -82,19 +89,18 @@ class Bunny{
                 }
 
                 Log::info('Upload attempt', ['attempt' => $retryCount + 1, 'file_path' => $filePath]);
-                
+
                 $upload = $this->storageClient->upload($file->getPathname(), $filePath);
 
                 if ($upload) {
                     Log::info('Upload successful', ['file_path' => $filePath]);
                     break;
                 }
-
             } catch (\Exception $uploadException) {
                 $lastException = $uploadException;
                 $errorMessage = $this->parseErrorMessage($uploadException->getMessage(), $uploadException->getCode());
                 $retryCount++;
-                
+
                 Log::warning('Upload attempt failed', [
                     'attempt' => $retryCount,
                     'error' => $uploadException->getMessage(),
@@ -127,7 +133,7 @@ class Bunny{
                 'retries' => $retryCount,
                 'last_exception' => $lastException ? $lastException->getMessage() : 'Unknown error'
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => __('فشل رفع الملف') . ($lastException ? ': ' . $this->parseErrorMessage($lastException->getMessage(), $lastException->getCode()) : '')
@@ -137,11 +143,12 @@ class Bunny{
 
     /**
      * حذف الملف من المسار المحفوظ ف الداتا بيس
-    */
-    public function delete($video_url) {
+     */
+    public function delete($video_url)
+    {
         try {
             $fileExists = $this->exists($video_url);
-            if($fileExists){
+            if ($fileExists) {
                 $result = $this->storageClient->delete($video_url);
                 Log::info('File deleted', ['file_path' => $video_url, 'result' => $result]);
                 return $result;
@@ -159,12 +166,12 @@ class Bunny{
 
     /**
      * التأكد من وجود ملف ف مسار محدد
-    */
+     */
     public function exists($fullPath)
     {
         try {
             $client = new \GuzzleHttp\Client();
-            $response = $client->request('GET', 'https://storage.bunnycdn.com/'.$this->bunny_storage_zone.'/'.$fullPath, [
+            $response = $client->request('GET', 'https://storage.bunnycdn.com/' . $this->storage_zone . '/' . $fullPath, [
                 'headers' => [
                     'AccessKey' => $this->bunny_storage_password,
                     'accept' => '*/*',
@@ -173,14 +180,14 @@ class Bunny{
                 'timeout' => 30,
                 'connect_timeout' => 10,
             ]);
-            
+
             $exists = $response->getStatusCode() === 200;
             Log::info('File existence check', [
                 'file_path' => $fullPath,
                 'exists' => $exists,
                 'status_code' => $response->getStatusCode()
             ]);
-            
+
             return $exists;
         } catch (\Exception $e) {
             Log::error('Error checking file existence', [
@@ -198,7 +205,7 @@ class Bunny{
     {
         try {
             $client = new \GuzzleHttp\Client();
-            $response = $client->request('GET', 'https://storage.bunnycdn.com/'.$this->bunny_storage_zone.'/'.$fullPath, [
+            $response = $client->request('GET', 'https://storage.bunnycdn.com/' . $this->storage_zone . '/' . $fullPath, [
                 'headers' => [
                     'AccessKey' => $this->bunny_storage_password,
                     'accept' => '*/*',
@@ -206,11 +213,11 @@ class Bunny{
                 'timeout' => 60,
                 'connect_timeout' => 10,
             ]);
-            
+
             if ($response->getStatusCode() === 200) {
                 return $response->getBody()->getContents();
             }
-            
+
             return null;
         } catch (\Exception $e) {
             Log::error('Error getting file content', [
@@ -220,17 +227,17 @@ class Bunny{
             return null;
         }
     }
-    
+
     /**
      * حذف كل الملفات ف مسار محدد ف مسار محدد
-    */
-    public function deleteFiles($directoryPath) 
+     */
+    public function deleteFiles($directoryPath)
     {
         try {
             $files = $this->storageClient->listFiles($directoryPath);
-            if($files && count($files)){
+            if ($files && count($files)) {
                 foreach ($files as $file) {
-                    $this->storageClient->delete($directoryPath . '/' .$file->ObjectName);
+                    $this->storageClient->delete($directoryPath . '/' . $file->ObjectName);
                 }
             }
             Log::info('Directory files deleted', ['directory' => $directoryPath]);
@@ -241,10 +248,10 @@ class Bunny{
             ]);
         }
     }
-    
+
     /**
      * تحليل رسائل الأخطاء وتحويلها لرسائل مفهومة
-    */
+     */
     private function parseErrorMessage($message, $code)
     {
         $errorMappings = [

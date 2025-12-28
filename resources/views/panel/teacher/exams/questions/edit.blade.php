@@ -2,480 +2,383 @@
 
 @section('title', __('panel.edit_question'))
 
-@section('page_title', __('panel.edit_question'))
-
-@section('styles')
-<style>
-    .form-section {
-        background: #f8f9fa;
-        border-radius: 10px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    .form-section h5 {
-        color: #495057;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1rem;
-    }
-    .required::after {
-        content: " *";
-        color: #dc3545;
-    }
-    .option-item {
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 10px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-    }
-</style>
-@endsection
-
 @section('content')
-<div class="container-fluid">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="text-dark fw-bold">{{ __('panel.edit_question') }}</h2>
-            <p class="text-muted">
-                {{ __('panel.exam') }}: {{ app()->getLocale() == 'ar' ? $exam->title_ar : $exam->title_en }}
-            </p>
+<section class="ud-wrap">
+    <aside class="ud-menu">
+        <div class="ud-user">
+            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <div>
+                <h3>{{ auth()->user()->name }}</h3>
+                <span>{{ auth()->user()->email }}</span>
+            </div>
         </div>
-        <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>{{ __('panel.back_to_questions') }}
+        <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="ud-item">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>{{ __('panel.back_to_questions') }}</span>
         </a>
-    </div>
+    </aside>
 
-    <form action="{{ route('teacher.exams.exam_questions.update', [$exam, $question]) }}" method="POST" id="questionForm" enctype="multipart/form-data">
-        @csrf
-        @method('PUT')
-        
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <!-- Question Title English -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="title_en" class="form-label required">{{ __('panel.question_title_en') }}</label>
-                            <input type="text" 
-                                   class="form-control @error('title_en') is-invalid @enderror" 
-                                   id="title_en" 
-                                   name="title_en" 
-                                   value="{{ old('title_en', $question->title_en) }}" 
-                                   placeholder="{{ __('panel.enter_question_title_en') }}">
-                            @error('title_en')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+    <div class="ud-content">
+        <div class="ud-panel show">
+            <div class="ud-title">{{ __('panel.edit_question') }}</div>
+            <p class="ud-subtitle">{{ app()->getLocale() === 'ar' ? $exam->title_ar : $exam->title_en }}</p>
+
+            <form action="{{ route('teacher.exams.exam_questions.update', [$exam, $question]) }}" method="POST" id="questionForm" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <div class="section-title">{{ __('panel.basic_information') }}</div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="title_en">{{ __('panel.question_title_en') }} *</label>
+                            <input type="text" id="title_en" name="title_en" value="{{ old('title_en', $question->title_en) }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="title_ar">{{ __('panel.question_title_ar') }} *</label>
+                            <input type="text" id="title_ar" name="title_ar" value="{{ old('title_ar', $question->title_ar) }}" dir="rtl" required>
                         </div>
                     </div>
 
-                    <!-- Question Title Arabic -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="title_ar" class="form-label required">{{ __('panel.question_title_ar') }}</label>
-                            <input type="text" 
-                                   class="form-control @error('title_ar') is-invalid @enderror" 
-                                   id="title_ar" 
-                                   name="title_ar" 
-                                   value="{{ old('title_ar', $question->title_ar) }}" 
-                                   placeholder="{{ __('panel.enter_question_title_ar') }}"
-                                   dir="rtl">
-                            @error('title_ar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="question_en">{{ __('panel.question_text_en') }} *</label>
+                            <textarea id="question_en" name="question_en" rows="4" required>{{ old('question_en', $question->question_en) }}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="question_ar">{{ __('panel.question_text_ar') }} *</label>
+                            <textarea id="question_ar" name="question_ar" rows="4" dir="rtl" required>{{ old('question_ar', $question->question_ar) }}</textarea>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Question Text English -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="question_en" class="form-label required">{{ __('panel.question_text_en') }}</label>
-                            <textarea class="form-control @error('question_en') is-invalid @enderror" 
-                                      id="question_en" 
-                                      name="question_en" 
-                                      rows="4" 
-                                      placeholder="{{ __('panel.enter_question_text_en') }}">{{ old('question_en', $question->question_en) }}</textarea>
-                            @error('question_en')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
+                <!-- Question Settings -->
+                <div class="form-section">
+                    <div class="section-title">{{ __('panel.question_settings') }}</div>
 
-                    <!-- Question Text Arabic -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="question_ar" class="form-label required">{{ __('panel.question_text_ar') }}</label>
-                            <textarea class="form-control @error('question_ar') is-invalid @enderror" 
-                                      id="question_ar" 
-                                      name="question_ar" 
-                                      rows="4" 
-                                      placeholder="{{ __('panel.enter_question_text_ar') }}"
-                                      dir="rtl">{{ old('question_ar', $question->question_ar) }}</textarea>
-                            @error('question_ar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Course (Auto-filled from exam) -->
-                    <div class="col-md-4">
-                        <div class="form-group mb-3">
-                            <label for="course_id" class="form-label">{{ __('panel.course') }}</label>
-                            <input type="hidden" name="course_id" value="{{ $exam->course_id }}">
-                            <input type="text" class="form-control" 
-                                   value="{{ $exam->course ? (app()->getLocale() === 'ar' ? $exam->course->title_ar : $exam->course->title_en) : __('panel.no_course_assigned') }}" 
-                                   readonly>
-                            <small class="text-muted">{{ __('panel.auto_assigned_from_exam') }}</small>
-                        </div>
-                    </div>
-
-                    <!-- Question Type -->
-                    <div class="col-md-4">
-                        <div class="form-group mb-3">
-                            <label for="type" class="form-label required">{{ __('panel.question_type') }}</label>
-                            <select class="form-control @error('type') is-invalid @enderror" 
-                                    id="type" 
-                                    name="type"
-                                    onchange="toggleQuestionType()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="type">{{ __('panel.question_type') }} *</label>
+                            <select id="type" name="type" required>
                                 <option value="">{{ __('panel.select_question_type') }}</option>
-                                <option value="multiple_choice" {{ old('type', $question->type) == 'multiple_choice' ? 'selected' : '' }}>
+                                <option value="multiple_choice" {{ old('type', $question->type) === 'multiple_choice' ? 'selected' : '' }}>
                                     {{ __('panel.multiple_choice') }}
                                 </option>
-                                <option value="true_false" {{ old('type', $question->type) == 'true_false' ? 'selected' : '' }}>
+                                <option value="true_false" {{ old('type', $question->type) === 'true_false' ? 'selected' : '' }}>
                                     {{ __('panel.true_false') }}
                                 </option>
-                                <option value="essay" {{ old('type', $question->type) == 'essay' ? 'selected' : '' }}>
+                                <option value="essay" {{ old('type', $question->type) === 'essay' ? 'selected' : '' }}>
                                     {{ __('panel.essay') }}
                                 </option>
                             </select>
-                            @error('type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="grade">{{ __('panel.grade') }} *</label>
+                            <input type="number" id="grade" name="grade" value="{{ old('grade', $question->grade) }}" step="1" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="photo">{{ __('panel.photo') }}</label>
+                            <input type="file" id="photo" name="photo" accept="image/*">
+                            <small class="form-text">JPG, PNG, GIF</small>
                         </div>
                     </div>
 
-                    <!-- Grade -->
-                    <div class="col-md-4">
-                        <div class="form-group mb-3">
-                            <label for="grade" class="form-label required">{{ __('panel.grade') }}</label>
-                            <input type="number"
-                                   class="form-control @error('grade') is-invalid @enderror"
-                                   id="grade"
-                                   name="grade"
-                                   value="{{ old('grade', $question->grade) }}"
-                                   step="0.25"
-                                   min="0.25"
-                                   placeholder="1.00">
-                            @error('grade')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    @if($question->photo)
+                        <div class="photo-preview">
+                            <p class="preview-label">{{ __('panel.current_photo') }}:</p>
+                            <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}" alt="{{ $question->title_en }}" class="preview-image">
                         </div>
-                    </div>
+                    @endif
 
-                    <!-- Photo -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="photo" class="form-label">{{ __('panel.photo') ?? __('messages.photo') }}</label>
-                            @if($question->photo)
-                                <div class="mb-2">
-                                    <p class="text-muted small"><strong>{{ __('panel.current_photo') ?? __('messages.current_photo') }}:</strong></p>
-                                    <img src="{{ asset('assets/admin/uploads/' . $question->photo) }}"
-                                         alt="{{ $question->title_en }}"
-                                         style="max-width: 100px; max-height: 100px; border-radius: 5px;">
-                                </div>
-                            @endif
-                            <input type="file" class="form-control @error('photo') is-invalid @enderror"
-                                   id="photo" name="photo" accept="image/*">
-                            @error('photo')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <small class="form-text text-muted">{{ __('panel.supported_formats_jpg_png_gif') ?? __('messages.supported_formats_jpg_png_gif') }}</small>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="explanation_en">{{ __('panel.explanation_en') }}</label>
+                            <textarea id="explanation_en" name="explanation_en" rows="3">{{ old('explanation_en', $question->explanation_en) }}</textarea>
                         </div>
-                    </div>
-
-                    <!-- Explanation English -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="explanation_en" class="form-label">{{ __('panel.explanation_en') }}</label>
-                            <textarea class="form-control @error('explanation_en') is-invalid @enderror" 
-                                      id="explanation_en" 
-                                      name="explanation_en" 
-                                      rows="3" 
-                                      placeholder="{{ __('panel.enter_explanation_en') }}">{{ old('explanation_en', $question->explanation_en) }}</textarea>
-                            @error('explanation_en')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <!-- Explanation Arabic -->
-                    <div class="col-md-6">
-                        <div class="form-group mb-3">
-                            <label for="explanation_ar" class="form-label">{{ __('panel.explanation_ar') }}</label>
-                            <textarea class="form-control @error('explanation_ar') is-invalid @enderror" 
-                                      id="explanation_ar" 
-                                      name="explanation_ar" 
-                                      rows="3" 
-                                      placeholder="{{ __('panel.enter_explanation_ar') }}"
-                                      dir="rtl">{{ old('explanation_ar', $question->explanation_ar) }}</textarea>
-                            @error('explanation_ar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                        <div class="form-group">
+                            <label for="explanation_ar">{{ __('panel.explanation_ar') }}</label>
+                            <textarea id="explanation_ar" name="explanation_ar" rows="3" dir="rtl">{{ old('explanation_ar', $question->explanation_ar) }}</textarea>
                         </div>
                     </div>
                 </div>
 
                 <!-- Multiple Choice Options -->
-                <div id="multiple-choice-options" class="row" style="display: none;">
-                    <div class="col-12">
-                        <h5 class="text-primary mb-3">{{ __('panel.answer_options') }}</h5>
-                        <div id="options-container">
-                            <!-- Options will be loaded from existing data or added dynamically -->
-                        </div>
-                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addOption()">
-                            <i class="fas fa-plus"></i> {{ __('panel.add_option') }}
-                        </button>
-                    </div>
+                <div id="multiple-choice-section" class="form-section" style="display:none">
+                    <div class="section-title">{{ __('panel.answer_options') }}</div>
+                    <div id="options-container"></div>
+                    <button type="button" class="btn btn-outline-secondary" onclick="addOption()">
+                        <i class="fa-solid fa-plus"></i>{{ __('panel.add_option') }}
+                    </button>
                 </div>
 
                 <!-- True/False Options -->
-                <div id="true-false-options" class="row" style="display: none;">
-                    <div class="col-12">
-                        <h5 class="text-primary mb-3">{{ __('panel.correct_answer') }}</h5>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="true_false_answer" 
-                                   id="answer_true" value="1" 
-                                   {{ old('true_false_answer', $question->type == 'true_false' && $question->options && $question->options->first() && $question->options->first()->is_correct ? '1' : '') == '1' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="answer_true">
-                                <span class="badge bg-success">{{ __('panel.true') }}</span>
-                            </label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="true_false_answer" 
-                                   id="answer_false" value="0" 
-                                   {{ old('true_false_answer', $question->type == 'true_false' && $question->options && $question->options->count() > 1 && $question->options->skip(1)->first() && $question->options->skip(1)->first()->is_correct ? '0' : '') == '0' ? 'checked' : '' }}>
-                            <label class="form-check-label" for="answer_false">
-                                <span class="badge bg-danger">{{ __('panel.false') }}</span>
-                            </label>
-                        </div>
-                        @error('true_false_answer')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
+                <div id="true-false-section" class="form-section" style="display:none">
+                    <div class="section-title">{{ __('panel.correct_answer') }}</div>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="true_false_answer" value="1">
+                            <span class="badge badge-success">{{ __('panel.true') }}</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="true_false_answer" value="0">
+                            <span class="badge badge-danger">{{ __('panel.false') }}</span>
+                        </label>
                     </div>
                 </div>
 
                 <!-- Essay Note -->
-                <div id="essay-note" class="row" style="display: none;">
-                    <div class="col-12">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle"></i>
-                            {{ __('panel.essay_question_note') }}
-                        </div>
+                <div id="essay-section" class="form-section" style="display:none">
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-info-circle"></i>
+                        {{ __('panel.essay_question_note') }}
                     </div>
                 </div>
-            </div>
 
-            <div class="card-footer">
-                <div class="d-flex justify-content-between">
+                <!-- Form Actions -->
+                <div class="form-actions">
                     <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="btn btn-secondary">
                         {{ __('panel.cancel') }}
                     </a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> {{ __('panel.update_question') }}
+                        <i class="fa-solid fa-save"></i>{{ __('panel.update_question') }}
                     </button>
                 </div>
-            </div>
+            </form>
         </div>
-    </form>
-</div>
+    </div>
+</section>
+@endsection
 
+@section('styles')
+<style>
+.ud-wrap{display:grid;grid-template-columns:320px 1fr;gap:24px;padding:16px 0}
+.ud-menu{margin:10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
+.ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
+.ud-user h3{font-size:16px;margin:0 0 2px 0}
+.ud-user span{font-size:12px;color:#6b7280}
+.ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
+.ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
+.ud-content{min-width:0}
+.ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
+.ud-title{font-size:20px;font-weight:900;margin-bottom:8px;color:#0f172a}
+.ud-subtitle{font-size:13px;color:#6b7280;margin:0 0 20px 0}
+
+.form-section{margin-bottom:24px}
+.section-title{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
+.form-group label{font-weight:800;color:#0f172a;font-size:14px}
+.form-group .form-text{color:#6b7280;font-size:12px}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #d1d5db;border-radius:10px;padding:12px 14px;font-size:14px;background:#fff;transition:border-color .16s,box-shadow .16s;font-family:inherit}
+.form-group textarea{min-height:80px;resize:vertical}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
+
+.photo-preview{margin:16px 0;padding:12px;background:#f9fafb;border-radius:10px}
+.preview-label{font-size:12px;font-weight:700;color:#6b7280;margin:0 0 8px 0}
+.preview-image{max-width:100px;max-height:100px;border-radius:8px;border:1px solid #d1d5db}
+
+.radio-group{display:flex;gap:20px;margin-top:12px}
+.radio-label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:#0f172a}
+.radio-label input[type="radio"]{cursor:pointer;width:18px;height:18px;margin:0}
+.badge{font-size:12px;font-weight:700;padding:6px 12px;border-radius:6px}
+.badge-success{background:#dcfce7;color:#15803d}
+.badge-danger{background:#fee2e2;color:#dc2626}
+
+.option-item{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:16px}
+.option-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.option-header h6{font-size:14px;font-weight:700;color:#0f172a;margin:0}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
+.btn-primary{background:#0055D2;color:#fff}
+.btn-primary:hover{background:#0047b3;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,85,210,.18)}
+.btn-secondary{background:#111827;color:#fff}
+.btn-secondary:hover{background:#0f172a;transform:translateY(-1px)}
+.btn-outline-secondary{border:1px solid #d1d5db;color:#374151;background:#fff}
+.btn-outline-secondary:hover{background:#f9fafb;border-color:#9ca3af}
+.btn-outline-danger{border:1px solid #fecaca;color:#dc2626;background:#fff;padding:6px 10px;font-size:12px}
+.btn-outline-danger:hover{background:#fee2e2}
+
+.alert{padding:12px 16px;border-radius:10px;margin-bottom:16px;border:1px solid transparent}
+.alert-info{background:#dbeafe;border-color:#0369a1;color:#0369a1}
+
+.form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid #eef0f3}
+
+@media (max-width:992px){
+  .ud-wrap{grid-template-columns:1fr}
+  .ud-menu{position:static}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+@endsection
+
+@section('scripts')
 <script>
-let optionCount = 0;
-let existingOptions = @json($question->options ?? []);
+let optionCount=0;
+let existingOptions=@json($question->options ?? []);
 
-function toggleQuestionType() {
-    const type = document.getElementById('type').value;
-    const multipleChoiceDiv = document.getElementById('multiple-choice-options');
-    const trueFalseDiv = document.getElementById('true-false-options');
-    const essayDiv = document.getElementById('essay-note');
-    
-    // Hide all option divs
-    multipleChoiceDiv.style.display = 'none';
-    trueFalseDiv.style.display = 'none';
-    essayDiv.style.display = 'none';
-    
-    // Show relevant div
-    if (type === 'multiple_choice') {
-        multipleChoiceDiv.style.display = 'block';
-        if (optionCount === 0) {
-            loadExistingOptions();
+document.addEventListener('DOMContentLoaded',function(){
+  const typeSelect=document.getElementById('type');
+  const multipleChoiceSection=document.getElementById('multiple-choice-section');
+  const trueFalseSection=document.getElementById('true-false-section');
+  const essaySection=document.getElementById('essay-section');
+  const questionForm=document.getElementById('questionForm');
+
+  if(typeSelect){
+    typeSelect.addEventListener('change',function(){
+      const type=this.value;
+      multipleChoiceSection.style.display='none';
+      trueFalseSection.style.display='none';
+      essaySection.style.display='none';
+
+      if(type==='multiple_choice'){
+        multipleChoiceSection.style.display='block';
+        if(optionCount===0){
+          loadExistingOptions();
         }
-    } else if (type === 'true_false') {
-        trueFalseDiv.style.display = 'block';
+      }else if(type==='true_false'){
+        trueFalseSection.style.display='block';
         loadTrueFalseAnswer();
-    } else if (type === 'essay') {
-        essayDiv.style.display = 'block';
-    }
-}
-
-function loadExistingOptions() {
-    const container = document.getElementById('options-container');
-    container.innerHTML = ''; // Clear existing options
-    
-    if (existingOptions && existingOptions.length > 0) {
-        existingOptions.forEach((option, index) => {
-            optionCount++;
-            const optionHtml = `
-                <div class="option-item mb-3 p-3 border rounded" id="option-${optionCount}">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">{{ __('panel.option') }} ${String.fromCharCode(64 + optionCount)}</h6>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOption(${optionCount})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-5">
-                            <label class="form-label">{{ __('panel.option_text_en') }}</label>
-                            <input type="text" class="form-control" name="options[${optionCount-1}][option_en]" 
-                                   value="${option.option_en || ''}" placeholder="{{ __('panel.enter_option_en') }}" required>
-                        </div>
-                        <div class="col-md-5">
-                            <label class="form-label">{{ __('panel.option_text_ar') }}</label>
-                            <input type="text" class="form-control" name="options[${optionCount-1}][option_ar]" 
-                                   value="${option.option_ar || ''}" placeholder="{{ __('panel.enter_option_ar') }}" dir="rtl" required>
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">{{ __('panel.correct') }}</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                       name="options[${optionCount-1}][is_correct]" value="1" 
-                                       id="correct-${optionCount}" ${option.is_correct ? 'checked' : ''}>
-                                <label class="form-check-label" for="correct-${optionCount}">
-                                    {{ __('panel.correct_answer') }}
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <input type="hidden" name="options[${optionCount-1}][id]" value="${option.id || ''}">
-                </div>
-            `;
-            container.insertAdjacentHTML('beforeend', optionHtml);
-        });
-    } else {
-        // Add default 4 options if no existing options
-        for (let i = 0; i < 4; i++) {
-            addOption();
-        }
-    }
-}
-
-function loadTrueFalseAnswer() {
-    if (existingOptions && existingOptions.length >= 2) {
-        const trueOption = existingOptions.find(opt => opt.option_en === 'True' || opt.option_ar === 'صحيح');
-        const falseOption = existingOptions.find(opt => opt.option_en === 'False' || opt.option_ar === 'خطأ');
-        
-        if (trueOption && trueOption.is_correct) {
-            document.getElementById('answer_true').checked = true;
-        } else if (falseOption && falseOption.is_correct) {
-            document.getElementById('answer_false').checked = true;
-        }
-    }
-}
-
-function addOption() {
-    optionCount++;
-    const container = document.getElementById('options-container');
-    const optionHtml = `
-        <div class="option-item mb-3 p-3 border rounded" id="option-${optionCount}">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">{{ __('panel.option') }} ${String.fromCharCode(64 + optionCount)}</h6>
-                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOption(${optionCount})">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <div class="row">
-                <div class="col-md-5">
-                    <label class="form-label">{{ __('panel.option_text_en') }}</label>
-                    <input type="text" class="form-control" name="options[${optionCount-1}][option_en]" 
-                           placeholder="{{ __('panel.enter_option_en') }}" required>
-                </div>
-                <div class="col-md-5">
-                    <label class="form-label">{{ __('panel.option_text_ar') }}</label>
-                    <input type="text" class="form-control" name="options[${optionCount-1}][option_ar]" 
-                           placeholder="{{ __('panel.enter_option_ar') }}" dir="rtl" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">{{ __('panel.correct') }}</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" 
-                               name="options[${optionCount-1}][is_correct]" value="1" 
-                               id="correct-${optionCount}">
-                        <label class="form-check-label" for="correct-${optionCount}">
-                            {{ __('panel.correct_answer') }}
-                        </label>
-                    </div>
-                </div>
-            </div>
-            <input type="hidden" name="options[${optionCount-1}][id]" value="">
-        </div>
-    `;
-    container.insertAdjacentHTML('beforeend', optionHtml);
-}
-
-function removeOption(optionId) {
-    const option = document.getElementById(`option-${optionId}`);
-    if (option) {
-        option.remove();
-        updateOptionLetters();
-    }
-}
-
-function updateOptionLetters() {
-    const options = document.querySelectorAll('.option-item');
-    options.forEach((option, index) => {
-        const letter = String.fromCharCode(65 + index);
-        const header = option.querySelector('h6');
-        if (header) {
-            header.textContent = `{{ __('panel.option') }} ${letter}`;
-        }
+      }else if(type==='essay'){
+        essaySection.style.display='block';
+      }
     });
+
+    if(typeSelect.value){
+      typeSelect.dispatchEvent(new Event('change'));
+    }
+  }
+
+  if(questionForm){
+    questionForm.addEventListener('submit',function(e){
+      const type=document.getElementById('type').value;
+
+      if(type==='multiple_choice'){
+        const options=document.querySelectorAll('.option-item');
+        if(options.length<2){
+          e.preventDefault();
+          alert('{{ __("panel.minimum_two_options_required") }}');
+          return;
+        }
+
+        const correctOptions=document.querySelectorAll('input[name*="[is_correct]"]:checked');
+        if(correctOptions.length===0){
+          e.preventDefault();
+          alert('{{ __("panel.at_least_one_correct_answer_required") }}');
+          return;
+        }
+      }else if(type==='true_false'){
+        const selectedAnswer=document.querySelector('input[name="true_false_answer"]:checked');
+        if(!selectedAnswer){
+          e.preventDefault();
+          alert('{{ __("panel.please_select_correct_answer") }}');
+          return;
+        }
+      }
+    });
+  }
+});
+
+function loadExistingOptions(){
+  const container=document.getElementById('options-container');
+  container.innerHTML='';
+
+  if(existingOptions&&existingOptions.length>0){
+    existingOptions.forEach((option,index)=>{
+      optionCount++;
+      const optionHtml=`
+        <div class="option-item" id="option-${optionCount}">
+          <div class="option-header">
+            <h6>{{ __('panel.option') }} ${String.fromCharCode(64+optionCount)}</h6>
+            <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ __('panel.option_text_en') }}</label>
+              <input type="text" name="options[${optionCount-1}][option_en]" value="${option.option_en||''}" required>
+            </div>
+            <div class="form-group">
+              <label>{{ __('panel.option_text_ar') }}</label>
+              <input type="text" name="options[${optionCount-1}][option_ar]" value="${option.option_ar||''}" dir="rtl" required>
+            </div>
+          </div>
+          <label class="radio-label">
+            <input type="checkbox" name="options[${optionCount-1}][is_correct]" value="1" ${option.is_correct?'checked':''}>
+            <span>{{ __('panel.correct_answer') }}</span>
+          </label>
+          <input type="hidden" name="options[${optionCount-1}][id]" value="${option.id||''}">
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend',optionHtml);
+    });
+  }else{
+    for(let i=0;i<4;i++) addOption();
+  }
 }
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const currentType = document.getElementById('type').value;
-    if (currentType) {
-        toggleQuestionType();
-    }
-});
+function loadTrueFalseAnswer(){
+  if(existingOptions&&existingOptions.length>=2){
+    const trueOption=existingOptions.find(opt=>opt.option_en==='True'||opt.option_ar==='صحيح');
+    const falseOption=existingOptions.find(opt=>opt.option_en==='False'||opt.option_ar==='خطأ');
 
-// Form validation
-document.getElementById('questionForm').addEventListener('submit', function(e) {
-    const type = document.getElementById('type').value;
-    
-    if (type === 'multiple_choice') {
-        const options = document.querySelectorAll('.option-item');
-        if (options.length < 2) {
-            e.preventDefault();
-            alert('{{ __("panel.minimum_two_options_required") }}');
-            return;
-        }
-        
-        const correctOptions = document.querySelectorAll('input[name*="[is_correct]"]:checked');
-        if (correctOptions.length === 0) {
-            e.preventDefault();
-            alert('{{ __("panel.at_least_one_correct_answer_required") }}');
-            return;
-        }
-    } else if (type === 'true_false') {
-        const selectedAnswer = document.querySelector('input[name="true_false_answer"]:checked');
-        if (!selectedAnswer) {
-            e.preventDefault();
-            alert('{{ __("panel.please_select_correct_answer") }}');
-            return;
-        }
+    if(trueOption&&trueOption.is_correct){
+      document.querySelector('input[name="true_false_answer"][value="1"]').checked=true;
+    }else if(falseOption&&falseOption.is_correct){
+      document.querySelector('input[name="true_false_answer"][value="0"]').checked=true;
     }
-});
+  }
+}
+
+function addOption(){
+  optionCount++;
+  const container=document.getElementById('options-container');
+  const letter=String.fromCharCode(64+optionCount);
+  const optionHtml=`
+    <div class="option-item" id="option-${optionCount}">
+      <div class="option-header">
+        <h6>{{ __('panel.option') }} ${letter}</h6>
+        <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>{{ __('panel.option_text_en') }}</label>
+          <input type="text" name="options[${optionCount-1}][option_en]" required>
+        </div>
+        <div class="form-group">
+          <label>{{ __('panel.option_text_ar') }}</label>
+          <input type="text" name="options[${optionCount-1}][option_ar]" dir="rtl" required>
+        </div>
+      </div>
+      <label class="radio-label">
+        <input type="checkbox" name="options[${optionCount-1}][is_correct]" value="1">
+        <span>{{ __('panel.correct_answer') }}</span>
+      </label>
+      <input type="hidden" name="options[${optionCount-1}][id]" value="">
+    </div>
+  `;
+  container.insertAdjacentHTML('beforeend',optionHtml);
+}
+
+function removeOption(optionId){
+  const option=document.getElementById(`option-${optionId}`);
+  if(option) option.remove();
+  updateOptionLetters();
+}
+
+function updateOptionLetters(){
+  const options=document.querySelectorAll('.option-item');
+  options.forEach((option,index)=>{
+    const letter=String.fromCharCode(65+index);
+    const header=option.querySelector('.option-header h6');
+    if(header) header.textContent=`{{ __('panel.option') }} ${letter}`;
+  });
+}
 </script>
 @endsection

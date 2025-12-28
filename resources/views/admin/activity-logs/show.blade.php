@@ -5,13 +5,13 @@
     <div class="card">
         <div class="card-header bg-primary text-white">
             <h3 class="card-title mb-0">
-                <i class="fas fa-history"></i> Activity Logs - {{ class_basename($model) }} #{{ $model->id }}
+                <i class="fas fa-history"></i> {{ __('messages.activity_logs') }} - {{ class_basename($model) }} #{{ $model->id }}
             </h3>
         </div>
         
         <div class="card-body">
             <div class="alert alert-info mb-4">
-                <strong>Viewing logs for:</strong> {{ class_basename($model) }} 
+                <strong>{{ __('messages.viewing_logs_for') }}</strong> {{ class_basename($model) }} 
                 @if(isset($model->name))
                     - {{ $model->name }}
                 @endif
@@ -21,10 +21,10 @@
                 <table class="table table-bordered table-striped">
                     <thead class="table-dark">
                         <tr>
-                            <th width="20%">Date & Time</th>
-                            <th width="12%">Event</th>
-                            <th width="18%">User</th>
-                            <th>Changes</th>
+                            <th width="20%">{{ __('messages.date_and_time') }}</th>
+                            <th width="12%">{{ __('messages.event') }}</th>
+                            <th width="18%">{{ __('messages.user') }}</th>
+                            <th>{{ __('messages.changes') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,11 +36,11 @@
                             </td>
                             <td>
                                 @if($log->event == 'created')
-                                    <span class="badge bg-success"><i class="fas fa-plus-circle"></i> Created</span>
+                                    <span class="badge bg-success"><i class="fas fa-plus-circle"></i> {{ __('messages.event_created') }}</span>
                                 @elseif($log->event == 'updated')
-                                    <span class="badge bg-warning text-dark"><i class="fas fa-edit"></i> Updated</span>
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-edit"></i> {{ __('messages.event_updated') }}</span>
                                 @elseif($log->event == 'deleted')
-                                    <span class="badge bg-danger"><i class="fas fa-trash"></i> Deleted</span>
+                                    <span class="badge bg-danger"><i class="fas fa-trash"></i> {{ __('messages.event_deleted') }}</span>
                                 @else
                                     <span class="badge bg-secondary">{{ ucfirst($log->event) }}</span>
                                 @endif
@@ -50,7 +50,7 @@
                                     <div><i class="fas fa-user-circle"></i> <strong>{{ $log->causer->name }}</strong></div>
                                     <small class="text-muted">{{ $log->causer->email ?? '' }}</small>
                                 @else
-                                    <span class="text-muted"><i class="fas fa-robot"></i> System</span>
+                                    <span class="text-muted"><i class="fas fa-robot"></i> {{ __('messages.system_user') }}</span>
                                 @endif
                             </td>
                             <td>
@@ -61,11 +61,11 @@
                                                 <div class="change-item mb-2 p-2 border-start border-3 border-primary bg-light">
                                                     <strong class="text-primary">{{ ucfirst(str_replace('_', ' ', $key)) }}:</strong>
                                                     <div class="ms-3">
-                                                        <span class="badge bg-danger">Old:</span>
+                                                        <span class="badge bg-danger">{{ __('messages.old_value') }}</span>
                                                         <code>{{ is_array($log->properties['old'][$key]) ? json_encode($log->properties['old'][$key]) : ($log->properties['old'][$key] ?? 'null') }}</code>
                                                     </div>
                                                     <div class="ms-3">
-                                                        <span class="badge bg-success">New:</span>
+                                                        <span class="badge bg-success">{{ __('messages.new_value') }}</span>
                                                         <code>{{ is_array($value) ? json_encode($value) : ($value ?? 'null') }}</code>
                                                     </div>
                                                 </div>
@@ -73,10 +73,10 @@
                                         @endforeach
                                     </div>
                                 @elseif($log->event == 'created')
-                                    <span class="text-success"><i class="fas fa-check-circle"></i> New record created</span>
+                                    <span class="text-success"><i class="fas fa-check-circle"></i> {{ __('messages.new_record_created') }}</span>
                                     @if($log->properties->has('attributes'))
                                         <div class="mt-2">
-                                            <small class="text-muted">Initial values:</small>
+                                            <small class="text-muted">{{ __('messages.initial_values') }}</small>
                                             <div class="ms-3">
                                                 @foreach($log->properties['attributes'] as $key => $value)
                                                     @if($value)
@@ -87,7 +87,7 @@
                                         </div>
                                     @endif
                                 @elseif($log->event == 'deleted')
-                                    <span class="text-danger"><i class="fas fa-times-circle"></i> Record deleted</span>
+                                    <span class="text-danger"><i class="fas fa-times-circle"></i> {{ __('messages.record_deleted') }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -96,7 +96,7 @@
                             <td colspan="4" class="text-center">
                                 <div class="py-5">
                                     <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
-                                    <p class="text-muted h5">No activity logs found for this record</p>
+                                    <p class="text-muted h5">{{ __('messages.no_activity_logs_record') }}</p>
                                 </div>
                             </td>
                         </tr>
@@ -107,7 +107,7 @@
 
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <a href="{{ url()->previous() }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i> Back
+                    <i class="fas fa-arrow-left"></i> {{ __('messages.Back') }}
                 </a>
                 {{ $logs->links() }}
             </div>

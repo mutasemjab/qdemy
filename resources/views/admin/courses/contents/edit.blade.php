@@ -76,12 +76,6 @@
                                         <option value="pdf" {{ old('content_type', $content->content_type) == 'pdf' ? 'selected' : '' }}>
                                             {{ __('messages.pdf') }}
                                         </option>
-                                        <option value="quiz" {{ old('content_type', $content->content_type) == 'quiz' ? 'selected' : '' }}>
-                                            {{ __('messages.quiz') }}
-                                        </option>
-                                        <option value="assignment" {{ old('content_type', $content->content_type) == 'assignment' ? 'selected' : '' }}>
-                                            {{ __('messages.assignment') }}
-                                        </option>
                                     </select>
                                     @error('content_type')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -120,10 +114,10 @@
                                             id="is_main_video"
                                             name="is_main_video">
                                         <option value="2" {{ old('is_main_video', $content->is_main_video) == '2' ? 'selected' : '' }}>
-                                            {{ __('messages.paid') }}
+                                            {{ __('messages.no') }}
                                         </option>
                                          <option value="1" {{ old('is_main_video', $content->is_main_video) == '1' ? 'selected' : '' }}>
-                                            {{ __('messages.free') }}
+                                            {{ __('messages.yes') }}
                                         </option>
                                     </select>
                                     @error('is_main_video')
@@ -376,7 +370,7 @@ function toggleContentFields() {
         videoUrl.style.display    = 'block';
     } else if (contentType === 'video' && videoType == 'bunny') {
         videoUpload.style.display = 'block';
-    } else if (contentType === 'pdf' || contentType === 'quiz' || contentType === 'assignment') {
+    } else if (contentType === 'pdf') {
         pdfFields.style.display = 'block';
     }
 

@@ -30,6 +30,7 @@
                                     <th>{{ __('messages.Lesson/Subject') }}</th>
                                     <th>{{ __('messages.price') }}</th>
                                     <th>{{ __('messages.commission_of_admin') }}</th>
+                                    <th>{{ __('messages.course_status') }}</th>
                                     <th>{{ __('messages.created_at') }}</th>
                                     <th>{{ __('messages.actions') }}</th>
                                 </tr>
@@ -67,6 +68,20 @@
                                         </td>
                                         <td>
                                             <span class="badge bg-success">% {{ $course->commission_of_admin }}</span>
+                                        </td>
+                                        <td>
+                                            @php
+                                                $statusColors = [
+                                                    'pending' => 'warning',
+                                                    'accepted' => 'success',
+                                                    'rejected' => 'danger'
+                                                ];
+                                                $statusColor = $statusColors[$course->status] ?? 'secondary';
+                                                $statusLabel = __('messages.status_' . $course->status);
+                                            @endphp
+                                            <span class="badge bg-{{ $statusColor }}">
+                                                {{ $statusLabel }}
+                                            </span>
                                         </td>
                                         <td>{{ $course->created_at->format('Y-m-d') }}</td>
                                         <td>
@@ -114,7 +129,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="8" class="text-center">
+                                        <td colspan="10" class="text-center">
                                             {{ __('messages.no_courses_found') }}
                                         </td>
                                     </tr>

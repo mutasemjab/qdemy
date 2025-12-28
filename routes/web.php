@@ -139,36 +139,27 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     });
 
     // exam routes starts
-    // عرض قائمة الامتحانات
     Route::get('exams', [ExamController::class, 'index'])->name('exams');
     Route::get('exam/', [ExamController::class, 'index'])->name('exam.index');
 
     Route::middleware(['auth:user'])->prefix('exam')->group(function () {
 
-        // بدء الامتحان
         Route::post('/{exam}/start', [ExamController::class, 'start_exam'])->name('exam.start');
         Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam']);
 
-        // حل الامتحان (الصفحة الرئيسية) - يجب أن يكون قبل exam/{exam}/{slug?}
         Route::get('/{exam}/take', [ExamController::class, 'take'])->name('exam.take');
 
-        // الإجابة على سؤال
         Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
 
-        // تسليم الامتحان
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
 
-        // عرض النتيجة
         Route::get('/{exam}/result/{attempt}', [ExamController::class, 'result'])->name('exam.result');
 
-        // مراجعة محاولة معينة (قديم)
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
-    // عرض الامتحان (تفاصيل) - يجب أن يكون بعد الـ routes الأخرى لأن {slug?} optional
     Route::get('exam/{exam}/{slug?}', [ExamController::class, 'show'])->name('exam');
 
-    // سجل الامتحانات
     Route::get('exam-history', [ExamController::class, 'history'])->name('exam.history')->middleware('auth:user');
 
     // exam routes ends
@@ -235,6 +226,3 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     });
 
 });
-
-
-

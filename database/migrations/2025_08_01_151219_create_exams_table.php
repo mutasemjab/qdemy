@@ -41,6 +41,9 @@ return new class extends Migration
             $table->unsignedBigInteger('section_id')->nullable();
             $table->foreign('section_id')->references('id')->on('course_sections')->onDelete('cascade');
 
+            $table->unsignedBigInteger('course_content_id')->nullable();
+            $table->foreign('course_content_id')->references('id')->on('course_contents')->onDelete('set null');
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
 

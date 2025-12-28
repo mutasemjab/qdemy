@@ -21,8 +21,8 @@ class CourseController extends Controller
         $subjects  = collect();
 
         // Build main query
-        $query = Course::query();
-        // ->where('is_active', 1);
+        $query = Course::query()
+            ->where('status', 'accepted');
 
         // Program filter
         if ($request->filled('programm_id')) {

@@ -17,25 +17,14 @@ use App\Http\Controllers\Api\v1\User\NotificationUserController;
 use App\Http\Controllers\Api\v1\Teacher\AuthTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\DashboardTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\CourseTeacherController;
-use App\Http\Controllers\Api\v1\Teacher\StudentTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamTeacherController;
-use App\Http\Controllers\Api\v1\Teacher\AssignmentTeacherController;
-use App\Http\Controllers\Api\v1\Teacher\ScheduleTeacherController;
-use App\Http\Controllers\Api\v1\Teacher\ReportTeacherController;
-use App\Http\Controllers\Api\v1\Teacher\ResourceTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\NotificationTeacherController;
 
 // Parent Controllers
 use App\Http\Controllers\Api\v1\Parent\AuthParentController;
 use App\Http\Controllers\Api\v1\Parent\DashboardParentController;
-use App\Http\Controllers\Api\v1\Parent\ChildParentController;
-use App\Http\Controllers\Api\v1\Parent\ProgressParentController;
-use App\Http\Controllers\Api\v1\Parent\PaymentParentController;
-use App\Http\Controllers\Api\v1\Parent\ReportParentController;
-use App\Http\Controllers\Api\v1\Parent\CommunicationParentController;
 use App\Http\Controllers\Api\v1\Parent\NotificationParentController;
 use App\Http\Controllers\Api\v1\Parent\ParentChildAcademicController;
-use App\Http\Controllers\Api\v1\Parent\SettingParentController;
 use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 use App\Http\Controllers\Api\v1\NotificationController;
@@ -108,16 +97,16 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::group(['middleware' => ['auth:user-api']], function () {
         Route::prefix('progress')->group(function () {
             // Get progress for a specific course
-            Route::get('/courses/{courseId}', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseProgress']);
+            Route::get('/courses/{courseId}', [ProgressController::class, 'getCourseProgress']);
 
             // Get detailed progress (videos + exams breakdown)
-            Route::get('/courses/{courseId}/detailed', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'getCourseDetailedProgress']);
+            Route::get('/courses/{courseId}/detailed', [ProgressController::class, 'getCourseDetailedProgress']);
 
             // Update video watch progress
-            Route::post('/video/update', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'updateVideoProgress']);
+            Route::post('/video/update', [ProgressController::class, 'updateVideoProgress']);
 
             // Mark content (PDF, etc.) as completed
-            Route::post('/content/complete', [\App\Http\Controllers\Api\v1\User\ProgressController::class, 'markContentCompleted']);
+            Route::post('/content/complete', [ProgressController::class, 'markContentCompleted']);
         });
 
 
@@ -322,24 +311,17 @@ Route::group(['prefix' => 'v1/parent'], function () {
 
 
 // exam routes starts
-// عرض قائمة الامتحانات
 Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exam.index');
-// عرض الامتحان
 Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam');
 
 // middleware(['auth:user-api'])->
 Route::prefix('v1/exam')->name(API_ROUTE_PREFIX)->group(function () {
 
-    // بدء الامتحان
     Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
 
-    // الإجابة على سؤال
     Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
 
-    // تسليم الامتحان
     Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
 
-    // مراجعة محاولة معينة
     Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
 });
-// exam routes ends

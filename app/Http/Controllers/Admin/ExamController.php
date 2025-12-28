@@ -10,6 +10,8 @@ use App\Models\Question;
 use App\Models\ExamAttempt;
 use App\Models\ExamAnswer;
 use App\Models\Subject;
+use App\Models\CourseContent;
+use App\Models\CourseSection;
 use App\Traits\ExamManagementTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -191,6 +193,15 @@ class ExamController extends Controller
         return response()->json($formattedSections);
     }
 
+    public function getSectionContents(CourseSection $section)
+    {
+        $contents = CourseContent::where('section_id', $section->id)
+            ->select('id', 'title_ar', 'title_en')
+            ->orderBy('order')
+            ->get();
+
+        return response()->json($contents);
+    }
 
     public function manageQuestions(Request $request, Exam $exam)
     {

@@ -150,10 +150,12 @@ Route::group([
             // Results Routes
             Route::get('/{exam}/results', [TeacherController::class, 'examResults'])->name('results');
             Route::get('/{exam}/attempts/{attempt}', [TeacherController::class, 'viewExamAttempt'])->name('attempts.view');
+            Route::get('/{exam}/attempts/{attempt}/answers', [TeacherController::class, 'getAttemptAnswers'])->name('attempts.answers');
             
             // AJAX Routes for exam creation
             Route::get('/subjects/{subject}/courses', [TeacherController::class, 'getSubjectCoursesForExam'])->name('subjects.courses');
             Route::get('/courses/{course}/sections', [TeacherController::class, 'getCourseSectionsForExam'])->name('courses.sections');
+            Route::get('/sections/{section}/contents', [TeacherController::class, 'getSectionContentsForExam'])->name('sections.contents');
         });
         
         

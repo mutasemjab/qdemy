@@ -157,6 +157,7 @@
                                     <select class="form-select form-control @error('section_id') is-invalid @enderror"
                                             id="section_id"
                                             name="section_id"
+                                            onchange="loadSectionContents(this.value)"
                                             {{ $exam->course_id ? '' : 'disabled' }}>
                                         <option value="">{{ __('messages.select_section_optional') }}</option>
                                         @if($exam->course_id && isset($sections))
@@ -172,6 +173,30 @@
                                     @error('section_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+                            </div>
+
+                            <!-- Lesson (Course Content) -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="course_content_id" class="form-label">
+                                        {{ __('messages.lesson') }}
+                                    </label>
+                                    <select class="form-select form-control @error('course_content_id') is-invalid @enderror"
+                                            id="course_content_id"
+                                            name="course_content_id"
+                                            disabled>
+                                        <option value="">{{ __('messages.select_lesson_optional') }}</option>
+                                        @if($exam->section_id && isset($contents))
+                                            @foreach($contents as $content)
+                                                <option value="{{ $content->id }}"
+                                                        {{ old('course_content_id', $exam->course_content_id) == $content->id ? 'selected' : '' }}>
+                                                    {{ app()->getLocale() === 'ar' ? $content->title_ar : $content->title_en }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <small class="form-text text-muted">{{ __('messages.select_section_first') }}</small>
                                 </div>
                             </div>
 
@@ -421,9 +446,12 @@ function loadSubjectCourses(subjectId) {
 // Function to load sections when course is selected
 function loadCourseSections(courseId, selectedSectionId = null) {
     const sectionSelect = document.getElementById('section_id');
+    const contentSelect = document.getElementById('course_content_id');
 
     // Clear current options
     sectionSelect.innerHTML = '<option value="">{{ __('messages.select_section_optional') }}</option>';
+    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
+    contentSelect.disabled = true;
 
     if (!courseId) {
         sectionSelect.disabled = true;
@@ -450,11 +478,52 @@ function loadCourseSections(courseId, selectedSectionId = null) {
                 }
                 sectionSelect.add(option);
             });
+
+            // Load contents for selected section if editing
+            if (selectedSectionId) {
+                loadSectionContents(selectedSectionId);
+            }
         })
         .catch(error => {
             console.error('Error loading sections:', error);
             sectionSelect.disabled = true;
         });
+}
+
+// Function to load contents (lessons) when section is selected
+function loadSectionContents(sectionId) {
+    const contentSelect = document.getElementById('course_content_id');
+    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
+    if (!sectionId) {
+        contentSelect.disabled = true;
+        return;
+    }
+    contentSelect.disabled = false;
+    fetch(`{{ route('admin.sections.contents', ':section') }}`.replace(':section', sectionId), {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+    })
+    .then(response => response.json())
+    .then(contents => {
+        contents.forEach(content => {
+            const title = content.title_en || content.title_ar;
+            const option = new Option(title, content.id);
+            contentSelect.add(option);
+        });
+
+        // Restore selected content if editing
+        const selectedContentId = '{{ old('course_content_id', $exam->course_content_id) }}';
+        if (selectedContentId) {
+            contentSelect.value = selectedContentId;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading contents:', error);
+        contentSelect.disabled = true;
+    });
 }
 
 // Load courses and sections on page load

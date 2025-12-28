@@ -86,14 +86,18 @@ class CourseController extends Controller
             ->where('activate', 1)
             ->select('id', 'name', 'email')
             ->get();
-            
+
         // Get parent categories
         $parentCategories = Category::roots()
             ->active()
             ->ordered()
             ->get();
-            
-        return view('admin.courses.edit', compact('course', 'teachers', 'parentCategories'));
+
+        $subjects = Subject::active()
+            ->ordered()
+            ->get();
+
+        return view('admin.courses.edit', compact('course', 'teachers', 'parentCategories', 'subjects'));
 }
 
     /**

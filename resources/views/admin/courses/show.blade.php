@@ -70,12 +70,12 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>{{ __('messages.Subject') }}:</th>
+                                    <th>{{ __('messages.subject') }}:</th>
                                     <td>
                                         @if($course->subject)
                                             <span class="badge bg-primary">{{ $course->subject->localized_name }}</span>
                                         @else
-                                            <span class="text-muted">{{ __('messages.No Subject') }}</span>
+                                            <span class="text-muted">{{ __('messages.no_subject') }}</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -95,23 +95,24 @@
                     @if($course->sections->count() > 0)
                         <div class="row mt-4">
                             <div class="col-12">
-                                <h4>{{ __('messages.course_sections') }}</h4>
+                                <h5 class="mb-3">{{ __('messages.course_sections') }}</h5>
                                 <div class="accordion" id="sectionsAccordion">
                                     @foreach($course->sections as $section)
                                         <div class="accordion-item">
                                             <h2 class="accordion-header" id="heading{{ $section->id }}">
-                                                <button class="accordion-button collapsed" 
-                                                        type="button" 
-                                                        data-bs-toggle="collapse" 
-                                                        data-bs-target="#collapse{{ $section->id }}" 
-                                                        aria-expanded="false" 
-                                                        aria-controls="collapse{{ $section->id }}">
-                                                    <strong>{{ $section->title_en }}</strong>
+                                                <button class="accordion-button collapsed"
+                                                        type="button"
+                                                        data-bs-toggle="collapse"
+                                                        data-bs-target="#collapse{{ $section->id }}"
+                                                        aria-expanded="false"
+                                                        aria-controls="collapse{{ $section->id }}"
+                                                        style="font-size: 0.95rem; padding: 0.65rem 1.25rem;">
+                                                    {{ $section->title_en }}
                                                     @if($section->title_ar)
-                                                        <span class="ms-2 text-muted">- {{ $section->title_ar }}</span>
+                                                        <span class="ms-2 text-muted" style="font-size: 0.85rem;">- {{ $section->title_ar }}</span>
                                                     @endif
-                                                    <span class="badge bg-primary ms-auto me-2">
-                                                        {{ $section->contents->count() }} {{ __('messages.contents') }}
+                                                    <span class="badge bg-primary ms-auto me-2" style="font-size: 0.75rem;">
+                                                        {{ $section->contents->count() }}
                                                     </span>
                                                 </button>
                                             </h2>
@@ -185,7 +186,7 @@
                     @if($directContents->count() > 0)
                         <div class="row mt-4">
                             <div class="col-12">
-                                <h4>{{ __('messages.direct_contents') }}</h4>
+                                <h5 class="mb-3">{{ __('messages.direct_contents') }}</h5>
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead>

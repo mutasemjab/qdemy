@@ -15,6 +15,7 @@ class Course extends Model
      protected $casts = [
         'selling_price' => 'decimal:2',
         'is_sequential' => 'boolean',
+        'status' => 'string',
     ];
        /**
      * Get content title based on current locale
@@ -105,22 +106,32 @@ class Course extends Model
         $watchingVideos = 0;
         
         if ($totalVideos > 0) {
-            $completedVideos = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('course_content_id', 
-                    CourseContent::where('course_id', $this->id)
-                        ->where('content_type', 'video')
-                        ->pluck('id')
-                )
+            // Get all video content IDs for this course
+            $videoContentIds = CourseContent::where('course_id', $this->id)
+                ->where('content_type', 'video')
+                ->pluck('id')
+                ->toArray();
+
+            // Count videos completed by watching
+            $completedByWatching = ContentUserProgress::where('user_id', $user_id)
+                ->whereIn('course_content_id', $videoContentIds)
                 ->whereNull('exam_id') // Only video progress
                 ->where('completed', true)
                 ->count();
-            
+
+            // Count videos completed by exam (if exam is linked to the video content)
+            $completedByExam = ContentUserProgress::where('user_id', $user_id)
+                ->whereIn('course_content_id', $videoContentIds)
+                ->whereNotNull('exam_id') // Has exam linked
+                ->where('completed', true) // Exam passed
+                ->get()
+                ->unique('course_content_id') // Count unique content IDs
+                ->count();
+
+            $completedVideos = $completedByWatching + $completedByExam;
+
             $watchingVideos = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('course_content_id', 
-                    CourseContent::where('course_id', $this->id)
-                        ->where('content_type', 'video')
-                        ->pluck('id')
-                )
+                ->whereIn('course_content_id', $videoContentIds)
                 ->whereNull('exam_id')
                 ->where('completed', false)
                 ->where('watch_time', '>', 0)
@@ -146,11 +157,11 @@ class Course extends Model
         $examProgress = $totalExams > 0 ? ($completedExams / $totalExams) * 100 : 0;
         
         // Calculate total progress (weighted average)
-        // If course has both videos and exams, give 60% weight to videos, 40% to exams
+        // If course has both videos and exams, give 50% weight to videos, 50% to exams
         // If only videos or only exams, use 100% of that component
         $totalProgress = 0;
         if ($totalVideos > 0 && $totalExams > 0) {
-            $totalProgress = ($videoProgress * 0.6) + ($examProgress * 0.4);
+            $totalProgress = ($videoProgress * 0.5) + ($examProgress * 0.5);
         } elseif ($totalVideos > 0) {
             $totalProgress = $videoProgress;
         } elseif ($totalExams > 0) {

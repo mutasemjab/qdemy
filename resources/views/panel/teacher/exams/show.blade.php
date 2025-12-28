@@ -2,9 +2,71 @@
 
 @section('title', __('panel.view_exam'))
 
+@section('styles')
+<style>
+body{background:#f5f7fa}
+.ud-scope{width:100%;background:#f5f7fa}
+.ud-content{max-width:1300px;margin:0 auto;padding:30px}
+.container-fluid{max-width:1300px;margin:0 auto;padding:0}
+.row{display:grid;grid-template-columns:repeat(12,1fr);gap:16px;margin-bottom:16px}
+.col-12{grid-column:span 12}
+.col-md-3{grid-column:span 3}
+.col-md-6{grid-column:span 6}
+.col-lg-7{grid-column:span 7}
+.col-lg-5{grid-column:span 5}
+@media(max-width:1200px){.col-md-3{grid-column:span 6}.col-md-6{grid-column:span 12}.col-lg-7,.col-lg-5{grid-column:span 12}}
+@media(max-width:768px){.col-12,.col-md-3,.col-md-6,.col-lg-7,.col-lg-5{grid-column:span 12}}
+.mb-1{margin-bottom:4px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.me-2{margin-right:8px}
+.d-flex{display:flex}
+.justify-content-between{justify-content:space-between}
+.align-items-center{align-items:center}
+.text-muted{color:#6b7280}
+.text-dark{color:#0f172a}
+.fw-bold{font-weight:700}
+.info-box{display:flex;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff}
+.info-box-icon{width:70px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
+.info-box-content{padding:10px 12px;flex:1}
+.info-box-text{display:block;color:#6b7280;font-size:12px;font-weight:700}
+.info-box-number{display:block;color:#0f172a;font-size:20px;font-weight:900;line-height:1.1}
+.bg-success{background:#10b981}
+.bg-secondary{background:#6b7280}
+.bg-info{background:#3b82f6}
+.bg-warning{background:#f59e0b}
+.bg-danger{background:#ef4444}
+.btn-group{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:1px solid transparent;cursor:pointer;font-weight:700;text-decoration:none}
+.btn-primary{background:#0055D2;color:#fff}
+.btn-warning{background:#f59e0b;color:#fff}
+.btn-info{background:#3b82f6;color:#fff}
+.btn-secondary{background:#6b7280;color:#fff}
+.btn-outline-danger{border:1px solid #fca5a5;color:#dc2626;background:#fff}
+.btn-sm{padding:6px 12px;font-size:12px}
+.card{border:1px solid #e5e7eb;border-radius:12px;background:#fff;margin-bottom:16px}
+.card-body{padding:20px}
+.card-header{padding:15px 20px;border-bottom:1px solid #e5e7eb;background:#f9fafb}
+.card-title{margin:0 0 10px 0;font-size:18px;font-weight:700;color:#0f172a}
+.table{width:100%;border-collapse:collapse}
+.table th{background:#f9fafb;padding:12px;text-align:left;font-weight:700;color:#6b7280;border-bottom:1px solid #e5e7eb}
+.table td{padding:12px;border-bottom:1px solid #e5e7eb}
+.badge{display:inline-block;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700}
+.badge-success{background:#dcfce7;color:#15803d}
+.badge-danger{background:#fee2e2;color:#dc2626}
+.badge-warning{background:#fef3c7;color:#b45309}
+h2{margin:0 0 8px 0;font-size:24px;font-weight:900;color:#0f172a}
+h5{margin:0 0 12px 0;font-size:16px;font-weight:700;color:#0f172a}
+p{margin:0}
+</style>
+@endsection
+
 @section('content')
-<div class="container-fluid">
-    <!-- Header Section -->
+<section class="ud-scope">
+    <div class="ud-content">
+        <div class="container-fluid">
+            <!-- Header Section -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
@@ -87,7 +149,7 @@
 
     <div class="row">
         <!-- Main Content -->
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <!-- Exam Information -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -306,10 +368,10 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group btn-group-sm">
-                                                <a href="{{ route('teacher.questions.show', $question) }}" class="btn btn-outline-info btn-sm" title="{{ __('panel.view') }}">
+                                                <a href="{{ route('teacher.exams.exam_questions.show', [$exam, $question]) }}" class="btn btn-outline-info btn-sm" title="{{ __('panel.view') }}">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('teacher.questions.edit', $question) }}" class="btn btn-outline-warning btn-sm" title="{{ __('panel.edit') }}">
+                                                <a href="{{ route('teacher.exams.exam_questions.edit', [$exam, $question]) }}" class="btn btn-outline-warning btn-sm" title="{{ __('panel.edit') }}">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             </div>
@@ -334,7 +396,7 @@
         </div>
 
         <!-- Sidebar -->
-        <div class="col-lg-4">
+        <div class="col-lg-5">
             <!-- Recent Attempts -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -477,10 +539,12 @@
             </div>
         </div>
     </div>
-</div>
+        </div>
+    </div>
+</section>
 @endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Delete confirmation
@@ -543,4 +607,4 @@ setInterval(function() {
 }, 30000);
 @endif
 </script>
-@endpush
+@endsection

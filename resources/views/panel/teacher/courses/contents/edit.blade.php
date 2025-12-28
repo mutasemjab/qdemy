@@ -67,8 +67,6 @@
                 <option value="">{{ __('panel.select_content_type') }}</option>
                 <option value="video" {{ old('content_type', $content->content_type) == 'video' ? 'selected' : '' }}>{{ __('panel.video') }}</option>
                 <option value="pdf" {{ old('content_type', $content->content_type) == 'pdf' ? 'selected' : '' }}>{{ __('panel.pdf_document') }}</option>
-                <option value="quiz" {{ old('content_type', $content->content_type) == 'quiz' ? 'selected' : '' }}>{{ __('panel.quiz') }}</option>
-                <option value="assignment" {{ old('content_type', $content->content_type) == 'assignment' ? 'selected' : '' }}>{{ __('panel.assignment') }}</option>
               </select>
             </div>
             <div class="form-group">
@@ -207,10 +205,6 @@
           </div>
         </div>
 
-        <div class="form-section" id="quiz-settings" style="display:none">
-          <h3>{{ __('panel.quiz_assignment_settings') }}</h3>
-          <div class="alert alert-info">{{ __('panel.quiz_assignment_note') }}</div>
-        </div>
 
         <div class="form-actions">
           <a href="{{ route('teacher.courses.sections.index', $course) }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
@@ -305,22 +299,18 @@ function toggleContentFields(){
   var videoUrl=document.getElementById('video_url_field');
   var videoUpload=document.getElementById('upload_video_field');
   var pdfFields=document.getElementById('pdf-fields');
-  var quizSettings=document.getElementById('quiz-settings');
   var contentType=ct?ct.value:'';
   var videoType=vt?vt.value:'';
   if(videoFields) videoFields.style.display='none';
   if(videoUrl) videoUrl.style.display='none';
   if(videoUpload) videoUpload.style.display='none';
   if(pdfFields) pdfFields.style.display='none';
-  if(quizSettings) quizSettings.style.display='none';
   if(contentType==='video'){
     if(videoFields) videoFields.style.display='block';
     if(videoType==='youtube'&&videoUrl) videoUrl.style.display='block';
     if(videoType==='bunny'&&videoUpload) videoUpload.style.display='block';
   }else if(contentType==='pdf'){
     if(pdfFields) pdfFields.style.display='block';
-  }else if(contentType==='quiz'||contentType==='assignment'){
-    if(quizSettings) quizSettings.style.display='block';
   }
 }
 document.addEventListener('DOMContentLoaded',function(){
