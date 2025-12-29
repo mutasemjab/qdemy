@@ -170,4 +170,8 @@ return [
 
     'attributes' => [],
 
+    // Missing translations from app/
+    'invalid_parent_section' => 'القسم الأب غير صالح',
+    'section_cannot_be_parent_of_itself' => 'لا يمكن للقسم أن يكون أباً لنفسه',
+    'teacher_invalid' => 'المعلم غير صالح',
 ];

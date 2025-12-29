@@ -71,15 +71,43 @@ class BankQuestionController extends Controller
 
     public function download(BankQuestion $bankQuestion)
     {
-        if (!$bankQuestion->pdfExists()) {
+        if (!$bankQuestion->pdf || !$bankQuestion->pdfExists()) {
             return redirect()->back()->with('error', __('front.file_not_available'));
         }
 
-        // Increment download count if you have a downloads field
-        $bankQuestion->increment('download_count');
+        try {
+            // Get file content from Bunny storage
+            $fileContent = BunnyHelper()->getFileContent($bankQuestion->pdf);
 
-        // Return file download response
-        return response()->download($bankQuestion->pdf_path, $bankQuestion->display_name ?? 'document.pdf');
+            if (!$fileContent) {
+                return redirect()->back()->with('error', __('front.file_not_available'));
+            }
+
+            // Increment download count
+            $bankQuestion->increment('download_count');
+
+            // Prepare filename
+            $filename = $bankQuestion->display_name ?? 'document.pdf';
+            if (!str_ends_with(strtolower($filename), '.pdf')) {
+                $filename .= '.pdf';
+            }
+
+            // Return file as download response
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error downloading PDF', [
+                'bank_question_id' => $bankQuestion->id,
+                'pdf_path' => $bankQuestion->pdf,
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', __('front.file_not_available'));
+        }
     }
 
     // AJAX endpoint for getting subjects by category

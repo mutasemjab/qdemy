@@ -121,7 +121,7 @@
                                         {{ __('messages.commission_of_admin') }} <span class="text-danger">*</span>
                                     </label>
                                     <div class="input-group">
-                                        <span class="input-group-text">{{ __('messages.percent') }}</span>
+                                        <span class="input-group-text">%</span>
                                         <input type="number"
                                                class="form-control @error('commission_of_admin') is-invalid @enderror"
                                                id="commission_of_admin"
@@ -208,7 +208,13 @@
                                         <option value="">{{ __('messages.select_subject') }}</option>
                                         @foreach($subjects as $subject)
                                             <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                                {{ $subject->localized_name }}
+                                                {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                                @if($subject->grade)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                                @endif
+                                                @if($subject->semester)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>

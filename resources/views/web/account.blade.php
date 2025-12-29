@@ -12,21 +12,21 @@
       </div>
     </div>
 
-    <button class="ud-item active" data-target="profile"><i class="fa-regular fa-user"></i><span>حسابي الشخصي</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="settings"><i class="fa-solid fa-gear"></i><span>إعدادات الحساب</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="notifications"><i class="fa-regular fa-bell"></i><span>الإشعارات</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="inbox"><i class="fa-regular fa-comments"></i><span>الرسائل</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="courses"><i class="fa-solid fa-graduation-cap"></i><span>دوراتي</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول الزمني</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="kids"><i class="fa-solid fa-children"></i><span>الأبناء وإنجازاتهم</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="offers"><i class="fa-solid fa-tags"></i><span>العروض</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="students"><i class="fa-solid fa-user-group"></i><span>الطلاب</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="wallet"><i class="fa-regular fa-wallet"></i><span>المحفظة</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="results"><i class="fa-solid fa-square-poll-vertical"></i><span>نتائج اختباراتي</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="community"><i class="fa-solid fa-magnifying-glass"></i><span>مجتمع Q</span><i class="fa-solid fa-angle-left"></i></button>
-    <button class="ud-item" data-target="support"><i class="fa-brands fa-whatsapp"></i><span>الدعم الفني</span><i class="fa-solid fa-angle-left"></i></button>
+    <button class="ud-item active" data-target="profile"><i class="far fa-user"></i><span>حسابي الشخصي</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="settings"><i class="fas fa-gear"></i><span>إعدادات الحساب</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="notifications"><i class="far fa-bell"></i><span>الإشعارات</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="inbox"><i class="far fa-comments"></i><span>الرسائل</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="courses"><i class="fas fa-graduation-cap"></i><span>دوراتي</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="schedule"><i class="far fa-calendar-days"></i><span>الجدول الزمني</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="kids"><i class="fas fa-children"></i><span>الأبناء وإنجازاتهم</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="offers"><i class="fas fa-tags"></i><span>العروض</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="students"><i class="fas fa-user-group"></i><span>الطلاب</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="wallet"><i class="far fa-wallet"></i><span>المحفظة</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="results"><i class="fas fa-square-poll-vertical"></i><span>نتائج اختباراتي</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="community"><i class="fas fa-magnifying-glass"></i><span>مجتمع Q</span><i class="fas fa-angle-left"></i></button>
+    <button class="ud-item" data-target="support"><i class="fab fa-whatsapp"></i><span>الدعم الفني</span><i class="fas fa-angle-left"></i></button>
 
-    <a href="#" class="ud-logout"><i class="fa-solid fa-arrow-left-long"></i><span>تسجيل خروج</span></a>
+    <a href="#" class="ud-logout"><i class="fas fa-arrow-left-long"></i><span>تسجيل خروج</span></a>
   </aside>
 
   <div class="ud-content">
@@ -52,7 +52,7 @@
                 <div class="ud-ava-wrap">
                     <img data-src="{{ asset('assets_front/images/avatar-round.png') }}" class="ud-ava" alt="">
                     <label class="ud-ava-edit">
-                        <i class="fa-solid fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                         <input type="file" name="avatar" accept="image/*" style="display:none">
                     </label>
                 </div>
@@ -106,7 +106,7 @@
           </div>
           <div class="ud-chat-box">
             <input type="text" placeholder="اكتب رسالة">
-            <button class="ud-primary ud-send"><i class="fa-solid fa-paper-plane"></i></button>
+            <button class="ud-primary ud-send"><i class="fas fa-paper-plane"></i></button>
           </div>
         </div>
       </div>
@@ -282,7 +282,7 @@
       <div class="ud-title">الدعم الفني</div>
       <div class="ud-support">
         <p>لأي مشاكل تقنية تواجهك يرجى مراسلتنا عبر الواتساب على الرقم التالي</p>
-        <a href="https://wa.me/09898756567876" class="ud-wh"><i class="fa-brands fa-whatsapp"></i> 09898756567876</a>
+        <a href="https://wa.me/09898756567876" class="ud-wh"><i class="fab fa-whatsapp"></i> 09898756567876</a>
       </div>
     </div>
 

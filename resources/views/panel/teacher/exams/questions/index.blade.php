@@ -6,14 +6,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.show', $exam) }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_exam') }}</span>
         </a>
     </aside>
@@ -27,7 +27,7 @@
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fa-solid fa-question"></i>
+                        <i class="fas fa-question"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number">{{ $totalQuestions ?? 0 }}</div>
@@ -36,7 +36,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#dcfce7">
-                        <i class="fa-solid fa-check"></i>
+                        <i class="fas fa-check"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number">{{ $multipleChoiceCount ?? 0 }}</div>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#dbeafe">
-                        <i class="fa-solid fa-toggle-on"></i>
+                        <i class="fas fa-toggle-on"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number">{{ $trueFalseCount ?? 0 }}</div>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon" style="background:#fef3c7">
-                        <i class="fa-solid fa-pen"></i>
+                        <i class="fas fa-pen"></i>
                     </div>
                     <div class="stat-content">
                         <div class="stat-number">{{ $essayCount ?? 0 }}</div>
@@ -66,7 +66,7 @@
             <!-- Action Button -->
             <div class="action-bar">
                 <a href="{{ route('teacher.exams.exam_questions.create', $exam) }}" class="btn btn-primary">
-                    <i class="fa-solid fa-plus"></i>{{ __('panel.create_question') }}
+                    <i class="fas fa-plus"></i>{{ __('panel.create_question') }}
                 </a>
             </div>
 
@@ -99,7 +99,7 @@
 
                         <div class="filter-group">
                             <a href="{{ route('teacher.exams.exam_questions.index',$exam) }}" class="btn btn-outline-secondary w-100">
-                                <i class="fa-solid fa-times"></i>{{ __('panel.clear') }}
+                                <i class="fas fa-times"></i>{{ __('panel.clear') }}
                             </a>
                         </div>
                     </div>
@@ -120,16 +120,16 @@
                                 </div>
                                 <div class="card-actions">
                                     <a href="{{ route('teacher.exams.exam_questions.show', [$exam, $question]) }}" class="btn-action" title="{{ __('panel.view') }}">
-                                        <i class="fa-solid fa-eye"></i>
+                                        <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('teacher.exams.exam_questions.edit', [$exam, $question]) }}" class="btn-action" title="{{ __('panel.edit') }}">
-                                        <i class="fa-solid fa-edit"></i>
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('teacher.exams.exam_questions.destroy', [$exam, $question]) }}" method="POST" class="d-inline" onsubmit="return confirm('{{ __('panel.delete_question_warning') }}')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn-action btn-danger" title="{{ __('panel.delete') }}">
-                                            <i class="fa-solid fa-trash"></i>
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </div>
@@ -146,11 +146,11 @@
 
                                 <div class="question-meta">
                                     <div class="meta-item">
-                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fas fa-star"></i>
                                         <span>{{ $question->grade }}</span>
                                     </div>
                                     <div class="meta-item">
-                                        <i class="fa-solid fa-clock"></i>
+                                        <i class="fas fa-clock"></i>
                                         <span>{{ $question->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
@@ -166,11 +166,11 @@
             @else
                 <!-- Empty State -->
                 <div class="empty-state">
-                    <i class="fa-solid fa-question"></i>
+                    <i class="fas fa-question"></i>
                     <h3>{{ __('panel.no_questions_found') }}</h3>
                     <p>{{ __('panel.no_questions_desc') }}</p>
                     <a href="{{ route('teacher.exams.exam_questions.create',$exam) }}" class="btn btn-primary">
-                        <i class="fa-solid fa-plus"></i>{{ __('panel.create_first_question') }}
+                        <i class="fas fa-plus"></i>{{ __('panel.create_first_question') }}
                     </a>
                 </div>
             @endif

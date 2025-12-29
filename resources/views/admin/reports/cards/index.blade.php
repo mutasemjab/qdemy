@@ -6,10 +6,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="fa-solid fa-chart-line"></i> {{ __('messages.card_reports') }}</h4>
+                    <h4><i class="fas fa-chart-line"></i> {{ __('messages.card_reports') }}</h4>
                     <div>
                         <a href="{{ route('cards.index') }}" class="btn btn-secondary">
-                            <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_list') }}
+                            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
                         </a>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_cards']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-credit-card fa-3x"></i>
+                                            <i class="fas fa-credit-card fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_card_numbers']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-list-ol fa-3x"></i>
+                                            <i class="fas fa-list-ol fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['available_card_numbers']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-check-circle fa-3x"></i>
+                                            <i class="fas fa-check-circle fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['sold_card_numbers']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-shopping-cart fa-3x"></i>
+                                            <i class="fas fa-shopping-cart fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['used_card_numbers']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-times-circle fa-3x"></i>
+                                            <i class="fas fa-times-circle fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['active_card_numbers']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-toggle-on fa-3x"></i>
+                                            <i class="fas fa-toggle-on fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +122,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['cards_with_doseyats']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-gift fa-3x"></i>
+                                            <i class="fas fa-gift fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_revenue'], 2) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-dollar-sign fa-3x"></i>
+                                            <i class="fas fa-dollar-sign fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@
                     <form method="GET" action="{{ route('card-reports.index') }}" id="filterForm">
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0"><i class="fa-solid fa-filter"></i> {{ __('messages.filters') }}</h5>
+                                <h5 class="mb-0"><i class="fas fa-filter"></i> {{ __('messages.filters') }}</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -226,19 +226,19 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="fa-solid fa-search"></i> {{ __('messages.filter') }}
+                                            <i class="fas fa-search"></i> {{ __('messages.filter') }}
                                         </button>
                                         <a href="{{ route('card-reports.index') }}" class="btn btn-secondary">
-                                            <i class="fa-solid fa-redo"></i> {{ __('messages.reset') }}
+                                            <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                                         </a>
                                     </div>
                                     <div>
                                         <a href="{{ route('card-reports.export-excel', request()->all()) }}" class="btn btn-success">
-                                            <i class="fa-solid fa-file-excel"></i> {{ __('messages.export_excel') }}
+                                            <i class="fas fa-file-excel"></i> {{ __('messages.export_excel') }}
                                         </a>
                                        
                                         <a href="{{ route('card-reports.print', request()->all()) }}" class="btn btn-info" target="_blank">
-                                            <i class="fa-solid fa-print"></i> {{ __('messages.print') }}
+                                            <i class="fas fa-print"></i> {{ __('messages.print') }}
                                         </a>
                                     </div>
                                 </div>
@@ -302,7 +302,7 @@
                                             <td>
                                                 @if($card->doseyats->count() > 0)
                                                     <span class="badge bg-success">
-                                                        <i class="fa-solid fa-gift"></i> {{ $card->doseyats->count() }}
+                                                        <i class="fas fa-gift"></i> {{ $card->doseyats->count() }}
                                                     </span>
                                                 @else
                                                     <span class="badge bg-secondary">0</span>
@@ -325,7 +325,14 @@
                                                 </span>
                                             </td>
                                             <td>{{ $card->created_at->format('Y-m-d') }}</td>
-                                          
+                                            <td>
+                                                <a href="{{ route('cards.show', $card->id) }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('cards.edit', $card->id) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -337,7 +344,7 @@
                         </div>
                     @else
                         <div class="alert alert-info text-center">
-                            <i class="fa-solid fa-info-circle fa-2x mb-2"></i>
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
                             <p class="mb-0">{{ __('messages.no_data_found') }}</p>
                         </div>
                     @endif

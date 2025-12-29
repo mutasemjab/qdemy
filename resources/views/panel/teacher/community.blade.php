@@ -4,7 +4,7 @@
         <!-- Post Creation Box -->
         <div class="ud-postbox">
             <div class="ud-post-head">
-                <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-round.png') }}" alt="Avatar">
+                <img data-src="{{ auth()->user()->photo_url }}" alt="Avatar">
                 <b>{{ auth()->user()->name }}</b>
             </div>
             <form id="create-post-form">
@@ -22,7 +22,7 @@
                 <div class="ud-post" data-post-id="{{ $post->id }}">
                     <div class="ud-post-top">
                         <div class="ud-post-user">
-                            <img data-src="{{ $post->user->photo ? asset('assets/admin/uploads/' . $post->user->photo) : asset('assets_front/images/avatar-round.png') }}" alt="User Avatar">
+                            <img data-src="{{ $post->user->photo_url }}" alt="User Avatar">
                             <div>
                                 <b>{{ $post->user->name }}</b>
                                 <br>
@@ -38,7 +38,7 @@
                             <span class="likes-count">{{ $post->likesCount() }}</span>
                         </button>
                         <button class="comment-toggle" data-post-id="{{ $post->id }}">
-                            <i class="fa-regular fa-comment"></i>
+                            <i class="far fa-comment"></i>
                             <span>{{ $post->commentsCount() }}</span>
                         </button>
                     </div>
@@ -47,7 +47,7 @@
                     <div class="ud-comments" id="comments-{{ $post->id }}" style="display: none;">
                         @foreach($post->comments as $comment)
                             <div class="ud-comment">
-                                <img data-src="{{ $comment->user->photo ? asset('assets/admin/uploads/' . $comment->user->photo) : asset('assets_front/images/avatar-round.png') }}" alt="Comment Avatar">
+                                <img data-src="{{ $comment->user->photo_url }}" alt="Comment Avatar">
                                 <div class="ud-comment-content">
                                     <b>{{ $comment->user->name }}</b>
                                     <p>{{ $comment->content }}</p>
@@ -138,12 +138,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     if (data.liked) {
-                        icon.classList.remove('fa-regular');
-                        icon.classList.add('fa-solid');
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
                         this.classList.add('liked');
                     } else {
-                        icon.classList.remove('fa-solid');
-                        icon.classList.add('fa-regular');
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
                         this.classList.remove('liked');
                     }
                     countSpan.textContent = data.likes_count;

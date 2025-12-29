@@ -8,7 +8,7 @@
       <div class="ud-title-actions">
         <h1 class="ud-title">{{ __('panel.my_courses') }}</h1>
         <a href="{{ route('teacher.courses.create') }}" class="ud-btn-primary">
-          <i class="fa-solid fa-plus"></i> {{ __('panel.add_course') }}
+          <i class="fas fa-plus"></i> {{ __('panel.add_course') }}
         </a>
       </div>
 
@@ -28,7 +28,7 @@
           <div class="ud-search">
             <form method="GET" class="d-flex gap-2" style="width: 100%;">
               <input type="text" name="search" id="courseSearch" placeholder="{{ __('panel.search') }}…" value="{{ request('search') }}" style="flex: 1;">
-              <i class="fa-solid fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
+              <i class="fas fa-magnifying-glass" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #6b7280;"></i>
             </form>
           </div>
           <div class="ud-filters">
@@ -58,23 +58,23 @@
                 <img src="{{ $course->photo ? asset('assets/admin/uploads/' . $course->photo) : asset('assets_front/images/course-default.png') }}" alt="{{ $course->title_ar }}">
                 <div class="course-actions">
                   <a href="{{ route('teacher.courses.show', $course) }}" class="btn-action" title="{{ __('panel.view') }}">
-                    <i class="fa-solid fa-eye"></i>
+                    <i class="fas fa-eye"></i>
                   </a>
                   <a href="{{ route('teacher.courses.edit', $course) }}" class="btn-action" title="{{ __('panel.edit') }}">
-                    <i class="fa-solid fa-edit"></i>
+                    <i class="fas fa-edit"></i>
                   </a>
                   <button type="button" onclick="deleteCourse({{ $course->id }})" class="btn-action btn-danger" title="{{ __('panel.delete') }}">
-                    <i class="fa-solid fa-trash"></i>
+                    <i class="fas fa-trash"></i>
                   </button>
                 </div>
                 <span class="course-badge">{{ $course->subject->name_ar ?? __('panel.no_subject') }}</span>
                 <span class="course-status-badge status-{{ $course->status }}">
                   @if($course->status === 'pending')
-                    <i class="fa-solid fa-clock"></i> {{ __('messages.status_pending') }}
+                    <i class="fas fa-clock"></i> {{ __('messages.status_pending') }}
                   @elseif($course->status === 'accepted')
-                    <i class="fa-solid fa-check-circle"></i> {{ __('messages.status_accepted') }}
+                    <i class="fas fa-check-circle"></i> {{ __('messages.status_accepted') }}
                   @else
-                    <i class="fa-solid fa-times-circle"></i> {{ __('messages.status_rejected') }}
+                    <i class="fas fa-times-circle"></i> {{ __('messages.status_rejected') }}
                   @endif
                 </span>
               </div>
@@ -87,7 +87,7 @@
                     <span class="price">{{ number_format($course->selling_price, 2) }} JD</span>
                   </div>
                   <div class="course-date">
-                    <i class="fa-regular fa-calendar"></i>
+                    <i class="far fa-calendar"></i>
                     <span>{{ $course->created_at->format('Y-m-d') }}</span>
                   </div>
                 </div>
@@ -105,10 +105,10 @@
         </div>
       @else
         <div class="empty-state">
-          <div class="empty-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+          <div class="empty-icon"><i class="fas fa-graduation-cap"></i></div>
           <h3>{{ __('panel.no_courses_yet') }}</h3>
           <p>{{ __('panel.start_creating_courses') }}</p>
-          <a href="{{ route('teacher.courses.create') }}" class="btn-primary"><i class="fa-solid fa-plus"></i> {{ __('panel.create_first_course') }}</a>
+          <a href="{{ route('teacher.courses.create') }}" class="btn-primary"><i class="fas fa-plus"></i> {{ __('panel.create_first_course') }}</a>
         </div>
       @endif
     </div>
@@ -438,7 +438,7 @@ document.addEventListener('DOMContentLoaded',function(){
       const form=this;
       const submitBtn=form.querySelector('button[type="submit"]');
       submitBtn.disabled=true;
-      submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.deleting") }}...';
+      submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.deleting") }}...';
       fetch(form.action,{
         method:'POST',
         headers:{

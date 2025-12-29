@@ -16,7 +16,7 @@
     </ul>
     <div class="faq-search">
       <input type="text" id="faqSearch" placeholder="{{ __('front.Search, for example: activation code, teachers, cancel') }}" inputmode="search">
-      <i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fas fa-magnifying-glass"></i>
     </div>
   </div>
 
@@ -26,7 +26,7 @@
         <button class="faq-q" aria-expanded="false">
           <span class="faq-tag">{{ collect($categories)->firstWhere('key', $f->type)['label'] ?? __('front.Other') }}</span>
           <span class="faq-title">{{ $f->question }}</span>
-          <span class="faq-icon"><i class="fa-solid fa-chevron-down"></i></span>
+          <span class="faq-icon"><i class="fas fa-chevron-down"></i></span>
         </button>
         <div class="faq-a">
           <div class="faq-a-inner"><p>{{ $f->answer }}</p></div>

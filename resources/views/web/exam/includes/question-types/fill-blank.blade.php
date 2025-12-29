@@ -8,7 +8,7 @@
            autocomplete="off"
            @if(isset($currentAnswer))value="{{ $currentAnswer->essay_answer }}"@endif>
     <div class="fill-blank-hint">
-        <i class="fas fa-lightbulb"></i>
+        <i class="fas falbulb"></i>
         {{ __('front.please_write_answer') }}
     </div>
 </div>

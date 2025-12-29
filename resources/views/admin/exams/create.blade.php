@@ -110,6 +110,9 @@
                                                 @if($subject->grade)
                                                     - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
                                                 @endif
+                                                @if($subject->semester)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>

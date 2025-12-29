@@ -637,4 +637,23 @@ return array (
     'cannot_add_attempt' => 'لقد استنفدت عدد المحاولات المسموحة',
     'view_results' => 'عرض النتائج',
     'exam_completed' => 'تم إكمال الامتحان',
+
+    // Missing translations from app/
+    'exam_submitted_successfully' => 'تم تقديم الامتحان بنجاح',
+    'invalid_amount' => 'المبلغ غير صالح',
+    'payment_error' => 'حدث خطأ في الدفع',
+    'payment_failed' => 'فشل الدفع',
+    'question_not_found' => 'السؤال غير موجود',
+    'قيد' => 'قيد',
+    'متروك' => 'متروك',
+    'نجح' => 'نجح',
+
+    // Missing from views
+    'Field' => 'الحقل',
+    'bank_questions' => 'بنك الأسئلة',
+    'no_questions_found' => 'لم يتم العثور على أسئلة',
+    'payment_submitted' => 'تم تقديم الدفع بنجاح',
+    'الشرح' => 'الشرح',
+    'في انتظار التصحيح اليدوي' => 'في انتظار التصحيح اليدوي',
+    'لم يتم الإجابة' => 'لم يتم الإجابة',
 );

@@ -18,7 +18,7 @@
                 <!-- Category/Program Dropdown -->
                 <div class="examx-dropdown">
                     <button type="button" class="examx-pill" id="category-dropdown">
-                        <i class="fa-solid fa-caret-down"></i>
+                        <i class="fas fa-caret-down"></i>
                         <span>{{ __('front.choose_program') }}</span>
                     </button>
                     <ul class="examx-menu" id="category-menu">
@@ -36,7 +36,7 @@
                 <!-- Subject Dropdown -->
                 <div class="examx-dropdown">
                     <button type="button" class="examx-pill" id="subject-dropdown">
-                        <i class="fa-solid fa-caret-down"></i>
+                        <i class="fas fa-caret-down"></i>
                         <span>{{ __('front.choose_subject') }}</span>
                     </button>
                     <ul class="examx-menu" id="subject-menu">
@@ -60,7 +60,7 @@
             <div class="examx-search">
                 <input type="text" name="search" value="{{ $search }}" 
                        placeholder="{{ __('front.search_placeholder') }}">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fas fa-magnifying-glass"></i>
             </div>
         </form>
     </div>
@@ -96,7 +96,7 @@
 
                 <div class="bq-left">
                     <a href="#" class="bq-btn bq-share" onclick="shareFile('{{ $question->pdf_path }}', '{{ $question->display_name }}')">
-                        <i class="fa-solid fa-share-nodes"></i>
+                        <i class="fas fa-share-nodes"></i>
                         <span>{{ __('front.share') }}</span>
                     </a>
                     @if($question->pdfExists())
@@ -106,7 +106,7 @@
                         </a>
                     @else
                         <button class="bq-btn bq-download disabled" disabled>
-                            <i class="fa-solid fa-download"></i>
+                            <i class="fas fa-download"></i>
                             <span>{{ __('front.file_not_available') }}</span>
                         </button>
                     @endif

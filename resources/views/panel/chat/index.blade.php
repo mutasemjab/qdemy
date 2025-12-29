@@ -76,7 +76,7 @@
                             <div class="chat-messages" id="udChat">
                                 <div class="welcome-message">
                                     <div class="welcome-icon">
-                                        <i class="fa-solid fa-comment-dots"></i>
+                                        <i class="fas fa-comment-dots"></i>
                                     </div>
                                     <h5>Welcome to Messages</h5>
                                     <p>Select a conversation or start a new chat with a teacher</p>
@@ -90,7 +90,7 @@
                                     <div class="input-container">
                                         <input type="text" id="messageInput" placeholder="Type your message..." class="message-input" required>
                                         <button type="submit" class="send-button">
-                                            <i class="fa-solid fa-paper-plane"></i>
+                                            <i class="fas fa-paper-plane"></i>
                                         </button>
                                     </div>
                                 </form>
@@ -125,12 +125,12 @@
                                             @endif
                                         </div>
                                         <button class="start-chat-button">
-                                            <i class="fa-solid fa-message"></i>
+                                            <i class="fas fa-message"></i>
                                         </button>
                                     </div>
                                 @empty
                                     <div class="no-teachers">
-                                        <i class="fa-solid fa-user-slash"></i>
+                                        <i class="fas fa-user-slash"></i>
                                         <p>No teachers available</p>
                                     </div>
                                 @endforelse
@@ -138,7 +138,7 @@
                         @else
                             <div class="teacher-info">
                                 <div class="info-icon">
-                                    <i class="fa-solid fa-chalkboard-teacher"></i>
+                                    <i class="fas fa-chalkboard-teacher"></i>
                                 </div>
                                 <h6>Teacher Panel</h6>
                                 <p>Students and parents can start conversations with you</p>
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.className = `toast ${type}`;
         toast.innerHTML = `
             <div class="d-flex align-items-center">
-                <i class="fa-solid fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
                 ${message}
             </div>
         `;
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             chatContainer.innerHTML = `
                 <div class="welcome-message">
                     <div class="welcome-icon">
-                        <i class="fa-solid fa-comment-dots"></i>
+                        <i class="fas fa-comment-dots"></i>
                     </div>
                     <h5>Start the conversation</h5>
                     <p>No messages yet. Send the first message to get started!</p>
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const btn = e.target.closest('.start-chat-button');
             const originalContent = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             const requestData = {
                 participant_id: parseInt(teacherId)
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     displayMessages([]);
                     
                     // Update button state
-                    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    btn.innerHTML = '<i class="fas fa-check"></i>';
                     btn.classList.add('active');
                     btn.disabled = true;
                     
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Load messages
             const chatContainer = document.getElementById('udChat');
-            chatContainer.innerHTML = '<div class="text-center p-4"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading messages...</p></div>';
+            chatContainer.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading messages...</p></div>';
             
             fetch(`{{ url('/panel/chat') }}/${chatId}/messages`)
                 .then(response => response.json())
@@ -358,7 +358,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     chatContainer.innerHTML = `
                         <div class="welcome-message">
                             <div class="welcome-icon">
-                                <i class="fa-solid fa-exclamation-triangle"></i>
+                                <i class="fas fa-exclamation-triangle"></i>
                             </div>
                             <h5>Error loading messages</h5>
                             <p>Please try again or refresh the page</p>
@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInput.disabled = true;
             const submitBtn = messageForm.querySelector('button[type="submit"]');
             const originalBtnContent = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
             fetch('{{ route("chat.send") }}', {
                 method: 'POST',

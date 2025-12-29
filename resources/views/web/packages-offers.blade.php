@@ -14,7 +14,7 @@
   <div class="co-chooser">
     <button class="co-chooser-btn" id="coChooserBtn">
       <span> {{$programm?->localized_name ?? translate_lang('choose the programm') }} </span>
-      <i class="fa-solid fa-caret-down"></i>
+      <i class="fas fa-caret-down"></i>
     </button>
     @if($programms && $programms->count())
     <ul class="co-chooser-list" id="coChooserList">

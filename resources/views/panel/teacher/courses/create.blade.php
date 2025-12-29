@@ -5,14 +5,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.courses.index') }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_courses') }}</span>
         </a>
     </aside>
@@ -28,6 +28,12 @@
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
+                </div>
+            @endif
+
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
                 </div>
             @endif
 
@@ -72,7 +78,13 @@
                         <option value="">{{ __('panel.select_subject') }}</option>
                         @foreach($subjects as $subject)
                             <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
-                                {{ $subject->localized_name }}
+                                {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                @if($subject->grade)
+                                    - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                @endif
+                                @if($subject->semester)
+                                    - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                @endif
                             </option>
                         @endforeach
                     </select>
@@ -99,7 +111,7 @@
                 <div class="form-actions">
                     <a href="{{ route('teacher.courses.index') }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="fa-solid fa-save"></i>
+                        <i class="fas fa-save"></i>
                         {{ __('panel.create_course') }}
                     </button>
                 </div>
@@ -159,6 +171,7 @@
 
 .alert{padding:12px 14px;border-radius:12px;margin-bottom:16px}
 .alert-danger{background:#fef2f2;color:#991b1b;border:1px solid #fee2e2}
+.alert-success{background:#f0fdf4;color:#166534;border:1px solid #dcfce7}
 
 @media (max-width:992px){
   .ud-wrap{grid-template-columns:1fr}
@@ -197,10 +210,10 @@ document.addEventListener('DOMContentLoaded',function(){
 
   courseForm.addEventListener('submit',function(){
     submitBtn.disabled=true;
-    submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
+    submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
     setTimeout(function(){
       submitBtn.disabled=false;
-      submitBtn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.create_course") }}';
+      submitBtn.innerHTML='<i class="fas fa-save"></i> {{ __("panel.create_course") }}';
     },10000);
   });
 });

@@ -6,14 +6,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_questions') }}</span>
         </a>
     </aside>
@@ -111,7 +111,7 @@
                     <div class="section-title">{{ __('panel.answer_options') }}</div>
                     <div id="options-container"></div>
                     <button type="button" class="btn btn-outline-secondary" onclick="addOption()">
-                        <i class="fa-solid fa-plus"></i>{{ __('panel.add_option') }}
+                        <i class="fas fa-plus"></i>{{ __('panel.add_option') }}
                     </button>
                 </div>
 
@@ -133,7 +133,7 @@
                 <!-- Essay Note -->
                 <div id="essay-section" class="form-section" style="display:none">
                     <div class="alert alert-info">
-                        <i class="fa-solid fa-info-circle"></i>
+                        <i class="fas fa-info-circle"></i>
                         {{ __('panel.essay_question_note') }}
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                         {{ __('panel.cancel') }}
                     </a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fa-solid fa-save"></i>{{ __('panel.update_question') }}
+                        <i class="fas fa-save"></i>{{ __('panel.update_question') }}
                     </button>
                 </div>
             </form>
@@ -294,7 +294,7 @@ function loadExistingOptions(){
           <div class="option-header">
             <h6>{{ __('panel.option') }} ${String.fromCharCode(64+optionCount)}</h6>
             <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})">
-              <i class="fa-solid fa-trash"></i>
+              <i class="fas fa-trash"></i>
             </button>
           </div>
           <div class="form-row">
@@ -343,7 +343,7 @@ function addOption(){
       <div class="option-header">
         <h6>{{ __('panel.option') }} ${letter}</h6>
         <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})">
-          <i class="fa-solid fa-trash"></i>
+          <i class="fas fa-trash"></i>
         </button>
       </div>
       <div class="form-row">

@@ -108,9 +108,14 @@ trait CourseManagementTrait
             DB::commit();
 
             $courseData = $course->load(['teacher', 'subject', 'sections', 'contents']);
-            
+
+            // Use different message based on whether it's admin or teacher creating the course
+            $message = $isAdmin
+                ? __('messages.course_created_successfully')
+                : __('messages.course_created_awaiting_review');
+
             return $this->successResponse(
-                __('messages.course_created_successfully'),
+                $message,
                 $courseData,
                 201
             );

@@ -5,14 +5,14 @@
 <section class="ud-wrap">
   <aside class="ud-menu">
     <div class="ud-user">
-      <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+      <img data-src="{{ auth()->user()->photo_url }}" alt="">
       <div>
         <h3>{{ auth()->user()->name }}</h3>
         <span>{{ auth()->user()->email }}</span>
       </div>
     </div>
     <a href="{{ route('teacher.courses.sections.index', $course) }}" class="ud-item">
-      <i class="fa-solid fa-arrow-left"></i>
+      <i class="fas fa-arrow-left"></i>
       <span>{{ __('panel.back_to_course') }}</span>
     </a>
   </aside>
@@ -121,7 +121,7 @@
                 @if($content->video_url)
                   <div class="video-preview">
                     @if($content->video_type === 'youtube')
-                      <a href="{{ $content->video_url }}" target="_blank" class="btn-outline-primary"><i class="fa-solid fa-arrow-up-right-from-square"></i> {{ __('panel.view_on_youtube') }}</a>
+                      <a href="{{ $content->video_url }}" target="_blank" class="btn-outline-primary"><i class="fas fa-arrow-up-right-from-square"></i> {{ __('panel.view_on_youtube') }}</a>
                     @else
                       <video controls width="300" height="200">
                         <source src="{{ asset($content->video_url) }}" type="video/mp4">
@@ -138,7 +138,7 @@
                   <p><strong>{{ __('panel.type') }}:</strong> {{ ucfirst($content->pdf_type ?? 'PDF') }}</p>
                 </div>
                 <div class="file-actions">
-                  <a href="{{ asset($content->file_path) }}" target="_blank" class="btn-outline-primary"><i class="fa-solid fa-download"></i> {{ __('panel.download_current_file') }}</a>
+                  <a href="{{ asset($content->file_path) }}" target="_blank" class="btn-outline-primary"><i class="fas fa-download"></i> {{ __('panel.download_current_file') }}</a>
                 </div>
               </div>
             @endif
@@ -195,7 +195,7 @@
               <input type="file" id="file_path" name="file_path" accept=".pdf">
               <div class="upload-preview" id="pdf-preview" style="display:none">
                 <div class="pdf-info">
-                  <i class="fa-solid fa-file-pdf"></i>
+                  <i class="fas fa-file-pdf"></i>
                   <span class="file-name"></span>
                   <span class="file-size"></span>
                 </div>
@@ -208,7 +208,7 @@
 
         <div class="form-actions">
           <a href="{{ route('teacher.courses.sections.index', $course) }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
-          <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fa-solid fa-save"></i>{{ __('panel.update_content') }}</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fas fa-save"></i>{{ __('panel.update_content') }}</button>
         </div>
       </form>
     </div>
@@ -349,10 +349,10 @@ document.addEventListener('DOMContentLoaded',function(){
     form.addEventListener('submit',function(){
       if(!submitBtn) return;
       submitBtn.disabled=true;
-      submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
+      submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
       setTimeout(function(){
         submitBtn.disabled=false;
-        submitBtn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.update_content") }}';
+        submitBtn.innerHTML='<i class="fas fa-save"></i> {{ __("panel.update_content") }}';
       },30000);
     });
   }

@@ -5,7 +5,7 @@
 
         <aside class="ud-menu">
             <div class="ud-user">
-                <img data-src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-big.png') }}"
+                <img data-src="{{ $user->photo_url }}"
                     alt="">
                 <div>
                     <h3>{{ $user->name }}</h3>
@@ -14,42 +14,42 @@
             </div>
 
             <button class="ud-item active" data-target="profile"><i
-                    class="fa-regular fa-user"></i><span>{{ __('panel.personal_profile') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="far fa-user"></i><span>{{ __('panel.personal_profile') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="settings"><i
-                    class="fa-solid fa-gear"></i><span>{{ __('panel.account_settings') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-gear"></i><span>{{ __('panel.account_settings') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="notifications"><i
-                    class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span>
-                <i class="fa-solid fa-angle-left"></i>
+                    class="far fa-bell"></i><span>{{ __('panel.notifications') }}</span>
+                <i class="fas fa-angle-left"></i>
             </button>
             <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" href="{{ route('chat.index') }}">
-                <i class="fa-solid fa-comments"></i>
+                <i class="fas fa-comments"></i>
                 <span>{{ __('panel.messages') }}</span>
                 {{-- Unread messages badge (optional - you can implement this later) --}}
                 <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
-                <i class="fa-solid fa-angle-left"></i>
+                <i class="fas fa-angle-left"></i>
             </a>
 
             <button class="ud-item" data-target="kids"><i
-                    class="fa-solid fa-children"></i><span>{{ __('panel.children_overview') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-children"></i><span>{{ __('panel.children_overview') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="child-reports"><i
-                    class="fa-solid fa-chart-line"></i><span>{{ __('panel.children_reports') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-chart-line"></i><span>{{ __('panel.children_reports') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <button class="ud-item" data-target="add-child"><i
-                    class="fa-solid fa-user-plus"></i><span>{{ __('panel.add_child') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-user-plus"></i><span>{{ __('panel.add_child') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="support"><i
-                    class="fa-brands fa-whatsapp"></i><span>{{ __('panel.technical_support') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fab fa-whatsapp"></i><span>{{ __('panel.technical_support') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <form action="{{ route('panel.user.logout') }}" method="POST" style="display: inline; width: 100%;">
                 @csrf
                 <button type="submit" class="ud-logout"
                     style="background: none; border: none; cursor: pointer; width: 100%; text-align: inherit; display: flex; align-items: center; padding: 0;">
-                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <i class="fas fa-arrow-left-long"></i>
                     <span>{{ __('panel.logout') }}</span>
                 </button>
             </form>
@@ -60,7 +60,7 @@
             <div class="ud-panel show" id="profile">
                 <div class="ud-title">{{ __('panel.personal_profile') }}</div>
                 <div class="ud-profile-head">
-                    <img data-src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-round.png') }}"
+                    <img data-src="{{ $user->photo_url }}"
                         class="ud-ava" alt="">
                     <div class="ud-name">
                         <h2>{{ $user->name }}<br><span class="g-sub1">{{ $user->email }}</span></h2>
@@ -121,12 +121,12 @@
                         <div class="ud-ava-wrap">
                             <!-- صورة البروفايل -->
                             <img id="preview-image"
-                                src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-round.png') }}"
+                                src="{{ $user->photo_url }}"
                                 class="ud-ava" alt="">
 
                             <!-- زر التعديل -->
                             <label class="ud-ava-edit">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fas fa-pen"></i>
                                 <input type="file" id="avatarInput" name="photo" accept="image/*" style="display:none">
                             </label>
                         </div>
@@ -177,11 +177,11 @@
                                     </div>
                                     <div class="ud-child-actions">
                                         <button class="ud-child-btn" onclick="viewChildDetails({{ $child->user_id }})">
-                                            <i class="fa-solid fa-eye"></i>
+                                            <i class="fas fa-eye"></i>
                                         </button>
                                         <button class="ud-child-btn"
                                             onclick="removeChildFromParent({{ $child->user_id }}, '{{ $child->name }}')">
-                                            <i class="fa-solid fa-trash text-danger"></i>
+                                            <i class="fas fa-trash text-danger"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -222,7 +222,7 @@
                                         @endforeach
                                     @else
                                         <div class="ud-no-courses">
-                                            <i class="fa-solid fa-book"></i>
+                                            <i class="fas fa-book"></i>
                                             <span>{{ __('panel.no_courses_enrolled') }}</span>
                                         </div>
                                     @endif
@@ -254,7 +254,7 @@
                     </div>
                 @else
                     <div class="ud-no-children">
-                        <i class="fa-solid fa-users"></i>
+                        <i class="fas fa-users"></i>
                         <h3>{{ __('panel.no_children_added') }}</h3>
                         <p>{{ __('panel.add_children_message') }}</p>
                         <button class="ud-primary" onclick="switchPanel('add-child')">
@@ -315,7 +315,7 @@
                     </div>
                 @else
                     <div class="ud-no-data">
-                        <i class="fa-solid fa-chart-line"></i>
+                        <i class="fas fa-chart-line"></i>
                         <h3>{{ __('panel.no_reports_available') }}</h3>
                         <p>{{ __('panel.add_children_to_see_reports') }}</p>
                     </div>
@@ -355,7 +355,7 @@
             <div class="ud-modal-body">
                 <p>{{ __('panel.remove_child_confirmation') }} <strong id="childNameToRemove"></strong>?</p>
                 <div class="ud-warning">
-                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    <i class="fas fa-exclamation-triangle"></i>
                     {{ __('panel.remove_child_warning') }}
                 </div>
             </div>
@@ -1181,7 +1181,7 @@
 
         document.getElementById('confirmRemoveChild').addEventListener('click', function() {
             if (childIdToRemove) {
-                this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> {{ __('panel.removing') }}...';
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> {{ __('panel.removing') }}...';
                 this.disabled = true;
 
                 fetch('{{ route('parent.remove-child') }}', {
@@ -1216,7 +1216,7 @@
 
         function addChild(studentId, studentName) {
             const button = event.target;
-            button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             button.disabled = true;
 
             fetch('{{ route('parent.add-child-submit') }}', {

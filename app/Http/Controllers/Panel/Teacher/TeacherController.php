@@ -127,8 +127,9 @@ class TeacherController extends Controller
             ->active()
             ->ordered()
             ->get();
-            
+
         $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
             ->ordered()
             ->get();
 
@@ -138,7 +139,18 @@ class TeacherController extends Controller
     public function store(Request $request)
     {
         // Use the trait method with isAdmin = false (teacher mode)
-        return $this->storeCourse($request, false);
+        $response = $this->storeCourse($request, false);
+
+        // For web requests (non-API), redirect to create page instead of back
+        if (!request()->expectsJson() && $response instanceof \Illuminate\Http\RedirectResponse) {
+            $session = $response->getSession();
+            if ($session && $session->has('success')) {
+                return redirect()->route('teacher.courses.create')
+                    ->with('success', $session->get('success'));
+            }
+        }
+
+        return $response;
     }
 
     /**
@@ -212,7 +224,12 @@ class TeacherController extends Controller
             ->ordered()
             ->get();
 
-        return view('panel.teacher.courses.edit', compact('course', 'parentCategories'));
+        $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
+            ->ordered()
+            ->get();
+
+        return view('panel.teacher.courses.edit', compact('course', 'parentCategories', 'subjects'));
     }
 
     
@@ -615,12 +632,15 @@ class TeacherController extends Controller
     public function createExamMethod()
     {
         $user = Auth::user();
-        
+
         $courses = Course::where('teacher_id', $user->id)
                         ->with(['subject', 'sections'])
                         ->get();
-        $subjects = Subject::active()->ordered()->get();
-        
+        $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
+            ->ordered()
+            ->get();
+
         return view('panel.teacher.exams.create', compact('courses', 'subjects'));
     }
 
@@ -695,8 +715,11 @@ class TeacherController extends Controller
         $courses = Course::where('teacher_id', $user->id)
                         ->with(['subject', 'sections'])
                         ->get();
-        $subjects = Subject::active()->ordered()->get();
-         $sections = CourseSection::get();
+        $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
+            ->ordered()
+            ->get();
+        $sections = CourseSection::get();
         return view('panel.teacher.exams.edit', compact('exam', 'courses', 'subjects','sections'));
     }
 

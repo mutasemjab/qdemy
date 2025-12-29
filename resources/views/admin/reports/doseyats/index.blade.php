@@ -6,10 +6,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4><i class="fa-solid fa-chart-line"></i> {{ __('messages.doseyat_reports') }}</h4>
+                    <h4><i class="fas fa-chart-line"></i> {{ __('messages.doseyat_reports') }}</h4>
                     <div>
                         <a href="{{ route('doseyats.index') }}" class="btn btn-secondary">
-                            <i class="fa-solid fa-arrow-left"></i> {{ __('messages.back_to_list') }}
+                            <i class="fas fa-arrow-left"></i> {{ __('messages.back_to_list') }}
                         </a>
                     </div>
                 </div>
@@ -26,7 +26,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_doseyats']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-book fa-3x"></i>
+                                            <i class="fas fa-book fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['doseyats_with_cards']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-check-circle fa-3x"></i>
+                                            <i class="fas fa-check-circle fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -58,7 +58,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['doseyats_without_cards']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-exclamation-circle fa-3x"></i>
+                                            <i class="fas fa-exclamation-circle fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -74,7 +74,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_cards_associated']) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-credit-card fa-3x"></i>
+                                            <i class="fas fa-credit-card fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -90,7 +90,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['total_price'], 2) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-dollar-sign fa-3x"></i>
+                                            <i class="fas fa-dollar-sign fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['average_price'], 2) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-chart-bar fa-3x"></i>
+                                            <i class="fas fa-chart-bar fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -122,7 +122,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['min_price'], 2) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-arrow-down fa-3x"></i>
+                                            <i class="fas fa-arrow-down fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +138,7 @@
                                             <h3 class="mb-0">{{ number_format($statistics['max_price'], 2) }}</h3>
                                         </div>
                                         <div class="text-white-50">
-                                            <i class="fa-solid fa-arrow-up fa-3x"></i>
+                                            <i class="fas fa-arrow-up fa-3x"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@
                     <form method="GET" action="{{ route('doseyat-reports.index') }}" id="filterForm">
                         <div class="card mb-4">
                             <div class="card-header bg-light">
-                                <h5 class="mb-0"><i class="fa-solid fa-filter"></i> {{ __('messages.filters') }}</h5>
+                                <h5 class="mb-0"><i class="fas fa-filter"></i> {{ __('messages.filters') }}</h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
@@ -240,18 +240,18 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="fa-solid fa-search"></i> {{ __('messages.filter') }}
+                                            <i class="fas fa-search"></i> {{ __('messages.filter') }}
                                         </button>
                                         <a href="{{ route('doseyat-reports.index') }}" class="btn btn-secondary">
-                                            <i class="fa-solid fa-redo"></i> {{ __('messages.reset') }}
+                                            <i class="fas fa-redo"></i> {{ __('messages.reset') }}
                                         </a>
                                     </div>
                                     <div>
                                         <a href="{{ route('doseyat-reports.export-excel', request()->all()) }}" class="btn btn-success">
-                                            <i class="fa-solid fa-file-excel"></i> {{ __('messages.export_excel') }}
+                                            <i class="fas fa-file-excel"></i> {{ __('messages.export_excel') }}
                                         </a>
                                         <a href="{{ route('doseyat-reports.print', request()->all()) }}" class="btn btn-info" target="_blank">
-                                            <i class="fa-solid fa-print"></i> {{ __('messages.print') }}
+                                            <i class="fas fa-print"></i> {{ __('messages.print') }}
                                         </a>
                                     </div>
                                 </div>
@@ -310,14 +310,21 @@
                                             <td>
                                                 @if($doseyat->cards->count() > 0)
                                                     <span class="badge bg-primary">
-                                                        <i class="fa-solid fa-credit-card"></i> {{ $doseyat->cards->count() }}
+                                                        <i class="fas fa-credit-card"></i> {{ $doseyat->cards->count() }}
                                                     </span>
                                                 @else
                                                     <span class="badge bg-secondary">0</span>
                                                 @endif
                                             </td>
                                             <td>{{ $doseyat->created_at->format('Y-m-d') }}</td>
-                                          
+                                            <td>
+                                                <a href="{{ route('doseyats.show', $doseyat->id) }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('doseyats.edit', $doseyat->id) }}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -329,7 +336,7 @@
                         </div>
                     @else
                         <div class="alert alert-info text-center">
-                            <i class="fa-solid fa-info-circle fa-2x mb-2"></i>
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
                             <p class="mb-0">{{ __('messages.no_data_found') }}</p>
                         </div>
                     @endif

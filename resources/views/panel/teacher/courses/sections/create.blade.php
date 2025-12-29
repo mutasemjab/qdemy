@@ -5,14 +5,14 @@
 <section class="ud-wrap">
   <aside class="ud-menu">
     <div class="ud-user">
-      <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+      <img data-src="{{ auth()->user()->photo_url }}" alt="">
       <div>
         <h3>{{ auth()->user()->name }}</h3>
         <span>{{ auth()->user()->email }}</span>
       </div>
     </div>
     <a href="{{ route('teacher.courses.sections.index', $course) }}" class="ud-item">
-      <i class="fa-solid fa-arrow-left"></i>
+      <i class="fas fa-arrow-left"></i>
       <span>{{ __('panel.back_to_course') }}</span>
     </a>
   </aside>
@@ -67,7 +67,7 @@
             {{ __('panel.cancel') }}
           </a>
           <button type="submit" class="btn btn-primary" id="submitBtn">
-            <i class="fa-solid fa-save"></i>
+            <i class="fas fa-save"></i>
             {{ __('panel.create_section') }}
           </button>
         </div>
@@ -134,10 +134,10 @@ document.addEventListener('DOMContentLoaded',function(){
   if(form&&btn){
     form.addEventListener('submit',function(){
       btn.disabled=true;
-      btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
+      btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
       setTimeout(function(){
         btn.disabled=false;
-        btn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.create_section") }}';
+        btn.innerHTML='<i class="fas fa-save"></i> {{ __("panel.create_section") }}';
       },8000);
     });
   }

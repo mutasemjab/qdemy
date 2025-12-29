@@ -52,7 +52,7 @@
         data-card-price="{{ $doseyat->price }}"
         data-category-id="{{ $doseyat->category_id }}">
         <img src="{{ asset('assets/admin/uploads/' . $doseyat->photo) }}" alt="{{ $doseyat->name }}">
-        <div class="card-overlay"><i class="fa-solid fa-check"></i></div>
+        <div class="card-overlay"><i class="fas fa-check"></i></div>
       </a>
     @endforeach
   </div>

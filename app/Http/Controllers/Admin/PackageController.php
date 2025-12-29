@@ -289,7 +289,7 @@ class PackageController extends Controller
                     'id' => $subject->id,
                     'name_ar' => $subject->name_ar,
                     'name_en' => $subject->name_en,
-                    'display_name' => $subject->grade ? $subject->grade->breadcrumb  . ' >> ' . $subject->name : ($subject->semester ? $subject->semester->breadcrumb  . ' >> ' . $subject->name : $subject->name),
+                    'display_name' => $subject->grade ? $subject->grade->breadcrumb  . ' >> ' . $subject->name_ar : ($subject->semester ? $subject->semester->breadcrumb  . ' >> ' . $subject->name_ar : $subject->name_ar),
                     'icon' => $subject->icon,
                     'color' => $subject->color,
                     'parent_name' => $subject->parent ? $subject->parent->name_ar : null

@@ -136,11 +136,11 @@
 
                 <div class="course-card__meta">
                     <div class="course-card__meta-item">
-                        <i class="fa-regular fa-calendar"></i>
+                        <i class="far fa-calendar"></i>
                         <span>{{ $course->start_at?->locale(app()->getLocale())->translatedFormat('dddd, d F Y') ?? $course->created_at->locale(app()->getLocale())->translatedFormat('dddd, d F Y') }}</span>
                     </div>
                     <div class="course-card__meta-item">
-                        <i class="fa-regular fa-clock"></i>
+                        <i class="far fa-clock"></i>
                         <span>{{ $course->start_at?->format('g:i A') ?? $course->created_at->format('g:i A') }}</span>
                     </div>
                 </div>

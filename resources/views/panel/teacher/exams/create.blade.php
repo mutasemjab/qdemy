@@ -6,14 +6,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.index') }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_exams') }}</span>
         </a>
     </aside>
@@ -74,6 +74,12 @@
                                 @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
                                         {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                        @if($subject->grade)
+                                            - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                        @endif
+                                        @if($subject->semester)
+                                            - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -81,21 +87,18 @@
 
                         <div class="form-group">
                             <label for="course_id">{{ __('panel.course') }}</label>
-                            <select id="course_id" name="course_id">
+                            <select id="course_id" name="course_id" disabled>
                                 <option value="">{{ __('panel.select_course') }}</option>
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}" data-subject="{{ $course->subject_id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
-                                        {{ app()->getLocale() === 'ar' ? $course->title_ar : $course->title_en }}
-                                    </option>
-                                @endforeach
                             </select>
+                            <small class="form-text">{{ __('messages.select_subject_first') }}</small>
                         </div>
 
                         <div class="form-group">
                             <label for="section_id">{{ __('panel.section') }}</label>
-                            <select id="section_id" name="section_id">
+                            <select id="section_id" name="section_id" disabled>
                                 <option value="">{{ __('panel.select_section') }}</option>
                             </select>
+                            <small class="form-text">{{ __('messages.select_course_first') }}</small>
                         </div>
                     </div>
 
@@ -189,7 +192,7 @@
                 <div class="form-actions">
                     <a href="{{ route('teacher.exams.index') }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="fa-solid fa-save"></i>
+                        <i class="fas fa-save"></i>
                         {{ __('panel.create_exam') }}
                     </button>
                 </div>
@@ -272,27 +275,45 @@ document.addEventListener('DOMContentLoaded',function(){
   const submitBtn=document.getElementById('submitBtn');
   const examForm=document.getElementById('examForm');
 
-  // Handle subject change to filter courses
+  // Handle subject change to load courses
   if(subjectSelect){
     subjectSelect.addEventListener('change',function(){
       const subjectId=this.value;
-      if(courseSelect){
-        // Hide/show course options based on subject
-        const courseOptions=courseSelect.querySelectorAll('option[data-subject]');
-        courseOptions.forEach(option=>{
-          if(subjectId&&option.getAttribute('data-subject')===subjectId){
-            option.style.display='block';
-          }else if(subjectId){
-            option.style.display='none';
-          }else{
-            option.style.display='block';
-          }
-        });
-        courseSelect.value='';
-        if(sectionSelect){
-          sectionSelect.innerHTML='<option value="">{{ __("panel.select_section") }}</option>';
-        }
+
+      // Reset and disable course select
+      resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+      resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!subjectId){
+        courseSelect.disabled=true;
+        sectionSelect.disabled=true;
+        contentSelect.disabled=true;
+        return;
       }
+
+      // Load courses by subject
+      courseSelect.disabled=false;
+      setLoadingState(courseSelect,'{{ __("panel.loading") }}...');
+
+      // Fetch teacher's courses for this subject
+      const url='{{ route("teacher.exams.subjects.courses", ":subject") }}'.replace(":subject", subjectId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(courses=>{
+          resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+          if(courses&&courses.length>0){
+            courses.forEach(course=>{
+              const title='{{ app()->getLocale() }}'==='ar'?course.title_ar:course.title_en;
+              addOption(courseSelect,course.id,title);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load courses:',error);
+          resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+          courseSelect.disabled=true;
+        });
     });
   }
 
@@ -300,25 +321,37 @@ document.addEventListener('DOMContentLoaded',function(){
   if(courseSelect){
     courseSelect.addEventListener('change',function(){
       const courseId=this.value;
-      if(sectionSelect&&courseId){
-        resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
-        setLoadingState(sectionSelect,'{{ __("panel.loading") }}...');
-        const sectionsUrl='{{ route("teacher.exams.courses.sections","") }}/'+courseId;
-        fetch(sectionsUrl)
-          .then(r=>r.json())
-          .then(sections=>{
-            resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
-            if(sections&&sections.length>0){
-              sections.forEach(section=>{
-                addOption(sectionSelect,section.id,section.title);
-              });
-            }
-          })
-          .catch(error=>{
-            console.warn('Failed to load sections:',error);
-            resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
-          });
+
+      // Reset and disable section select
+      resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!courseId){
+        sectionSelect.disabled=true;
+        contentSelect.disabled=true;
+        return;
       }
+
+      // Load sections
+      sectionSelect.disabled=false;
+      setLoadingState(sectionSelect,'{{ __("panel.loading") }}...');
+
+      const url='{{ route("teacher.exams.courses.sections", ":course") }}'.replace(":course", courseId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(sections=>{
+          resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+          if(sections&&sections.length>0){
+            sections.forEach(section=>{
+              addOption(sectionSelect,section.id,section.title);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load sections:',error);
+          resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+          sectionSelect.disabled=true;
+        });
     });
   }
 
@@ -326,32 +359,34 @@ document.addEventListener('DOMContentLoaded',function(){
   if(sectionSelect){
     sectionSelect.addEventListener('change',function(){
       const sectionId=this.value;
-      if(contentSelect){
-        resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
-        if(!sectionId){
-          contentSelect.disabled=true;
-          return;
-        }
-        contentSelect.disabled=false;
-        setLoadingState(contentSelect,'{{ __("panel.loading") }}...');
-        const contentsUrl='{{ route("teacher.exams.sections.contents","") }}/'+sectionId;
-        fetch(contentsUrl)
-          .then(r=>r.json())
-          .then(contents=>{
-            resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
-            if(contents&&contents.length>0){
-              contents.forEach(content=>{
-                const title=content.title_en||content.title_ar;
-                addOption(contentSelect,content.id,title);
-              });
-            }
-          })
-          .catch(error=>{
-            console.warn('Failed to load contents:',error);
-            resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
-            contentSelect.disabled=true;
-          });
+
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!sectionId){
+        contentSelect.disabled=true;
+        return;
       }
+
+      contentSelect.disabled=false;
+      setLoadingState(contentSelect,'{{ __("panel.loading") }}...');
+
+      const url='{{ route("teacher.exams.sections.contents", ":section") }}'.replace(":section", sectionId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(contents=>{
+          resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+          if(contents&&contents.length>0){
+            contents.forEach(content=>{
+              const title=content.title_en||content.title_ar;
+              addOption(contentSelect,content.id,title);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load contents:',error);
+          resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+          contentSelect.disabled=true;
+        });
     });
   }
 
@@ -399,7 +434,7 @@ document.addEventListener('DOMContentLoaded',function(){
         e.preventDefault();
       }else{
         submitBtn.disabled=true;
-        submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
+        submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.creating") }}...';
       }
     });
   }
@@ -441,6 +476,14 @@ document.addEventListener('DOMContentLoaded',function(){
           if(courseSelect){
             courseSelect.value='{{ old("course_id") }}';
             courseSelect.dispatchEvent(new Event('change'));
+            setTimeout(function(){
+              @if(old('section_id'))
+                if(sectionSelect){
+                  sectionSelect.value='{{ old("section_id") }}';
+                  sectionSelect.dispatchEvent(new Event('change'));
+                }
+              @endif
+            },300);
           }
         @endif
       },300);

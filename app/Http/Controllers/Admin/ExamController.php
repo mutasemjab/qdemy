@@ -79,7 +79,10 @@ class ExamController extends Controller
     public function create()
     {
         $courses = Course::with(['subject', 'sections'])->get();
-        $subjects = Subject::active()->ordered()->get();
+        $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
+            ->ordered()
+            ->get();
         return view('admin.exams.create', compact('courses', 'subjects'));
     }
 
@@ -89,17 +92,22 @@ class ExamController extends Controller
     public function store(Request $request)
     {
         $response = $this->storeExam($request, true); // true = isAdmin
-        
+
         if ($request->expectsJson()) {
             return $response;
         }
-        
+
         $data = $response->getData();
         if ($data->success) {
             return redirect()->route('exams.questions.manage', $data->data->id)
                 ->with('success', $data->message);
         }
-        
+
+        // إذا كان في validation errors، حطها في session
+        if (isset($data->errors) && is_object($data->errors)) {
+            return redirect()->back()->withInput()->withErrors((array)$data->errors);
+        }
+
         return redirect()->back()->withInput()->with('error', $data->message);
     }
 
@@ -118,7 +126,10 @@ class ExamController extends Controller
     public function edit(Exam $exam)
     {
         $courses = Course::with(['subject', 'sections'])->get();
-        $subjects = Subject::active()->ordered()->get();
+        $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
+            ->ordered()
+            ->get();
         return view('admin.exams.edit', compact('exam', 'courses', 'subjects'));
     }
 
@@ -128,17 +139,22 @@ class ExamController extends Controller
     public function update(Request $request, Exam $exam)
     {
         $response = $this->updateExam($request, $exam, true); // true = isAdmin
-        
+
         if ($request->expectsJson()) {
             return $response;
         }
-        
+
         $data = $response->getData();
         if ($data->success) {
             return redirect()->route('exams.index')
                 ->with('success', $data->message);
         }
-        
+
+        // إذا كان في validation errors، حطها في session
+        if (isset($data->errors) && is_object($data->errors)) {
+            return redirect()->back()->withInput()->withErrors((array)$data->errors);
+        }
+
         return redirect()->back()->withInput()->with('error', $data->message);
     }
 

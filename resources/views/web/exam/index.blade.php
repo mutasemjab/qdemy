@@ -64,7 +64,7 @@
             </div>
 
             <div class="examx-search">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fas fa-magnifying-glass"></i>
                 <input type="text" placeholder="{{ translate_lang('search') }}" name='search' value="{{ request('search') }}">
             </div>
         </form>

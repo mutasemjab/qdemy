@@ -5,7 +5,7 @@
 
         <aside class="ud-menu">
             <div class="ud-user">
-                <img data-src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-big.png') }}"
+                <img data-src="{{ $user->photo_url }}"
                     alt="">
                 <div>
                     <h3>{{ $user->name }}</h3>
@@ -14,45 +14,45 @@
             </div>
 
             <button class="ud-item active" data-target="profile"><i
-                    class="fa-regular fa-user"></i><span>{{ __('panel.personal_profile') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="far fa-user"></i><span>{{ __('panel.personal_profile') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="settings"><i
-                    class="fa-solid fa-gear"></i><span>{{ __('panel.account_settings') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-gear"></i><span>{{ __('panel.account_settings') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="notifications"><i
-                    class="fa-regular fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="far fa-bell"></i><span>{{ __('panel.notifications') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <a class="ud-item nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}" href="{{ route('chat.index') }}">
-                <i class="fa-solid fa-comments"></i><span>{{ __('panel.messages') }}</span>
+                <i class="fas fa-comments"></i><span>{{ __('panel.messages') }}</span>
                 {{-- Unread messages badge (optional - you can implement this later) --}}
                 <span class="badge bg-danger ms-auto" id="unreadCount" style="display: none;">0</span>
-                <i class="fa-solid fa-angle-left"></i>
+                <i class="fas fa-angle-left"></i>
             </a>
             <button class="ud-item" data-target="courses">
-                <i class="fa-solid fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span>
-                <i class="fa-solid fa-angle-left"></i>
+                <i class="fas fa-graduation-cap"></i><span>{{ __('panel.my_courses') }}</span>
+                <i class="fas fa-angle-left"></i>
             </button>
 
-            <button class="ud-item" data-target="schedule"><i class="fa-regular fa-calendar-days"></i><span>الجدول
-                    الزمني</span><i class="fa-solid fa-angle-left"></i></button>
+            <button class="ud-item" data-target="schedule"><i class="far fa-calendar-days"></i><span>الجدول
+                    الزمني</span><i class="fas fa-angle-left"></i></button>
 
             <button class="ud-item" data-target="results"><i
-                    class="fa-solid fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-square-poll-vertical"></i><span>{{ __('panel.my_results') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <button class="ud-item" data-target="community"><i
-                    class="fa-solid fa-magnifying-glass"></i><span>{{ __('panel.q_community') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-magnifying-glass"></i><span>{{ __('panel.q_community') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="support"><i
-                    class="fa-brands fa-whatsapp"></i><span>{{ __('panel.technical_support') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fab fa-whatsapp"></i><span>{{ __('panel.technical_support') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <form action="{{ route('panel.user.logout') }}" method="POST" style="display: inline; width: 100%;">
                 @csrf
                 <button type="submit" class="ud-logout"
                     style="background: none; border: none; cursor: pointer; width: 100%; text-align: inherit; display: flex; align-items: center; padding: 0;">
-                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <i class="fas fa-arrow-left-long"></i>
                     <span>{{ __('panel.logout') }}</span>
                 </button>
             </form>
@@ -63,7 +63,7 @@
             <div class="ud-panel show" id="profile">
                 <div class="ud-title">{{ __('panel.personal_profile') }}</div>
                 <div class="ud-profile-head">
-                    <img data-src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-round.png') }}"
+                    <img data-src="{{ $user->photo_url }}"
                         class="ud-ava" alt="">
                     <div class="ud-name">
                         <h2>{{ $user->name }}<br><span class="g-sub1">{{ $user->email }}</span></h2>
@@ -125,12 +125,12 @@
                         <div class="ud-ava-wrap">
                             <!-- صورة البروفايل -->
                             <img id="preview-image"
-                                src="{{ $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/avatar-round.png') }}"
+                                src="{{ $user->photo_url }}"
                                 class="ud-ava" alt="">
 
                             <!-- زر التعديل -->
                             <label class="ud-ava-edit">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fas fa-pen"></i>
                                 <input type="file" id="avatarInput" name="photo" accept="image/*" style="display:none">
                             </label>
                         </div>

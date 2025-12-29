@@ -16,7 +16,7 @@
 
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
         <form method="GET" action="{{ route('sale-point') }}" class="examx-search">
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fas fa-magnifying-glass"></i>
             <input type="text" 
                    name="search" 
                    placeholder="{{ __('front.Search') }}" 
@@ -29,7 +29,7 @@
             @foreach($posGrouped as $countryName => $locations)
                 <div class="sp2-group {{ $loop->first ? 'is-open' : '' }}">
                     <button class="sp2-group-head">
-                        <i class="fa-solid {{ $loop->first ? 'fa-minus' : 'fa-plus' }}"></i>
+                        <i class="fas {{ $loop->first ? 'fa-minus' : 'fa-plus' }}"></i>
                         <span>{{ $countryName }}</span>
                     </button>
                     <div class="sp2-panel">
@@ -55,12 +55,12 @@
                                                 <a href="{{ $pos->google_map_link }}" 
                                                    target="_blank" 
                                                    class="sp2-loc">
-                                                    <i class="fa-solid fa-location-dot"></i> 
+                                                    <i class="fas fa-location-dot"></i> 
                                                     {{ __('front.Library Location') }}
                                                 </a>
                                             @else
                                                 <span class="sp2-loc" style="color: #ccc;">
-                                                    <i class="fa-solid fa-location-dot"></i> 
+                                                    <i class="fas fa-location-dot"></i> 
                                                     {{ __('front.Location Not Available') }}
                                                 </span>
                                             @endif
@@ -74,7 +74,7 @@
             @endforeach
         @else
             <div class="no-results" style="text-align: center; padding: 40px; color: #666;">
-                <i class="fa-solid fa-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
+                <i class="fas fa-search" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
                 <h3>{{ __('front.No Results Found') }}</h3>
                 <p>{{ __('front.No sale points found matching your search criteria') }}</p>
                 @if(request('search'))

@@ -14,7 +14,7 @@
     <div class="co-chooser">
         <button class="co-chooser-btn" id="coChooserBtn">
             <span>{{ $clas?->localized_name ?? translate_lang('choose class') }}</span>
-            <i class="fa-solid fa-caret-down"></i>
+            <i class="fas fa-caret-down"></i>
         </button>
 
         <ul class="co-chooser-list" id="coChooserList">
@@ -56,7 +56,7 @@
     @foreach ($subjects as $subject)
         <div class="sp2-group">
         <button class="sp2-group-head">
-            <i class="fa-solid fa-plus"></i>
+            <i class="fas fa-plus"></i>
             <span>{{ $subject->localized_name }}</span>
         </button>
         <div class="sp2-panel">
@@ -84,7 +84,7 @@
                 @foreach ($optionals as $optional_lesson)
                     <div class="sp2-group sp2-nested">
                     <button class="sp2-group-head sp2-sub-head">
-                        <i class="fa-solid fa-plus"></i>
+                        <i class="fas fa-plus"></i>
                         <span>{{ $optional_lesson->localized_name }}</span>
                     </button>
                     <div class="sp2-panel">

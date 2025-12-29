@@ -12,12 +12,12 @@
       <p class="t-role">{{ $teacher->name_of_lesson }}</p>
       <div class="t-meta">
         <div class="t-badge">
-          <i class="fa-regular fa-circle-play"></i>
+          <i class="far fa-circle-play"></i>
           <span>{{ $coursesCount }} {{ __('front.course') }}</span>
         </div>
         <div class="t-dot"></div>
         <div class="t-badge">
-          <i class="fa-regular fa-user"></i>
+          <i class="far fa-user"></i>
           <span>{{ number_format($teacher->followersCount()) }} {{ __('front.follower') }}</span>
         </div>
       </div>
@@ -28,7 +28,7 @@
                 class="btn t-btn--ghost follow-btn" 
                 data-teacher-id="{{ $teacher->id }}"
                 data-following="{{ $isFollowing ? 'true' : 'false' }}">
-          <i class="fa-regular {{ $isFollowing ? 'fa-heart-circle-check' : 'fa-heart' }}"></i>
+          <i class="far {{ $isFollowing ? 'fa-heart-circle-check' : 'fa-heart' }}"></i>
           <span>{{ $isFollowing ? __('front.following') : __('front.follow') }}</span>
         </button>
         @endauth
@@ -36,22 +36,22 @@
       <div class="t-socials">
         @if($teacher->facebook)
         <a href="{{ $teacher->facebook }}" target="_blank" aria-label="Facebook">
-          <i class="fa-brands fa-facebook"></i>
+          <i class="fab fa-facebook"></i>
         </a>
         @endif
         @if($teacher->youtube)
         <a href="{{ $teacher->youtube }}" target="_blank" aria-label="YouTube">
-          <i class="fa-brands fa-youtube"></i>
+          <i class="fab fa-youtube"></i>
         </a>
         @endif
         @if($teacher->instagram)
         <a href="{{ $teacher->instagram }}" target="_blank" aria-label="Instagram">
-          <i class="fa-brands fa-instagram"></i>
+          <i class="fab fa-instagram"></i>
         </a>
         @endif
         @if($teacher->whataspp)
         <a href="{{ $teacher->whataspp }}" target="_blank" aria-label="WhatsApp">
-          <i class="fa-brands fa-whatsapp"></i>
+          <i class="fab fa-whatsapp"></i>
         </a>
         @endif
       </div>
@@ -110,7 +110,7 @@
               </span>
              
               <span>
-                <i class="fa-regular fa-calendar"></i>
+                <i class="far fa-calendar"></i>
                 {{ $course->created_at->format('d M Y') }}
               </span>
             </div>

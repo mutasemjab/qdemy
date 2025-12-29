@@ -120,12 +120,6 @@
                                         
                                         <td>
                                             <div class="btn-group btn-group-sm" role="group">
-                                                <!-- View Button -->
-                                                <a href="{{ route('ministerial-questions.show', $ministerialQuestion) }}" 
-                                                   class="btn btn-info btn-sm" title="{{ __('messages.view') }}">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                
                                                 <!-- Download Button -->
                                                 @if($ministerialQuestion->pdf && $ministerialQuestion->pdfExists())
                                                     <a href="{{ route('ministerial-questions.download-pdf', $ministerialQuestion) }}" 

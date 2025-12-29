@@ -170,8 +170,8 @@ class MinisterialYearsQuestionController extends Controller
      */
     public function show(MinisterialYearsQuestion $ministerialQuestion)
     {
-        $ministerialQuestion->load(['category', 'subject']);
-        return view('admin.ministerial_questions.show', compact('ministerialQuestion'));
+        // Redirect to edit page instead since show view doesn't exist
+        return redirect()->route('ministerial-questions.edit', $ministerialQuestion);
     }
 
     /**

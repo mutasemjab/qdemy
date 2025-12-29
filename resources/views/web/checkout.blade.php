@@ -34,7 +34,7 @@
                       data-course-id="{{ $course->id }}"
                       data-is-package="{{ $is_package ? '1' : '0' }}"
                       data-package-id="{{ $package_info['package_id'] ?? null }}">
-                <i class="fa-solid fa-trash"></i>
+                <i class="fas fa-trash"></i>
               </button>
             </div>
           </div>

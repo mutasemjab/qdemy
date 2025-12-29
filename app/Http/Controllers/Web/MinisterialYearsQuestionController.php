@@ -82,18 +82,43 @@ class MinisterialYearsQuestionController extends Controller
     public function download(MinisterialYearsQuestion $ministerialQuestion)
     {
         // Check if ministerial question is active and file exists
-        if (!$ministerialQuestion->is_active || !$ministerialQuestion->pdfExists()) {
+        if (!$ministerialQuestion->is_active || !$ministerialQuestion->pdf || !$ministerialQuestion->pdfExists()) {
             abort(404, __('front.file_not_available'));
         }
 
-        // Increment download count
-        $ministerialQuestion->increment('download_count');
+        try {
+            // Get file content from Bunny storage
+            $fileContent = BunnyHelper()->getFileContent($ministerialQuestion->pdf);
 
-        // Return file download response
-        return response()->download(
-            $ministerialQuestion->pdf_path, 
-            $ministerialQuestion->display_name ?? 'ministerial-question.pdf'
-        );
+            if (!$fileContent) {
+                abort(404, __('front.file_not_available'));
+            }
+
+            // Increment download count
+            $ministerialQuestion->increment('download_count');
+
+            // Prepare filename
+            $filename = $ministerialQuestion->display_name ?? 'ministerial-question.pdf';
+            if (!str_ends_with(strtolower($filename), '.pdf')) {
+                $filename .= '.pdf';
+            }
+
+            // Return file as download response
+            return response($fileContent)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+                ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                ->header('Pragma', 'no-cache')
+                ->header('Expires', '0');
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error downloading ministerial PDF', [
+                'ministerial_question_id' => $ministerialQuestion->id,
+                'pdf_path' => $ministerialQuestion->pdf,
+                'error' => $e->getMessage()
+            ]);
+            abort(500, __('front.file_not_available'));
+        }
     }
 
     /**

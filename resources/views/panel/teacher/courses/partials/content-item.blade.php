@@ -5,19 +5,19 @@
         <div class="content-icon {{ $content->content_type }}">
             @switch($content->content_type)
                 @case('video')
-                    <i class="fa-solid fa-play"></i>
+                    <i class="fas fa-play"></i>
                     @break
                 @case('pdf')
-                    <i class="fa-solid fa-file-pdf"></i>
+                    <i class="fas fa-file-pdf"></i>
                     @break
                 @case('quiz')
-                    <i class="fa-solid fa-question-circle"></i>
+                    <i class="fas fa-question-circle"></i>
                     @break
                 @case('assignment')
-                    <i class="fa-solid fa-tasks"></i>
+                    <i class="fas fa-tasks"></i>
                     @break
                 @default
-                    <i class="fa-solid fa-file"></i>
+                    <i class="fas fa-file"></i>
             @endswitch
         </div>
         
@@ -25,13 +25,13 @@
             <h4>{{ $content->title_ar }}</h4>
             <div class="content-meta">
                 <span class="content-type">
-                    <i class="fa-solid fa-tag"></i>
+                    <i class="fas fa-tag"></i>
                     {{ ucfirst($content->content_type) }}
                 </span>
                 
                 @if($content->content_type === 'video' && $content->video_duration)
                     <span class="duration">
-                        <i class="fa-solid fa-clock"></i>
+                        <i class="fas fa-clock"></i>
                         {{ gmdate('H:i:s', $content->video_duration) }}
                     </span>
                 @endif
@@ -46,7 +46,7 @@
                 
                 @if($content->order)
                     <span class="order">
-                        <i class="fa-solid fa-sort-numeric-up"></i>
+                        <i class="fas fa-sort-numeric-up"></i>
                         {{ __('panel.order') }}: {{ $content->order }}
                     </span>
                 @endif
@@ -58,23 +58,23 @@
         @if($content->content_type === 'video' && $content->video_url)
             <a href="{{ $content->video_type === 'youtube' ? $content->video_url : asset($content->video_url) }}" 
                target="_blank" class="btn-action" title="{{ __('panel.preview') }}">
-                <i class="fa-solid fa-external-link-alt"></i>
+                <i class="fas fa-external-link-alt"></i>
             </a>
         @elseif($content->content_type !== 'video' && $content->file_path)
             <a href="{{ asset($content->file_path) }}" 
                target="_blank" class="btn-action" title="{{ __('panel.download') }}">
-                <i class="fa-solid fa-download"></i>
+                <i class="fas fa-download"></i>
             </a>
         @endif
         
         <a href="{{ route('teacher.courses.contents.edit', [$course, $content]) }}" 
            class="btn-action" title="{{ __('panel.edit') }}">
-            <i class="fa-solid fa-edit"></i>
+            <i class="fas fa-edit"></i>
         </a>
         
         <button onclick="deleteContent({{ $content->id }})" 
                 class="btn-action btn-danger" title="{{ __('panel.delete') }}">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fas fa-trash"></i>
         </button>
     </div>
 </div>

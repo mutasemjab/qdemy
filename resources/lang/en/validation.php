@@ -170,4 +170,8 @@ return [
 
     'attributes' => [],
 
+    // Missing translations from app/
+    'invalid_parent_section' => 'Invalid parent section',
+    'section_cannot_be_parent_of_itself' => 'Section cannot be parent of itself',
+    'teacher_invalid' => 'Invalid teacher',
 ];

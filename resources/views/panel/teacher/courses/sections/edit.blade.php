@@ -5,14 +5,14 @@
 <section class="ud-wrap">
   <aside class="ud-menu">
     <div class="ud-user">
-      <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+      <img data-src="{{ auth()->user()->photo_url }}" alt="">
       <div>
         <h3>{{ auth()->user()->name }}</h3>
         <span>{{ auth()->user()->email }}</span>
       </div>
     </div>
     <a href="{{ route('teacher.courses.sections.index', $course) }}" class="ud-item">
-      <i class="fa-solid fa-arrow-left"></i>
+      <i class="fas fa-arrow-left"></i>
       <span>{{ __('panel.back_to_course') }}</span>
     </a>
   </aside>
@@ -74,21 +74,21 @@
           <div class="section-stats">
             <div class="stats-row">
               <div class="stat-item">
-                <div class="stat-icon"><i class="fa-solid fa-play"></i></div>
+                <div class="stat-icon"><i class="fas fa-play"></i></div>
                 <div class="stat-info">
                   <h4>{{ $section->contents->count() }}</h4>
                   <p>{{ __('panel.direct_contents') }}</p>
                 </div>
               </div>
               <div class="stat-item">
-                <div class="stat-icon"><i class="fa-solid fa-folder"></i></div>
+                <div class="stat-icon"><i class="fas fa-folder"></i></div>
                 <div class="stat-info">
                   <h4>{{ $section->children->count() }}</h4>
                   <p>{{ __('panel.subsections') }}</p>
                 </div>
               </div>
               <div class="stat-item">
-                <div class="stat-icon"><i class="fa-solid fa-list"></i></div>
+                <div class="stat-icon"><i class="fas fa-list"></i></div>
                 <div class="stat-info">
                   @php
                     $totalContents = $section->contents->count() + $section->children->sum(function($child){ return $child->contents->count(); });
@@ -112,7 +112,7 @@
                   @foreach($section->contents as $content)
                     <div class="content-preview-item">
                       <div class="content-icon {{ $content->content_type }}">
-                        <i class="fa-solid fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
+                        <i class="fas fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
                       </div>
                       <div class="content-info">
                         <h5>{{ $content->title_ar }}</h5>
@@ -123,7 +123,7 @@
                       </div>
                       <div class="content-actions">
                         <a href="{{ route('teacher.courses.contents.edit', [$course, $content]) }}" class="btn-small">
-                          <i class="fa-solid fa-edit"></i>
+                          <i class="fas fa-edit"></i>
                         </a>
                       </div>
                     </div>
@@ -139,14 +139,14 @@
                   @foreach($section->children as $childSection)
                     <div class="subsection-preview-item">
                       <div class="subsection-header">
-                        <h5><i class="fa-solid fa-folder-open"></i>{{ $childSection->title_ar }}</h5>
+                        <h5><i class="fas fa-folder-open"></i>{{ $childSection->title_ar }}</h5>
                         <span class="content-count">{{ $childSection->contents->count() }} {{ __('panel.items') }}</span>
                       </div>
                       @if($childSection->contents->count() > 0)
                         <div class="child-contents">
                           @foreach($childSection->contents as $content)
                             <div class="child-content-item">
-                              <i class="fa-solid fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
+                              <i class="fas fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
                               <span>{{ $content->title_ar }}</span>
                             </div>
                           @endforeach
@@ -163,7 +163,7 @@
         <div class="form-actions">
           <a href="{{ route('teacher.courses.sections.index', $course) }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
           <button type="submit" class="btn btn-primary">
-            <i class="fa-solid fa-save"></i>
+            <i class="fas fa-save"></i>
             {{ __('panel.update_section') }}
           </button>
         </div>
@@ -268,10 +268,10 @@ document.addEventListener('DOMContentLoaded',function(){
     const btn=this.querySelector('button[type="submit"]');
     if(!btn) return;
     btn.disabled=true;
-    btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
     setTimeout(function(){
       btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.update_section") }}';
+      btn.innerHTML='<i class="fas fa-save"></i> {{ __("panel.update_section") }}';
     },5000);
   });
 });

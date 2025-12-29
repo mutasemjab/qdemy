@@ -49,11 +49,11 @@
         data-category-id="{{ $card->category_id }}"
         data-doseyats='@json($card->doseyats->map(function($d) { return ["id" => $d->id, "name" => $d->name, "photo" => $d->photo]; }))'>
         <img src="{{ asset('assets/admin/uploads/' . $card->photo) }}" alt="{{ $card->name }}">
-        <div class="card-overlay"><i class="fa-solid fa-check"></i></div>
+        <div class="card-overlay"><i class="fas fa-check"></i></div>
         
         @if($card->doseyats && $card->doseyats->count() > 0)
           <div class="card-free-badge">
-            <i class="fa-solid fa-gift"></i>
+            <i class="fas fa-gift"></i>
             <span>{{ __('front.free') }}</span>
           </div>
           <div class="card-doseyats">
@@ -83,7 +83,7 @@
         </div>
         <div id="waDoseyats" class="summary-doseyats" style="display:none;">
           <div class="doseyats-header">
-            <i class="fa-solid fa-gift"></i>
+            <i class="fas fa-gift"></i>
             <span>{{ __('front.free_doseyats') }}:</span>
           </div>
           <div id="waDoseyatsList" class="doseyats-list"></div>
@@ -109,7 +109,7 @@
         </div>
         <div id="cashDoseyats" class="summary-doseyats" style="display:none;">
           <div class="doseyats-header">
-            <i class="fa-solid fa-gift"></i>
+            <i class="fas fa-gift"></i>
             <span>{{ __('front.free_doseyats') }}:</span>
           </div>
           <div id="cashDoseyatsList" class="doseyats-list"></div>
@@ -139,7 +139,7 @@
         </div>
         <div id="visaDoseyats" class="summary-doseyats" style="display:none;">
           <div class="doseyats-header">
-            <i class="fa-solid fa-gift"></i>
+            <i class="fas fa-gift"></i>
             <span>{{ __('front.free_doseyats') }}:</span>
           </div>
           <div id="visaDoseyatsList" class="doseyats-list"></div>

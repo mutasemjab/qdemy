@@ -6,7 +6,7 @@
     <aside class="ud-menu">
         <div class="ud-user">
             <img
-                data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}"
+                data-src="{{ auth()->user()->photo_url }}"
                 alt=""
             />
             <div>
@@ -16,7 +16,7 @@
         </div>
 
         <a href="{{ route('teacher.courses.index') }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_courses') }}</span>
         </a>
     </aside>
@@ -38,27 +38,27 @@
 
                     <div class="course-meta">
                         <div class="meta-item">
-                            <i class="fa-solid fa-book"></i>
+                            <i class="fas fa-book"></i>
                             <span>{{ $course->subject->name_ar ?? __('panel.no_subject') }}</span>
                         </div>
                         <div class="meta-item">
-                            <i class="fa-solid fa-tag"></i>
+                            <i class="fas fa-tag"></i>
                             <span>{{ number_format($course->selling_price, 2) }} {{ __('panel.currency') }}</span>
                         </div>
                         <div class="meta-item">
-                            <i class="fa-solid fa-calendar"></i>
+                            <i class="fas fa-calendar"></i>
                             <span>{{ $course->created_at->format('Y-m-d') }}</span>
                         </div>
                     </div>
 
                     <div class="course-actions">
                         <a href="{{ route('teacher.courses.edit', $course) }}" class="btn btn-primary">
-                            <i class="fa-solid fa-edit"></i>
+                            <i class="fas fa-edit"></i>
                             {{ __('panel.edit_course') }}
                         </a>
 
                         <a href="{{ route('teacher.courses.sections.index', $course) }}" class="btn btn-secondary">
-                            <i class="fa-solid fa-list"></i>
+                            <i class="fas fa-list"></i>
                             {{ __('panel.manage_content') }}
                         </a>
                     </div>
@@ -68,7 +68,7 @@
             <div class="course-stats">
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fa-solid fa-folder"></i>
+                        <i class="fas fa-folder"></i>
                     </div>
                     <div class="stat-info">
                         <h3>{{ $course->sections->count() }}</h3>
@@ -78,7 +78,7 @@
 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fa-solid fa-play"></i>
+                        <i class="fas fa-play"></i>
                     </div>
                     <div class="stat-info">
                         @php
@@ -96,7 +96,7 @@
 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fa-solid fa-clock"></i>
+                        <i class="fas fa-clock"></i>
                     </div>
                     <div class="stat-info">
                         @php
@@ -123,7 +123,7 @@
 
                 <div class="stat-card">
                     <div class="stat-icon">
-                        <i class="fa-solid fa-users"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                     <div class="stat-info">
                         <h3>0</h3>
@@ -158,7 +158,7 @@
                                 <div class="structure-header">
                                     <div class="structure-info">
                                         <h4>
-                                            <i class="fa-solid fa-folder"></i>
+                                            <i class="fas fa-folder"></i>
                                             {{ $index + 1 }}. {{ $section->title_ar }}
                                         </h4>
                                         <span class="structure-count">
@@ -173,7 +173,7 @@
                                         @foreach ($section->contents as $contentIndex => $content)
                                             <div class="structure-content-item">
                                                 <div class="content-left">
-                                                    <i class="fa-solid fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
+                                                    <i class="fas fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
                                                     <span>{{ $contentIndex + 1 }}. {{ $content->title_ar }}</span>
                                                 </div>
                                                 <div class="content-badges">
@@ -193,7 +193,7 @@
                                     <div class="structure-child">
                                         <div class="structure-child-header">
                                             <h5>
-                                                <i class="fa-solid fa-folder-open"></i>
+                                                <i class="fas fa-folder-open"></i>
                                                 {{ $index + 1 }}.{{ $childIndex + 1 }} {{ $childSection->title_ar }}
                                             </h5>
                                             <span class="structure-count">
@@ -206,7 +206,7 @@
                                                 @foreach ($childSection->contents as $contentIndex => $content)
                                                     <div class="structure-content-item">
                                                         <div class="content-left">
-                                                            <i class="fa-solid fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
+                                                            <i class="fas fa-{{ $content->content_type === 'video' ? 'play' : 'file-pdf' }}"></i>
                                                             <span>{{ $contentIndex + 1 }}. {{ $content->title_ar }}</span>
                                                         </div>
                                                         <div class="content-badges">
@@ -228,7 +228,7 @@
                     </div>
                 @else
                     <div class="empty-structure">
-                        <i class="fa-solid fa-folder-open"></i>
+                        <i class="fas fa-folder-open"></i>
                         <p>{{ __('panel.no_content_structure') }}</p>
                         <a
                             href="{{ route('teacher.courses.sections.create', $course) }}"

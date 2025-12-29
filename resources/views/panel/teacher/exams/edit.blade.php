@@ -6,14 +6,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.index') }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_exams') }}</span>
         </a>
     </aside>
@@ -75,6 +75,12 @@
                                 @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}" {{ old('subject_id', $exam->subject_id) == $subject->id ? 'selected' : '' }}>
                                         {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                        @if($subject->grade)
+                                            - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                        @endif
+                                        @if($subject->semester)
+                                            - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                        @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -82,28 +88,18 @@
 
                         <div class="form-group">
                             <label for="course_id">{{ __('panel.course') }}</label>
-                            <select id="course_id" name="course_id">
+                            <select id="course_id" name="course_id" {{ $exam->subject_id ? '' : 'disabled' }}>
                                 <option value="">{{ __('panel.select_course') }}</option>
-                                @foreach($courses as $course)
-                                    <option value="{{ $course->id }}" data-subject="{{ $course->subject_id }}" {{ old('course_id', $exam->course_id) == $course->id ? 'selected' : '' }}>
-                                        {{ app()->getLocale() === 'ar' ? $course->title_ar : $course->title_en }}
-                                    </option>
-                                @endforeach
                             </select>
+                            <small class="form-text">{{ __('messages.select_subject_first') }}</small>
                         </div>
 
                         <div class="form-group">
                             <label for="section_id">{{ __('panel.section') }}</label>
-                            <select id="section_id" name="section_id">
+                            <select id="section_id" name="section_id" {{ $exam->course_id ? '' : 'disabled' }}>
                                 <option value="">{{ __('panel.select_section') }}</option>
-                                @if(isset($sections))
-                                    @foreach ($sections as $section)
-                                        <option value="{{ $section->id }}" {{ old('section_id', $exam->section_id) == $section->id ? 'selected' : '' }}>
-                                            {{ $section->title }}
-                                        </option>
-                                    @endforeach
-                                @endif
                             </select>
+                            <small class="form-text">{{ __('messages.select_course_first') }}</small>
                         </div>
                     </div>
 
@@ -197,7 +193,7 @@
                 <div class="form-actions">
                     <a href="{{ route('teacher.exams.index') }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
                     <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="fa-solid fa-save"></i>
+                        <i class="fas fa-save"></i>
                         {{ __('panel.update_exam') }}
                     </button>
                 </div>
@@ -272,333 +268,228 @@
 
 @section('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof $ !== 'undefined') {
-        initializeWithJQuery();
-    } else {
-        initializeWithVanillaJS();
+document.addEventListener('DOMContentLoaded',function(){
+  const subjectSelect=document.getElementById('subject_id');
+  const courseSelect=document.getElementById('course_id');
+  const sectionSelect=document.getElementById('section_id');
+  const contentSelect=document.getElementById('course_content_id');
+  const examForm=document.getElementById('examForm');
+
+  // Handle subject change to load courses
+  if(subjectSelect){
+    subjectSelect.addEventListener('change',function(){
+      const subjectId=this.value;
+
+      // Reset and disable course select
+      resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+      resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!subjectId){
+        courseSelect.disabled=true;
+        sectionSelect.disabled=true;
+        contentSelect.disabled=true;
+        return;
+      }
+
+      // Load courses by subject
+      courseSelect.disabled=false;
+      setLoadingState(courseSelect,'{{ __("panel.loading") }}...');
+
+      // Fetch teacher's courses for this subject
+      const url='{{ route("teacher.exams.subjects.courses", ":subject") }}'.replace(":subject", subjectId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(courses=>{
+          resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+          if(courses&&courses.length>0){
+            courses.forEach(course=>{
+              const title='{{ app()->getLocale() }}'==='ar'?course.title_ar:course.title_en;
+              const selected=course.id=='{{ old("course_id",$exam->course_id??"") }}'?'selected':'';
+              addOption(courseSelect,course.id,title,false,selected);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load courses:',error);
+          resetSelect(courseSelect,'{{ __("panel.select_course") }}');
+          courseSelect.disabled=true;
+        });
+    });
+  }
+
+  // Handle course change to load sections
+  if(courseSelect){
+    courseSelect.addEventListener('change',function(){
+      const courseId=this.value;
+
+      // Reset and disable section select
+      resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!courseId){
+        sectionSelect.disabled=true;
+        contentSelect.disabled=true;
+        return;
+      }
+
+      // Load sections
+      sectionSelect.disabled=false;
+      setLoadingState(sectionSelect,'{{ __("panel.loading") }}...');
+
+      const url='{{ route("teacher.exams.courses.sections", ":course") }}'.replace(":course", courseId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(sections=>{
+          resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+          if(sections&&sections.length>0){
+            sections.forEach(section=>{
+              const selected=section.id=='{{ old("section_id",$exam->section_id??"") }}'?'selected':'';
+              addOption(sectionSelect,section.id,section.title,false,selected);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load sections:',error);
+          resetSelect(sectionSelect,'{{ __("panel.select_section") }}');
+          sectionSelect.disabled=true;
+        });
+    });
+  }
+
+  // Handle section change to load contents (lessons)
+  if(sectionSelect){
+    sectionSelect.addEventListener('change',function(){
+      const sectionId=this.value;
+
+      resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+
+      if(!sectionId){
+        contentSelect.disabled=true;
+        return;
+      }
+
+      contentSelect.disabled=false;
+      setLoadingState(contentSelect,'{{ __("panel.loading") }}...');
+
+      const url='{{ route("teacher.exams.sections.contents", ":section") }}'.replace(":section", sectionId);
+      fetch(url)
+        .then(r=>r.json())
+        .then(contents=>{
+          resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+          if(contents&&contents.length>0){
+            contents.forEach(content=>{
+              const title=content.title_en||content.title_ar;
+              const selected=content.id=='{{ old("course_content_id",$exam->course_content_id??"") }}'?'selected':'';
+              addOption(contentSelect,content.id,title,false,selected);
+            });
+          }
+        })
+        .catch(error=>{
+          console.warn('Failed to load contents:',error);
+          resetSelect(contentSelect,'{{ __("messages.select_lesson_optional") }}');
+          contentSelect.disabled=true;
+        });
+    });
+  }
+
+  // Form validation
+  if(examForm){
+    examForm.addEventListener('submit',function(e){
+      let isValid=true;
+      const requiredFields=['title_en','title_ar','subject_id','attempts_allowed','passing_grade'];
+
+      requiredFields.forEach(fieldName=>{
+        const input=document.querySelector(`[name="${fieldName}"]`);
+        if(input&&!input.value.trim()){
+          input.style.borderColor='#dc3545';
+          isValid=false;
+        }else if(input){
+          input.style.borderColor='#e5e7eb';
+        }
+      });
+
+      // Validate date range
+      const startDateInput=document.querySelector('[name="start_date"]');
+      const endDateInput=document.querySelector('[name="end_date"]');
+      if(startDateInput&&endDateInput&&startDateInput.value&&endDateInput.value){
+        const startDate=new Date(startDateInput.value);
+        const endDate=new Date(endDateInput.value);
+        if(endDate<=startDate){
+          endDateInput.style.borderColor='#dc3545';
+          isValid=false;
+          alert('{{ __("panel.end_date_must_be_after_start_date") }}');
+        }
+      }
+
+      // Validate passing grade
+      const passingGradeInput=document.querySelector('[name="passing_grade"]');
+      if(passingGradeInput){
+        const passingGrade=parseFloat(passingGradeInput.value);
+        if(passingGrade<0||passingGrade>100){
+          passingGradeInput.style.borderColor='#dc3545';
+          isValid=false;
+          alert('{{ __("panel.passing_grade_must_be_between_0_100") }}');
+        }
+      }
+
+      if(!isValid){
+        e.preventDefault();
+      }
+    });
+  }
+
+  // Auto-adjust textarea height
+  const textareas=document.querySelectorAll('textarea');
+  textareas.forEach(textarea=>{
+    function adjustHeight(){
+      textarea.style.height='auto';
+      textarea.style.height=(textarea.scrollHeight)+'px';
     }
+    adjustHeight();
+    textarea.addEventListener('input',adjustHeight);
+  });
+
+  function resetSelect(sel,txt){
+    sel.innerHTML='';
+    addOption(sel,'',txt);
+  }
+  function setLoadingState(sel,txt){
+    sel.innerHTML='';
+    addOption(sel,'',txt);
+  }
+  function addOption(sel,val,txt,disabled=false,selected=false){
+    const o=document.createElement('option');
+    o.value=val;
+    o.textContent=txt;
+    if(disabled)o.disabled=true;
+    if(selected)o.selected=true;
+    sel.appendChild(o);
+  }
+
+  // Load data on page load
+  @if($exam->subject_id)
+    if(subjectSelect){
+      subjectSelect.value='{{ $exam->subject_id }}';
+      subjectSelect.dispatchEvent(new Event('change'));
+      setTimeout(function(){
+        @if($exam->course_id)
+          if(courseSelect){
+            courseSelect.value='{{ $exam->course_id }}';
+            courseSelect.dispatchEvent(new Event('change'));
+            setTimeout(function(){
+              @if($exam->section_id)
+                if(sectionSelect){
+                  sectionSelect.value='{{ $exam->section_id }}';
+                  sectionSelect.dispatchEvent(new Event('change'));
+                }
+              @endif
+            },300);
+          }
+        @endif
+      },300);
+    }
+  @endif
 });
-
-function initializeWithJQuery() {
-    initializeFormState();
-    // Handle subject change to filter courses
-        $('#subject_id').on('change', function() {
-            const subjectId = $(this).val();
-            const courseSelect = $('#course_id');
-            const sectionSelect = $('#section_id');
-
-            // Reset course and section dropdowns
-            courseSelect.val('').find('option:not(:first)').hide();
-            sectionSelect.val('').html('<option value="">{{ __('panel.select_section') }}</option>');
-
-            if (subjectId) {
-                // Show courses that belong to selected subject
-                courseSelect.find(`option[data-subject="${subjectId}"]`).show();
-
-                // Also make AJAX call to get courses (if routes exist)
-                const coursesUrl = '{{ route('teacher.exams.subjects.courses', '') }}/' + subjectId;
-                $.get(coursesUrl)
-                    .done(function(courses) {
-                        courseSelect.html('<option value="">{{ __('panel.select_course') }}</option>');
-                        courses.forEach(course => {
-                            const title = '{{ app()->getLocale() }}' === 'ar' ? course.title_ar : course.title_en;
-                            const selected = course.id == '{{ old('course_id', $exam->course_id ?? '') }}' ? 'selected' : '';
-                            courseSelect.append(`<option value="${course.id}" ${selected}>${title}</option>`);
-                        });
-                    })
-                    .fail(function() {
-                        console.warn('AJAX course loading failed, using static options');
-                    });
-            } else {
-                courseSelect.find('option').show();
-            }
-        });
-
-        // Handle course change to load sections
-        $('#course_id').on('change', function() {
-            const courseId = $(this).val();
-            const sectionSelect = $('#section_id');
-
-            sectionSelect.html('<option value="">{{ __('panel.select_section') }}</option>');
-
-            if (courseId) {
-                const sectionsUrl = '{{ route('teacher.exams.courses.sections', '') }}/' + courseId;
-                $.get(sectionsUrl)
-                    .done(function(sections) {
-                        sections.forEach(section => {
-                            const selected = section.id == '{{ old('section_id', $exam->section_id ?? '') }}' ? 'selected' : '';
-                            sectionSelect.append(`<option value="${section.id}" ${selected}>${section.title}</option>`);
-                        });
-                    })
-                    .fail(function() {
-                        console.warn('AJAX section loading failed');
-                    });
-            }
-        });
-
-        // Form validation
-        $('#examForm').on('submit', function(e) {
-            let isValid = true;
-
-            // Check required fields
-            const requiredFields = ['title_en', 'title_ar', 'subject_id', 'attempts_allowed', 'passing_grade'];
-
-            requiredFields.forEach(field => {
-                const input = $(`[name="${field}"]`);
-                if (input.length && !input.val().trim()) {
-                    input.addClass('is-invalid');
-                    isValid = false;
-                } else if (input.length) {
-                    input.removeClass('is-invalid');
-                }
-            });
-
-            // Validate date range
-            const startDateInput = $('[name="start_date"]');
-            const endDateInput = $('[name="end_date"]');
-
-            if (startDateInput.length && endDateInput.length &&
-                startDateInput.val() && endDateInput.val()) {
-                const startDate = new Date(startDateInput.val());
-                const endDate = new Date(endDateInput.val());
-
-                if (endDate <= startDate) {
-                    endDateInput.addClass('is-invalid');
-                    isValid = false;
-
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: '{{ __('panel.validation_error') }}',
-                            text: '{{ __('panel.end_date_must_be_after_start_date') }}'
-                        });
-                    } else {
-                        alert('{{ __('panel.end_date_must_be_after_start_date') }}');
-                    }
-                }
-            }
-
-            // Validate passing grade
-            const passingGrade = parseFloat($('[name="passing_grade"]').val());
-            if (passingGrade < 0 || passingGrade > 100) {
-                $('[name="passing_grade"]').addClass('is-invalid');
-                isValid = false;
-                alert('{{ __('panel.passing_grade_must_be_between_0_100') }}');
-            }
-
-            if (!isValid) {
-                e.preventDefault();
-            }
-        });
-
-        // Auto-adjust textarea height
-        $('textarea').on('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-
-        // Trigger subject change to initialize course filtering
-        $('#subject_id').trigger('change');
-    });
-
-    function initializeFormState() {
-        // Filter courses based on the currently selected subject
-        const selectedSubjectId = $('#subject_id').val();
-        if (selectedSubjectId) {
-            const courseSelect = $('#course_id');
-            courseSelect.find('option:not(:first)').hide();
-            courseSelect.find(`option[data-subject="${selectedSubjectId}"]`).show();
-        }
-    }
-}
-
-function initializeWithVanillaJS() {
-    // Initialize the form with current values
-    initializeFormStateVanilla();
-
-    // Subject change handler
-    const subjectSelect = document.getElementById('subject_id');
-    if (subjectSelect) {
-        subjectSelect.addEventListener('change', function() {
-            const subjectId = this.value;
-            const courseSelect = document.getElementById('course_id');
-            const sectionSelect = document.getElementById('section_id');
-
-            if (courseSelect && sectionSelect) {
-                // Reset dropdowns
-                courseSelect.value = '';
-                sectionSelect.innerHTML = '<option value="">{{ __('panel.select_section') }}</option>';
-
-                // Hide/show course options based on subject
-                const courseOptions = courseSelect.querySelectorAll('option[data-subject]');
-                courseOptions.forEach(option => {
-                    if (subjectId && option.getAttribute('data-subject') === subjectId) {
-                        option.style.display = 'block';
-                    } else if (subjectId) {
-                        option.style.display = 'none';
-                    } else {
-                        option.style.display = 'block';
-                    }
-                });
-            }
-        });
-
-        // Trigger change to initialize
-        subjectSelect.dispatchEvent(new Event('change'));
-    }
-
-    // Course change handler
-    const courseSelect = document.getElementById('course_id');
-    if (courseSelect) {
-        courseSelect.addEventListener('change', function() {
-            const courseId = this.value;
-            const sectionSelect = document.getElementById('section_id');
-
-            if (sectionSelect && courseId) {
-                // Make fetch request for sections
-                fetch(`/panel/teacher/exams/courses/${courseId}/sections`)
-                    .then(response => response.json())
-                    .then(sections => {
-                        sectionSelect.innerHTML = '<option value="">{{ __('panel.select_section') }}</option>';
-                        sections.forEach(section => {
-                            const option = document.createElement('option');
-                            option.value = section.id;
-                            option.textContent = section.title;
-                            // Check if this section should be selected
-                            if (section.id == '{{ old('section_id', $exam->section_id ?? '') }}') {
-                                option.selected = true;
-                            }
-                            sectionSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.warn('Failed to load sections:', error);
-                    });
-            }
-        });
-    }
-
-    // Section change handler to load contents (lessons)
-    const sectionSelect = document.getElementById('section_id');
-    const contentSelect = document.getElementById('course_content_id');
-    if (sectionSelect && contentSelect) {
-        sectionSelect.addEventListener('change', function() {
-            const sectionId = this.value;
-
-            // Reset contents select
-            contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
-
-            if (!sectionId) {
-                contentSelect.disabled = true;
-                return;
-            }
-
-            contentSelect.disabled = false;
-
-            // Make fetch request for contents
-            fetch(`/panel/teacher/exams/sections/${sectionId}/contents`)
-                .then(response => response.json())
-                .then(contents => {
-                    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
-                    contents.forEach(content => {
-                        const title = content.title_en || content.title_ar;
-                        const option = document.createElement('option');
-                        option.value = content.id;
-                        option.textContent = title;
-                        // Check if this content should be selected
-                        if (content.id == '{{ old('course_content_id', $exam->course_content_id ?? '') }}') {
-                            option.selected = true;
-                        }
-                        contentSelect.appendChild(option);
-                    });
-                })
-                .catch(error => {
-                    console.warn('Failed to load contents:', error);
-                    contentSelect.innerHTML = '<option value="">{{ __('messages.select_lesson_optional') }}</option>';
-                    contentSelect.disabled = true;
-                });
-        });
-    }
-
-    // Form validation
-    const examForm = document.getElementById('examForm');
-    if (examForm) {
-        examForm.addEventListener('submit', function(e) {
-            let isValid = true;
-
-            // Check required fields
-            const requiredFields = ['title_en', 'title_ar', 'subject_id', 'attempts_allowed', 'passing_grade'];
-
-            requiredFields.forEach(fieldName => {
-                const input = document.querySelector(`[name="${fieldName}"]`);
-                if (input && !input.value.trim()) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
-                } else if (input) {
-                    input.classList.remove('is-invalid');
-                }
-            });
-
-            // Validate date range
-            const startDateInput = document.querySelector('[name="start_date"]');
-            const endDateInput = document.querySelector('[name="end_date"]');
-
-            if (startDateInput && endDateInput &&
-                startDateInput.value && endDateInput.value) {
-                const startDate = new Date(startDateInput.value);
-                const endDate = new Date(endDateInput.value);
-
-                if (endDate <= startDate) {
-                    endDateInput.classList.add('is-invalid');
-                    isValid = false;
-                    alert('{{ __('panel.end_date_must_be_after_start_date') }}');
-                }
-            }
-
-            // Validate passing grade
-            const passingGradeInput = document.querySelector('[name="passing_grade"]');
-            if (passingGradeInput) {
-                const passingGrade = parseFloat(passingGradeInput.value);
-                if (passingGrade < 0 || passingGrade > 100) {
-                    passingGradeInput.classList.add('is-invalid');
-                    isValid = false;
-                    alert('Passing grade must be between 0 and 100');
-                }
-            }
-
-            if (!isValid) {
-                e.preventDefault();
-            }
-        });
-    }
-
-    // Auto-adjust textarea height
-    const textareas = document.querySelectorAll('textarea');
-    textareas.forEach(textarea => {
-        textarea.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-    });
-
-    function initializeFormStateVanilla() {
-        // Filter courses based on the currently selected subject
-        const subjectSelect = document.getElementById('subject_id');
-        const courseSelect = document.getElementById('course_id');
-        
-        if (subjectSelect && courseSelect) {
-            const selectedSubjectId = subjectSelect.value;
-            if (selectedSubjectId) {
-                const courseOptions = courseSelect.querySelectorAll('option[data-subject]');
-                courseOptions.forEach(option => {
-                    if (option.getAttribute('data-subject') !== selectedSubjectId) {
-                        option.style.display = 'none';
-                    }
-                });
-            }
-        }
-    }
-}
 </script>
 @endsection

@@ -5,14 +5,14 @@
 <section class="ud-wrap">
   <aside class="ud-menu">
     <div class="ud-user">
-      <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+      <img data-src="{{ auth()->user()->photo_url }}" alt="">
       <div>
         <h3>{{ auth()->user()->name }}</h3>
         <span>{{ auth()->user()->email }}</span>
       </div>
     </div>
     <a href="{{ route('teacher.courses.index') }}" class="ud-item">
-      <i class="fa-solid fa-arrow-left"></i>
+      <i class="fas fa-arrow-left"></i>
       <span>{{ __('panel.back_to_courses') }}</span>
     </a>
   </aside>
@@ -26,10 +26,10 @@
         </div>
         <div class="course-actions">
           <a href="{{ route('teacher.courses.sections.create', $course) }}" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> {{ __('panel.add_section') }}
+            <i class="fas fa-plus"></i> {{ __('panel.add_section') }}
           </a>
           <a href="{{ route('teacher.courses.contents.create', $course) }}" class="btn btn-secondary">
-            <i class="fa-solid fa-file-circle-plus"></i> {{ __('panel.add_content') }}
+            <i class="fas fa-file-circle-plus"></i> {{ __('panel.add_content') }}
           </a>
         </div>
       </div>
@@ -45,7 +45,7 @@
         @if($directContents->count() > 0)
           <div class="content-group direct-contents">
             <div class="group-header">
-              <h3><i class="fa-solid fa-file"></i> {{ __('panel.course_materials') }}</h3>
+              <h3><i class="fas fa-file"></i> {{ __('panel.course_materials') }}</h3>
             </div>
             <div class="contents-list">
               @foreach($directContents as $content)
@@ -59,20 +59,20 @@
           <div class="section-group" id="section-{{ $parentSection->id }}">
             <div class="section-header">
               <div class="section-info">
-                <h3><i class="fa-solid fa-folder"></i>{{ $parentSection->title_ar }}</h3>
+                <h3><i class="fas fa-folder"></i>{{ $parentSection->title_ar }}</h3>
                 <span class="content-count">
                   {{ $parentSection->contents->count() + $parentSection->children->sum(function($child){ return $child->contents->count(); }) }} {{ __('panel.items') }}
                 </span>
               </div>
               <div class="section-actions">
                 <a href="{{ route('teacher.courses.contents.create', [$course, 'section_id' => $parentSection->id]) }}" class="btn-action" title="{{ __('panel.add_content') }}">
-                  <i class="fa-solid fa-plus"></i>
+                  <i class="fas fa-plus"></i>
                 </a>
                 <a href="{{ route('teacher.courses.sections.edit', [$course, $parentSection]) }}" class="btn-action" title="{{ __('panel.edit_section') }}">
-                  <i class="fa-solid fa-pen"></i>
+                  <i class="fas fa-pen"></i>
                 </a>
                 <button onclick="deleteSection({{ $parentSection->id }})" class="btn-action btn-danger" title="{{ __('panel.delete_section') }}">
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="fas fa-trash"></i>
                 </button>
               </div>
             </div>
@@ -89,18 +89,18 @@
               <div class="child-section-group" id="section-{{ $childSection->id }}">
                 <div class="child-section-header">
                   <div class="section-info">
-                    <h4><i class="fa-solid fa-folder-open"></i>{{ $childSection->title_ar }}</h4>
+                    <h4><i class="fas fa-folder-open"></i>{{ $childSection->title_ar }}</h4>
                     <span class="content-count">{{ $childSection->contents->count() }} {{ __('panel.items') }}</span>
                   </div>
                   <div class="section-actions">
                     <a href="{{ route('teacher.courses.contents.create', [$course, 'section_id' => $childSection->id]) }}" class="btn-action" title="{{ __('panel.add_content') }}">
-                      <i class="fa-solid fa-plus"></i>
+                      <i class="fas fa-plus"></i>
                     </a>
                     <a href="{{ route('teacher.courses.sections.edit', [$course, $childSection]) }}" class="btn-action" title="{{ __('panel.edit_section') }}">
-                      <i class="fa-solid fa-pen"></i>
+                      <i class="fas fa-pen"></i>
                     </a>
                     <button onclick="deleteSection({{ $childSection->id }})" class="btn-action btn-danger" title="{{ __('panel.delete_section') }}">
-                      <i class="fa-solid fa-trash"></i>
+                      <i class="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>
@@ -113,7 +113,7 @@
                   </div>
                 @else
                   <div class="empty-section">
-                    <i class="fa-regular fa-folder-open"></i>
+                    <i class="far fa-folder-open"></i>
                     <p>{{ __('panel.no_content_in_section') }}</p>
                     <a href="{{ route('teacher.courses.contents.create', [$course, 'section_id' => $childSection->id]) }}" class="btn btn-sm btn-primary">
                       {{ __('panel.add_first_content') }}
@@ -125,7 +125,7 @@
 
             @if($parentSection->contents->count() == 0 && $parentSection->children->count() == 0)
               <div class="empty-section">
-                <i class="fa-regular fa-folder-open"></i>
+                <i class="far fa-folder-open"></i>
                 <p>{{ __('panel.no_content_in_section') }}</p>
                 <div class="empty-actions">
                   <a href="{{ route('teacher.courses.sections.create', $course) }}" class="btn btn-sm btn-secondary">{{ __('panel.add_subsection') }}</a>
@@ -137,15 +137,15 @@
         @empty
           @if($directContents->count() == 0)
             <div class="empty-course">
-              <div class="empty-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+              <div class="empty-icon"><i class="fas fa-graduation-cap"></i></div>
               <h3>{{ __('panel.empty_course') }}</h3>
               <p>{{ __('panel.start_adding_content') }}</p>
               <div class="empty-actions">
                 <a href="{{ route('teacher.courses.sections.create', $course) }}" class="btn btn-primary">
-                  <i class="fa-solid fa-folder-plus"></i> {{ __('panel.create_section') }}
+                  <i class="fas fa-folder-plus"></i> {{ __('panel.create_section') }}
                 </a>
                 <a href="{{ route('teacher.courses.contents.create', $course) }}" class="btn btn-secondary">
-                  <i class="fa-solid fa-file-circle-plus"></i> {{ __('panel.add_content_directly') }}
+                  <i class="fas fa-file-circle-plus"></i> {{ __('panel.add_content_directly') }}
                 </a>
               </div>
             </div>
@@ -331,7 +331,7 @@
     const btn=form.querySelector('button[type="submit"]');
     const originalHTML=btn.innerHTML;
     btn.disabled=true;
-    btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i> ${loadingText}...`;
+    btn.innerHTML=`<i class="fas fa-spinner fa-spin"></i> ${loadingText}...`;
     fetch(form.action,{
       method:'POST',
       headers:{

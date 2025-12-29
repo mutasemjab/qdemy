@@ -147,9 +147,25 @@ class User extends Authenticatable
             ->count();
     }
 
-     public function getPhotoUrlAttribute()
+    /**
+     * Get the user's profile photo URL
+     * Returns the uploaded photo if exists (from User or Teacher model),
+     * otherwise returns the default avatar image
+     */
+    public function getPhotoUrlAttribute()
     {
-       return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/Profile-picture.jpg');
+        // Check if user has photo in User model
+        if ($this->photo) {
+            return asset('assets/admin/uploads/' . $this->photo);
+        }
+
+        // Check if user is a teacher with photo in Teacher model
+        if ($this->role_name === 'teacher' && $this->teacher && $this->teacher->photo) {
+            return asset('assets/admin/uploads/' . $this->teacher->photo);
+        }
+
+        // Return default avatar
+        return asset('assets_front/images/avatar-big.png');
     }
 
 

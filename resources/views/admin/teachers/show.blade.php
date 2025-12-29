@@ -24,12 +24,12 @@
                         <!-- Teacher Photo and Basic Info -->
                         <div class="col-md-4 text-center">
                             @if($teacher->photo)
-                                <img src="{{ asset('storage/' . $teacher->photo) }}" 
-                                     alt="{{ $teacher->name }}" 
-                                     class="img-fluid rounded shadow" 
+                                <img src="{{ $teacher->photo_url }}"
+                                     alt="{{ $teacher->name }}"
+                                     class="img-fluid rounded shadow"
                                      style="max-width: 250px; max-height: 300px; object-fit: cover;">
                             @else
-                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded shadow mx-auto" 
+                                <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded shadow mx-auto"
                                      style="width: 250px; height: 300px; font-size: 5rem;">
                                     {{ substr($teacher->name, 0, 1) }}
                                 </div>

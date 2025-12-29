@@ -137,7 +137,7 @@
                     <a href="{{ route('teacher', $teacher->id) }}">
                         <div class="x3c-cell">
                             <div class="x3c-fig">
-                                <img data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}"
+                                <img data-src="{{ $teacher->photo_url }}"
                                     alt="{{ $teacher->name }}">
                             </div>
                         </div>

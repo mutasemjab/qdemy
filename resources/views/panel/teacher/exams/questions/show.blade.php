@@ -6,14 +6,14 @@
 <section class="ud-wrap">
     <aside class="ud-menu">
         <div class="ud-user">
-            <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+            <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
                 <span>{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="ud-item">
-            <i class="fa-solid fa-arrow-left"></i>
+            <i class="fas fa-arrow-left"></i>
             <span>{{ __('panel.back_to_questions') }}</span>
         </a>
     </aside>
@@ -26,13 +26,13 @@
             <!-- Action Buttons -->
             <div class="action-buttons" style="margin-bottom: 24px; display: flex; gap: 12px;">
                 <a href="{{ route('teacher.exams.exam_questions.edit', [$exam, $question]) }}" class="btn btn-primary">
-                    <i class="fa-solid fa-edit"></i> {{ __('panel.edit') }}
+                    <i class="fas fa-edit"></i> {{ __('panel.edit') }}
                 </a>
                 <form action="{{ route('teacher.exams.exam_questions.destroy', [$exam, $question]) }}" method="POST" style="display: inline;" onsubmit="return confirm('{{ __('panel.delete_question_warning') }}')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">
-                        <i class="fa-solid fa-trash"></i> {{ __('panel.delete') }}
+                        <i class="fas fa-trash"></i> {{ __('panel.delete') }}
                     </button>
                 </form>
             </div>
@@ -111,7 +111,7 @@
                                 @endif
                             </div>
                             @if($option->is_correct)
-                            <i class="fa-solid fa-check-circle" style="color: #22c55e; font-size: 18px;"></i>
+                            <i class="fas fa-check-circle" style="color: #22c55e; font-size: 18px;"></i>
                             @endif
                         </div>
                         <div style="margin-bottom: 8px;">
@@ -136,12 +136,12 @@
                 <div style="text-align: center;">
                     @if($correctAnswer === 'true')
                         <div style="display: inline-block; padding: 16px 32px; background: #dcfce7; border-radius: 10px; border: 2px solid #22c55e;">
-                            <i class="fa-solid fa-circle-check" style="color: #22c55e; font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                            <i class="fas fa-circle-check" style="color: #22c55e; font-size: 32px; display: block; margin-bottom: 8px;"></i>
                             <span style="font-size: 18px; font-weight: 700; color: #22c55e;">{{ __('panel.true') }}</span>
                         </div>
                     @else
                         <div style="display: inline-block; padding: 16px 32px; background: #fee2e2; border-radius: 10px; border: 2px solid #dc2626;">
-                            <i class="fa-solid fa-circle-xmark" style="color: #dc2626; font-size: 32px; display: block; margin-bottom: 8px;"></i>
+                            <i class="fas fa-circle-xmark" style="color: #dc2626; font-size: 32px; display: block; margin-bottom: 8px;"></i>
                             <span style="font-size: 18px; font-weight: 700; color: #dc2626;">{{ __('panel.false') }}</span>
                         </div>
                     @endif
@@ -151,7 +151,7 @@
             <div class="form-section">
                 <div class="section-title">{{ __('panel.essay') }}</div>
                 <div style="padding: 12px 16px; background: #dbeafe; border: 1px solid #0369a1; border-radius: 10px; color: #0369a1;">
-                    <i class="fa-solid fa-info-circle"></i>
+                    <i class="fas fa-info-circle"></i>
                     {{ __('panel.essay_question_note') }}
                 </div>
             </div>

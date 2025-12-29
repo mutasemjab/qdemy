@@ -61,7 +61,7 @@
                     <div class="comment-input-container">
                         <input class="cmty-input" name="content" type="text" placeholder="{{ __('front.add_comment') }}" required maxlength="500">
                         <button type="submit" class="cmty-comment-btn">
-                            <i class="fa-solid fa-paper-plane"></i>
+                            <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
                 </form>
@@ -75,7 +75,7 @@
                     data-post-id="{{ $post->id }}"
                     {{ !Auth::check() ? 'disabled' : '' }}
                 >
-                    <i class="fa-solid fa-thumbs-up"></i> 
+                    <i class="fas fa-thumbs-up"></i> 
                     <span class="like-text">
                         {{ Auth::check() && $post->isLikedBy(Auth::id()) ? __('front.liked') : __('front.like') }}
                     </span>

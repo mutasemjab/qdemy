@@ -6,7 +6,7 @@
 
         <aside class="ud-menu">
             <div class="ud-user">
-                <img data-src="{{ $childUser->photo ? asset('assets/admin/uploads/' . $childUser->photo) : asset('assets_front/images/avatar-big.png') }}"
+                <img data-src="{{ $childUser->photo_url }}"
                     alt="">
                 <div>
                     <h3>{{ $childUser->name }}</h3>
@@ -15,23 +15,23 @@
             </div>
 
             <button class="ud-item active" data-target="overview"><i
-                    class="fa-solid fa-chart-pie"></i><span>{{ __('panel.overview') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-chart-pie"></i><span>{{ __('panel.overview') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="courses"><i
-                    class="fa-solid fa-book"></i><span>{{ __('panel.courses') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-book"></i><span>{{ __('panel.courses') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="exams"><i
-                    class="fa-solid fa-clipboard-check"></i><span>{{ __('panel.exams') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-clipboard-check"></i><span>{{ __('panel.exams') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="progress"><i
-                    class="fa-solid fa-chart-line"></i><span>{{ __('panel.progress') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-chart-line"></i><span>{{ __('panel.progress') }}</span><i
+                    class="fas fa-angle-left"></i></button>
             <button class="ud-item" data-target="performance"><i
-                    class="fa-solid fa-trophy"></i><span>{{ __('panel.performance') }}</span><i
-                    class="fa-solid fa-angle-left"></i></button>
+                    class="fas fa-trophy"></i><span>{{ __('panel.performance') }}</span><i
+                    class="fas fa-angle-left"></i></button>
 
             <a href="{{ route('parent.dashboard') }}" class="ud-logout"><i
-                    class="fa-solid fa-arrow-left-long"></i><span>{{ __('panel.back_to_dashboard') }}</span></a>
+                    class="fas fa-arrow-left-long"></i><span>{{ __('panel.back_to_dashboard') }}</span></a>
         </aside>
 
         <div class="ud-content">
@@ -43,7 +43,7 @@
                 <!-- Student Info Card -->
                 <div class="ud-student-info-card">
                     <div class="ud-profile-head">
-                        <img data-src="{{ $childUser->photo ? asset('assets/admin/uploads/' . $childUser->photo) : asset('assets_front/images/avatar-round.png') }}"
+                        <img data-src="{{ $childUser->photo_url }}"
                             class="ud-ava" alt="">
                         <div class="ud-name">
                             <h2>{{ $childUser->name }}<br>
@@ -62,7 +62,7 @@
                     <div class="ud-quick-stats">
                         <div class="ud-stat-card">
                             <div class="ud-stat-icon bg-primary">
-                                <i class="fa-solid fa-book"></i>
+                                <i class="fas fa-book"></i>
                             </div>
                             <div class="ud-stat-info">
                                 <h3>{{ $overallStats['total_courses'] }}</h3>
@@ -72,7 +72,7 @@
                         
                         <div class="ud-stat-card">
                             <div class="ud-stat-icon bg-success">
-                                <i class="fa-solid fa-clipboard-check"></i>
+                                <i class="fas fa-clipboard-check"></i>
                             </div>
                             <div class="ud-stat-info">
                                 <h3>{{ $overallStats['completed_exams'] }}</h3>
@@ -82,7 +82,7 @@
                         
                         <div class="ud-stat-card">
                             <div class="ud-stat-icon bg-warning">
-                                <i class="fa-solid fa-chart-line"></i>
+                                <i class="fas fa-chart-line"></i>
                             </div>
                             <div class="ud-stat-info">
                                 <h3>{{ number_format($overallStats['average_score'], 1) }}%</h3>
@@ -92,7 +92,7 @@
                         
                         <div class="ud-stat-card">
                             <div class="ud-stat-icon bg-info">
-                                <i class="fa-solid fa-award"></i>
+                                <i class="fas fa-award"></i>
                             </div>
                             <div class="ud-stat-info">
                                 <h3>{{ $overallStats['total_attempts'] }}</h3>
@@ -105,7 +105,7 @@
                     @if($overallStats['best_subject'])
                         <div class="ud-best-subject">
                             <div class="ud-achievement-badge">
-                                <i class="fa-solid fa-star"></i>
+                                <i class="fas fa-star"></i>
                                 <div>
                                     <h4>{{ __('panel.best_subject') }}</h4>
                                     <p>{{ $overallStats['best_subject']['name'] }} - {{ number_format($overallStats['best_subject']['average_score'], 1) }}%</p>
@@ -123,7 +123,7 @@
                             @foreach($overallStats['recent_activity'] as $activity)
                                 <div class="ud-activity-item">
                                     <div class="ud-activity-icon {{ $activity['score'] >= 70 ? 'success' : ($activity['score'] >= 50 ? 'warning' : 'danger') }}">
-                                        <i class="fa-solid fa-clipboard-check"></i>
+                                        <i class="fas fa-clipboard-check"></i>
                                     </div>
                                     <div class="ud-activity-content">
                                         <h4>{{ $activity['title'] }}</h4>
@@ -159,10 +159,10 @@
                                 <div class="ud-course-body">
                                     <h4>{{ Str::limit($course['title'], 40) }}</h4>
                                     <p class="ud-course-teacher">
-                                        <i class="fa-solid fa-user"></i> {{ $course['teacher_name'] }}
+                                        <i class="fas fa-user"></i> {{ $course['teacher_name'] }}
                                     </p>
                                     <p class="ud-course-subject">
-                                        <i class="fa-solid fa-tag"></i> {{ $course['subject_name'] }}
+                                        <i class="fas fa-tag"></i> {{ $course['subject_name'] }}
                                     </p>
                                     
                                     <div class="ud-course-stats">
@@ -185,7 +185,7 @@
                     </div>
                 @else
                     <div class="ud-no-content">
-                        <i class="fa-solid fa-book"></i>
+                        <i class="fas fa-book"></i>
                         <h3>{{ __('panel.no_courses_enrolled') }}</h3>
                         <p>{{ __('panel.student_not_enrolled_message') }}</p>
                     </div>
@@ -244,7 +244,7 @@
                     </div>
                 @else
                     <div class="ud-no-content">
-                        <i class="fa-solid fa-clipboard-check"></i>
+                        <i class="fas fa-clipboard-check"></i>
                         <h3>{{ __('panel.no_exam_attempts') }}</h3>
                         <p>{{ __('panel.student_no_exams_message') }}</p>
                     </div>
@@ -282,7 +282,7 @@
                     </div>
                 @else
                     <div class="ud-no-content">
-                        <i class="fa-solid fa-chart-line"></i>
+                        <i class="fas fa-chart-line"></i>
                         <h3>{{ __('panel.no_progress_data') }}</h3>
                         <p>{{ __('panel.enroll_courses_to_see_progress') }}</p>
                     </div>
@@ -298,7 +298,7 @@
                     <div class="ud-performance-metrics">
                         <div class="ud-metric-card">
                             <div class="ud-metric-header">
-                                <i class="fa-solid fa-chart-line"></i>
+                                <i class="fas fa-chart-line"></i>
                                 <h4>{{ __('panel.performance_trend') }}</h4>
                             </div>
                             <div class="ud-metric-body">
@@ -308,7 +308,7 @@
                                         ($recentExams->first()['percentage'] > $recentExams->last()['percentage'] ? 'up' : 'down') : 'stable';
                                 @endphp
                                 <span class="ud-trend {{ $trend }}">
-                                    <i class="fa-solid fa-arrow-{{ $trend == 'up' ? 'up' : ($trend == 'down' ? 'down' : 'right') }}"></i>
+                                    <i class="fas fa-arrow-{{ $trend == 'up' ? 'up' : ($trend == 'down' ? 'down' : 'right') }}"></i>
                                     {{ ucfirst($trend) }}
                                 </span>
                             </div>
@@ -316,7 +316,7 @@
                         
                         <div class="ud-metric-card">
                             <div class="ud-metric-header">
-                                <i class="fa-solid fa-target"></i>
+                                <i class="fas fa-target"></i>
                                 <h4>{{ __('panel.pass_rate') }}</h4>
                             </div>
                             <div class="ud-metric-body">
@@ -363,7 +363,7 @@
                     @endif
                 @else
                     <div class="ud-no-content">
-                        <i class="fa-solid fa-trophy"></i>
+                        <i class="fas fa-trophy"></i>
                         <h3>{{ __('panel.no_performance_data') }}</h3>
                         <p>{{ __('panel.complete_exams_to_see_performance') }}</p>
                     </div>

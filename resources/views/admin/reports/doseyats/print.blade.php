@@ -68,10 +68,10 @@
 <body>
     <div class="no-print mb-3 text-end">
         <button onclick="window.print()" class="btn btn-primary">
-            <i class="fa-solid fa-print"></i> {{ __('messages.print') }}
+            <i class="fas fa-print"></i> {{ __('messages.print') }}
         </button>
         <button onclick="window.close()" class="btn btn-secondary">
-            <i class="fa-solid fa-times"></i> {{ __('messages.close') }}
+            <i class="fas fa-times"></i> {{ __('messages.close') }}
         </button>
     </div>
 

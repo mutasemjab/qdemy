@@ -637,4 +637,23 @@ return array (
     'cannot_add_attempt' => 'You have exhausted the allowed attempts',
     'view_results' => 'View Results',
     'exam_completed' => 'Exam Completed',
+
+    // Missing translations from app/
+    'exam_submitted_successfully' => 'Exam submitted successfully',
+    'invalid_amount' => 'Invalid amount',
+    'payment_error' => 'Payment error occurred',
+    'payment_failed' => 'Payment failed',
+    'question_not_found' => 'Question not found',
+    'قيد' => 'In Progress',
+    'متروك' => 'Abandoned',
+    'نجح' => 'Passed',
+
+    // Missing from views
+    'Field' => 'Field',
+    'bank_questions' => 'Bank Questions',
+    'no_questions_found' => 'No questions found',
+    'payment_submitted' => 'Payment submitted successfully',
+    'الشرح' => 'Explanation',
+    'في انتظار التصحيح اليدوي' => 'Awaiting manual grading',
+    'لم يتم الإجابة' => 'Not answered',
 );

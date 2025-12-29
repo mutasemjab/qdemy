@@ -254,23 +254,23 @@ function loadCategories() {
                 const isChecked = @json(old('categories', [])).includes(category.id.toString());
                 html += `
                     <div class="col-md-6">
-                        <div class="form-check p-3 border rounded category-item" 
-                             style="cursor: pointer; transition: all 0.3s ease;">
-                            <input class="form-check-input category-checkbox" type="checkbox" 
-                                   value="${category.id}" id="category_${category.id}" 
-                                   name="categories[]" ${isChecked ? 'checked' : ''} 
-                                   onchange="loadSubjects()">
-                            <label class="form-check-label d-flex align-items-center" 
-                                   for="category_${category.id}" style="cursor: pointer;">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center">
-                                        ${category.icon ? `<i class="${category.icon} me-2" style="color: ${category.color}"></i>` : ''}
+                        <div class="form-check p-3 border rounded category-item"
+                             style="cursor: pointer; transition: all 0.3s ease; display: flex; align-items: flex-start; min-height: 80px;">
+                            <input class="form-check-input category-checkbox me-3" type="checkbox"
+                                   value="${category.id}" id="category_${category.id}"
+                                   name="categories[]" ${isChecked ? 'checked' : ''}
+                                   onchange="loadSubjects()" style="width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0;">
+                            <label class="form-check-label d-flex flex-column flex-grow-1"
+                                   for="category_${category.id}" style="cursor: pointer; margin-bottom: 0;">
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        ${category.icon ? `<i class="${category.icon} me-3" style="color: ${category.color}; font-size: 1.3rem;"></i>` : ''}
                                         <strong>${category.name_ar}</strong>
                                     </div>
-                                    <div class="text-muted small mt-1">
+                                    <div class="text-muted small ms-4 mb-1">
                                         ${category.display_name}
                                     </div>
-                                    ${category.parent_name ? `<div class="text-info small"><i class="fas fa-arrow-up me-1"></i>${category.parent_name}</div>` : ''}
+                                    ${category.parent_name ? `<div class="text-info small ms-4"><i class="fas fa-arrow-up me-1"></i>${category.parent_name}</div>` : ''}
                                 </div>
                             </label>
                         </div>
@@ -377,17 +377,17 @@ function loadSubjects() {
                 const isChecked = @json(old('subjects', [])).includes(subject.id.toString());
                 html += `
                     <div class="col-md-4">
-                        <div class="form-check p-2 border rounded subject-item" 
-                             style="cursor: pointer; transition: all 0.3s ease;">
-                            <input class="form-check-input" type="checkbox" 
-                                   value="${subject.id}" id="subject_${subject.id}" 
-                                   name="subjects[]" ${isChecked ? 'checked' : ''}>
-                            <label class="form-check-label d-flex align-items-center" 
-                                   for="subject_${subject.id}" style="cursor: pointer;">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center">
-                                        ${subject.icon ? `<i class="${subject.icon} me-2" style="color: ${subject.color}"></i>` : ''}
-                                        <strong class="small">${subject.name_ar}</strong>
+                        <div class="form-check p-3 border rounded subject-item"
+                             style="cursor: pointer; transition: all 0.3s ease; min-height: 60px; display: flex; align-items: center;">
+                            <input class="form-check-input me-3" type="checkbox"
+                                   value="${subject.id}" id="subject_${subject.id}"
+                                   name="subjects[]" ${isChecked ? 'checked' : ''} style="width: 18px; height: 18px; margin-top: 0;">
+                            <label class="form-check-label d-flex align-items-center flex-grow-1"
+                                   for="subject_${subject.id}" style="cursor: pointer; margin-bottom: 0;">
+                                <div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        ${subject.icon ? `<i class="${subject.icon} me-3" style="color: ${subject.color}; font-size: 1.2rem;"></i>` : ''}
+                                        <strong class="small">${subject.name_ar || subject.name_en || 'Unknown Subject'}</strong>
                                     </div>
                                 </div>
                             </label>

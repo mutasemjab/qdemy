@@ -14,7 +14,7 @@
             <!-- Subject Filter -->
             <div class="examx-dropdown">
                 <button class="examx-pill">
-                    <i class="fa-solid fa-caret-down"></i>
+                    <i class="fas fa-caret-down"></i>
                     <span>
                         @if(request('subject') && $subjects->find(request('subject')))
                             {{ app()->getLocale() == 'ar' ? $subjects->find(request('subject'))->name_ar : $subjects->find(request('subject'))->name_en }}
@@ -42,7 +42,7 @@
     @foreach ($teachers as $teacher)
       <a class="tch-item tch-item-a" href="{{ route('teacher', $teacher->id) }}">
         <img class="tch-img"
-             data-src="{{ $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/teacher1.png') }}"
+             data-src="{{ $teacher->photo_url }}"
              alt="{{ $teacher->name }}">
       </a>
     @endforeach

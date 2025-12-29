@@ -2,7 +2,7 @@
   <div class="ud-title">{{ __('panel.technical_support') }}</div>
   <div class="ud-support">
     <p>{{ __('panel.support_text') }}</p>
-    <a href="https://wa.me/962795123456" class="ud-wh"><i class="fa-brands fa-whatsapp"></i> +962 79 512 3456</a>
+    <a href="https://wa.me/962795123456" class="ud-wh"><i class="fab fa-whatsapp"></i> +962 79 512 3456</a>
     
     <div class="ud-support-faq">
       <h3>{{ __('panel.faq_title') }}</h3>

@@ -48,16 +48,17 @@ class CourseController extends Controller
             ->where('activate', 1)
             ->select('id', 'name', 'email')
             ->get();
-            
+
        $parentCategories = Category::roots()
             ->active()
             ->ordered()
             ->get();
-            
+
         $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
             ->ordered()
             ->get();
-            
+
         return view('admin.courses.create', compact('teachers', 'subjects','parentCategories'));
     }
 
@@ -94,11 +95,12 @@ class CourseController extends Controller
             ->get();
 
         $subjects = Subject::active()
+            ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
             ->ordered()
             ->get();
 
         return view('admin.courses.edit', compact('course', 'teachers', 'parentCategories', 'subjects'));
-}
+    }
 
     /**
      * Store a newly created resource in storage

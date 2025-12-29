@@ -209,7 +209,13 @@
                                         <option value="">{{ __('messages.select_subject') }}</option>
                                         @foreach($subjects as $subject)
                                             <option value="{{ $subject->id }}" {{ old('subject_id', $course->subject_id) == $subject->id ? 'selected' : '' }}>
-                                                {{ $subject->localized_name }}
+                                                {{ app()->getLocale() === 'ar' ? $subject->name_ar : $subject->name_en }}
+                                                @if($subject->grade)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->grade->name_ar : $subject->grade->name_en }}
+                                                @endif
+                                                @if($subject->semester)
+                                                    - {{ app()->getLocale() === 'ar' ? $subject->semester->name_ar : $subject->semester->name_en }}
+                                                @endif
                                             </option>
                                         @endforeach
                                     </select>

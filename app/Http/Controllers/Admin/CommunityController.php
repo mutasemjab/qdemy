@@ -39,10 +39,7 @@ class CommunityController extends Controller
 
         // Search
         if ($request->has('search') && $request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('content', 'like', '%' . $request->search . '%');
-            });
+            $query->where('content', 'like', '%' . $request->search . '%');
         }
 
         $posts = $query->latest()->paginate(15);
@@ -67,6 +64,12 @@ class CommunityController extends Controller
     // Store new post (admin)
     public function store(Request $request)
     {
+        // Convert checkbox values to boolean before validation
+        $request->merge([
+            'is_approved' => $request->boolean('is_approved'),
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
         $request->validate([
             'content' => 'required|string|min:10',
             'user_id' => 'required|exists:users,id',
@@ -77,8 +80,8 @@ class CommunityController extends Controller
         Post::create([
             'content' => $request->content,
             'user_id' => $request->user_id,
-            'is_approved' => $request->has('is_approved'),
-            'is_active' => $request->has('is_active'),
+            'is_approved' => $request->is_approved,
+            'is_active' => $request->is_active,
         ]);
 
         return redirect()->route('admin.community.posts.index')
@@ -94,6 +97,12 @@ class CommunityController extends Controller
     // Update post
     public function update(Request $request, Post $post)
     {
+        // Convert checkbox values to boolean before validation
+        $request->merge([
+            'is_approved' => $request->boolean('is_approved'),
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
         $request->validate([
             'content' => 'required|string|min:10',
             'is_approved' => 'boolean',
@@ -102,8 +111,8 @@ class CommunityController extends Controller
 
         $post->update([
             'content' => $request->content,
-            'is_approved' => $request->has('is_approved'),
-            'is_active' => $request->has('is_active'),
+            'is_approved' => $request->is_approved,
+            'is_active' => $request->is_active,
         ]);
 
         return redirect()->route('admin.community.posts.index')

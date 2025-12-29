@@ -73,13 +73,13 @@
               </span>
               <div class="exam-actions">
                 <a href="{{ route('teacher.exams.show', $exam) }}" class="btn-action" title="{{ __('panel.view') }}">
-                  <i class="fa-solid fa-eye"></i>
+                  <i class="fas fa-eye"></i>
                 </a>
                 <a href="{{ route('teacher.exams.edit', $exam) }}" class="btn-action" title="{{ __('panel.edit') }}">
-                  <i class="fa-solid fa-edit"></i>
+                  <i class="fas fa-edit"></i>
                 </a>
                 <button type="button" onclick="deleteExam({{ $exam->id }})" class="btn-action btn-danger" title="{{ __('panel.delete') }}">
-                  <i class="fa-solid fa-trash"></i>
+                  <i class="fas fa-trash"></i>
                 </button>
               </div>
             </div>
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded',function(){
       const form=this;
       const submitBtn=form.querySelector('button[type="submit"]');
       submitBtn.disabled=true;
-      submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.deleting") }}...';
+      submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.deleting") }}...';
       fetch(form.action,{
         method:'POST',
         headers:{

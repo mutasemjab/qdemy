@@ -5,14 +5,14 @@
 <section class="ud-wrap">
   <aside class="ud-menu">
     <div class="ud-user">
-      <img data-src="{{ auth()->user()->photo ? asset('assets/admin/uploads/' . auth()->user()->photo) : asset('assets_front/images/avatar-big.png') }}" alt="">
+      <img data-src="{{ auth()->user()->photo_url }}" alt="">
       <div>
         <h3>{{ auth()->user()->name }}</h3>
         <span>{{ auth()->user()->email }}</span>
       </div>
     </div>
     <a href="{{ route('teacher.courses.sections.index', $course) }}" class="ud-item">
-      <i class="fa-solid fa-arrow-left"></i>
+      <i class="fas fa-arrow-left"></i>
       <span>{{ __('panel.back_to_course') }}</span>
     </a>
   </aside>
@@ -143,7 +143,7 @@
               <input type="file" id="file_path" name="file_path" accept=".pdf">
               <div class="upload-preview" id="pdf-preview" style="display:none">
                 <div class="pdf-info">
-                  <i class="fa-solid fa-file-pdf"></i>
+                  <i class="fas fa-file-pdf"></i>
                   <span class="file-name"></span>
                   <span class="file-size"></span>
                 </div>
@@ -160,7 +160,7 @@
 
         <div class="form-actions">
           <a href="{{ route('teacher.courses.sections.index', $course) }}" class="btn btn-secondary">{{ __('panel.cancel') }}</a>
-          <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fa-solid fa-save"></i>{{ __('panel.add_content') }}</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn"><i class="fas fa-save"></i>{{ __('panel.add_content') }}</button>
         </div>
       </form>
     </div>
@@ -307,10 +307,10 @@ document.addEventListener('DOMContentLoaded',function(){
       }
       if(submitBtn){
         submitBtn.disabled=true;
-        submitBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> {{ __("panel.uploading") }}...';
+        submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.uploading") }}...';
         setTimeout(function(){
           submitBtn.disabled=false;
-          submitBtn.innerHTML='<i class="fa-solid fa-save"></i> {{ __("panel.add_content") }}';
+          submitBtn.innerHTML='<i class="fas fa-save"></i> {{ __("panel.add_content") }}';
         },30000);
       }
     });
