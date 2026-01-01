@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+    use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -15,6 +16,16 @@ class LoginController extends Controller
     }
 
   public function login(LoginRequest $request){
+
+
+dd(
+    Admin::where('username', $request->username)->first(),
+    Hash::check(
+        $request->password,
+        optional(Admin::where('username', $request->username)->first())->password
+    )
+);
+
 
     if(auth()->guard('admin')->attempt(['username'=>$request->input('username'),'password'=>$request->input('password')]))
     {
@@ -26,9 +37,10 @@ class LoginController extends Controller
   }
 
   public function logout(){
-    auth()->logout();
+    auth()->guard('admin')->logout();
     return redirect()->route('admin.showlogin');
-   }
+}
+
 
 
    public function editlogin($id)
