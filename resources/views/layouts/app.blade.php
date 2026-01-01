@@ -26,7 +26,6 @@
 
     @stack('styles')
     @yield('styles')
-
 <style>
     @font-face {
         font-family: 'Somar';
@@ -46,25 +45,50 @@
         font-display: swap;
     }
 
-    html, body {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
+    /* تطبيق خط Somar على كل العناصر إلا Font Awesome */
+    html, 
+    body {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     }
 
     body,
-    button,
+    button:not(.fa):not(.fas):not(.far):not(.fab):not(.fal),
     input,
     textarea,
     select,
+    option,
     p,
-    span,
+    span:not(.fa):not(.fas):not(.far):not(.fab):not(.fal),
     a,
     li,
     label,
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
+    h1, h2, h3, h4, h5, h6,
+    div,
+    .form-control,
+    .form-select,
+    .examx-pill,
+    .examx-dropdown select,
+    .examx-dropdown option {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    }
+
+    /* حماية Font Awesome من التغيير */
+    i,
+    .fa,
+    .fas,
+    .far,
+    .fab,
+    .fal,
+    [class^="fa-"],
+    [class*=" fa-"] {
+        font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
+        font-weight: 900 !important;
+    }
+
+    .far {
+        font-weight: 400 !important;
     }
 </style>
-
 
 </head>
 
