@@ -189,6 +189,12 @@
 @endsection
 @push('styles')
     <style>
+        .course-card__meta-item i {
+            font-family: "Font Awesome 6 Free" !important;
+            font-weight: 900 !important;
+            font-style: normal;
+        }
+
         /* Apply Somar font */
         .universities-page,
         .universities-page * {
