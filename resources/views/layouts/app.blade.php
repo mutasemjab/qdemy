@@ -26,6 +26,7 @@
 
     @stack('styles')
     @yield('styles')
+
 <style>
     @font-face {
         font-family: 'Somar';
@@ -45,38 +46,25 @@
         font-display: swap;
     }
 
-    /* تطبيق خط Somar على كل العناصر */
-    *,
-    *::before,
-    *::after {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    html, body {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
     }
 
-    html, 
-    body {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-    }
-
-    /* تطبيق على عناصر Form بشكل خاص */
+    body,
     button,
     input,
     textarea,
     select,
-    option,
     p,
     span,
     a,
     li,
     label,
-    h1, h2, h3, h4, h5, h6,
-    .form-control,
-    .form-select,
-    .examx-pill,
-    .examx-dropdown select,
-    .examx-dropdown option {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
     }
 </style>
+
 
 </head>
 
