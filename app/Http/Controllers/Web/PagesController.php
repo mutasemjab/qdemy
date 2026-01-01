@@ -19,31 +19,37 @@ class PagesController extends Controller
     }
 
 
-   public function sale_point(Request $request)
+    public function sale_point(Request $request)
     {
         $query = POS::query();
 
         // Search functionality
-        if ($request->has('search') && !empty($request->search)) {
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('address', 'LIKE', "%{$search}%")
-                  ->orWhere('country_name', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
             });
         }
 
+        // فلتر الدولة
+        if ($request->filled('country')) {
+            $query->where('country_name', $request->country);
+        }
+        $pos = $query->get();
         // Group by country/city
-        $posGrouped = $query->get()->groupBy('country_name');
+        $posGrouped = $pos->groupBy('country_name');
 
         return view('web.sale-point', compact('posGrouped'));
     }
 
 
-      public function privacyPolicy()
+
+    public function privacyPolicy()
     {
         $page = Page::getPrivacyPolicy();
-        
+
         if (!$page) {
             abort(404);
         }
@@ -57,13 +63,11 @@ class PagesController extends Controller
     public function termsConditions()
     {
         $page = Page::getTermsConditions();
-        
+
         if (!$page) {
             abort(404);
         }
 
         return view('pages.terms-conditions', compact('page'));
     }
-
-
 }

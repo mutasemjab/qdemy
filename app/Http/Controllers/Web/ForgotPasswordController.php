@@ -44,7 +44,6 @@ class ForgotPasswordController extends Controller
 
             // Find user by phone number and ensure they are a student
             $user = User::where('phone', $request->phone)
-                       ->where('role_name', 'student')
                        ->first();
 
             if (!$user) {

@@ -5027,12 +5027,11 @@ subject-plus-dropdown-examx {
     left: 10px;
   }
 }
-
 .cmty-page {
   max-width: 1300px;
   margin: 40px auto 28px auto;
   direction: rtl;
-  font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif
+  font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .cmty-feed {
@@ -5046,60 +5045,68 @@ subject-plus-dropdown-examx {
   border: 1px solid #E3E3E3;
   border-radius: 18px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
-  padding: 18px 22px
+  padding: 18px 22px;
 }
 
 .cmty-post--outlined {
   border: 2px solid #0E5ADF;
-  box-shadow: none
+  box-shadow: none;
 }
 
 .cmty-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px
+  flex-direction: column;
+  align-items: flex-start; /* كل شي على اليمين لأن direction: rtl */
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cmty-mark {
+  width: 46px;
+  height: 46px;
+  align-self: flex-start; /* اللوغو على اليمين */
 }
 
 .cmty-user {
   display: flex;
   align-items: center;
-  gap: 12px
+  gap: 12px;
+  flex-direction: row-reverse;
+  align-self: flex-start; /* الاسم والصورة على اليمين */
+}
+
+.cmty-user div {
+  text-align: right;
 }
 
 .cmty-user img {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  object-fit: cover
+  object-fit: cover;
 }
 
 .cmty-user h4 {
   margin: 0 0 2px 0;
-  font-size: 18px
+  font-size: 18px;
 }
 
 .cmty-user time {
   font-size: 12px;
-  color: #8c8c8c
-}
-
-.cmty-mark {
-  width: 46px;
-  height: 46px
+  color: #8c8c8c;
 }
 
 .cmty-text {
   font-size: 20px;
   line-height: 1.8;
   margin: 6px 0 14px;
-  color: #1d1d1d
+  color: #1d1d1d;
 }
 
 .cmty-text a {
   color: #0E5ADF;
   text-decoration: none;
-  font-weight: 700
+  font-weight: 700;
 }
 
 .cmty-actions {
@@ -5107,7 +5114,7 @@ subject-plus-dropdown-examx {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px
+  margin-bottom: 12px;
 }
 
 .cmty-like {
@@ -5117,7 +5124,7 @@ subject-plus-dropdown-examx {
   border-radius: 8px;
   padding: 8px 14px;
   font-weight: 700;
-  cursor: pointer
+  cursor: pointer;
 }
 
 .cmty-input {
@@ -5126,7 +5133,7 @@ subject-plus-dropdown-examx {
   border: 1px solid #BFBFBF;
   border-radius: 8px;
   padding: 0 12px;
-  font-size: 14px
+  font-size: 14px;
 }
 
 .cmty-comments {
@@ -5135,30 +5142,36 @@ subject-plus-dropdown-examx {
   gap: 12px;
   border-top: 1px solid #EFEFEF;
   padding-top: 14px;
-  margin-top: 6px
+  margin-top: 6px;
 }
 
 .cmty-comment {
   display: flex;
-  gap: 10px
+  gap: 10px;
+  flex-direction: row-reverse; /* الصورة على اليمين */
 }
 
 .cmty-comment img {
   width: 28px;
   height: 28px;
-  border-radius: 50%
+  border-radius: 50%;
+}
+
+.cmty-comment div {
+  flex: 1;
+  text-align: right;
 }
 
 .cmty-comment b {
   display: block;
   font-size: 13px;
-  margin-bottom: 2px
+  margin-bottom: 2px;
 }
 
 .cmty-comment p {
   margin: 0;
   font-size: 13px;
-  color: #333
+  color: #333;
 }
 
 .cmty-more {
@@ -5167,12 +5180,12 @@ subject-plus-dropdown-examx {
   border: none;
   color: #000000;
   font-weight: 700;
-  cursor: pointer
+  cursor: pointer;
 }
 
 @media(max-width:768px) {
   .cmty-text {
-    font-size: 18px
+    font-size: 18px;
   }
 
   .cmty-feed {

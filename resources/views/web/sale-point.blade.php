@@ -14,15 +14,30 @@
         <div class="sp2-sub">{{ __('front.Cards available in the following libraries:') }}</div>
     </div>
 
-    <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
-        <form method="GET" action="{{ route('sale-point') }}" class="examx-search">
+  <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
+    <form method="GET" action="{{ route('sale-point') }}" id="salePointForm">
+        <div class="examx-row">
+            <div class="examx-dropdown">
+                <select class="examx-pill" name="country" id="country_filter" onchange="document.getElementById('salePointForm').submit()">
+                    <option value="">{{ __('front.All Countries') }}</option>
+                    @foreach($posGrouped->keys() as $country)
+                        <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                            {{ $country }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
+        <div class="examx-search">
             <i class="fas fa-magnifying-glass"></i>
             <input type="text" 
                    name="search" 
                    placeholder="{{ __('front.Search') }}" 
                    value="{{ request('search') }}">
-        </form>
-    </div>
+        </div>
+    </form>
+</div>
 
     <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="300" class="sp2-box">
         @if($posGrouped->count() > 0)

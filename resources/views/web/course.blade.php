@@ -41,9 +41,7 @@
                     </div>
                     
                     <div class="crs2-side-body">
-                        @if(!$is_enrolled)
-                        <div class="crs2-side-note">{{ translate_lang('subscribe_now') }}</div>
-                        @endif
+                  
                         
                         <div class="crs2-side-price-row">
                             <div class="crs2-side-price-chip">

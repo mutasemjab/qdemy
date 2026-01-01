@@ -51,6 +51,21 @@
 
 </section>
 
+<style>
+    
+/* In your assets_front/css/style.css or similar */
+.otp-inputs {
+    direction: ltr !important;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.otp-digit {
+    direction: ltr !important;
+    text-align: center;
+}    
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -112,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Countdown timer (5 minutes)
-    let timeLeft = 300; // 5 minutes in seconds
+    let timeLeft = 60; // 5 minutes in seconds
     const countdownEl = document.getElementById('countdown');
     const resendLink = document.getElementById('resendLink');
     

@@ -20,7 +20,7 @@ class OtpService
         $this->accname = config('otp.account_name', 'aliencode');
         $this->accpass = config('otp.account_password', 'jU0nH9pI6mD4vQ2s');
         $this->otpLength = config('otp.length', 4);
-        $this->otpExpiry = config('otp.expiry', 300); // 5 minutes in seconds
+        $this->otpExpiry = config('otp.expiry', 60); // 5 minutes in seconds
     }
 
     /**

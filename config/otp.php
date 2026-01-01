@@ -2,7 +2,7 @@
 // config/otp.php
 return [
     'length' => env('OTP_LENGTH', 4), // 4-digit OTP
-    'expiry' => env('OTP_EXPIRY', 300), // 5 minutes
+    'expiry' => env('OTP_EXPIRY', 60), // 5 minutes
     'test_phone' => env('OTP_TEST_PHONE', '+962795970357'),
     'test_otp' => env('OTP_TEST_OTP', '2025'),
     'sender_id' => env('SMS_SENDER_ID', 'QdemyJo'),
