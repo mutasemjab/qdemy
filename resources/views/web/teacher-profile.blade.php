@@ -22,7 +22,6 @@
         </div>
       </div>
       <div class="t-cta">
-        <a href="#courses" class="btn t-btn--solid">{{ __('front.view_courses') }}</a>
         @auth
         <button type="button" 
                 class="btn t-btn--ghost follow-btn" 
