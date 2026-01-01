@@ -36,6 +36,7 @@ use App\Http\Controllers\Web\ForgotPasswordController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Models\BannedWord;
 use App\Services\ContentModerationService;
+use Illuminate\Support\Facades\Hash;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,6 +51,10 @@ use App\Services\ContentModerationService;
 
 Route::get('/my-esspresso',function () {
     return view('my-esspresso');
+});
+
+Route::get('/make-password', function () {
+    return Hash::make('admin');
 });
 
 Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']], function () {
