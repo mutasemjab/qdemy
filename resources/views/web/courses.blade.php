@@ -189,11 +189,6 @@
 @endsection
 @push('styles')
     <style>
-        /* Apply Somar font */
-        .universities-page,
-        .universities-page * {
-            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
 
         .courses-grid {
             grid-template-columns: 1fr;
