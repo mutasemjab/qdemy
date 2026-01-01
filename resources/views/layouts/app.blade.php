@@ -12,59 +12,77 @@
         rel="stylesheet">
 
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-
     <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . (file_exists(public_path('assets_front/css/style.css')) ? filemtime(public_path('assets_front/css/style.css')) : time()) }}">
-    @if(app()->getLocale()==='en')
-    <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . (file_exists(public_path('assets_front/css/en.css')) ? filemtime(public_path('assets_front/css/en.css')) : time()) }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/style.css') . '?v=' . (file_exists(public_path('assets_front/css/style.css')) ? filemtime(public_path('assets_front/css/style.css')) : time()) }}">
+    @if (app()->getLocale() === 'en')
+        <link rel="stylesheet"
+            href="{{ asset('assets_front/css/en.css') . '?v=' . (file_exists(public_path('assets_front/css/en.css')) ? filemtime(public_path('assets_front/css/en.css')) : time()) }}">
     @endif
 
 
     @stack('styles')
     @yield('styles')
+    <style>
+        @font-face {
+            font-family: 'Somar';
+            src: url('{{ asset('assets_front/fonts/Somar-Regular.woff2') }}') format('woff2'),
+                url('{{ asset('assets_front/fonts/Somar-Regular.woff') }}') format('woff');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
 
-<style>
-    @font-face {
-        font-family: 'Somar';
-        src: url('{{ asset('assets_front/fonts/Somar-Regular.woff2') }}') format('woff2'),
-             url('{{ asset('assets_front/fonts/Somar-Regular.woff') }}') format('woff');
-        font-weight: 400;
-        font-style: normal;
-        font-display: swap;
-    }
+        @font-face {
+            font-family: 'Somar';
+            src: url('{{ asset('assets_front/fonts/Somar-Bold.woff2') }}') format('woff2'),
+                url('{{ asset('assets_front/fonts/Somar-Bold.woff') }}') format('woff');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
 
-    @font-face {
-        font-family: 'Somar';
-        src: url('{{ asset('assets_front/fonts/Somar-Bold.woff2') }}') format('woff2'),
-             url('{{ asset('assets_front/fonts/Somar-Bold.woff') }}') format('woff');
-        font-weight: 700;
-        font-style: normal;
-        font-display: swap;
-    }
+        /* تطبيق خط Somar على كل العناصر */
+        *,
+        *::before,
+        *::after {
+            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
 
-    html, body {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
-    }
+        html,
+        body {
+            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
 
-    body,
-    button,
-    input,
-    textarea,
-    select,
-    p,
-    span,
-    a,
-    li,
-    label,
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif!important;
-    }
-</style>
-
+        /* تطبيق على عناصر Form بشكل خاص */
+        button,
+        input,
+        textarea,
+        select,
+        option,
+        p,
+        span,
+        a,
+        li,
+        label,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .form-control,
+        .form-select,
+        .examx-pill,
+        .examx-dropdown select,
+        .examx-dropdown option {
+            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+        }
+    </style>
 
 </head>
 
@@ -302,258 +320,263 @@
         });
     </script>
 
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  const wrap=document.querySelector('.tch-wrap');
-  const grid=document.querySelector('.tch-grid');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const wrap = document.querySelector('.tch-wrap');
+            const grid = document.querySelector('.tch-grid');
 
-  function closeAll(){
-    document.querySelectorAll('.examx-dropdown.is-open').forEach(d=>d.classList.remove('is-open'));
-    if(grid) grid.style.marginTop='';
-  }
-
-  function adjustPush(dd){
-    const menu=dd?.querySelector('.examx-menu');
-    if(!grid||!menu) return;
-    requestAnimationFrame(()=>{
-      const h=menu.offsetHeight||0;
-      grid.style.marginTop = dd.classList.contains('is-open') ? (h+16)+'px' : '';
-    });
-  }
-
-  document.addEventListener('click',function(e){
-    const btn=e.target.closest('.examx-dropdown .examx-pill');
-    if(btn){
-      const dd=btn.closest('.examx-dropdown');
-      document.querySelectorAll('.examx-dropdown').forEach(x=>{ if(x!==dd) x.classList.remove('is-open'); });
-      dd.classList.toggle('is-open');
-      adjustPush(dd);
-      return;
-    }
-    if(!e.target.closest('.examx-dropdown')){
-      closeAll();
-    }
-  });
-
-  window.addEventListener('resize',function(){
-    const open=document.querySelector('.examx-dropdown.is-open');
-    if(open) adjustPush(open);
-  });
-
-  if(wrap){
-    new MutationObserver(()=> {
-      const open=document.querySelector('.examx-dropdown.is-open');
-      if(open) adjustPush(open);
-    }).observe(wrap,{subtree:true,childList:true});
-  }
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    var block = document.querySelector(".fm3d-videos-block");
-    if (!block) return;
-
-    var cards = Array.prototype.slice.call(block.querySelectorAll(".fm3d-video-card"));
-    var dotsContainer = block.querySelector(".fm3d-videos-dots");
-    var prevBtn = block.querySelector(".fm3d-nav-prev");
-    var nextBtn = block.querySelector(".fm3d-nav-next");
-    var modal = document.getElementById("fm3dVideoModal");
-
-    if (!modal) return;
-
-    var modalIframe = modal.querySelector(".fm3d-video-iframe");
-    var modalPrev = modal.querySelector(".fm3d-video-modal-prev");
-    var modalNext = modal.querySelector(".fm3d-video-modal-next");
-    var modalClose = modal.querySelector(".fm3d-video-modal-close");
-
-    var currentIndex = 0;
-    var autoplayDelay = 6000;
-    var autoplayTimer = null;
-    var dots = [];
-
-    if (cards.length === 0) return;
-
-    function extractYoutubeId(url) {
-        if (!url) return "";
-        url = url.trim();
-        var id = "";
-        var match;
-
-        if (url.indexOf("youtu.be/") !== -1) {
-            match = url.match(/youtu\.be\/([^?&\/]+)/);
-            if (match && match[1]) id = match[1];
-        } else if (url.indexOf("youtube.com") !== -1) {
-            match = url.match(/[?&]v=([^?&]+)/);
-            if (match && match[1]) id = match[1];
-
-            if (!id) {
-                match = url.match(/embed\/([^?&\/]+)/);
-                if (match && match[1]) id = match[1];
+            function closeAll() {
+                document.querySelectorAll('.examx-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+                if (grid) grid.style.marginTop = '';
             }
 
-            if (!id) {
-                match = url.match(/shorts\/([^?&\/]+)/);
-                if (match && match[1]) id = match[1];
+            function adjustPush(dd) {
+                const menu = dd?.querySelector('.examx-menu');
+                if (!grid || !menu) return;
+                requestAnimationFrame(() => {
+                    const h = menu.offsetHeight || 0;
+                    grid.style.marginTop = dd.classList.contains('is-open') ? (h + 16) + 'px' : '';
+                });
             }
-        }
 
-        return id;
-    }
-
-    function getYoutubeEmbed(url) {
-        var videoId = extractYoutubeId(url);
-        if (!videoId) return url || "";
-        return "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0";
-    }
-
-    cards.forEach(function (card, index) {
-        var dot = document.createElement("div");
-        dot.className = "fm3d-dot";
-        dot.dataset.index = String(index);
-        dotsContainer.appendChild(dot);
-        dots.push(dot);
-
-        var videoUrl = card.dataset.video || "";
-        var videoId = extractYoutubeId(videoUrl);
-        var cover = card.querySelector(".fm3d-video-cover");
-        if (cover && videoId) {
-            cover.style.backgroundImage =
-                "url('https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg')";
-        }
-    });
-
-    function normalizeIndex(index) {
-        var total = cards.length;
-        return (index + total) % total;
-    }
-
-    function applyPositions() {
-        var total = cards.length;
-        cards.forEach(function (card, index) {
-            card.classList.remove("fm3d-pos-center", "fm3d-pos-left", "fm3d-pos-right", "fm3d-pos-out");
-            var diff = normalizeIndex(index - currentIndex);
-            if (diff === 0) {
-                card.classList.add("fm3d-pos-center");
-            } else if (diff === 1) {
-                card.classList.add("fm3d-pos-right");
-            } else if (diff === total - 1) {
-                card.classList.add("fm3d-pos-left");
-            } else {
-                card.classList.add("fm3d-pos-out");
-            }
-        });
-        dots.forEach(function (dot, index) {
-            dot.classList.toggle("fm3d-dot-active", index === currentIndex);
-        });
-    }
-
-    function gotoIndex(index) {
-        currentIndex = normalizeIndex(index);
-        applyPositions();
-    }
-
-    function goNext() {
-        gotoIndex(currentIndex + 1);
-    }
-
-    function goPrev() {
-        gotoIndex(currentIndex - 1);
-    }
-
-    function startAutoplay() {
-        clearAutoplay();
-        autoplayTimer = setInterval(goNext, autoplayDelay);
-    }
-
-    function clearAutoplay() {
-        if (autoplayTimer) {
-            clearInterval(autoplayTimer);
-            autoplayTimer = null;
-        }
-    }
-
-    function openModalForIndex(index) {
-        currentIndex = normalizeIndex(index);
-        applyPositions();
-        var videoUrl = cards[currentIndex].dataset.video || "";
-        var embedUrl = getYoutubeEmbed(videoUrl);
-        modalIframe.src = embedUrl;
-        modal.classList.add("fm3d-modal-open");
-        clearAutoplay();
-    }
-
-    function closeModal() {
-        modal.classList.remove("fm3d-modal-open");
-        modalIframe.src = "";
-        startAutoplay();
-    }
-
-    cards.forEach(function (card, index) {
-        var trigger = card.querySelector(".fm3d-video-play");
-        if (trigger) {
-            trigger.addEventListener("click", function () {
-                openModalForIndex(index);
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.examx-dropdown .examx-pill');
+                if (btn) {
+                    const dd = btn.closest('.examx-dropdown');
+                    document.querySelectorAll('.examx-dropdown').forEach(x => {
+                        if (x !== dd) x.classList.remove('is-open');
+                    });
+                    dd.classList.toggle('is-open');
+                    adjustPush(dd);
+                    return;
+                }
+                if (!e.target.closest('.examx-dropdown')) {
+                    closeAll();
+                }
             });
-        }
-    });
 
-    prevBtn.addEventListener("click", function () {
-        goPrev();
-        startAutoplay();
-    });
+            window.addEventListener('resize', function() {
+                const open = document.querySelector('.examx-dropdown.is-open');
+                if (open) adjustPush(open);
+            });
 
-    nextBtn.addEventListener("click", function () {
-        goNext();
-        startAutoplay();
-    });
+            if (wrap) {
+                new MutationObserver(() => {
+                    const open = document.querySelector('.examx-dropdown.is-open');
+                    if (open) adjustPush(open);
+                }).observe(wrap, {
+                    subtree: true,
+                    childList: true
+                });
+            }
+        });
+    </script>
 
-    dots.forEach(function (dot) {
-        dot.addEventListener("click", function () {
-            var index = parseInt(dot.dataset.index, 10);
-            gotoIndex(index);
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var block = document.querySelector(".fm3d-videos-block");
+            if (!block) return;
+
+            var cards = Array.prototype.slice.call(block.querySelectorAll(".fm3d-video-card"));
+            var dotsContainer = block.querySelector(".fm3d-videos-dots");
+            var prevBtn = block.querySelector(".fm3d-nav-prev");
+            var nextBtn = block.querySelector(".fm3d-nav-next");
+            var modal = document.getElementById("fm3dVideoModal");
+
+            if (!modal) return;
+
+            var modalIframe = modal.querySelector(".fm3d-video-iframe");
+            var modalPrev = modal.querySelector(".fm3d-video-modal-prev");
+            var modalNext = modal.querySelector(".fm3d-video-modal-next");
+            var modalClose = modal.querySelector(".fm3d-video-modal-close");
+
+            var currentIndex = 0;
+            var autoplayDelay = 6000;
+            var autoplayTimer = null;
+            var dots = [];
+
+            if (cards.length === 0) return;
+
+            function extractYoutubeId(url) {
+                if (!url) return "";
+                url = url.trim();
+                var id = "";
+                var match;
+
+                if (url.indexOf("youtu.be/") !== -1) {
+                    match = url.match(/youtu\.be\/([^?&\/]+)/);
+                    if (match && match[1]) id = match[1];
+                } else if (url.indexOf("youtube.com") !== -1) {
+                    match = url.match(/[?&]v=([^?&]+)/);
+                    if (match && match[1]) id = match[1];
+
+                    if (!id) {
+                        match = url.match(/embed\/([^?&\/]+)/);
+                        if (match && match[1]) id = match[1];
+                    }
+
+                    if (!id) {
+                        match = url.match(/shorts\/([^?&\/]+)/);
+                        if (match && match[1]) id = match[1];
+                    }
+                }
+
+                return id;
+            }
+
+            function getYoutubeEmbed(url) {
+                var videoId = extractYoutubeId(url);
+                if (!videoId) return url || "";
+                return "https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0";
+            }
+
+            cards.forEach(function(card, index) {
+                var dot = document.createElement("div");
+                dot.className = "fm3d-dot";
+                dot.dataset.index = String(index);
+                dotsContainer.appendChild(dot);
+                dots.push(dot);
+
+                var videoUrl = card.dataset.video || "";
+                var videoId = extractYoutubeId(videoUrl);
+                var cover = card.querySelector(".fm3d-video-cover");
+                if (cover && videoId) {
+                    cover.style.backgroundImage =
+                        "url('https://img.youtube.com/vi/" + videoId + "/hqdefault.jpg')";
+                }
+            });
+
+            function normalizeIndex(index) {
+                var total = cards.length;
+                return (index + total) % total;
+            }
+
+            function applyPositions() {
+                var total = cards.length;
+                cards.forEach(function(card, index) {
+                    card.classList.remove("fm3d-pos-center", "fm3d-pos-left", "fm3d-pos-right",
+                        "fm3d-pos-out");
+                    var diff = normalizeIndex(index - currentIndex);
+                    if (diff === 0) {
+                        card.classList.add("fm3d-pos-center");
+                    } else if (diff === 1) {
+                        card.classList.add("fm3d-pos-right");
+                    } else if (diff === total - 1) {
+                        card.classList.add("fm3d-pos-left");
+                    } else {
+                        card.classList.add("fm3d-pos-out");
+                    }
+                });
+                dots.forEach(function(dot, index) {
+                    dot.classList.toggle("fm3d-dot-active", index === currentIndex);
+                });
+            }
+
+            function gotoIndex(index) {
+                currentIndex = normalizeIndex(index);
+                applyPositions();
+            }
+
+            function goNext() {
+                gotoIndex(currentIndex + 1);
+            }
+
+            function goPrev() {
+                gotoIndex(currentIndex - 1);
+            }
+
+            function startAutoplay() {
+                clearAutoplay();
+                autoplayTimer = setInterval(goNext, autoplayDelay);
+            }
+
+            function clearAutoplay() {
+                if (autoplayTimer) {
+                    clearInterval(autoplayTimer);
+                    autoplayTimer = null;
+                }
+            }
+
+            function openModalForIndex(index) {
+                currentIndex = normalizeIndex(index);
+                applyPositions();
+                var videoUrl = cards[currentIndex].dataset.video || "";
+                var embedUrl = getYoutubeEmbed(videoUrl);
+                modalIframe.src = embedUrl;
+                modal.classList.add("fm3d-modal-open");
+                clearAutoplay();
+            }
+
+            function closeModal() {
+                modal.classList.remove("fm3d-modal-open");
+                modalIframe.src = "";
+                startAutoplay();
+            }
+
+            cards.forEach(function(card, index) {
+                var trigger = card.querySelector(".fm3d-video-play");
+                if (trigger) {
+                    trigger.addEventListener("click", function() {
+                        openModalForIndex(index);
+                    });
+                }
+            });
+
+            prevBtn.addEventListener("click", function() {
+                goPrev();
+                startAutoplay();
+            });
+
+            nextBtn.addEventListener("click", function() {
+                goNext();
+                startAutoplay();
+            });
+
+            dots.forEach(function(dot) {
+                dot.addEventListener("click", function() {
+                    var index = parseInt(dot.dataset.index, 10);
+                    gotoIndex(index);
+                    startAutoplay();
+                });
+            });
+
+            modalPrev.addEventListener("click", function() {
+                goPrev();
+                openModalForIndex(currentIndex);
+            });
+
+            modalNext.addEventListener("click", function() {
+                goNext();
+                openModalForIndex(currentIndex);
+            });
+
+            modalClose.addEventListener("click", function() {
+                closeModal();
+            });
+
+            modal.addEventListener("click", function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            document.addEventListener("keydown", function(e) {
+                if (!modal.classList.contains("fm3d-modal-open")) return;
+                if (e.key === "Escape") {
+                    closeModal();
+                } else if (e.key === "ArrowLeft") {
+                    goPrev();
+                    openModalForIndex(currentIndex);
+                } else if (e.key === "ArrowRight") {
+                    goNext();
+                    openModalForIndex(currentIndex);
+                }
+            });
+
+            applyPositions();
             startAutoplay();
         });
-    });
-
-    modalPrev.addEventListener("click", function () {
-        goPrev();
-        openModalForIndex(currentIndex);
-    });
-
-    modalNext.addEventListener("click", function () {
-        goNext();
-        openModalForIndex(currentIndex);
-    });
-
-    modalClose.addEventListener("click", function () {
-        closeModal();
-    });
-
-    modal.addEventListener("click", function (e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-
-    document.addEventListener("keydown", function (e) {
-        if (!modal.classList.contains("fm3d-modal-open")) return;
-        if (e.key === "Escape") {
-            closeModal();
-        } else if (e.key === "ArrowLeft") {
-            goPrev();
-            openModalForIndex(currentIndex);
-        } else if (e.key === "ArrowRight") {
-            goNext();
-            openModalForIndex(currentIndex);
-        }
-    });
-
-    applyPositions();
-    startAutoplay();
-});
-
-</script>
+    </script>
 
 
     <script>
@@ -674,385 +697,462 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const root = document.querySelector('section.blog-slider');
-    if (!root) return;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const root = document.querySelector('section.blog-slider');
+            if (!root) return;
 
-    const track = root.querySelector('.blog-slider__track');
-    const dotsWrap = root.querySelector('.blog-slider__dots');
+            const track = root.querySelector('.blog-slider__track');
+            const dotsWrap = root.querySelector('.blog-slider__dots');
 
-    if (!track) return;
+            if (!track) return;
 
-    const cards = Array.from(track.querySelectorAll('.blog-card'));
-    const total = cards.length;
-    if (!total) return;
+            const cards = Array.from(track.querySelectorAll('.blog-card'));
+            const total = cards.length;
+            if (!total) return;
 
-    function getPerView() {
-        const w = window.innerWidth;
-        if (w <= 600) return 1;
-        if (w <= 992) return 2;
-        return 3;
-    }
+            function getPerView() {
+                const w = window.innerWidth;
+                if (w <= 600) return 1;
+                if (w <= 992) return 2;
+                return 3;
+            }
 
-    let perView = getPerView();
-    const prevBtn = root.querySelector('.blog-slider__arrow--prev');
-    const nextBtn = root.querySelector('.blog-slider__arrow--next');
+            let perView = getPerView();
+            const prevBtn = root.querySelector('.blog-slider__arrow--prev');
+            const nextBtn = root.querySelector('.blog-slider__arrow--next');
 
-    if (total <= perView) {
-        if (prevBtn) prevBtn.style.display = 'none';
-        if (nextBtn) nextBtn.style.display = 'none';
-        if (dotsWrap) dotsWrap.style.display = 'none';
-        return;
-    }
+            if (total <= perView) {
+                if (prevBtn) prevBtn.style.display = 'none';
+                if (nextBtn) nextBtn.style.display = 'none';
+                if (dotsWrap) dotsWrap.style.display = 'none';
+                return;
+            }
 
-    let index = 0;
-    let timer = null;
-    let pages = Math.ceil(total / perView);
+            let index = 0;
+            let timer = null;
+            let pages = Math.ceil(total / perView);
 
-    function buildDots() {
-        if (!dotsWrap) return;
-        dotsWrap.innerHTML = '';
-        for (let i = 0; i < pages; i++) {
-            const b = document.createElement('button');
-            b.type = 'button';
-            b.addEventListener('click', function () {
-                index = i * perView;
+            function buildDots() {
+                if (!dotsWrap) return;
+                dotsWrap.innerHTML = '';
+                for (let i = 0; i < pages; i++) {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.addEventListener('click', function() {
+                        index = i * perView;
+                        updateVisible();
+                        restartAuto();
+                    });
+                    dotsWrap.appendChild(b);
+                }
+            }
+
+            function updateDots() {
+                if (!dotsWrap) return;
+                const currentPage = Math.floor(index / perView) % pages;
+                Array.from(dotsWrap.children).forEach(function(btn, i) {
+                    btn.setAttribute('aria-current', i === currentPage ? 'true' : 'false');
+                });
+            }
+
+            function updateVisible() {
+                perView = getPerView();
+                pages = Math.ceil(total / perView);
+
+                cards.forEach(function(card) {
+                    card.classList.add('blog-card--hidden');
+                });
+
+                for (let i = 0; i < perView; i++) {
+                    const current = (index + i) % total;
+                    cards[current].classList.remove('blog-card--hidden');
+                }
+
+                updateDots();
+            }
+
+            function nextSlide() {
+                perView = getPerView();
+                index = (index + perView) % total;
                 updateVisible();
-                restartAuto();
-            });
-            dotsWrap.appendChild(b);
-        }
-    }
+            }
 
-    function updateDots() {
-        if (!dotsWrap) return;
-        const currentPage = Math.floor(index / perView) % pages;
-        Array.from(dotsWrap.children).forEach(function (btn, i) {
-            btn.setAttribute('aria-current', i === currentPage ? 'true' : 'false');
-        });
-    }
+            function prevSlide() {
+                perView = getPerView();
+                index = (index - perView) % total;
+                if (index < 0) index = ((pages - 1) * perView) % total;
+                updateVisible();
+            }
 
-    function updateVisible() {
-        perView = getPerView();
-        pages = Math.ceil(total / perView);
+            function startAuto() {
+                if (timer) clearInterval(timer);
+                timer = setInterval(nextSlide, 10000);
+            }
 
-        cards.forEach(function (card) {
-            card.classList.add('blog-card--hidden');
-        });
+            function stopAuto() {
+                if (timer) {
+                    clearInterval(timer);
+                    timer = null;
+                }
+            }
 
-        for (let i = 0; i < perView; i++) {
-            const current = (index + i) % total;
-            cards[current].classList.remove('blog-card--hidden');
-        }
+            function restartAuto() {
+                stopAuto();
+                startAuto();
+            }
 
-        updateDots();
-    }
-
-    function nextSlide() {
-        perView = getPerView();
-        index = (index + perView) % total;
-        updateVisible();
-    }
-
-    function prevSlide() {
-        perView = getPerView();
-        index = (index - perView) % total;
-        if (index < 0) index = ((pages - 1) * perView) % total;
-        updateVisible();
-    }
-
-    function startAuto() {
-        if (timer) clearInterval(timer);
-        timer = setInterval(nextSlide, 10000);
-    }
-
-    function stopAuto() {
-        if (timer) {
-            clearInterval(timer);
-            timer = null;
-        }
-    }
-
-    function restartAuto() {
-        stopAuto();
-        startAuto();
-    }
-
-    buildDots();
-    updateVisible();
-    startAuto();
-
-    root.addEventListener('click', function (e) {
-        const nextHit = e.target.closest('.blog-slider__arrow--next');
-        const prevHit = e.target.closest('.blog-slider__arrow--prev');
-
-        if (nextHit) {
-            nextSlide();
-            restartAuto();
-        } else if (prevHit) {
-            prevSlide();
-            restartAuto();
-        }
-    });
-
-    window.addEventListener('resize', function () {
-        const newPerView = getPerView();
-        if (newPerView !== perView) {
-            perView = newPerView;
-            pages = Math.ceil(total / perView);
-            index = 0;
             buildDots();
             updateVisible();
-            restartAuto();
-        }
-    });
+            startAuto();
 
-    root.addEventListener('mouseenter', stopAuto);
-    root.addEventListener('mouseleave', startAuto);
-});
-</script>
+            root.addEventListener('click', function(e) {
+                const nextHit = e.target.closest('.blog-slider__arrow--next');
+                const prevHit = e.target.closest('.blog-slider__arrow--prev');
+
+                if (nextHit) {
+                    nextSlide();
+                    restartAuto();
+                } else if (prevHit) {
+                    prevSlide();
+                    restartAuto();
+                }
+            });
+
+            window.addEventListener('resize', function() {
+                const newPerView = getPerView();
+                if (newPerView !== perView) {
+                    perView = newPerView;
+                    pages = Math.ceil(total / perView);
+                    index = 0;
+                    buildDots();
+                    updateVisible();
+                    restartAuto();
+                }
+            });
+
+            root.addEventListener('mouseenter', stopAuto);
+            root.addEventListener('mouseleave', startAuto);
+        });
+    </script>
 
 
 
-<script>
-(function(){
-  const win=document.querySelector('.rvx-window');
-  const track=document.querySelector('.rvx-track');
-  const prev=document.querySelector('.rvx-prev');
-  const next=document.querySelector('.rvx-next');
-  const dotsBox=document.querySelector('.rvx-dots');
-  if(!win||!track||!dotsBox) return;
+    <script>
+        (function() {
+            const win = document.querySelector('.rvx-window');
+            const track = document.querySelector('.rvx-track');
+            const prev = document.querySelector('.rvx-prev');
+            const next = document.querySelector('.rvx-next');
+            const dotsBox = document.querySelector('.rvx-dots');
+            if (!win || !track || !dotsBox) return;
 
-  let originals=Array.from(track.children);
-  if(!originals.length) return;
+            let originals = Array.from(track.children);
+            if (!originals.length) return;
 
-  const GAP=28;
-  let visible=2;
-  let cloneN=visible;
-  let items=[];
-  let index=0;
-  let step=0;
-  let timer, dragging=false, startX=0, curX=0;
+            const GAP = 28;
+            let visible = 2;
+            let cloneN = visible;
+            let items = [];
+            let index = 0;
+            let step = 0;
+            let timer, dragging = false,
+                startX = 0,
+                curX = 0;
 
-  function perView(){
-    const w=win.clientWidth;
-    if(w<=600) return 1;
-    if(w<=992) return 2;
-    return 2;
-  }
+            function perView() {
+                const w = win.clientWidth;
+                if (w <= 600) return 1;
+                if (w <= 992) return 2;
+                return 2;
+            }
 
-  function setCardWidths(){
-    const vw=win.clientWidth;
-    const cardW=(vw - GAP*(visible-1))/visible;
-    items.forEach(el=>{ el.style.minWidth=cardW+'px'; });
-    step=cardW+GAP;
-  }
+            function setCardWidths() {
+                const vw = win.clientWidth;
+                const cardW = (vw - GAP * (visible - 1)) / visible;
+                items.forEach(el => {
+                    el.style.minWidth = cardW + 'px';
+                });
+                step = cardW + GAP;
+            }
 
-  function buildClones(){
-    track.innerHTML='';
-    cloneN=visible;
-    const head=originals.slice(0,cloneN).map(n=>n.cloneNode(true));
-    const tail=originals.slice(-cloneN).map(n=>n.cloneNode(true));
-    tail.forEach(n=>track.appendChild(n));
-    originals.forEach(n=>track.appendChild(n));
-    head.forEach(n=>track.appendChild(n));
-    items=Array.from(track.children);
-  }
+            function buildClones() {
+                track.innerHTML = '';
+                cloneN = visible;
+                const head = originals.slice(0, cloneN).map(n => n.cloneNode(true));
+                const tail = originals.slice(-cloneN).map(n => n.cloneNode(true));
+                tail.forEach(n => track.appendChild(n));
+                originals.forEach(n => track.appendChild(n));
+                head.forEach(n => track.appendChild(n));
+                items = Array.from(track.children);
+            }
 
-  function jump(i){
-    track.style.transition='none';
-    track.style.transform=`translateX(${-i*step}px)`;
-    track.offsetHeight;
-    track.style.transition='transform .6s cubic-bezier(.22,.61,.36,1)';
-  }
+            function jump(i) {
+                track.style.transition = 'none';
+                track.style.transform = `translateX(${-i*step}px)`;
+                track.offsetHeight;
+                track.style.transition = 'transform .6s cubic-bezier(.22,.61,.36,1)';
+            }
 
-  function apply(){
-    track.style.transform=`translateX(${-index*step}px)`;
-    updateDots();
-  }
+            function apply() {
+                track.style.transform = `translateX(${-index*step}px)`;
+                updateDots();
+            }
 
-  function normalize(){
-    if(index>=originals.length+cloneN){ index=cloneN; jump(index); }
-    if(index<cloneN){ index=cloneN+originals.length-1; jump(index); }
-  }
+            function normalize() {
+                if (index >= originals.length + cloneN) {
+                    index = cloneN;
+                    jump(index);
+                }
+                if (index < cloneN) {
+                    index = cloneN + originals.length - 1;
+                    jump(index);
+                }
+            }
 
-  function currentDot(){
-    const raw=(index-cloneN+originals.length)%originals.length;
-    return raw;
-  }
+            function currentDot() {
+                const raw = (index - cloneN + originals.length) % originals.length;
+                return raw;
+            }
 
-  function buildDots(){
-    dotsBox.innerHTML='';
-    for(let i=0;i<originals.length;i++){
-      const b=document.createElement('button');
-      b.type='button';
-      b.addEventListener('click',()=>{ index=cloneN+i; apply(); });
-      dotsBox.appendChild(b);
-    }
-    updateDots();
-  }
+            function buildDots() {
+                dotsBox.innerHTML = '';
+                for (let i = 0; i < originals.length; i++) {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.addEventListener('click', () => {
+                        index = cloneN + i;
+                        apply();
+                    });
+                    dotsBox.appendChild(b);
+                }
+                updateDots();
+            }
 
-  function updateDots(){
-    const cur=currentDot();
-    [...dotsBox.children].forEach((d,k)=>d.setAttribute('aria-current',k===cur?'true':'false'));
-  }
+            function updateDots() {
+                const cur = currentDot();
+                [...dotsBox.children].forEach((d, k) => d.setAttribute('aria-current', k === cur ? 'true' : 'false'));
+            }
 
-  function measure(rebuild=false){
-    const newVis=perView();
-    if(rebuild || newVis!==visible){
-      visible=newVis;
-      buildClones();
-      setCardWidths();
-      index=cloneN;
-      jump(index);
-      buildDots();
-      eagerLoad();
-      ensureAuto();
-    }else{
-      setCardWidths();
-      jump(index);
-      updateDots();
-    }
-  }
+            function measure(rebuild = false) {
+                const newVis = perView();
+                if (rebuild || newVis !== visible) {
+                    visible = newVis;
+                    buildClones();
+                    setCardWidths();
+                    index = cloneN;
+                    jump(index);
+                    buildDots();
+                    eagerLoad();
+                    ensureAuto();
+                } else {
+                    setCardWidths();
+                    jump(index);
+                    updateDots();
+                }
+            }
 
-  function nextSlide(){ index+=1; apply(); }
-  function prevSlide(){ index-=1; apply(); }
+            function nextSlide() {
+                index += 1;
+                apply();
+            }
 
-  track.addEventListener('transitionend',normalize);
+            function prevSlide() {
+                index -= 1;
+                apply();
+            }
 
-  win.addEventListener('pointerdown',e=>{ dragging=true; startX=curX=e.clientX; win.setPointerCapture(e.pointerId); });
-  win.addEventListener('pointermove',e=>{ if(!dragging) return; curX=e.clientX; });
-  win.addEventListener('pointerup',()=>{ if(!dragging) return; dragging=false; const dx=curX-startX; if(Math.abs(dx)>40){ dx<0?nextSlide():prevSlide(); }});
+            track.addEventListener('transitionend', normalize);
 
-  if(prev) prev.addEventListener('click',prevSlide);
-  if(next) next.addEventListener('click',nextSlide);
+            win.addEventListener('pointerdown', e => {
+                dragging = true;
+                startX = curX = e.clientX;
+                win.setPointerCapture(e.pointerId);
+            });
+            win.addEventListener('pointermove', e => {
+                if (!dragging) return;
+                curX = e.clientX;
+            });
+            win.addEventListener('pointerup', () => {
+                if (!dragging) return;
+                dragging = false;
+                const dx = curX - startX;
+                if (Math.abs(dx) > 40) {
+                    dx < 0 ? nextSlide() : prevSlide();
+                }
+            });
 
-  function start(){ stop(); timer=setInterval(nextSlide,5000); }
-  function stop(){ if(timer) clearInterval(timer); }
-  function ensureAuto(){ if(step>0){ start(); } }
+            if (prev) prev.addEventListener('click', prevSlide);
+            if (next) next.addEventListener('click', nextSlide);
 
-  win.addEventListener('mouseenter',stop);
-  win.addEventListener('mouseleave',start);
+            function start() {
+                stop();
+                timer = setInterval(nextSlide, 5000);
+            }
 
-  window.addEventListener('resize',()=>measure(true));
-  window.addEventListener('load',()=>measure(true));
+            function stop() {
+                if (timer) clearInterval(timer);
+            }
 
-  function eagerLoad(){
-    const imgs=track.querySelectorAll('img[data-src]');
-    const io=new IntersectionObserver(es=>{
-      es.forEach(e=>{ if(e.isIntersecting){ const img=e.target; img.src=img.getAttribute('data-src'); img.removeAttribute('data-src'); io.unobserve(img); }});
-    },{root:win,rootMargin:'200px'});
-    imgs.forEach(img=>io.observe(img));
-  }
+            function ensureAuto() {
+                if (step > 0) {
+                    start();
+                }
+            }
 
-  measure(true);
-})();
-</script>
+            win.addEventListener('mouseenter', stop);
+            win.addEventListener('mouseleave', start);
+
+            window.addEventListener('resize', () => measure(true));
+            window.addEventListener('load', () => measure(true));
+
+            function eagerLoad() {
+                const imgs = track.querySelectorAll('img[data-src]');
+                const io = new IntersectionObserver(es => {
+                    es.forEach(e => {
+                        if (e.isIntersecting) {
+                            const img = e.target;
+                            img.src = img.getAttribute('data-src');
+                            img.removeAttribute('data-src');
+                            io.unobserve(img);
+                        }
+                    });
+                }, {
+                    root: win,
+                    rootMargin: '200px'
+                });
+                imgs.forEach(img => io.observe(img));
+            }
+
+            measure(true);
+        })();
+    </script>
 
 
     <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
     <script>
-    AOS.init({
-    duration: 600,
-    easing: 'ease-out-cubic',
-    offset: 80,
-    once: true
-    });
+        AOS.init({
+            duration: 600,
+            easing: 'ease-out-cubic',
+            offset: 80,
+            once: true
+        });
     </script>
-<script>
-document.addEventListener('DOMContentLoaded',function(){
-  const viewport=document.querySelector('.x3c-viewport');
-  if(!viewport)return;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const viewport = document.querySelector('.x3c-viewport');
+            if (!viewport) return;
 
-  const rail=viewport.querySelector('.x3c-rail');
-  const left=viewport.querySelector('.x3c-left');
-  const right=viewport.querySelector('.x3c-right');
+            const rail = viewport.querySelector('.x3c-rail');
+            const left = viewport.querySelector('.x3c-left');
+            const right = viewport.querySelector('.x3c-right');
 
-  if(!rail)return;
+            if (!rail) return;
 
-  let baseCells=Array.from(rail.children);
-  if(!baseCells.length)return;
+            let baseCells = Array.from(rail.children);
+            if (!baseCells.length) return;
 
-  let vis=window.matchMedia('(max-width:768px)').matches?1:3;
-  let cloneCount=vis;
-  let index=cloneCount;
-  let itemWidth=0;
-  let items,realCount=baseCells.length;
-  let animating=false,timer;
+            let vis = window.matchMedia('(max-width:768px)').matches ? 1 : 3;
+            let cloneCount = vis;
+            let index = cloneCount;
+            let itemWidth = 0;
+            let items, realCount = baseCells.length;
+            let animating = false,
+                timer;
 
-  function buildClones(){
-    rail.innerHTML='';
-    const head=baseCells.slice(0,cloneCount).map(n=>n.cloneNode(true));
-    const tail=baseCells.slice(-cloneCount).map(n=>n.cloneNode(true));
-    tail.forEach(n=>rail.appendChild(n));
-    baseCells.forEach(n=>rail.appendChild(n));
-    head.forEach(n=>rail.appendChild(n));
-    items=Array.from(rail.children);
-  }
+            function buildClones() {
+                rail.innerHTML = '';
+                const head = baseCells.slice(0, cloneCount).map(n => n.cloneNode(true));
+                const tail = baseCells.slice(-cloneCount).map(n => n.cloneNode(true));
+                tail.forEach(n => rail.appendChild(n));
+                baseCells.forEach(n => rail.appendChild(n));
+                head.forEach(n => rail.appendChild(n));
+                items = Array.from(rail.children);
+            }
 
-  function jump(i){
-    rail.style.transition='none';
-    rail.style.transform=`translate3d(${-i*itemWidth}px,0,0)`;
-    rail.offsetHeight;
-    rail.style.transition='transform .7s cubic-bezier(.22,.61,.36,1)';
-  }
+            function jump(i) {
+                rail.style.transition = 'none';
+                rail.style.transform = `translate3d(${-i*itemWidth}px,0,0)`;
+                rail.offsetHeight;
+                rail.style.transition = 'transform .7s cubic-bezier(.22,.61,.36,1)';
+            }
 
-  function focus(){
-    items.forEach(i=>i.classList.remove('x3c-focus'));
-    const centerOffset=(vis===3?1:0);
-    const mid=index+centerOffset;
-    if(items[mid])items[mid].classList.add('x3c-focus');
-  }
+            function focus() {
+                items.forEach(i => i.classList.remove('x3c-focus'));
+                const centerOffset = (vis === 3 ? 1 : 0);
+                const mid = index + centerOffset;
+                if (items[mid]) items[mid].classList.add('x3c-focus');
+            }
 
-  function measure(){
-    const nowVis=window.matchMedia('(max-width:768px)').matches?1:3;
-    if(nowVis!==vis){
-      vis=nowVis;cloneCount=vis;index=cloneCount;
-      baseCells=items.slice(cloneCount,cloneCount+realCount).map(n=>n.cloneNode(true));
-      buildClones();
-    }
-    itemWidth=viewport.clientWidth/vis;
-    items.forEach(i=>i.style.minWidth=itemWidth+'px');
-    jump(index);
-    focus();
-  }
+            function measure() {
+                const nowVis = window.matchMedia('(max-width:768px)').matches ? 1 : 3;
+                if (nowVis !== vis) {
+                    vis = nowVis;
+                    cloneCount = vis;
+                    index = cloneCount;
+                    baseCells = items.slice(cloneCount, cloneCount + realCount).map(n => n.cloneNode(true));
+                    buildClones();
+                }
+                itemWidth = viewport.clientWidth / vis;
+                items.forEach(i => i.style.minWidth = itemWidth + 'px');
+                jump(index);
+                focus();
+            }
 
-  function go(to){
-    if(animating)return;
-    animating=true;
-    index=to;
-    rail.style.transform=`translate3d(${-index*itemWidth}px,0,0)`;
-    focus();
-  }
+            function go(to) {
+                if (animating) return;
+                animating = true;
+                index = to;
+                rail.style.transform = `translate3d(${-index*itemWidth}px,0,0)`;
+                focus();
+            }
 
-  function next(){go(index+1)}
-  function prev(){go(index-1)}
+            function next() {
+                go(index + 1)
+            }
 
-  function normalize(){
-    if(index>=realCount+cloneCount){index=cloneCount;jump(index)}
-    else if(index<cloneCount){index=cloneCount+realCount-1;jump(index)}
-  }
+            function prev() {
+                go(index - 1)
+            }
 
-  rail.addEventListener('transitionend',()=>{
-    normalize();
-    animating=false;
-    focus();
-  });
+            function normalize() {
+                if (index >= realCount + cloneCount) {
+                    index = cloneCount;
+                    jump(index)
+                } else if (index < cloneCount) {
+                    index = cloneCount + realCount - 1;
+                    jump(index)
+                }
+            }
 
-  left.addEventListener('click',prev);
-  right.addEventListener('click',next);
+            rail.addEventListener('transitionend', () => {
+                normalize();
+                animating = false;
+                focus();
+            });
 
-  function startAuto(){ stopAuto(); timer=setInterval(next,5000) }
-  function stopAuto(){ if(timer) clearInterval(timer) }
-  viewport.addEventListener('mouseenter',stopAuto);
-  viewport.addEventListener('mouseleave',startAuto);
+            left.addEventListener('click', prev);
+            right.addEventListener('click', next);
 
-  buildClones();
-  requestAnimationFrame(()=>{ measure(); startAuto(); });
-  window.addEventListener('resize',measure);
-});
-</script>
+            function startAuto() {
+                stopAuto();
+                timer = setInterval(next, 5000)
+            }
+
+            function stopAuto() {
+                if (timer) clearInterval(timer)
+            }
+            viewport.addEventListener('mouseenter', stopAuto);
+            viewport.addEventListener('mouseleave', startAuto);
+
+            buildClones();
+            requestAnimationFrame(() => {
+                measure();
+                startAuto();
+            });
+            window.addEventListener('resize', measure);
+        });
+    </script>
 
 
     @stack('scripts')
