@@ -404,40 +404,58 @@
                 return data.file_path;
             }
 
-            form.addEventListener('submit', async function(e) {
-                const contentType = document.getElementById('content_type').value;
-                const videoType = videoTypeInput.value;
+         form.addEventListener('submit', async function(e) {
+    const contentType = document.getElementById('content_type').value;
+    const videoType = videoTypeInput.value;
 
-                // Only intercept if it's a Bunny video
-                if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length > 0) {
-                    e.preventDefault(); // stop normal form submit
+    // Only intercept if it's a Bunny video
+    if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length > 0) {
+        e.preventDefault(); // stop normal form submit
 
-                    const file = videoInput.files[0];
+        const file = videoInput.files[0];
 
-                    // Show loading only during upload
-                    loadingDiv.style.display = 'flex';
+        // Show loading
+        loadingDiv.style.display = 'flex';
 
-                    try {
-                        const path = await uploadToBunny(file, {{ $course->id }});
+        try {
+            // Upload video to Bunny
+            const path = await uploadToBunny(file, {{ $course->id }});
 
-                        videoUrlInput.value = path;
-                        videoTypeInput.value = 'bunny';
+            // ✅ Set form fields BEFORE submit
+            videoUrlInput.value = path;       // video_url
+            videoTypeInput.value = 'bunny';   // video_type
 
-                        if (!videoDurationInput.value) videoDurationInput.value = 0;
+            // Ensure duration is not empty
+            if (!videoDurationInput.value) {
+                // Optional: calculate duration using HTMLVideoElement
+                const video = document.createElement('video');
+                video.preload = 'metadata';
+                video.src = URL.createObjectURL(file);
+                video.onloadedmetadata = function() {
+                    window.URL.revokeObjectURL(video.src);
+                    videoDurationInput.value = Math.floor(video.duration); // seconds
 
-                        videoInput.value = '';
+                    // Clear file input so Laravel won't try to re-upload
+                    videoInput.value = '';
 
-                        // Submit the form after upload
-                        form.submit();
-                    } catch (err) {
-                        alert('Video upload failed. Please try again.');
-                        console.error(err);
-                    } finally {
-                        // Hide loading after upload or failure
-                        loadingDiv.style.display = 'none';
-                    }
-                }
-            });
+                    // Submit form
+                    form.submit();
+                };
+                return; // wait for duration calculation
+            }
+
+            // If user already entered duration
+            videoInput.value = '';
+            form.submit();
+
+        } catch (err) {
+            alert('Video upload failed. Please try again.');
+            console.error(err);
+            loadingDiv.style.display = 'none';
+        }
+    }
+});
+
         });
     </script>
 
