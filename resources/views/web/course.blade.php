@@ -762,7 +762,8 @@
                             @endif
 
                             {{-- All Course Exams --}}
-                            @if ($is_enrolled && $exams && $exams->count())
+                            {{-- All Course Exams --}}
+                            @if ($exams && $exams->count())
                                 <div class="crs2-section">
                                     <button type="button" class="crs2-section-header">
                                         <span class="crs2-section-arrow"></span>
@@ -775,19 +776,47 @@
                                     </button>
                                     <div class="crs2-section-body">
                                         @foreach ($exams as $exam)
-                                            <div class="crs2-resource crs2-resource--locked-enrolled">
-                                                <div class="crs2-resource-main">
-                                                    <span class="crs2-resource-icon">
-                                                        <i class="fa fa-mobile-alt"></i>
-                                                    </span>
-                                                    <div class="crs2-resource-content">
-                                                        <span class="crs2-resource-title">{{ $exam->title }}</span>
-                                                        <span class="crs2-resource-app-message">
-                                                            {{ translate_lang('go_to_app_to_take_exam') }}
+                                            @if ($is_enrolled)
+                                                {{-- Enrolled - Show Clickable Exam --}}
+                                                <div class="crs2-resource crs2-resource--exam">
+                                                    <div class="crs2-resource-main">
+                                                        <span class="crs2-resource-icon">
+                                                            <i class="fa fa-question-circle"></i>
                                                         </span>
+                                                        <span class="crs2-resource-title">{{ $exam->title }}</span>
+                                                    </div>
+                                                    <div class="crs2-resource-actions">
+                                                        <div class="crs2-resource-meta">
+                                                            <span class="crs2-meta-chip">
+                                                                {{ translate_lang('attempts') }}:
+                                                                {{ $exam->user_attempts()->count() }}
+                                                            </span>
+                                                            @if ($exam->result_attempt())
+                                                                <span
+                                                                    class="crs2-meta-chip {{ $exam->result_attempt()->is_passed ? 'passed' : 'failed' }}">
+                                                                    <i
+                                                                        class="fa fa-{{ $exam->result_attempt()->is_passed ? 'check' : 'times' }}"></i>
+                                                                    {{ $exam->result_attempt()->percentage }}%
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}"
+                                                            target="_blank" class="crs2-pill-btn crs2-pill-btn--red">
+                                                            {{ translate_lang('enter_exam') }}
+                                                        </a>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            @else
+                                                {{-- Not Enrolled - Show Lock --}}
+                                                <div class="crs2-resource crs2-resource--locked">
+                                                    <div class="crs2-resource-main">
+                                                        <span class="crs2-resource-icon">
+                                                            <i class="fa fa-lock"></i>
+                                                        </span>
+                                                        <span class="crs2-resource-title">{{ $exam->title }}</span>
+                                                    </div>
+                                                </div>
+                                            @endif
                                         @endforeach
                                     </div>
                                 </div>
@@ -818,409 +847,412 @@
                 </div>
             @endsection
 
-            @if (!$is_enrolled || !$user)
-                @push('scripts')
-                    <script>
-                        let user = "{{ $user?->id }}";
-                        let isEnrolled = {{ $is_enrolled }};
-                    </script>
-                    <script>
-                        // Card activation
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const activateButton = document.querySelector('.crs2-card-button');
-                            const cardInput = document.querySelector('.crs2-card-input');
-                            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            @push('scripts')
+                <script>
+                    let user = "{{ $user?->id }}";
+                    let isEnrolled = {{ $is_enrolled }};
+                </script>
+                <script>
+                    // Card activation
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const activateButton = document.querySelector('.crs2-card-button');
+                        const cardInput = document.querySelector('.crs2-card-input');
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-                            if (activateButton) {
-                                activateButton.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    const cardNumber = cardInput.value.trim();
-                                    const courseId = this.getAttribute('data-course-id');
+                        if (activateButton) {
+                            activateButton.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                const cardNumber = cardInput.value.trim();
+                                const courseId = this.getAttribute('data-course-id');
 
-                                    if (!user) {
-                                        alert("{{ translate_lang('please_login_first') }}");
-                                        return;
-                                    } else if (!cardNumber) {
-                                        alert('{{ translate_lang('please_enter_card_number') }}');
-                                        return;
-                                    }
-
-                                    activateButton.innerHTML = '{{ translate_lang('activating') }}...';
-                                    activateButton.disabled = true;
-
-                                    fetch('{{ route('activate.card') }}', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRF-TOKEN': csrfToken,
-                                                'Accept': 'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                card_number: cardNumber,
-                                                course_id: courseId
-                                            })
-                                        })
-                                        .then(response => {
-                                            activateButton.innerHTML = '{{ translate_lang('activate_card') }}';
-                                            activateButton.disabled = false;
-
-                                            if (!response.ok) {
-                                                throw new Error('Network response was not ok');
-                                            }
-                                            return response.json();
-                                        })
-                                        .then(data => {
-                                            if (data.success) {
-                                                alert('{{ translate_lang('card_activated_successfully') }}');
-                                                location.reload();
-                                            } else {
-                                                alert('{{ translate_lang('activation_error') }}: ' + (data.message ||
-                                                    'Unknown error'));
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.log('Error:', error);
-                                            alert('{{ translate_lang('connection_error') }}');
-                                        });
-                                });
-                            }
-                        });
-                    </script>
-                    <script>
-                        // Enrollment
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const modal = document.getElementById('enrollment-modal');
-                            const closeBtn = document.querySelector('.close');
-                            const continueBtn = document.getElementById('continue-shopping');
-                            const checkoutBtn = document.getElementById('go-to-checkout');
-                            const enrollButtons = document.querySelectorAll('.enroll-btn');
-                            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-                            enrollButtons.forEach(button => {
-                                button.addEventListener('click', function(e) {
-                                    e.preventDefault();
-
-                                    if (!user) {
-                                        alert("{{ translate_lang('login_required') }}");
-                                        return;
-                                    }
-
-                                    const courseId = this.getAttribute('data-course-id');
-                                    const buttonId = this.getAttribute('id');
-                                    const buttonInnerHTML = this.innerHTML;
-
-                                    this.innerHTML = '{{ translate_lang('loading') }}';
-                                    this.disabled = true;
-
-                                    fetch('{{ route('add.to.session') }}', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRF-TOKEN': csrfToken,
-                                                'Accept': 'application/json'
-                                            },
-                                            body: JSON.stringify({
-                                                course_id: courseId
-                                            })
-                                        })
-                                        .then(response => response.json())
-                                        .then(data => {
-                                            if (buttonId && buttonId == 'buy_now') {
-                                                window.location.href = '{{ route('checkout') }}';
-                                            }
-                                            if (data.success) {
-                                                modal.style.display = 'flex';
-                                                this.innerHTML = "{{ translate_lang('go_to_checkout') }}";
-                                                this.disabled = false;
-                                            } else {
-                                                alert('{{ translate_lang('error_adding_course') }}: ' + (data
-                                                    .message || 'Unknown error'));
-                                            }
-                                        })
-                                        .catch(error => {
-                                            this.innerHTML = buttonInnerHTML;
-                                        });
-                                });
-                            });
-
-                            if (closeBtn) {
-                                closeBtn.addEventListener('click', function() {
-                                    modal.style.display = 'none';
-                                });
-                            }
-
-                            if (continueBtn) {
-                                continueBtn.addEventListener('click', function() {
-                                    modal.style.display = 'none';
-                                });
-                            }
-
-                            if (checkoutBtn) {
-                                checkoutBtn.addEventListener('click', function() {
-                                    window.location.href = '{{ route('checkout') }}';
-                                });
-                            }
-
-                            window.addEventListener('click', function(event) {
-                                if (event.target === modal) {
-                                    modal.style.display = 'none';
+                                if (!user) {
+                                    alert("{{ translate_lang('please_login_first') }}");
+                                    return;
+                                } else if (!cardNumber) {
+                                    alert('{{ translate_lang('please_enter_card_number') }}');
+                                    return;
                                 }
-                            });
 
-                            // Accordion functionality
-                            document.addEventListener('click', function(e) {
-                                if (e.target.classList.contains('accordion-header')) {
-                                    e.target.classList.toggle('active');
-                                    const body = e.target.nextElementSibling;
-                                    body.classList.toggle('active');
+                                activateButton.innerHTML = '{{ translate_lang('activating') }}...';
+                                activateButton.disabled = true;
+
+                                fetch('{{ route('activate.card') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': csrfToken,
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            card_number: cardNumber,
+                                            course_id: courseId
+                                        })
+                                    })
+                                    .then(response => {
+                                        activateButton.innerHTML = '{{ translate_lang('activate_card') }}';
+                                        activateButton.disabled = false;
+
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        return response.json();
+                                    })
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert('{{ translate_lang('card_activated_successfully') }}');
+                                            location.reload();
+                                        } else {
+                                            alert('{{ translate_lang('activation_error') }}: ' + (data.message ||
+                                                'Unknown error'));
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.log('Error:', error);
+                                        alert('{{ translate_lang('connection_error') }}');
+                                    });
+                            });
+                        }
+                    });
+                </script>
+                <script>
+                    // Enrollment
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const modal = document.getElementById('enrollment-modal');
+                        const closeBtn = document.querySelector('.close');
+                        const continueBtn = document.getElementById('continue-shopping');
+                        const checkoutBtn = document.getElementById('go-to-checkout');
+                        const enrollButtons = document.querySelectorAll('.enroll-btn');
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                        enrollButtons.forEach(button => {
+                            button.addEventListener('click', function(e) {
+                                e.preventDefault();
+
+                                if (!user) {
+                                    alert("{{ translate_lang('login_required') }}");
+                                    return;
                                 }
+
+                                const courseId = this.getAttribute('data-course-id');
+                                const buttonId = this.getAttribute('id');
+                                const buttonInnerHTML = this.innerHTML;
+
+                                this.innerHTML = '{{ translate_lang('loading') }}';
+                                this.disabled = true;
+
+                                fetch('{{ route('add.to.session') }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': csrfToken,
+                                            'Accept': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            course_id: courseId
+                                        })
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (buttonId && buttonId == 'buy_now') {
+                                            window.location.href = '{{ route('checkout') }}';
+                                        }
+                                        if (data.success) {
+                                            modal.style.display = 'flex';
+                                            this.innerHTML = "{{ translate_lang('go_to_checkout') }}";
+                                            this.disabled = false;
+                                        } else {
+                                            alert('{{ translate_lang('error_adding_course') }}: ' + (data
+                                                .message || 'Unknown error'));
+                                        }
+                                    })
+                                    .catch(error => {
+                                        this.innerHTML = buttonInnerHTML;
+                                    });
                             });
                         });
-                    </script>
 
-                  <!-- Video Progress Tracking -->
-<script>
-    let currentVideoId = null;
-    let videoStartTime = 0;
-    let progressUpdateInterval = null;
-    let currentVideoDuration = 0;
-    let lastWatchedTime = 0;
-    let stopProgress = 0;
-    const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', function() {
+                                modal.style.display = 'none';
+                            });
+                        }
 
-    function fixYouTubeUrl(url) {
-        let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
+                        if (continueBtn) {
+                            continueBtn.addEventListener('click', function() {
+                                modal.style.display = 'none';
+                            });
+                        }
 
-        // Check if it's a Bunny CDN video (mp4 file)
-        if (url.includes('.mp4') || url.includes('/storage/')) {
-            return null; // Will be handled with HTML5 video
-        }
+                        if (checkoutBtn) {
+                            checkoutBtn.addEventListener('click', function() {
+                                window.location.href = '{{ route('checkout') }}';
+                            });
+                        }
 
-        // YouTube URL handling
-        if (url.includes('youtube.com/watch?v=')) {
-            let videoId = url.split('v=')[1].split('&')[0];
-            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
-        } else if (url.includes('youtu.be/')) {
-            let videoId = url.split('youtu.be/')[1].split('?')[0];
-            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
-        } else if (url.includes('youtube.com/embed/')) {
-            return url + (url.includes('?') ? '&' : '?') + `rel=0&modestbranding=1&start=${start}`;
-        }
-        return url;
-    }
+                        window.addEventListener('click', function(event) {
+                            if (event.target === modal) {
+                                modal.style.display = 'none';
+                            }
+                        });
 
-    function startProgressTracking() {
-        if (progressUpdateInterval) {
-            clearInterval(progressUpdateInterval);
-        }
+                        // Accordion functionality
+                        document.addEventListener('click', function(e) {
+                            if (e.target.classList.contains('accordion-header')) {
+                                e.target.classList.toggle('active');
+                                const body = e.target.nextElementSibling;
+                                body.classList.toggle('active');
+                            }
+                        });
+                    });
+                </script>
 
-        progressUpdateInterval = setInterval(function() {
-            updateVideoProgress();
-        }, 3000);
-    }
+                <!-- Video Progress Tracking -->
+                <script>
+                    let currentVideoId = null;
+                    let videoStartTime = 0;
+                    let progressUpdateInterval = null;
+                    let currentVideoDuration = 0;
+                    let lastWatchedTime = 0;
+                    let stopProgress = 0;
+                    const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
 
-    function stopProgressProgressTracking() {
-        if (progressUpdateInterval) {
-            clearInterval(progressUpdateInterval);
-            progressUpdateInterval = null;
+                    function fixYouTubeUrl(url) {
+                        let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
 
-            if (currentVideoId && !stopProgress) {
-                updateVideoProgress(true);
-            }
-        }
-    }
+                        // Check if it's a Bunny CDN video (mp4 file)
+                        if (url.includes('.mp4') || url.includes('/storage/')) {
+                            return null; // Will be handled with HTML5 video
+                        }
 
-    function updateVideoProgress(isFinalUpdate = false) {
-        if (!currentVideoId || stopProgress) return;
-
-        let currentTime = Date.now();
-        let watchedSeconds = Math.floor((currentTime - videoStartTime) / 1000) + lastWatchedTime;
-
-        let shouldComplete = false;
-        if (currentVideoDuration > 0) {
-            let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
-            shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
-        }
-
-        fetch("{{ route('video.progress.update') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    content_id: currentVideoId,
-                    watch_time: watchedSeconds,
-                    completed: shouldComplete ? 1 : 0,
-                    is_final_update: isFinalUpdate
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    updateProgressDisplay(data.progress);
-                    if (data.completed) {
-                        updateVideoCompletionStatus(currentVideoId, true);
+                        // YouTube URL handling
+                        if (url.includes('youtube.com/watch?v=')) {
+                            let videoId = url.split('v=')[1].split('&')[0];
+                            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
+                        } else if (url.includes('youtu.be/')) {
+                            let videoId = url.split('youtu.be/')[1].split('?')[0];
+                            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
+                        } else if (url.includes('youtube.com/embed/')) {
+                            return url + (url.includes('?') ? '&' : '?') + `rel=0&modestbranding=1&start=${start}`;
+                        }
+                        return url;
                     }
-                }
-            })
-            .catch(error => console.error('Error:', error));
-    }
 
-    function updateVideoCompletionStatus(contentId, completed) {
-        const videoElement = document.querySelector(`.lesson-video[data-content-id="${contentId}"]`);
+                    function startProgressTracking() {
+                        if (progressUpdateInterval) {
+                            clearInterval(progressUpdateInterval);
+                        }
 
-        if (completed && videoElement) {
-            const progressBadge = videoElement.querySelector('.progress-badge');
-            if (progressBadge) {
-                progressBadge.remove();
-            }
+                        progressUpdateInterval = setInterval(function() {
+                            updateVideoProgress();
+                        }, 3000);
+                    }
 
-            if (!videoElement.querySelector('.completion-badge')) {
-                const completionBadge = document.createElement('span');
-                completionBadge.className = 'completion-badge';
-                completionBadge.textContent = '✓';
-                videoElement.appendChild(completionBadge);
-            }
+                    function stopProgressProgressTracking() {
+                        if (progressUpdateInterval) {
+                            clearInterval(progressUpdateInterval);
+                            progressUpdateInterval = null;
 
-            const progressFill = videoElement.closest('.crs2-resource').querySelector('.crs2-progress-fill');
-            if (progressFill) {
-                progressFill.style.width = '100%';
-            }
-        }
-    }
+                            if (currentVideoId && !stopProgress) {
+                                updateVideoProgress(true);
+                            }
+                        }
+                    }
 
-    function updateProgressDisplay(progressData) {
-        if (progressData) {
-            const progressBar = document.querySelector('.crs2-progress-bar');
-            const progressText = document.querySelector('.crs2-progress-text');
-            const progressStats = document.querySelector('.crs2-progress-stats');
+                    function updateVideoProgress(isFinalUpdate = false) {
+                        if (!currentVideoId || stopProgress) return;
 
-            if (progressBar) {
-                progressBar.style.width = progressData.course_progress + '%';
-            }
+                        let currentTime = Date.now();
+                        let watchedSeconds = Math.floor((currentTime - videoStartTime) / 1000) + lastWatchedTime;
 
-            if (progressText) {
-                progressText.textContent = Math.round(progressData.course_progress) + '% ' +
-                    "{{ translate_lang('completed') }}";
-            }
+                        let shouldComplete = false;
+                        if (currentVideoDuration > 0) {
+                            let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
+                            shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
+                        }
 
-            if (progressStats) {
-                progressStats.innerHTML = `
+                        fetch("{{ route('video.progress.update') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({
+                                    content_id: currentVideoId,
+                                    watch_time: watchedSeconds,
+                                    completed: shouldComplete ? 1 : 0,
+                                    is_final_update: isFinalUpdate
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    updateProgressDisplay(data.progress);
+                                    if (data.completed) {
+                                        updateVideoCompletionStatus(currentVideoId, true);
+                                    }
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                    }
+
+                    function updateVideoCompletionStatus(contentId, completed) {
+                        const videoElement = document.querySelector(`.lesson-video[data-content-id="${contentId}"]`);
+
+                        if (completed && videoElement) {
+                            const progressBadge = videoElement.querySelector('.progress-badge');
+                            if (progressBadge) {
+                                progressBadge.remove();
+                            }
+
+                            if (!videoElement.querySelector('.completion-badge')) {
+                                const completionBadge = document.createElement('span');
+                                completionBadge.className = 'completion-badge';
+                                completionBadge.textContent = '✓';
+                                videoElement.appendChild(completionBadge);
+                            }
+
+                            const progressFill = videoElement.closest('.crs2-resource').querySelector('.crs2-progress-fill');
+                            if (progressFill) {
+                                progressFill.style.width = '100%';
+                            }
+                        }
+                    }
+
+                    function updateProgressDisplay(progressData) {
+                        if (progressData) {
+                            const progressBar = document.querySelector('.crs2-progress-bar');
+                            const progressText = document.querySelector('.crs2-progress-text');
+                            const progressStats = document.querySelector('.crs2-progress-stats');
+
+                            if (progressBar) {
+                                progressBar.style.width = progressData.course_progress + '%';
+                            }
+
+                            if (progressText) {
+                                progressText.textContent = Math.round(progressData.course_progress) + '% ' +
+                                    "{{ translate_lang('completed') }}";
+                            }
+
+                            if (progressStats) {
+                                progressStats.innerHTML = `
                 <span>{{ translate_lang('completed') }}: ${progressData.completed_videos}</span>
                 <span>{{ translate_lang('watching') }}: ${progressData.watching_videos}</span>
                 <span>{{ translate_lang('total_videos') }}: ${progressData.total_videos}</span>
             `;
-            }
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Handle video click
-        document.addEventListener('click', function(e) {
-            // Check if clicked element or its parent has the video data
-            const element = e.target.closest('.lesson-video, .playable');
-            
-            if (element) {
-                e.preventDefault(); // Prevent default action
-                
-                let videoUrl = element.getAttribute('data-video');
-                let contentId = element.getAttribute('data-content-id');
-                let isBunny = element.getAttribute('data-is-bunny') === '1';
-                let duration = element.getAttribute('data-duration') || 0;
-
-                console.log('Video clicked:', {videoUrl, contentId, isBunny}); // Debug log
-
-                stopProgress = 0;
-                if (!isEnrolled) {
-                    stopProgress = 1;
-                }
-
-                lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
-
-                if (videoUrl && contentId) {
-                    currentVideoId = contentId;
-                    currentVideoDuration = duration;
-                    videoStartTime = Date.now();
-
-                    const popup = document.querySelector('.video-popup');
-                    const iframe = popup.querySelector('iframe');
-                    const videoContainer = popup.querySelector('.video-popup-content');
-
-                    if (isBunny) {
-                        // Create HTML5 video player for Bunny
-                        iframe.style.display = 'none';
-                        let existingVideo = videoContainer.querySelector('video');
-                        if (existingVideo) existingVideo.remove();
-
-                        const video = document.createElement('video');
-                        video.controls = true;
-                        video.autoplay = true;
-                        video.style.width = '100%';
-                        video.style.height = '70vh';
-                        video.currentTime = lastWatchedTime;
-
-                        const source = document.createElement('source');
-                        source.src = videoUrl;
-                        source.type = 'video/mp4';
-
-                        video.appendChild(source);
-                        videoContainer.appendChild(video);
-                    } else {
-                        // YouTube video
-                        iframe.style.display = 'block';
-                        let existingVideo = videoContainer.querySelector('video');
-                        if (existingVideo) existingVideo.remove();
-
-                        videoUrl = fixYouTubeUrl(videoUrl);
-                        iframe.src = videoUrl;
+                            }
+                        }
                     }
 
-                    popup.classList.add('active');
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Handle video click
+                        document.addEventListener('click', function(e) {
+                            // Check if clicked element or its parent has the video data
+                            const element = e.target.closest('.lesson-video, .playable');
 
-                    if (user) {
-                        startProgressTracking();
-                    }
-                }
-            }
-        });
+                            if (element) {
+                                e.preventDefault(); // Prevent default action
 
-        // Close popup handlers
-        const popup = document.querySelector('.video-popup');
-        const closeButton = document.querySelector('.close-popup');
+                                let videoUrl = element.getAttribute('data-video');
+                                let contentId = element.getAttribute('data-content-id');
+                                let isBunny = element.getAttribute('data-is-bunny') === '1';
+                                let duration = element.getAttribute('data-duration') || 0;
 
-        if (closeButton) {
-            closeButton.addEventListener('click', function(e) {
-                e.stopPropagation();
-                popup.classList.remove('active');
-                const iframe = popup.querySelector('iframe');
-                const video = popup.querySelector('video');
+                                console.log('Video clicked:', {
+                                    videoUrl,
+                                    contentId,
+                                    isBunny
+                                }); // Debug log
 
-                if (iframe) iframe.src = '';
-                if (video) video.remove();
+                                stopProgress = 0;
+                                if (!isEnrolled) {
+                                    stopProgress = 1;
+                                }
 
-                stopProgressProgressTracking();
-            });
-        }
+                                lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
 
-        if (popup) {
-            popup.addEventListener('click', function(event) {
-                if (event.target === popup) {
-                    popup.classList.remove('active');
-                    const iframe = popup.querySelector('iframe');
-                    const video = popup.querySelector('video');
+                                if (videoUrl && contentId) {
+                                    currentVideoId = contentId;
+                                    currentVideoDuration = duration;
+                                    videoStartTime = Date.now();
 
-                    if (iframe) iframe.src = '';
-                    if (video) video.remove();
+                                    const popup = document.querySelector('.video-popup');
+                                    const iframe = popup.querySelector('iframe');
+                                    const videoContainer = popup.querySelector('.video-popup-content');
 
-                    stopProgressProgressTracking();
-                }
-            });
-        }
-    });
-</script>
-                @endpush
-            @endif
+                                    if (isBunny) {
+                                        // Create HTML5 video player for Bunny
+                                        iframe.style.display = 'none';
+                                        let existingVideo = videoContainer.querySelector('video');
+                                        if (existingVideo) existingVideo.remove();
+
+                                        const video = document.createElement('video');
+                                        video.controls = true;
+                                        video.autoplay = true;
+                                        video.style.width = '100%';
+                                        video.style.height = '70vh';
+                                        video.currentTime = lastWatchedTime;
+
+                                        const source = document.createElement('source');
+                                        source.src = videoUrl;
+                                        source.type = 'video/mp4';
+
+                                        video.appendChild(source);
+                                        videoContainer.appendChild(video);
+                                    } else {
+                                        // YouTube video
+                                        iframe.style.display = 'block';
+                                        let existingVideo = videoContainer.querySelector('video');
+                                        if (existingVideo) existingVideo.remove();
+
+                                        videoUrl = fixYouTubeUrl(videoUrl);
+                                        iframe.src = videoUrl;
+                                    }
+
+                                    popup.classList.add('active');
+
+                                    if (user) {
+                                        startProgressTracking();
+                                    }
+                                }
+                            }
+                        });
+
+                        // Close popup handlers
+                        const popup = document.querySelector('.video-popup');
+                        const closeButton = document.querySelector('.close-popup');
+
+                        if (closeButton) {
+                            closeButton.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                popup.classList.remove('active');
+                                const iframe = popup.querySelector('iframe');
+                                const video = popup.querySelector('video');
+
+                                if (iframe) iframe.src = '';
+                                if (video) video.remove();
+
+                                stopProgressProgressTracking();
+                            });
+                        }
+
+                        if (popup) {
+                            popup.addEventListener('click', function(event) {
+                                if (event.target === popup) {
+                                    popup.classList.remove('active');
+                                    const iframe = popup.querySelector('iframe');
+                                    const video = popup.querySelector('video');
+
+                                    if (iframe) iframe.src = '';
+                                    if (video) video.remove();
+
+                                    stopProgressProgressTracking();
+                                }
+                            });
+                        }
+                    });
+                </script>
+            @endpush
+
 
             @push('styles')
                 <style>
