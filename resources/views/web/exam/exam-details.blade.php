@@ -127,8 +127,10 @@
                         </p>
                     @else
                         {{-- Start Button --}}
-                        <form method="POST" action="{{ route('exam.start', ['exam' => $exam->id]) }}">
-                            @csrf
+<form method="POST" action="{{ route($apiRoutePrefix.'exam.start', ['exam' => $exam->id]) }}">
+                              @if(!$isApi)
+        @csrf
+    @endif
                             <button type="submit" class="btn btn-success btn-large">
                                 <i class="fas fa-play-circle"></i>
                                 {{ __('front.start_exam') }}

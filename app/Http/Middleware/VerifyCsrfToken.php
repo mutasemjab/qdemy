@@ -19,6 +19,7 @@ class VerifyCsrfToken extends Middleware
         'ar/login',
         'en/password/reset',
         'ar/password/reset',
+        'api/*',
     ];
 
     /**
