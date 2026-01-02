@@ -50,39 +50,25 @@ class ExamController extends Controller
         // IMPORTANT: Call checkIfApi FIRST
         $this->checkIfApi();
 
-        // Now do authentication
+        // API-specific authentication
         if ($this->isApi && $request->hasHeader('UserId')) {
             $userId = $request->header('UserId');
 
-            // Validate that this user exists and is a student
             $user = \App\Models\User::where('id', $userId)
                 ->where('role_name', 'student')
                 ->first();
 
             if ($user) {
                 auth('user')->login($user);
-
-                // ✅ Set session flag for subsequent requests
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
-
-                \Log::info('User authenticated in API:', [
-                    'user_id' => auth('user')->id(),
-                    'is_authenticated' => auth('user')->check(),
-                    'role' => auth('user')->user()?->role_name,
-                    'isApi' => $this->isApi,
-                    'apiRoutePrefix' => $this->apiRoutePrefix
-                ]);
-            } else {
-                \Log::error('User not found or not a student:', ['userId' => $userId]);
             }
         }
 
-        // ✅ Check session flag - this will persist across redirects
+        // Check session flag for API mode
         if (session('is_mobile_app')) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
 
-            // Re-authenticate user from session if not already authenticated
             if (!auth('user')->check() && session('mobile_user_id')) {
                 $user = \App\Models\User::find(session('mobile_user_id'));
                 if ($user) {
@@ -91,7 +77,7 @@ class ExamController extends Controller
             }
         }
 
-        // Set language from header
+        // Set language
         if ($request->hasHeader('Lang') || $request->hasHeader('Language')) {
             $lang = $request->header('Lang') ?? $request->header('Language');
             if (in_array($lang, ['en', 'ar'])) {
