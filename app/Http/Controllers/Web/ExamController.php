@@ -40,33 +40,31 @@ class ExamController extends Controller
 
     public function __construct(Request $request)
     {
-        // Check if request is API - check for UserId header as indicator
-        if ($request->expectsJson() || $request->is('api/*') || $request->hasHeader('UserId')) {
-            $this->isApi          = true;
-            $this->apiRoutePrefix = API_ROUTE_PREFIX;
+        // IMPORTANT: Call checkIfApi FIRST
+        $this->checkIfApi();
 
-            if ($request->hasHeader('UserId')) {
-                $userId = $request->header('UserId');
+        // Now do authentication
+        if ($this->isApi && $request->hasHeader('UserId')) {
+            $userId = $request->header('UserId');
 
-                // Validate that this user exists and is a student
-                $user = \App\Models\User::where('id', $userId)
-                    ->where('role_name', 'student')
-                    ->first();
+            // Validate that this user exists and is a student
+            $user = \App\Models\User::where('id', $userId)
+                ->where('role_name', 'student')
+                ->first();
 
-                if ($user) {
-                    auth('user')->login($user);
+            if ($user) {
+                auth('user')->login($user);
 
-                    // DEBUG: Log to verify authentication worked
-                    \Log::info('User authenticated in API:', [
-                        'user_id' => auth('user')->id(),
-                        'is_authenticated' => auth('user')->check(),
-                        'role' => auth('user')->user()?->role_name,
-                        'isApi' => $this->isApi,
-                        'apiRoutePrefix' => $this->apiRoutePrefix
-                    ]);
-                } else {
-                    \Log::error('User not found or not a student:', ['userId' => $userId]);
-                }
+                // DEBUG: Log to verify authentication worked
+                \Log::info('User authenticated in API:', [
+                    'user_id' => auth('user')->id(),
+                    'is_authenticated' => auth('user')->check(),
+                    'role' => auth('user')->user()?->role_name,
+                    'isApi' => $this->isApi,
+                    'apiRoutePrefix' => $this->apiRoutePrefix
+                ]);
+            } else {
+                \Log::error('User not found or not a student:', ['userId' => $userId]);
             }
         }
 
@@ -327,12 +325,12 @@ class ExamController extends Controller
         $user = auth_student();
 
         \Log::info('answer_question called:', [
-        'exam_id' => $exam->id,
-        'question_id' => $question->id,
-        'isApi' => $this->isApi,
-        'apiRoutePrefix' => $this->apiRoutePrefix,
-        'has_answer' => $request->has('answer')
-    ]);
+            'exam_id' => $exam->id,
+            'question_id' => $question->id,
+            'isApi' => $this->isApi,
+            'apiRoutePrefix' => $this->apiRoutePrefix,
+            'has_answer' => $request->has('answer')
+        ]);
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {
