@@ -472,12 +472,14 @@ class ExamController extends Controller
         if ($this->isApi) {
             // Force API URL with query parameter to maintain API mode
             $redirectUrl = url("/api/v1/exam/{$exam->id}/{$exam->slug}") . "?page={$next_page}&_api=1";
+            \Log::info('Redirecting to API URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         } else {
             $redirectUrl = route('exam', [
                 'exam' => $exam->id,
                 'slug' => $exam->slug,
                 'page' => $next_page
             ]);
+            \Log::info('Redirecting to WEB URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         }
 
         return redirect($redirectUrl)->with($error ?? '', $message_status ?? '');
