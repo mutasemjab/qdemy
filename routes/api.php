@@ -324,3 +324,6 @@ Route::prefix('v1/exam')
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish');
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
+
+
+Route::post('/bunny/sign-upload', [BunnyUploadController::class, 'sign']);

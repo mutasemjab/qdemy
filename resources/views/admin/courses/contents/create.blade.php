@@ -220,6 +220,7 @@
                                         @enderror
                                     </div>
                                 </div>
+                                    <input type="hidden" name="video_url" id="bunny_video_path">
 
                                 <div class="col-md-4">
                                     <div class="form-group mb-3">
@@ -342,4 +343,59 @@
             toggleContentFields();
         });
     </script>
+
+    <script>
+    async function uploadToBunny(file, courseId) {
+        const res = await fetch('/api/bunny/sign-upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ course_id: courseId })
+        });
+
+        const data = await res.json();
+
+        await fetch(data.upload_url, {
+            method: 'PUT',
+            headers: {
+                'AccessKey': data.access_key,
+                'Content-Type': file.type
+            },
+            body: file
+        });
+
+        return data.file_path;
+    }
+
+    document.querySelector('form').addEventListener('submit', async function (e) {
+        const contentType = document.getElementById('content_type').value;
+        const videoType   = document.getElementById('video_type').value;
+        const videoInput  = document.getElementById('upload_video');
+
+        if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length) {
+            e.preventDefault(); // 🔴 stop normal submit
+
+            const file = videoInput.files[0];
+
+            try {
+                const path = await uploadToBunny(file, {{ $course->id }});
+
+                // put bunny path
+                document.getElementById('bunny_video_path').value = path;
+
+                // remove file so Laravel won't receive it
+                videoInput.value = '';
+
+                // submit again (now without file)
+                e.target.submit();
+            } catch (err) {
+                alert('Video upload failed. Please try again.');
+                console.error(err);
+            }
+        }
+    });
+</script>
+
 @endsection

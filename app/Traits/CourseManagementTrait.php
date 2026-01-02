@@ -34,7 +34,7 @@ trait CourseManagementTrait
         if ($this->isApiRequest()) {
             return $this->success_response($message, $data)->setStatusCode($statusCode);
         }
-        
+
         return redirect()->back()->with('success', $message);
     }
 
@@ -46,7 +46,7 @@ trait CourseManagementTrait
         if ($this->isApiRequest()) {
             return $this->error_response($message, $data)->setStatusCode($statusCode);
         }
-        
+
         return redirect()->back()->with('error', $message)->withInput();
     }
 
@@ -62,7 +62,7 @@ trait CourseManagementTrait
                 'data' => $errors
             ], $statusCode);
         }
-        
+
         return redirect()->back()->withErrors($errors)->withInput();
     }
 
@@ -73,7 +73,7 @@ trait CourseManagementTrait
     {
         // Validate the request
         $validator = $this->validateCourseRequest($request, $isAdmin);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -82,15 +82,14 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $courseData = $this->prepareCourseData($request, $isAdmin);
-            
+
             // Handle photo upload
             if ($request->hasFile('photo')) {
                 $photoUpload = uploadImage('assets/admin/uploads', $request->photo);
                 $courseData['photo'] =  $photoUpload;
-               
             }
 
             $course = Course::create($courseData);
@@ -119,10 +118,9 @@ trait CourseManagementTrait
                 $courseData,
                 201
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.course_creation_failed'),
                 $e->getMessage(),
@@ -147,7 +145,7 @@ trait CourseManagementTrait
 
         // Validate the request
         $validator = $this->validateCourseRequest($request, $isAdmin, $course->id);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -156,17 +154,17 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $courseData = $this->prepareCourseData($request, $isAdmin, $course);
-            
+
             // Handle photo upload
             if ($request->hasFile('photo')) {
                 // Delete old photo
                 if ($course->photo) {
                     BunnyHelper()->delete($course->photo);
                 }
-                
+
                 $photoUpload = uploadImage('assets/admin/uploads', $request->photo);
                 $courseData['photo'] = $photoUpload;
             }
@@ -186,15 +184,14 @@ trait CourseManagementTrait
             DB::commit();
 
             $courseData = $course->fresh()->load(['teacher', 'subject', 'sections', 'contents']);
-            
+
             return $this->successResponse(
                 __('messages.course_updated_successfully'),
                 $courseData
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.course_update_failed'),
                 $e->getMessage(),
@@ -218,7 +215,7 @@ trait CourseManagementTrait
         }
 
         $validator = $this->validateContentRequest($request);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -227,25 +224,33 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $contentData = $request->only([
-                'title_en', 'title_ar', 'content_type', 'is_free','is_main_video',
-                'order', 'video_type', 'video_url', 'video_duration', 
-                'pdf_type', 'section_id'
+                'title_en',
+                'title_ar',
+                'content_type',
+                'is_free',
+                'is_main_video',
+                'order',
+                'video_type',
+                'video_url',
+                'video_duration',
+                'pdf_type',
+                'section_id'
             ]);
-            
+
             $contentData['course_id'] = $course->id;
 
             // Handle file uploads based on content type
             $uploadResult = $this->handleContentFileUpload($request, $course);
-            
+
             if (!$uploadResult['success']) {
                 return $this->errorResponse($uploadResult['message']);
             }
 
             $contentData = array_merge($contentData, $uploadResult['data']);
-            
+
             $content = CourseContent::create($contentData);
 
             DB::commit();
@@ -255,10 +260,9 @@ trait CourseManagementTrait
                 $content,
                 201
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.content_creation_failed'),
                 $e->getMessage(),
@@ -282,7 +286,7 @@ trait CourseManagementTrait
         }
 
         $validator = $this->validateContentRequest($request, $content->id);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -291,28 +295,36 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $contentData = $request->only([
-                'title_en', 'title_ar', 'content_type', 'is_free','is_main_video',
-                'order', 'video_type', 'video_url', 'video_duration', 
-                'pdf_type', 'section_id'
+                'title_en',
+                'title_ar',
+                'content_type',
+                'is_free',
+                'is_main_video',
+                'order',
+                'video_type',
+                'video_url',
+                'video_duration',
+                'pdf_type',
+                'section_id'
             ]);
 
             // Handle file uploads if new files are provided
             if ($request->hasFile('upload_video') || $request->hasFile('file_path')) {
                 // Delete old files
                 $this->deleteContentFiles($content);
-                
+
                 $uploadResult = $this->handleContentFileUpload($request, $content->course);
-                
+
                 if (!$uploadResult['success']) {
                     return $this->errorResponse($uploadResult['message']);
                 }
 
                 $contentData = array_merge($contentData, $uploadResult['data']);
             }
-            
+
             $content->update($contentData);
 
             DB::commit();
@@ -321,10 +333,9 @@ trait CourseManagementTrait
                 __('messages.content_updated_successfully'),
                 $content->fresh()
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.content_update_failed'),
                 $e->getMessage(),
@@ -348,7 +359,7 @@ trait CourseManagementTrait
         }
 
         $validator = $this->validateSectionRequest($request, $course);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -357,7 +368,7 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $section = $course->sections()->create([
                 'title_en' => $request->title_en,
@@ -372,10 +383,9 @@ trait CourseManagementTrait
                 $section,
                 201
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.section_creation_failed'),
                 $e->getMessage(),
@@ -408,7 +418,7 @@ trait CourseManagementTrait
         }
 
         $validator = $this->validateSectionRequest($request, $course, $section->id);
-        
+
         if ($validator->fails()) {
             return $this->validationErrorResponse(
                 __('messages.validation_error'),
@@ -417,7 +427,7 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $section->update([
                 'title_en' => $request->title_en,
@@ -431,10 +441,9 @@ trait CourseManagementTrait
                 __('messages.section_updated_successfully'),
                 $section->fresh()
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.section_update_failed'),
                 $e->getMessage(),
@@ -485,7 +494,7 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             $section->delete();
 
@@ -494,10 +503,9 @@ trait CourseManagementTrait
             return $this->successResponse(
                 __('messages.section_deleted_successfully')
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.section_deletion_failed'),
                 $e->getMessage(),
@@ -523,11 +531,11 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             // Delete files from Bunny CDN
             $this->deleteContentFiles($content);
-            
+
             // Delete the content record
             $content->delete();
 
@@ -536,10 +544,9 @@ trait CourseManagementTrait
             return $this->successResponse(
                 __('messages.content_deleted_successfully')
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.content_deletion_failed'),
                 $e->getMessage(),
@@ -562,7 +569,7 @@ trait CourseManagementTrait
         }
 
         DB::beginTransaction();
-        
+
         try {
             // Delete course photo
             if ($course->photo) {
@@ -585,10 +592,9 @@ trait CourseManagementTrait
             return $this->successResponse(
                 __('messages.course_deleted_successfully')
             );
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             return $this->errorResponse(
                 __('messages.course_deletion_failed'),
                 $e->getMessage(),
@@ -657,33 +663,40 @@ trait CourseManagementTrait
     protected function validateContentRequest(Request $request, $contentId = null)
     {
         $rules = [
-            'title_en' => 'required|string|max:255',
-            'title_ar' => 'required|string|max:255',
+            'title_en'     => 'required|string|max:255',
+            'title_ar'     => 'required|string|max:255',
             'content_type' => 'required|in:video,pdf,quiz,assignment',
-            'is_free' => 'required|in:1,2',
+            'is_free'      => 'required|in:1,2',
             'is_main_video' => 'required|in:1,2',
-            'order' => 'required|integer|min:0',
-            'section_id' => 'sometimes|exists:course_sections,id'
+            'order'        => 'required|integer|min:0',
+            'section_id'   => 'sometimes|exists:course_sections,id'
         ];
 
-        // Content type specific validations
         if ($request->content_type === 'video') {
+
             $rules['video_type'] = 'required|in:youtube,bunny';
-            
+
             if ($request->video_type === 'youtube') {
                 $rules['video_url'] = 'required|url';
-            } else {
-                $rules['upload_video'] = $contentId ? 'sometimes|file|mimes:mp4,avi,mov,wmv|max:512000' : 'required|file|mimes:mp4,avi,mov,wmv|max:512000';
             }
-            
+
+            if ($request->video_type === 'bunny') {
+                // ✅ Direct upload to Bunny
+                $rules['video_url'] = 'required|string';
+                // ❌ لا upload_video هنا
+            }
+
             $rules['video_duration'] = 'sometimes|integer|min:1';
         } else {
             $rules['pdf_type'] = 'required|in:homework,worksheet,notes,other';
-            $rules['file_path'] = $contentId ? 'sometimes|file|mimes:pdf|max:10240' : 'required|file|mimes:pdf|max:10240';
+            $rules['file_path'] = $contentId
+                ? 'sometimes|file|mimes:pdf|max:10240'
+                : 'required|file|mimes:pdf|max:10240';
         }
 
         return Validator::make($request->all(), $rules);
     }
+
 
     /**
      * Validate section request
@@ -703,7 +716,7 @@ trait CourseManagementTrait
                         if (!$parentSection || $parentSection->course_id !== $course->id) {
                             $fail(__('validation.invalid_parent_section'));
                         }
-                        
+
                         // Check not setting as own parent (for updates)
                         if ($sectionId && $value == $sectionId) {
                             $fail(__('validation.section_cannot_be_parent_of_itself'));
@@ -722,8 +735,13 @@ trait CourseManagementTrait
     protected function prepareCourseData(Request $request, $isAdmin = false, $course = null)
     {
         $data = $request->only([
-            'title_en', 'title_ar', 'description_en',
-            'description_ar','commission_of_admin' ,'selling_price', 'subject_id'
+            'title_en',
+            'title_ar',
+            'description_en',
+            'description_ar',
+            'commission_of_admin',
+            'selling_price',
+            'subject_id'
         ]);
 
         // Handle boolean checkbox properly
@@ -763,13 +781,13 @@ trait CourseManagementTrait
                     $request->upload_video,
                     CourseContent::BUNNY_PATH . '/' . $course->id
                 );
-                
+
                 $uploadResponseData = $uploadResponse->getData();
-                
+
                 if ($uploadResponseData->success && $uploadResponseData->file_path) {
                     $data['video_url'] = $uploadResponseData->file_path;
                     $data['video_type'] = 'bunny';
-                    
+
                     if ($request->has('video_duration')) {
                         $data['video_duration'] = $request->video_duration;
                     }
@@ -786,9 +804,9 @@ trait CourseManagementTrait
                     $request->file_path,
                     CourseContent::BUNNY_PATH . '/' . $course->id
                 );
-                
+
                 $uploadResponseData = $uploadResponse->getData();
-                
+
                 if ($uploadResponseData->success && $uploadResponseData->file_path) {
                     $data['file_path'] = $uploadResponseData->file_path;
                     $data['pdf_type'] = $request->pdf_type;
@@ -811,7 +829,6 @@ trait CourseManagementTrait
                 'success' => true,
                 'data' => $data
             ];
-
         } catch (\Exception $e) {
             return [
                 'success' => false,
@@ -849,11 +866,11 @@ trait CourseManagementTrait
     {
         foreach ($contents as $contentData) {
             $contentData['course_id'] = $course->id;
-            
+
             // Handle file uploads for each content
             $request = new Request($contentData);
             $uploadResult = $this->handleContentFileUpload($request, $course);
-            
+
             if ($uploadResult['success']) {
                 $contentData = array_merge($contentData, $uploadResult['data']);
                 CourseContent::create($contentData);
@@ -879,7 +896,7 @@ trait CourseManagementTrait
         if ($content->video_url && $content->video_type === 'bunny') {
             BunnyHelper()->delete($content->video_url);
         }
-        
+
         if ($content->file_path) {
             BunnyHelper()->delete($content->file_path);
         }
@@ -891,22 +908,22 @@ trait CourseManagementTrait
     protected function canManageCourse(Course $course)
     {
         $user = auth()->user();
-        
+
         if (!$user) {
             return false;
         }
-        
+
         // Check if user is admin (from admins table) - you'll need to implement this check
         // This assumes you have a way to check if current user is an admin
         if (auth()->guard('admin')->check()) {
             return true;
         }
-        
+
         // For teachers, they can only manage their own courses
         if ($user->role_name === 'teacher') {
             return $course->teacher_id === $user->id;
         }
-        
+
         return false;
     }
 }
