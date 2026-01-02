@@ -98,7 +98,7 @@
 
         <article class="t-course">
           <div class="t-course__media">
-            <img src="{{ $course->image_url }}" alt="{{ $course->title }}">
+            <img src="{{ asset('assets/admin/uploads/'. $course->photo) }}" alt="{{ $course->title }}">
             <span class="t-price">{{ $course->price }} {{ __('front.currency') }}</span>
           </div>
           <div class="t-course__body">
