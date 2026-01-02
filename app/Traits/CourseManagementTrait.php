@@ -708,8 +708,8 @@ trait CourseManagementTrait
         } else {
             $rules['pdf_type'] = 'required|in:homework,worksheet,notes,other';
             $rules['file_path'] = $contentId
-                ? 'nullable|file|mimes:pdf|max:10240'
-                : 'required|file|mimes:pdf|max:10240';
+                ? 'nullable|file|mimes:pdf'
+                : 'required|file|mimes:pdf';
         }
 
         return Validator::make($request->all(), $rules);

@@ -33,7 +33,7 @@
                                         !filter_var($coverVideoSource, FILTER_VALIDATE_URL) &&
                                         !empty($coverVideoSource)
                                     ) {
-                                        $coverVideoSource = asset('storage/' . $coverVideoSource);
+                                        $coverVideoSource = asset('assets/admin/uploads/' . $coverVideoSource);
                                     }
                                 @endphp
                                 <div class="playable" data-video="{{ $coverVideoSource }}"
@@ -190,7 +190,7 @@
                                                         !empty($videoSource)
                                                     ) {
                                                         // It's a file path, construct the full URL
-    $videoSource = asset('storage/' . $videoSource);
+    $videoSource = asset('assets/admin/uploads/' . $videoSource);
                                                     }
                                                 @endphp
 
@@ -212,7 +212,7 @@
                                                             !filter_var($videoSource, FILTER_VALIDATE_URL) &&
                                                             !empty($videoSource)
                                                         ) {
-                                                            $videoSource = asset('storage/' . $videoSource);
+                                                            $videoSource = asset('assets/admin/uploads/' . $videoSource);
                                                         }
                                                     @endphp
 
@@ -478,7 +478,7 @@
                                                                         !empty($subVideoSource)
                                                                     ) {
                                                                         $subVideoSource = asset(
-                                                                            'storage/' . $subVideoSource,
+                                                                            'assets/admin/uploads/' . $subVideoSource,
                                                                         );
                                                                     }
                                                                 @endphp
@@ -744,7 +744,7 @@
                                                         !filter_var($unVideoSource, FILTER_VALIDATE_URL) &&
                                                         !empty($unVideoSource)
                                                     ) {
-                                                        $unVideoSource = asset('storage/' . $unVideoSource);
+                                                        $unVideoSource = asset('assets/admin/uploads/' . $unVideoSource);
                                                     }
                                                 @endphp
 
@@ -1110,7 +1110,7 @@
                         let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
 
                         // Check if it's a Bunny CDN video (mp4 file)
-                        if (url.includes('.mp4') || url.includes('/storage/')) {
+                        if (url.includes('.mp4') || url.includes('/assets/admin/uploads/')) {
                             return null; // Will be handled with HTML5 video
                         }
 

@@ -120,7 +120,7 @@ class PackageAndOfferController extends Controller
      * @param Category $clas
      * @return \Illuminate\Http\JsonResponse
      */
-  public function show(Request $request, Package $package, Category $clas = null)
+     public function show(Request $request, Package $package, Category $clas = null)
     {
         try {
             $is_type_class = ($package->type == 'class');

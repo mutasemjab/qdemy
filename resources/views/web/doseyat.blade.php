@@ -372,7 +372,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  const whatsappNumber = '+962795970357';
+  const whatsappNumber = '+962775743580';
   let selectedAction = '';
   let selectedCategoryId = '';
   let selectedCategoryLabel = '';

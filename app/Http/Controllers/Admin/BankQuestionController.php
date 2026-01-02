@@ -61,7 +61,7 @@ class BankQuestionController extends Controller
             'parent_category' => 'required|exists:categories,id',
             'category_id' => 'required|exists:categories,id',
             'subject_id' => 'required|exists:subjects,id',
-            'pdf' => 'required|file|mimes:pdf|max:10240', // 10MB max
+            'pdf' => 'required|file|mimes:pdf', // 10MB max
             'display_name' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',
@@ -213,7 +213,7 @@ class BankQuestionController extends Controller
             'parent_category' => 'required|exists:categories,id',
             'category_id' => 'required|exists:categories,id',
             'subject_id' => 'required|exists:subjects,id',
-            'pdf' => 'nullable|file|mimes:pdf|max:10240', // 10MB max
+            'pdf' => 'nullable|file|mimes:pdf', // 10MB max
             'display_name' => 'nullable|string|max:255',
             'is_active' => 'boolean',
             'sort_order' => 'integer|min:0',

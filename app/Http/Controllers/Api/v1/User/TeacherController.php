@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Controller;
@@ -11,7 +12,7 @@ class TeacherController extends Controller
 {
     use Responses;
 
-     public function index()
+    public function index()
     {
         $data = Teacher::with('user')->get();
 
@@ -21,9 +22,11 @@ class TeacherController extends Controller
     public function show(Request $request, $teacherId)
     {
         try {
-            // Find teacher
-            $teacher = Teacher::with(['user', 'courses'])->find($teacherId);
-            
+            // Find teacher with only accepted courses
+            $teacher = Teacher::with(['user', 'courses' => function ($q) {
+                $q->where('status', 'accepted'); // <-- only accepted courses
+            }])->find($teacherId);
+
             if (!$teacher) {
                 return $this->error_response('Teacher not found', null);
             }
@@ -32,17 +35,16 @@ class TeacherController extends Controller
             $user = $request->user();
 
             // Check if user is following this teacher
-            $isFollowing = false;
-            if ($user) {
-                $isFollowing = Follow::where('user_id', $user->id)
-                                   ->where('teacher_id', $teacherId)
-                                   ->exists();
-            }
+            $isFollowing = $user
+                ? Follow::where('user_id', $user->id)
+                ->where('teacher_id', $teacherId)
+                ->exists()
+                : false;
 
             // Get followers count
             $followersCount = Follow::where('teacher_id', $teacherId)->count();
 
-            // Get courses count
+            // Get courses count (only accepted)
             $coursesCount = $teacher->courses()->count();
 
             // Build teacher data
@@ -64,32 +66,30 @@ class TeacherController extends Controller
                 ],
                 'follow_status' => [
                     'is_following' => $isFollowing,
-                    'can_follow' => (bool) $user // user must be authenticated to follow
+                    'can_follow' => (bool) $user
                 ],
                 'created_at' => $teacher->created_at,
                 'updated_at' => $teacher->updated_at
             ];
 
-            // Optionally include recent courses
-            if ($teacher->courses && $teacher->courses->count() > 0) {
-                $teacherData['recent_courses'] = $teacher->courses()
-                    ->latest()
-                    ->get()
-                    ->map(function ($course) {
-                        return [
-                            'id' => $course->id,
-                            'title_ar' => $course->title_ar,
-                            'title_en' => $course->title_en,
-                            'selling_price' => $course->selling_price,
-                            'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
-                        ];
-                    });
-            } else {
-                $teacherData['recent_courses'] = [];
-            }
+            // Include recent accepted courses only
+            $recentCourses = $teacher->courses()
+                ->where('status', 'accepted') // <-- filter accepted
+                ->latest()
+                ->get()
+                ->map(function ($course) {
+                    return [
+                        'id' => $course->id,
+                        'title_ar' => $course->title_ar,
+                        'title_en' => $course->title_en,
+                        'selling_price' => $course->selling_price,
+                        'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                    ];
+                });
+
+            $teacherData['recent_courses'] = $recentCourses;
 
             return $this->success_response('Teacher details retrieved successfully', $teacherData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve teacher details: ' . $e->getMessage(), null);
         }

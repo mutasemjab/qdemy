@@ -91,9 +91,11 @@
     </div>
 
     <div class="t-panel" id="courses">
-      @if($teacher->courses->count() > 0)
+     @if($teacher->courses->where('status', 'accepted')->count() > 0)
+
       <div class="t-list">
-        @foreach($teacher->courses as $course)
+       @foreach($teacher->courses->where('status', 'accepted') as $course)
+
         <article class="t-course">
           <div class="t-course__media">
             <img src="{{ $course->image_url }}" alt="{{ $course->title }}">

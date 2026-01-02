@@ -352,7 +352,7 @@ class CourseController extends Controller
             $perPage = $request->get('per_page', 10);
             $page = $request->get('page', 1);
 
-            $courses = Course::where('subject_id', $subject->id)
+            $courses = Course::where('status','accepted')->where('subject_id', $subject->id)
                 ->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program'])
                 ->latest()
                 ->paginate($perPage);
@@ -447,7 +447,7 @@ class CourseController extends Controller
                 ->where('is_active', true)
                 ->pluck('id');
 
-            $courses = Course::whereIn('subject_id', $subjects)
+            $courses = Course::where('status','accepted')->whereIn('subject_id', $subjects)
                 ->with(['teacher', 'subject'])
                 ->latest()
                 ->paginate($perPage);
@@ -524,7 +524,7 @@ class CourseController extends Controller
                 ->where('is_active', true)
                 ->pluck('id');
 
-            $courses = Course::whereIn('subject_id', $subjects)
+            $courses = Course::where('status','accepted')->whereIn('subject_id', $subjects)
                 ->with(['teacher', 'subject'])
                 ->latest()
                 ->paginate($perPage);
@@ -593,7 +593,7 @@ class CourseController extends Controller
             $search = $request->get('search');
             $sortBy = $request->get('sort_by', 'latest'); // latest, price_low, price_high, name
 
-            $query = Course::with(['teacher', 'subject']);
+            $query = Course::where('status','accepted')->with(['teacher', 'subject']);
 
             // Apply filters
             if ($subjectId) {
