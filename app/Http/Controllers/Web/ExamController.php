@@ -467,11 +467,17 @@ class ExamController extends Controller
         }
         // Redirect to next question
         $next_page = $request->get('next_page', $request->get('page', 1) + 1);
-        return redirect()->route($this->apiRoutePrefix . 'exam', [
-            'exam' => $exam->id,
-            'slug' => $exam->slug,
-            'page' => $next_page
-        ])->with($error ?? '', $message_status ?? '');
+        // Use absolute URL to ensure we stay on API routes
+        if ($this->isApi) {
+            $url = url("/api/v1/exam/{$exam->id}/{$exam->slug}?page={$next_page}");
+            return redirect($url)->with($error ?? '', $message_status ?? '');
+        } else {
+            return redirect()->route($this->apiRoutePrefix . 'exam', [
+                'exam' => $exam->id,
+                'slug' => $exam->slug,
+                'page' => $next_page
+            ])->with($error ?? '', $message_status ?? '');
+        }
     }
 
     // تسليم الامتحان
