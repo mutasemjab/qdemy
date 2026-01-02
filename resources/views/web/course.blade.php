@@ -978,227 +978,247 @@
                         });
                     </script>
 
-                    <!-- Video Progress Tracking (Keep the existing script from old version) -->
-                    <!-- Video Progress Tracking -->
-                    <script>
-                        let currentVideoId = null;
-                        let videoStartTime = 0;
-                        let progressUpdateInterval = null;
-                        let currentVideoDuration = 0;
-                        let lastWatchedTime = 0;
-                        let stopProgress = 0;
-                        const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
+                  <!-- Video Progress Tracking -->
+<script>
+    let currentVideoId = null;
+    let videoStartTime = 0;
+    let progressUpdateInterval = null;
+    let currentVideoDuration = 0;
+    let lastWatchedTime = 0;
+    let stopProgress = 0;
+    const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
 
-                        function fixYouTubeUrl(url) {
-                            let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
+    function fixYouTubeUrl(url) {
+        let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
 
-                            // Check if it's a Bunny CDN video (mp4 file)
-                            if (url.includes('.mp4') || url.includes('/storage/')) {
-                                return null; // Will be handled with HTML5 video
-                            }
+        // Check if it's a Bunny CDN video (mp4 file)
+        if (url.includes('.mp4') || url.includes('/storage/')) {
+            return null; // Will be handled with HTML5 video
+        }
 
-                            // YouTube URL handling
-                            if (url.includes('youtube.com/watch?v=')) {
-                                let videoId = url.split('v=')[1].split('&')[0];
-                                return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
-                            } else if (url.includes('youtu.be/')) {
-                                let videoId = url.split('youtu.be/')[1].split('?')[0];
-                                return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
-                            } else if (url.includes('youtube.com/embed/')) {
-                                return url + (url.includes('?') ? '&' : '?') + `rel=0&modestbranding=1&start=${start}`;
-                            }
-                            return url;
-                        }
+        // YouTube URL handling
+        if (url.includes('youtube.com/watch?v=')) {
+            let videoId = url.split('v=')[1].split('&')[0];
+            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
+        } else if (url.includes('youtu.be/')) {
+            let videoId = url.split('youtu.be/')[1].split('?')[0];
+            return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
+        } else if (url.includes('youtube.com/embed/')) {
+            return url + (url.includes('?') ? '&' : '?') + `rel=0&modestbranding=1&start=${start}`;
+        }
+        return url;
+    }
 
-                        function startProgressTracking() {
-                            if (progressUpdateInterval) {
-                                clearInterval(progressUpdateInterval);
-                            }
+    function startProgressTracking() {
+        if (progressUpdateInterval) {
+            clearInterval(progressUpdateInterval);
+        }
 
-                            progressUpdateInterval = setInterval(function() {
-                                updateVideoProgress();
-                            }, 3000);
-                        }
+        progressUpdateInterval = setInterval(function() {
+            updateVideoProgress();
+        }, 3000);
+    }
 
-                        function stopProgressProgressTracking() {
-                            if (progressUpdateInterval) {
-                                clearInterval(progressUpdateInterval);
-                                progressUpdateInterval = null;
+    function stopProgressProgressTracking() {
+        if (progressUpdateInterval) {
+            clearInterval(progressUpdateInterval);
+            progressUpdateInterval = null;
 
-                                if (currentVideoId && !stopProgress) {
-                                    updateVideoProgress(true);
-                                }
-                            }
-                        }
+            if (currentVideoId && !stopProgress) {
+                updateVideoProgress(true);
+            }
+        }
+    }
 
-                        function updateVideoProgress(isFinalUpdate = false) {
-                            if (!currentVideoId || stopProgress) return;
+    function updateVideoProgress(isFinalUpdate = false) {
+        if (!currentVideoId || stopProgress) return;
 
-                            let currentTime = Date.now();
-                            let watchedSeconds = Math.floor((currentTime - videoStartTime) / 1000) + lastWatchedTime;
+        let currentTime = Date.now();
+        let watchedSeconds = Math.floor((currentTime - videoStartTime) / 1000) + lastWatchedTime;
 
-                            let shouldComplete = false;
-                            if (currentVideoDuration > 0) {
-                                let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
-                                shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
-                            }
+        let shouldComplete = false;
+        if (currentVideoDuration > 0) {
+            let remainingMinutes = (currentVideoDuration - watchedSeconds) / 60;
+            shouldComplete = remainingMinutes <= COMPLETED_MINUTE;
+        }
 
-                            fetch("{{ route('video.progress.update') }}", {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    body: JSON.stringify({
-                                        content_id: currentVideoId,
-                                        watch_time: watchedSeconds,
-                                        completed: shouldComplete ? 1 : 0,
-                                        is_final_update: isFinalUpdate
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        updateProgressDisplay(data.progress);
-                                        if (data.completed) {
-                                            updateVideoCompletionStatus(currentVideoId, true);
-                                        }
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error));
-                        }
+        fetch("{{ route('video.progress.update') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    content_id: currentVideoId,
+                    watch_time: watchedSeconds,
+                    completed: shouldComplete ? 1 : 0,
+                    is_final_update: isFinalUpdate
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateProgressDisplay(data.progress);
+                    if (data.completed) {
+                        updateVideoCompletionStatus(currentVideoId, true);
+                    }
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
-                        function updateVideoCompletionStatus(contentId, completed) {
-                            const videoElement = document.querySelector(`.lesson-video[data-content-id="${contentId}"]`);
+    function updateVideoCompletionStatus(contentId, completed) {
+        const videoElement = document.querySelector(`.lesson-video[data-content-id="${contentId}"]`);
 
-                            if (completed && videoElement) {
-                                const progressBadge = videoElement.querySelector('.progress-badge');
-                                if (progressBadge) {
-                                    progressBadge.remove();
-                                }
+        if (completed && videoElement) {
+            const progressBadge = videoElement.querySelector('.progress-badge');
+            if (progressBadge) {
+                progressBadge.remove();
+            }
 
-                                if (!videoElement.querySelector('.completion-badge')) {
-                                    const completionBadge = document.createElement('span');
-                                    completionBadge.className = 'completion-badge';
-                                    completionBadge.textContent = '✓';
-                                    videoElement.appendChild(completionBadge);
-                                }
+            if (!videoElement.querySelector('.completion-badge')) {
+                const completionBadge = document.createElement('span');
+                completionBadge.className = 'completion-badge';
+                completionBadge.textContent = '✓';
+                videoElement.appendChild(completionBadge);
+            }
 
-                                const progressFill = videoElement.closest('.crs2-resource').querySelector('.crs2-progress-fill');
-                                if (progressFill) {
-                                    progressFill.style.width = '100%';
-                                }
-                            }
-                        }
+            const progressFill = videoElement.closest('.crs2-resource').querySelector('.crs2-progress-fill');
+            if (progressFill) {
+                progressFill.style.width = '100%';
+            }
+        }
+    }
 
-                        function updateProgressDisplay(progressData) {
-                            if (progressData) {
-                                const progressBar = document.querySelector('.crs2-progress-bar');
-                                const progressText = document.querySelector('.crs2-progress-text');
-                                const progressStats = document.querySelector('.crs2-progress-stats');
+    function updateProgressDisplay(progressData) {
+        if (progressData) {
+            const progressBar = document.querySelector('.crs2-progress-bar');
+            const progressText = document.querySelector('.crs2-progress-text');
+            const progressStats = document.querySelector('.crs2-progress-stats');
 
-                                if (progressBar) {
-                                    progressBar.style.width = progressData.course_progress + '%';
-                                }
+            if (progressBar) {
+                progressBar.style.width = progressData.course_progress + '%';
+            }
 
-                                if (progressText) {
-                                    progressText.textContent = Math.round(progressData.course_progress) + '% ' +
-                                        "{{ translate_lang('completed') }}";
-                                }
+            if (progressText) {
+                progressText.textContent = Math.round(progressData.course_progress) + '% ' +
+                    "{{ translate_lang('completed') }}";
+            }
 
-                                if (progressStats) {
-                                    progressStats.innerHTML = `
-                    <span>{{ translate_lang('completed') }}: ${progressData.completed_videos}</span>
-                    <span>{{ translate_lang('watching') }}: ${progressData.watching_videos}</span>
-                    <span>{{ translate_lang('total_videos') }}: ${progressData.total_videos}</span>
-                `;
-                                }
-                            }
-                        }
+            if (progressStats) {
+                progressStats.innerHTML = `
+                <span>{{ translate_lang('completed') }}: ${progressData.completed_videos}</span>
+                <span>{{ translate_lang('watching') }}: ${progressData.watching_videos}</span>
+                <span>{{ translate_lang('total_videos') }}: ${progressData.total_videos}</span>
+            `;
+            }
+        }
+    }
 
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Handle video click
-                            document.addEventListener('click', function(e) {
-                                if (e.target.closest('.lesson-video, .playable')) {
-                                    const element = e.target.closest('.lesson-video, .playable');
-                                    let videoUrl = element.getAttribute('data-video');
-                                    let contentId = element.getAttribute('data-content-id');
-                                    let isBunny = element.getAttribute('data-is-bunny') === '1';
-                                    let duration = element.getAttribute('data-duration') || 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle video click
+        document.addEventListener('click', function(e) {
+            // Check if clicked element or its parent has the video data
+            const element = e.target.closest('.lesson-video, .playable');
+            
+            if (element) {
+                e.preventDefault(); // Prevent default action
+                
+                let videoUrl = element.getAttribute('data-video');
+                let contentId = element.getAttribute('data-content-id');
+                let isBunny = element.getAttribute('data-is-bunny') === '1';
+                let duration = element.getAttribute('data-duration') || 0;
 
-                                    stopProgress = 0;
-                                    if (!isEnrolled) {
-                                        stopProgress = 1;
-                                    }
+                console.log('Video clicked:', {videoUrl, contentId, isBunny}); // Debug log
 
-                                    lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
+                stopProgress = 0;
+                if (!isEnrolled) {
+                    stopProgress = 1;
+                }
 
-                                    if (videoUrl && contentId) {
-                                        currentVideoId = contentId;
-                                        currentVideoDuration = duration;
-                                        videoStartTime = Date.now();
+                lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
 
-                                        const popup = document.querySelector('.video-popup');
-                                        const iframe = popup.querySelector('iframe');
-                                        const videoContainer = popup.querySelector('.video-popup-content');
+                if (videoUrl && contentId) {
+                    currentVideoId = contentId;
+                    currentVideoDuration = duration;
+                    videoStartTime = Date.now();
 
-                                        if (isBunny) {
-                                            // Create HTML5 video player for Bunny
-                                            iframe.style.display = 'none';
-                                            let existingVideo = videoContainer.querySelector('video');
-                                            if (existingVideo) existingVideo.remove();
+                    const popup = document.querySelector('.video-popup');
+                    const iframe = popup.querySelector('iframe');
+                    const videoContainer = popup.querySelector('.video-popup-content');
 
-                                            const video = document.createElement('video');
-                                            video.controls = true;
-                                            video.autoplay = true;
-                                            video.style.width = '100%';
-                                            video.style.height = '70vh';
-                                            video.currentTime = lastWatchedTime;
+                    if (isBunny) {
+                        // Create HTML5 video player for Bunny
+                        iframe.style.display = 'none';
+                        let existingVideo = videoContainer.querySelector('video');
+                        if (existingVideo) existingVideo.remove();
 
-                                            const source = document.createElement('source');
-                                            source.src = videoUrl;
-                                            source.type = 'video/mp4';
+                        const video = document.createElement('video');
+                        video.controls = true;
+                        video.autoplay = true;
+                        video.style.width = '100%';
+                        video.style.height = '70vh';
+                        video.currentTime = lastWatchedTime;
 
-                                            video.appendChild(source);
-                                            videoContainer.appendChild(video);
-                                        } else {
-                                            // YouTube video
-                                            iframe.style.display = 'block';
-                                            let existingVideo = videoContainer.querySelector('video');
-                                            if (existingVideo) existingVideo.remove();
+                        const source = document.createElement('source');
+                        source.src = videoUrl;
+                        source.type = 'video/mp4';
 
-                                            videoUrl = fixYouTubeUrl(videoUrl);
-                                            iframe.src = videoUrl;
-                                        }
+                        video.appendChild(source);
+                        videoContainer.appendChild(video);
+                    } else {
+                        // YouTube video
+                        iframe.style.display = 'block';
+                        let existingVideo = videoContainer.querySelector('video');
+                        if (existingVideo) existingVideo.remove();
 
-                                        popup.classList.add('active');
+                        videoUrl = fixYouTubeUrl(videoUrl);
+                        iframe.src = videoUrl;
+                    }
 
-                                        if (!user) return;
-                                        startProgressTracking();
-                                    }
-                                }
-                            });
+                    popup.classList.add('active');
 
-                            if (!user) return;
+                    if (user) {
+                        startProgressTracking();
+                    }
+                }
+            }
+        });
 
-                            // Update close popup to handle both
-                            const popup = document.querySelector('.video-popup');
-                            const closeButton = document.querySelector('.close-popup');
+        // Close popup handlers
+        const popup = document.querySelector('.video-popup');
+        const closeButton = document.querySelector('.close-popup');
 
-                            popup.addEventListener('click', function(event) {
-                                if (event.target === closeButton || event.target === popup) {
-                                    popup.classList.remove('active');
-                                    const iframe = popup.querySelector('iframe');
-                                    const video = popup.querySelector('video');
+        if (closeButton) {
+            closeButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                popup.classList.remove('active');
+                const iframe = popup.querySelector('iframe');
+                const video = popup.querySelector('video');
 
-                                    if (iframe) iframe.src = '';
-                                    if (video) video.remove();
+                if (iframe) iframe.src = '';
+                if (video) video.remove();
 
-                                    stopProgressProgressTracking();
-                                }
-                            });
-                        });
-                    </script>
+                stopProgressProgressTracking();
+            });
+        }
+
+        if (popup) {
+            popup.addEventListener('click', function(event) {
+                if (event.target === popup) {
+                    popup.classList.remove('active');
+                    const iframe = popup.querySelector('iframe');
+                    const video = popup.querySelector('video');
+
+                    if (iframe) iframe.src = '';
+                    if (video) video.remove();
+
+                    stopProgressProgressTracking();
+                }
+            });
+        }
+    });
+</script>
                 @endpush
             @endif
 
@@ -1625,7 +1645,8 @@
 
                     .crs2-pill-btn--gray {
                         background: #e5e7eb;
-                        color: #111827
+                        color: #111827;
+                        pointer-events: none;
                     }
 
                     .crs2-pill-btn--red {
