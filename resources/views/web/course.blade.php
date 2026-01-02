@@ -850,7 +850,7 @@
             @push('scripts')
                 <script>
                     let user = "{{ $user?->id }}";
-                    let isEnrolled = {{ $is_enrolled }};
+                   let isEnrolled = {{ $is_enrolled ? 'true' : 'false' }};
                 </script>
                 <script>
                     // Card activation
