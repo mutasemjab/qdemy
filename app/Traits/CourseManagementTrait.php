@@ -673,7 +673,6 @@ trait CourseManagementTrait
         ];
 
         if ($request->content_type === 'video') {
-
             $rules['video_type'] = 'required|in:youtube,bunny';
 
             if ($request->video_type === 'youtube') {
@@ -681,9 +680,9 @@ trait CourseManagementTrait
             }
 
             if ($request->video_type === 'bunny') {
-                // ✅ Direct upload to Bunny
+                // ✅ Accept video_url as string (the path from Bunny)
                 $rules['video_url'] = 'required|string';
-                // ❌ لا upload_video هنا
+                // ❌ Don't require upload_video file
             }
 
             $rules['video_duration'] = 'sometimes|integer|min:1';
@@ -696,7 +695,6 @@ trait CourseManagementTrait
 
         return Validator::make($request->all(), $rules);
     }
-
 
     /**
      * Validate section request
@@ -776,6 +774,22 @@ trait CourseManagementTrait
         ];
 
         try {
+            // ✅ Handle direct Bunny upload (when video_url is already provided)
+            if ($request->content_type === 'video' && $request->video_type === 'bunny' && $request->filled('video_url')) {
+                $data['video_url'] = $request->video_url;
+                $data['video_type'] = 'bunny';
+
+                if ($request->has('video_duration')) {
+                    $data['video_duration'] = $request->video_duration;
+                }
+
+                return [
+                    'success' => true,
+                    'data' => $data
+                ];
+            }
+
+            // Handle old server-side upload (fallback)
             if ($request->hasFile('upload_video') && $request->content_type === 'video') {
                 $uploadResponse = BunnyHelper()->upload(
                     $request->upload_video,
