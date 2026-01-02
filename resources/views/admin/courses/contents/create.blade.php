@@ -220,7 +220,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                  <input type="hidden" name="video_url" id="bunny_video_path">
+                                <input type="hidden" name="video_url" id="bunny_video_path">
 
                                 <div class="col-md-4">
                                     <div class="form-group mb-3">
@@ -345,106 +345,101 @@
     </script>
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const videoInput = document.getElementById('upload_video');
-    const videoTypeInput = document.getElementById('video_type');
-    const videoUrlInput = document.getElementById('bunny_video_path');
-    const videoDurationInput = document.getElementById('video_duration');
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const videoInput = document.getElementById('upload_video');
+            const videoTypeInput = document.getElementById('video_type');
+            const videoUrlInput = document.getElementById('bunny_video_path');
+            const videoDurationInput = document.getElementById('video_duration');
 
-    // Create a loading indicator
-    const loadingDiv = document.createElement('div');
-    loadingDiv.id = 'upload-loading';
-    loadingDiv.style.display = 'none';
-    loadingDiv.style.position = 'fixed';
-    loadingDiv.style.top = '0';
-    loadingDiv.style.left = '0';
-    loadingDiv.style.width = '100%';
-    loadingDiv.style.height = '100%';
-    loadingDiv.style.background = 'rgba(0,0,0,0.5)';
-    loadingDiv.style.color = 'white';
-    loadingDiv.style.fontSize = '1.5rem';
-    loadingDiv.style.display = 'flex';
-    loadingDiv.style.justifyContent = 'center';
-    loadingDiv.style.alignItems = 'center';
-    loadingDiv.style.zIndex = '9999';
-    loadingDiv.innerText = 'Uploading video... Please wait';
-    document.body.appendChild(loadingDiv);
+            // Create a loading indicator
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'upload-loading';
+            loadingDiv.style.position = 'fixed';
+            loadingDiv.style.top = '0';
+            loadingDiv.style.left = '0';
+            loadingDiv.style.width = '100%';
+            loadingDiv.style.height = '100%';
+            loadingDiv.style.background = 'rgba(0,0,0,0.5)';
+            loadingDiv.style.color = 'white';
+            loadingDiv.style.fontSize = '1.5rem';
+            loadingDiv.style.display = 'none'; // ⚠ keep hidden initially
+            loadingDiv.style.justifyContent = 'center';
+            loadingDiv.style.alignItems = 'center';
+            loadingDiv.style.zIndex = '9999';
+            loadingDiv.innerText = 'Uploading video... Please wait';
+            document.body.appendChild(loadingDiv);
 
-    async function uploadToBunny(file, courseId) {
-        // Get signed URL from backend
-        const res = await fetch('/api/bunny/sign-upload', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ course_id: courseId })
-        });
+            async function uploadToBunny(file, courseId) {
+                const res = await fetch('/api/bunny/sign-upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                });
 
-        const data = await res.json();
+                const data = await res.json();
 
-        if (!data.upload_url || !data.file_path) {
-            throw new Error('Failed to get upload URL from server');
-        }
-
-        // Upload to Bunny CDN
-        const uploadRes = await fetch(data.upload_url, {
-            method: 'PUT',
-            headers: {
-                'AccessKey': data.access_key,
-                'Content-Type': file.type
-            },
-            body: file
-        });
-
-        if (!uploadRes.ok) {
-            throw new Error('Video upload failed at Bunny CDN');
-        }
-
-        return data.file_path;
-    }
-
-    form.addEventListener('submit', async function(e) {
-        const contentType = document.getElementById('content_type').value;
-        const videoType = videoTypeInput.value;
-
-        if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length > 0) {
-            e.preventDefault(); // stop normal form submit
-
-            const file = videoInput.files[0];
-
-            // Show loading
-            loadingDiv.style.display = 'flex';
-
-            try {
-                const path = await uploadToBunny(file, {{ $course->id }});
-
-                // Put the Bunny path in hidden input
-                videoUrlInput.value = path;
-                videoTypeInput.value = 'bunny';
-
-                // Optionally, you can calculate duration here if needed
-                // For now, keep user input in video_duration
-                if (!videoDurationInput.value) {
-                    videoDurationInput.value = 0; // default to 0 if empty
+                if (!data.upload_url || !data.file_path) {
+                    throw new Error('Failed to get upload URL from server');
                 }
 
-                // Clear file input so Laravel won't expect the file
-                videoInput.value = '';
+                const uploadRes = await fetch(data.upload_url, {
+                    method: 'PUT',
+                    headers: {
+                        'AccessKey': data.access_key,
+                        'Content-Type': file.type
+                    },
+                    body: file
+                });
 
-                // Submit the form now
-                form.submit();
-            } catch (err) {
-                alert('Video upload failed. Please try again.');
-                console.error(err);
-            } finally {
-                loadingDiv.style.display = 'none';
+                if (!uploadRes.ok) {
+                    throw new Error('Video upload failed at Bunny CDN');
+                }
+
+                return data.file_path;
             }
-        }
-    });
-});
-</script>
+
+            form.addEventListener('submit', async function(e) {
+                const contentType = document.getElementById('content_type').value;
+                const videoType = videoTypeInput.value;
+
+                // Only intercept if it's a Bunny video
+                if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length > 0) {
+                    e.preventDefault(); // stop normal form submit
+
+                    const file = videoInput.files[0];
+
+                    // Show loading only during upload
+                    loadingDiv.style.display = 'flex';
+
+                    try {
+                        const path = await uploadToBunny(file, {{ $course->id }});
+
+                        videoUrlInput.value = path;
+                        videoTypeInput.value = 'bunny';
+
+                        if (!videoDurationInput.value) videoDurationInput.value = 0;
+
+                        videoInput.value = '';
+
+                        // Submit the form after upload
+                        form.submit();
+                    } catch (err) {
+                        alert('Video upload failed. Please try again.');
+                        console.error(err);
+                    } finally {
+                        // Hide loading after upload or failure
+                        loadingDiv.style.display = 'none';
+                    }
+                }
+            });
+        });
+    </script>
 
 
 @endsection
