@@ -88,10 +88,10 @@
                 @endif
 
                 @if($question_nm < $allQuestions->count())
-                    <button type="submit" class="btn-nav btn-next" onclick="setNextPage({{ $question_nm + 1 }})">
-                        {{ __('front.next_question_btn') }}
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
+                   <button type="button" class="btn-nav btn-next" onclick="setNextPage({{ $question_nm + 1 }})">
+                    {{ __('front.next_question_btn') }}
+                    <i class="fas fa-chevron-left"></i>
+                </button>
                 @else
                     <button type="button" class="btn-nav btn-submit" onclick="showSubmitConfirmation()">
                         <i class="fas fa-check"></i>
