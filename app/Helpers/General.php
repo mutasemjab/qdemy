@@ -1,68 +1,68 @@
 <?php
-define('CURRENCY','JOD');
-define('PGN',18);
-define('API_ROUTE_PREFIX','api.');
-define('FIELD_TYPE',[
-    'scientific'=> 'scientific',
-    'literary'  => 'literary',
-    'general'   => 'general',
+define('CURRENCY', 'JOD');
+define('PGN', 18);
+define('API_ROUTE_PREFIX', 'api.');
+define('FIELD_TYPE', [
+  'scientific' => 'scientific',
+  'literary'  => 'literary',
+  'general'   => 'general',
 ]);
-define('OPTIONAL_FROM_FIELD_TYPE',[
-    'scientific'  => 'scientific',
-    'literary'    => 'literary',
-    'general'     => 'general',
+define('OPTIONAL_FROM_FIELD_TYPE', [
+  'scientific'  => 'scientific',
+  'literary'    => 'literary',
+  'general'     => 'general',
 ]);
 
 // function to add new key langs to lang files
 if (!function_exists('getLocale')) {
-    function getLocale()
-    {
-        return app()->getLocale() ?? 'ar';
-    }
+  function getLocale()
+  {
+    return app()->getLocale() ?? 'ar';
+  }
 }
 if (!function_exists('translate_lang')) {
-    function translate_lang($key = null, $file = 'front')
-    {
-        if (empty($key)) {
-            return $key;
-        }
-
-        // Get current locale
-        $currentLocale = app()->getLocale();
-        $anotherCurrentLocale = $currentLocale == 'ar' ? 'en' : 'ar';
-        // Build file path
-        $filePath        = resource_path("lang/{$currentLocale}/{$file}.php");
-        $anotherFilePath = resource_path("lang/{$anotherCurrentLocale}/{$file}.php");
-
-        // Load existing translations
-        $translations = [];
-        if (file_exists($filePath)) {
-            $translations        = include $filePath;
-            $anotherTranslations = include $anotherFilePath;
-            if (!is_array($translations)) {
-                $translations = [];
-            }
-        }
-
-        // Check if key exists
-        $value = $translations[$key] ?? null;
-
-        if ($value === null) {
-            // Key doesn't exist, add it directly to the main array
-            $translations[$key] = $key;
-            $anotherTranslations[$key] = $key;
-
-            // Write updated translations back to file
-            $content = "<?php\n\nreturn " . var_export($translations, true) . ";\n";
-            file_put_contents($filePath, $content);
-            $anotherContent = "<?php\n\nreturn " . var_export($anotherTranslations, true) . ";\n";
-            file_put_contents($anotherFilePath, $anotherContent);
-
-            $value = $key; // Return the key as fallback
-        }
-
-        return $value ?? $key;
+  function translate_lang($key = null, $file = 'front')
+  {
+    if (empty($key)) {
+      return $key;
     }
+
+    // Get current locale
+    $currentLocale = app()->getLocale();
+    $anotherCurrentLocale = $currentLocale == 'ar' ? 'en' : 'ar';
+    // Build file path
+    $filePath        = resource_path("lang/{$currentLocale}/{$file}.php");
+    $anotherFilePath = resource_path("lang/{$anotherCurrentLocale}/{$file}.php");
+
+    // Load existing translations
+    $translations = [];
+    if (file_exists($filePath)) {
+      $translations        = include $filePath;
+      $anotherTranslations = include $anotherFilePath;
+      if (!is_array($translations)) {
+        $translations = [];
+      }
+    }
+
+    // Check if key exists
+    $value = $translations[$key] ?? null;
+
+    if ($value === null) {
+      // Key doesn't exist, add it directly to the main array
+      $translations[$key] = $key;
+      $anotherTranslations[$key] = $key;
+
+      // Write updated translations back to file
+      $content = "<?php\n\nreturn " . var_export($translations, true) . ";\n";
+      file_put_contents($filePath, $content);
+      $anotherContent = "<?php\n\nreturn " . var_export($anotherTranslations, true) . ";\n";
+      file_put_contents($anotherFilePath, $anotherContent);
+
+      $value = $key; // Return the key as fallback
+    }
+
+    return $value ?? $key;
+  }
 }
 
 if (!function_exists('BunnyHelper')) {
@@ -101,9 +101,10 @@ if (!function_exists('CartRepository')) {
 }
 
 if (!function_exists('MobileCartRepository')) {
-    function MobileCartRepository() {
-        return new \App\Repositories\MobileCartRepository();
-    }
+  function MobileCartRepository()
+  {
+    return new \App\Repositories\MobileCartRepository();
+  }
 }
 
 // return auth user
@@ -111,27 +112,38 @@ if (!function_exists('MobileCartRepository')) {
 if (!function_exists('auth_student')) {
   function auth_student()
   {
-    $user = auth('user')->user();
-    if(!$user || $user->role_name != 'student') return null;
-    return $user;
+    // First check the 'user' guard
+    if (auth('user')->check()) {
+      $user = auth('user')->user();
+      if ($user && $user->role_name == 'student') {
+        return $user;
+      }
+    }
+
+    // Fallback to default guard
+    if (auth()->check()) {
+      $user = auth()->user();
+      if ($user && $user->role_name == 'student') {
+        return $user;
+      }
+    }
+
+    return null;
   }
 }
 
 function uploadImage($folder, $image)
 {
-    $extension = strtolower($image->extension());
-    $filename = uniqid() . '_' . time() . '.' . $extension;
-    $image->move($folder, $filename);
-    return $filename;
+  $extension = strtolower($image->extension());
+  $filename = uniqid() . '_' . time() . '.' . $extension;
+  $image->move($folder, $filename);
+  return $filename;
 }
 
 
 
 function uploadFile($file, $folder)
 {
-    $path = $file->store($folder);
-    return $path;
+  $path = $file->store($folder);
+  return $path;
 }
-
-
-

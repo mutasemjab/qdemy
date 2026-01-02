@@ -32,10 +32,11 @@ class ExamController extends Controller
 
     public function __construct(Request $request)
     {
-        // فحص إذا كان الطلب API
+        // Check if request is API
         if ($request->expectsJson() || $request->is('api/*')) {
             $this->isApi          = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
+
             if ($request->hasHeader('UserId')) {
                 $userId = $request->header('UserId');
 
@@ -46,11 +47,20 @@ class ExamController extends Controller
 
                 if ($user) {
                     auth('user')->login($user);
+
+                    // DEBUG: Log to verify authentication worked
+                    \Log::info('User authenticated in API:', [
+                        'user_id' => auth('user')->id(),
+                        'is_authenticated' => auth('user')->check(),
+                        'role' => auth('user')->user()?->role_name
+                    ]);
+                } else {
+                    \Log::error('User not found or not a student:', ['userId' => $userId]);
                 }
             }
         }
 
-        // Set language from header (default to 'ar' if not provided)
+        // Set language from header
         if ($request->hasHeader('Lang') || $request->hasHeader('Language')) {
             $lang = $request->header('Lang') ?? $request->header('Language');
             if (in_array($lang, ['en', 'ar'])) {
