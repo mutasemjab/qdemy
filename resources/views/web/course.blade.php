@@ -484,127 +484,171 @@
                                                                 @endphp
 
                                                                 {{-- Video Content --}}
-                                                                @if ($subContent->video_url)
-                                                                    @if ($subContent->is_free === 1)
-                                                                        <div class="crs2-resource crs2-resource--video">
-                                                                            <div class="crs2-resource-main lesson-video"
-                                                                                data-video="{{ $subVideoSource }}"
-                                                                                data-is-completed="{{ $subContent->is_completed }}"
-                                                                                data-content-id="{{ $subContent->id }}"
-                                                                                data-watched-time="{{ $subContent->watched_time }}"
-                                                                                data-duration="{{ $subContent->video_duration }}"
-                                                                                data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-play-circle"></i>
-                                                                                </span>
-                                                                                <span
-                                                                                    class="crs2-resource-title">{{ $subContent->title }}</span>
+                                                             {{-- Video Content --}}
+@if ($subContent->video_url)
+    @if ($subContent->is_free === 1)
+        {{-- Free Video - Always Accessible --}}
+        <div class="crs2-resource crs2-resource--video">
+            <div class="crs2-resource-main lesson-video"
+                data-video="{{ $subVideoSource }}"
+                data-is-completed="{{ $subContent->is_completed }}"
+                data-content-id="{{ $subContent->id }}"
+                data-watched-time="{{ $subContent->watched_time }}"
+                data-duration="{{ $subContent->video_duration }}"
+                data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                <span class="crs2-resource-icon">
+                    <i class="fa fa-play-circle"></i>
+                </span>
+                <span class="crs2-resource-title">{{ $subContent->title }}</span>
 
-                                                                                @if ($is_enrolled && $subContent->is_completed)
-                                                                                    <span class="completion-badge">✓</span>
-                                                                                @elseif($is_enrolled && $subContent->watched_time > 0)
-                                                                                    <span
-                                                                                        class="progress-badge">{{ round($subProgressPercent) }}%</span>
-                                                                                @endif
+                @if ($is_enrolled && $subContent->is_completed)
+                    <span class="completion-badge">✓</span>
+                @elseif($is_enrolled && $subContent->watched_time > 0)
+                    <span class="progress-badge">{{ round($subProgressPercent) }}%</span>
+                @endif
 
-                                                                                <span
-                                                                                    class="crs2-free-badge">{{ translate_lang('free') }}</span>
-                                                                            </div>
-                                                                            <div class="crs2-resource-actions">
-                                                                                <a href="javascript:void(0)"
-                                                                                    class="crs2-pill-btn crs2-pill-btn--gray">
-                                                                                    {{ translate_lang('watch') }}
-                                                                                </a>
-                                                                            </div>
+                <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
+            </div>
+            <div class="crs2-resource-actions">
+                <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
+                    {{ translate_lang('watch') }}
+                </a>
+            </div>
 
-                                                                            @if ($is_enrolled && $subContent->content_type === 'video')
-                                                                                <div class="crs2-video-progress-bar">
-                                                                                    <div class="crs2-progress-fill"
-                                                                                        style="width: {{ $subProgressPercent }}%">
-                                                                                    </div>
-                                                                                </div>
-                                                                            @endif
-                                                                        </div>
-                                                                    @elseif($is_enrolled)
-                                                                        <div
-                                                                            class="crs2-resource crs2-resource--locked-enrolled">
-                                                                            <div class="crs2-resource-main">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-mobile-alt"></i>
-                                                                                </span>
-                                                                                <div class="crs2-resource-content">
-                                                                                    <span
-                                                                                        class="crs2-resource-title">{{ $subContent->title }}</span>
-                                                                                    <span
-                                                                                        class="crs2-resource-app-message">
-                                                                                        {{ translate_lang('go_to_app_to_watch_this_content') }}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @else
-                                                                        <div class="crs2-resource crs2-resource--locked">
-                                                                            <div class="crs2-resource-main">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-lock"></i>
-                                                                                </span>
-                                                                                <span
-                                                                                    class="crs2-resource-title">{{ $subContent->title }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                @endif
+            @if ($is_enrolled && $subContent->content_type === 'video')
+                <div class="crs2-video-progress-bar">
+                    <div class="crs2-progress-fill" style="width: {{ $subProgressPercent }}%"></div>
+                </div>
+            @endif
+        </div>
+    @elseif($is_enrolled)
+        {{-- Enrolled User - Check if locked or unlocked --}}
+        @php
+            $isSubContentLocked = !empty($lockedContents) && 
+                                 isset($lockedContents[$subContent->id]) && 
+                                 $lockedContents[$subContent->id]['is_locked'];
+        @endphp
+
+        @if ($isSubContentLocked)
+            {{-- LOCKED Content - Show lock message --}}
+            <div class="crs2-resource crs2-resource--locked-enrolled">
+                <div class="crs2-resource-main">
+                    <span class="crs2-resource-icon">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <div class="crs2-resource-content">
+                        <span class="crs2-resource-title">{{ $subContent->title }}</span>
+                        <span class="crs2-resource-app-message">
+                            {{ translate_lang('complete_lesson_first') }}: 
+                            {{ $lockedContents[$subContent->id]['previous_content_title'] }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        @else
+            {{-- UNLOCKED or NON-SEQUENTIAL - Show video --}}
+            <div class="crs2-resource crs2-resource--video">
+                <div class="crs2-resource-main lesson-video"
+                    data-video="{{ $subVideoSource }}"
+                    data-is-completed="{{ $subContent->is_completed }}"
+                    data-content-id="{{ $subContent->id }}"
+                    data-watched-time="{{ $subContent->watched_time }}"
+                    data-duration="{{ $subContent->video_duration }}"
+                    data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                    <span class="crs2-resource-icon">
+                        <i class="fa fa-play-circle"></i>
+                    </span>
+                    <span class="crs2-resource-title">{{ $subContent->title }}</span>
+
+                    @if ($subContent->is_completed)
+                        <span class="completion-badge">✓</span>
+                    @elseif($subContent->watched_time > 0)
+                        <span class="progress-badge">{{ round($subProgressPercent) }}%</span>
+                    @endif
+                </div>
+                <div class="crs2-resource-actions">
+                    <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
+                        {{ translate_lang('watch') }}
+                    </a>
+                </div>
+
+                @if ($subContent->content_type === 'video')
+                    <div class="crs2-video-progress-bar">
+                        <div class="crs2-progress-fill" style="width: {{ $subProgressPercent }}%"></div>
+                    </div>
+                @endif
+            </div>
+        @endif
+    @else
+        {{-- Not Enrolled - Show Lock --}}
+        <div class="crs2-resource crs2-resource--locked">
+            <div class="crs2-resource-main">
+                <span class="crs2-resource-icon">
+                    <i class="fa fa-lock"></i>
+                </span>
+                <span class="crs2-resource-title">{{ $subContent->title }}</span>
+            </div>
+        </div>
+    @endif
+@endif
 
                                                                 {{-- File Content --}}
-                                                                @if ($subContent->file_path)
-                                                                    @if ($subContent->is_free === 1)
-                                                                        <div class="crs2-resource crs2-resource--file">
-                                                                            <div class="crs2-resource-main">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-file-alt"></i>
-                                                                                </span>
-                                                                                <span
-                                                                                    class="crs2-resource-title">{{ $subContent->title }}</span>
-                                                                                <span
-                                                                                    class="crs2-free-badge">{{ translate_lang('free') }}</span>
-                                                                            </div>
-                                                                            <div class="crs2-resource-actions">
-                                                                                <a href="{{ $subContent->file_path }}"
-                                                                                    target="_blank"
-                                                                                    class="crs2-pill-btn crs2-pill-btn--blue">
-                                                                                    {{ translate_lang('download') }}
-                                                                                </a>
-                                                                            </div>
-                                                                        </div>
-                                                                    @elseif($is_enrolled)
-                                                                        <div
-                                                                            class="crs2-resource crs2-resource--locked-enrolled">
-                                                                            <div class="crs2-resource-main">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-mobile-alt"></i>
-                                                                                </span>
-                                                                                <div class="crs2-resource-content">
-                                                                                    <span
-                                                                                        class="crs2-resource-title">{{ $subContent->title }}</span>
-                                                                                    <span
-                                                                                        class="crs2-resource-app-message">
-                                                                                        {{ translate_lang('go_to_app_to_download_this_file') }}
-                                                                                    </span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    @else
-                                                                        <div class="crs2-resource crs2-resource--locked">
-                                                                            <div class="crs2-resource-main">
-                                                                                <span class="crs2-resource-icon">
-                                                                                    <i class="fa fa-lock"></i>
-                                                                                </span>
-                                                                                <span
-                                                                                    class="crs2-resource-title">{{ $subContent->title }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endif
-                                                                @endif
+                                                             {{-- File Content --}}
+@if ($subContent->file_path)
+    @if ($subContent->is_free === 1)
+        {{-- Free file code... --}}
+    @elseif($is_enrolled)
+        @php
+            $isSubContentLocked = !empty($lockedContents) && 
+                                 isset($lockedContents[$subContent->id]) && 
+                                 $lockedContents[$subContent->id]['is_locked'];
+        @endphp
+
+        @if ($isSubContentLocked)
+            {{-- Locked file --}}
+            <div class="crs2-resource crs2-resource--locked-enrolled">
+                <div class="crs2-resource-main">
+                    <span class="crs2-resource-icon">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <div class="crs2-resource-content">
+                        <span class="crs2-resource-title">{{ $subContent->title }}</span>
+                        <span class="crs2-resource-app-message">
+                            {{ translate_lang('complete_lesson_first') }}: 
+                            {{ $lockedContents[$subContent->id]['previous_content_title'] }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        @else
+            {{-- Unlocked file - show download --}}
+            <div class="crs2-resource crs2-resource--file">
+                <div class="crs2-resource-main">
+                    <span class="crs2-resource-icon">
+                        <i class="fa fa-file-alt"></i>
+                    </span>
+                    <span class="crs2-resource-title">{{ $subContent->title }}</span>
+                </div>
+                <div class="crs2-resource-actions">
+                    <a href="{{ $subContent->file_path }}" target="_blank" 
+                       class="crs2-pill-btn crs2-pill-btn--blue">
+                        {{ translate_lang('download') }}
+                    </a>
+                </div>
+            </div>
+        @endif
+    @else
+        {{-- Not enrolled --}}
+        <div class="crs2-resource crs2-resource--locked">
+            <div class="crs2-resource-main">
+                <span class="crs2-resource-icon">
+                    <i class="fa fa-lock"></i>
+                </span>
+                <span class="crs2-resource-title">{{ $subContent->title }}</span>
+            </div>
+        </div>
+    @endif
+@endif
                                                             @endforeach
                                                         @endif
 
@@ -744,23 +788,64 @@
                                                             </div>
                                                         @endif
                                                     </div>
-                                                @elseif($is_enrolled)
-                                                    {{-- Enrolled but Locked Video - Show App Message --}}
-                                                    <div class="crs2-resource crs2-resource--locked-enrolled">
-                                                        <div class="crs2-resource-main">
-                                                            <span class="crs2-resource-icon">
-                                                                <i class="fa fa-mobile-alt"></i>
-                                                            </span>
-                                                            <div class="crs2-resource-content">
-                                                                <span
-                                                                    class="crs2-resource-title">{{ $_content->title }}</span>
-                                                                <span class="crs2-resource-app-message">
-                                                                    {{ translate_lang('go_to_app_to_watch_this_content') }}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
+                                               @elseif($is_enrolled)
+    @php
+        $isUnassignedLocked = !empty($lockedContents) && 
+                             isset($lockedContents[$_content->id]) && 
+                             $lockedContents[$_content->id]['is_locked'];
+    @endphp
+
+    @if ($isUnassignedLocked)
+        {{-- LOCKED Content --}}
+        <div class="crs2-resource crs2-resource--locked-enrolled">
+            <div class="crs2-resource-main">
+                <span class="crs2-resource-icon">
+                    <i class="fa fa-lock"></i>
+                </span>
+                <div class="crs2-resource-content">
+                    <span class="crs2-resource-title">{{ $_content->title }}</span>
+                    <span class="crs2-resource-app-message">
+                        {{ translate_lang('complete_lesson_first') }}: 
+                        {{ $lockedContents[$_content->id]['previous_content_title'] }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    @else
+        {{-- UNLOCKED - Show video --}}
+        <div class="crs2-resource crs2-resource--video">
+            <div class="crs2-resource-main lesson-video"
+                data-video="{{ $unVideoSource }}"
+                data-is-completed="{{ $_content->is_completed }}"
+                data-content-id="{{ $_content->id }}"
+                data-watched-time="{{ $_content->watched_time }}"
+                data-duration="{{ $_content->video_duration }}"
+                data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                <span class="crs2-resource-icon">
+                    <i class="fa fa-play-circle"></i>
+                </span>
+                <span class="crs2-resource-title">{{ $_content->title }}</span>
+
+                @if ($_content->is_completed)
+                    <span class="completion-badge">✓</span>
+                @elseif($_content->watched_time > 0)
+                    <span class="progress-badge">{{ round($unProgressPercent) }}%</span>
+                @endif
+            </div>
+            <div class="crs2-resource-actions">
+                <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
+                    {{ translate_lang('watch') }}
+                </a>
+            </div>
+
+            @if ($_content->content_type === 'video')
+                <div class="crs2-video-progress-bar">
+                    <div class="crs2-progress-fill" style="width: {{ $unProgressPercent }}%"></div>
+                </div>
+            @endif
+        </div>
+    @endif
+@endif
                                             @endif
 
                                             {{-- File Content --}}
