@@ -251,8 +251,17 @@ class ExamController extends Controller
     {
         $user = auth_student();
 
+        // DEBUG: Check what auth_student returns
+        \Log::info('start_exam called:', [
+            'auth_student_result' => $user ? $user->id : 'null',
+            'auth_user_check' => auth('user')->check(),
+            'auth_user_id' => auth('user')->id(),
+            'exam_id' => $exam->id
+        ]);
+
         // Check if user can start new attempt
         if (!$exam->can_add_attempt($user?->id)) {
+            \Log::info('Cannot add attempt, redirecting');
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
@@ -261,9 +270,12 @@ class ExamController extends Controller
         $active_attempt = $exam->current_user_attempt();
 
         if ($active_attempt) {
+            \Log::info('Active attempt found, redirecting');
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لديك محاولة جارية بالفعل'));
         }
+
+        \Log::info('Creating new attempt');
 
         // Get questions and shuffle if needed
         $questions = $exam->questions;
@@ -280,6 +292,13 @@ class ExamController extends Controller
             'user_id' => $user?->id,
             'question_order' => $question_order,
             'status' => 'in_progress'
+        ]);
+
+       $routeName = $this->apiRoutePrefix . 'exam.take';
+        \Log::info('Attempting to redirect:', [
+            'route_name' => $routeName,
+            'route_exists' => \Route::has($routeName),
+            'available_routes' => collect(\Route::getRoutes())->map(fn($r) => $r->getName())->filter(fn($n) => str_contains($n, 'exam'))->values()
         ]);
 
         // Redirect to exam taking page
