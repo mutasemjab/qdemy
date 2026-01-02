@@ -257,9 +257,11 @@
                                                             @endif
                                                         </div>
                                                     @elseif($is_enrolled)
-                                                        {{-- Enrolled User - Check if locked or unlocked --}}
+                                                        {{-- Enrolled User --}}
                                                         @php
+                                                            // Check if course is sequential and content is locked
                                                             $isContentLocked =
+                                                                !empty($lockedContents) &&
                                                                 isset($lockedContents[$content->id]) &&
                                                                 $lockedContents[$content->id]['is_locked'];
                                                         @endphp
@@ -282,7 +284,7 @@
                                                                 </div>
                                                             </div>
                                                         @else
-                                                            {{-- UNLOCKED Content - Show video (SAME AS FREE VIDEO) --}}
+                                                            {{-- UNLOCKED or NON-SEQUENTIAL - Show video --}}
                                                             <div class="crs2-resource crs2-resource--video">
                                                                 <div class="crs2-resource-main lesson-video"
                                                                     data-video="{{ $videoSource }}"
