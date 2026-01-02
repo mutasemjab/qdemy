@@ -181,6 +181,12 @@ class ExamController extends Controller
     {
         $user = auth_student();
 
+         \Log::info('show() rendering view:', [
+        'isApi' => $this->isApi,
+        'apiRoutePrefix' => $this->apiRoutePrefix,
+        'has_userId_header' => request()->hasHeader('UserId'),
+        'url' => request()->url()
+    ]);
         
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
