@@ -196,8 +196,28 @@
 
                                                 {{-- Video Content --}}
                                                 @if ($content->video_url)
+                                                    @php
+                                                        $progressPercent =
+                                                            $content->video_duration > 0
+                                                                ? min(
+                                                                    100,
+                                                                    ($content->watched_time /
+                                                                        $content->video_duration) *
+                                                                        100,
+                                                                )
+                                                                : 0;
+
+                                                        $videoSource = $content->video_url;
+                                                        if (
+                                                            !filter_var($videoSource, FILTER_VALIDATE_URL) &&
+                                                            !empty($videoSource)
+                                                        ) {
+                                                            $videoSource = asset('storage/' . $videoSource);
+                                                        }
+                                                    @endphp
+
                                                     @if ($content->is_free === 1)
-                                                        {{-- Free Video - Always Accessible --}}
+                                                        {{-- Free Video - Always Accessible to EVERYONE --}}
                                                         <div class="crs2-resource crs2-resource--video">
                                                             <div class="crs2-resource-main lesson-video"
                                                                 data-video="{{ $videoSource }}"
@@ -237,7 +257,7 @@
                                                             @endif
                                                         </div>
                                                     @elseif($is_enrolled)
-                                                        {{-- Enrolled User - Check if content is locked --}}
+                                                        {{-- Enrolled User - Check if locked or unlocked --}}
                                                         @php
                                                             $isContentLocked =
                                                                 isset($lockedContents[$content->id]) &&
@@ -245,7 +265,7 @@
                                                         @endphp
 
                                                         @if ($isContentLocked)
-                                                            {{-- Content is locked - needs previous lesson completed --}}
+                                                            {{-- LOCKED Content - Show lock message --}}
                                                             <div class="crs2-resource crs2-resource--locked-enrolled">
                                                                 <div class="crs2-resource-main">
                                                                     <span class="crs2-resource-icon">
@@ -262,7 +282,7 @@
                                                                 </div>
                                                             </div>
                                                         @else
-                                                            {{-- Content is UNLOCKED and user is enrolled - SHOW THE VIDEO --}}
+                                                            {{-- UNLOCKED Content - Show video (SAME AS FREE VIDEO) --}}
                                                             <div class="crs2-resource crs2-resource--video">
                                                                 <div class="crs2-resource-main lesson-video"
                                                                     data-video="{{ $videoSource }}"
