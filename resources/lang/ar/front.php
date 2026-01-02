@@ -659,4 +659,8 @@ return array (
       'All Countries' => 'جميع المحافظات',
         'exams_for_students_only' => 'الإمتحانات هي للطلاب فقط',
   'students_only' => 'للطلاب فقط',
+   "all_attempts"=> "جميع المحاولات",
+    "attempt"=> "محاولة",
+    "current"=> "الحالية",
+    "view_details"=> "عرض التفاصيل",
 );
