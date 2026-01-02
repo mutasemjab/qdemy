@@ -325,6 +325,14 @@ class ExamController extends Controller
     {
         $this->checkIfApi();
         $user = auth_student();
+
+        \Log::info('answer_question called:', [
+        'exam_id' => $exam->id,
+        'question_id' => $question->id,
+        'isApi' => $this->isApi,
+        'apiRoutePrefix' => $this->apiRoutePrefix,
+        'has_answer' => $request->has('answer')
+    ]);
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {

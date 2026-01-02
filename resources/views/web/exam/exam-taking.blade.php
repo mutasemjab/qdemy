@@ -33,8 +33,10 @@
     </div>
 
     <!-- Question Container -->
-    <form id="answerForm" action="{{ route('answer.question', ['exam' => $exam->id, 'question' => $question->id]) }}" method="POST">
+    <form id="answerForm" action="{{ route($apiRoutePrefix . 'answer.question', ['exam' => $exam->id, 'question' => $question->id]) }}" method="POST">
+        @if (!$isApi)
         @csrf
+    @endif
         <input type="hidden" name="page" value="{{ $question_nm }}">
         <input type="hidden" name="next_page" id="nextPageInput" value="{{ $question_nm + 1 }}">
 
