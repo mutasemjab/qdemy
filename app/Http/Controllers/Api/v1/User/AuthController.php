@@ -72,6 +72,7 @@ class AuthController extends Controller
             // Validation
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
+                'ip_address' => 'required',
                 'email' => 'nullable|email|unique:users,email',
                 'phone' => 'nullable|string|unique:users,phone',
                 'password' => 'required|string|min:4|confirmed',
@@ -121,7 +122,7 @@ class AuthController extends Controller
                 'clas_id' => $request->clas_id,
                 'photo' => $photoPath,
                 'fcm_token' => $request->fcm_token,
-                'ip_address' => $request->ip(),
+                'ip_address' => $request->ip_address,
                 'referal_code' => $referralCode,
                 'activate' => 2, // User is not activated until OTP verification
                 'balance' => 0
@@ -283,6 +284,7 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                 'login' => 'required|string', // can be email or phone
                 'password' => 'required|string',
+                'ip_address' => 'required',
                 'fcm_token' => 'nullable|string'
             ]);
 
@@ -302,6 +304,13 @@ class AuthController extends Controller
                 return $this->error_response('بيانات الاعتماد غير صحيحة', null);
             }
 
+            if ($user->ip_address != $request->ip_address) {
+                return $this->error_response(
+                    'تم رفض تسجيل الدخول من جهاز أو شبكة مختلفة',
+                    null
+                );
+            }
+
             // Check if account is activated
             if ($user->activate != 1) {
                 return $this->error_response('الحساب معطل. يرجى الاتصال بالدعم.', null);
@@ -310,7 +319,6 @@ class AuthController extends Controller
             // Update FCM token and login info
             $user->update([
                 'fcm_token' => $request->fcm_token ?? $user->fcm_token,
-                'ip_address' => $request->ip(),
                 'last_login' => now()
             ]);
 
