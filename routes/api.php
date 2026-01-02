@@ -28,6 +28,7 @@ use App\Http\Controllers\Api\v1\Parent\ParentChildAcademicController;
 use App\Http\Controllers\Api\v1\Teacher\CourseSectionTeacherController;
 use App\Http\Controllers\Api\v1\Teacher\ExamQuestionsTeacherController;
 use App\Http\Controllers\Api\v1\NotificationController;
+use App\Http\Controllers\BunnyUploadController;
 use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\DoseyatController;
 use App\Http\Controllers\Web\ExamController;
