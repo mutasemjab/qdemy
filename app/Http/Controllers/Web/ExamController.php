@@ -186,7 +186,7 @@ class ExamController extends Controller
         ]);
     }
 
-      public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
+   public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
         $user = auth_student();
 
@@ -204,11 +204,11 @@ class ExamController extends Controller
 
         $attempts         = $exam->user_attempts();
         
-        // FIXED: Get the LATEST completed attempt instead of first one
+        // FIXED: Get the LATEST completed attempt from collection
         $result           = $exam->user_attempts()
             ->where('submitted_at', '!=', null)
             ->where('status', 'completed')
-            ->orderBy('created_at', 'desc')
+            ->sortByDesc('created_at')
             ->first();
             
         $current_attempts = $exam->current_user_attempts();
