@@ -305,16 +305,19 @@ trait CourseManagementTrait
                 'is_main_video',
                 'order',
                 'video_type',
-                'video_url',
                 'video_duration',
                 'pdf_type',
                 'section_id'
             ]);
 
-            // Handle file uploads if new files are provided
-            if ($request->hasFile('upload_video') || $request->hasFile('file_path')) {
-                // Delete old files
-                $this->deleteContentFiles($content);
+            // Handle file uploads if new files are provided OR if bunny_video_path is provided
+            if ($request->hasFile('upload_video') || $request->hasFile('file_path') || $request->filled('bunny_video_path')) {
+                // Only delete old files if we're actually uploading new ones
+                if ($request->hasFile('upload_video') || $request->filled('bunny_video_path')) {
+                    $this->deleteContentFiles($content);
+                } elseif ($request->hasFile('file_path')) {
+                    $this->deleteContentFiles($content);
+                }
 
                 $uploadResult = $this->handleContentFileUpload($request, $content->course);
 
@@ -323,6 +326,11 @@ trait CourseManagementTrait
                 }
 
                 $contentData = array_merge($contentData, $uploadResult['data']);
+            } else {
+                // No new files - handle video_url for YouTube updates
+                if ($request->content_type === 'video' && $request->video_type === 'youtube' && $request->filled('video_url')) {
+                    $contentData['video_url'] = $request->video_url;
+                }
             }
 
             $content->update($contentData);
@@ -660,6 +668,9 @@ trait CourseManagementTrait
     /**
      * Validate content request
      */
+    /**
+     * Validate content request
+     */
     protected function validateContentRequest(Request $request, $contentId = null)
     {
         $rules = [
@@ -669,27 +680,35 @@ trait CourseManagementTrait
             'is_free'      => 'required|in:1,2',
             'is_main_video' => 'required|in:1,2',
             'order'        => 'required|integer|min:0',
-            'section_id'   => 'sometimes|exists:course_sections,id'
+            'section_id'   => 'nullable|exists:course_sections,id'
         ];
 
         if ($request->content_type === 'video') {
             $rules['video_type'] = 'required|in:youtube,bunny';
 
             if ($request->video_type === 'youtube') {
+                // YouTube requires video_url
                 $rules['video_url'] = 'required|url';
             }
 
             if ($request->video_type === 'bunny') {
-                // For edit: accept either bunny_video_path or video_url
-                $rules['bunny_video_path'] = 'sometimes|string';
-                $rules['video_url'] = 'sometimes|string';
+                // For Bunny: Either bunny_video_path (edit with new upload) OR video_url (create or no new upload)
+                // At least one must be present for create, but for update it's optional (keeps existing)
+                if (!$contentId) {
+                    // CREATE: Must have video_url (from direct upload)
+                    $rules['video_url'] = 'required|string';
+                } else {
+                    // EDIT: Optional - either bunny_video_path or video_url or neither (keep existing)
+                    $rules['bunny_video_path'] = 'nullable|string';
+                    $rules['video_url'] = 'nullable|string';
+                }
             }
 
-            $rules['video_duration'] = 'sometimes|integer|min:1';
+            $rules['video_duration'] = 'nullable|integer|min:1';
         } else {
             $rules['pdf_type'] = 'required|in:homework,worksheet,notes,other';
             $rules['file_path'] = $contentId
-                ? 'sometimes|file|mimes:pdf|max:10240'
+                ? 'nullable|file|mimes:pdf|max:10240'
                 : 'required|file|mimes:pdf|max:10240';
         }
 
