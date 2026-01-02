@@ -274,7 +274,18 @@ class ExamController extends Controller
     public function start_exam(Exam $exam)
     {
 
-        $user = auth_student();
+          // Detailed debugging
+    \Log::info('start_exam - Auth Debug:', [
+        'auth_user_check' => auth('user')->check(),
+        'auth_user_id' => auth('user')->id(),
+        'auth_user' => auth('user')->user(),
+        'default_auth_check' => auth()->check(),
+        'default_auth_id' => auth()->id(),
+        'default_auth_user' => auth()->user(),
+    ]);
+
+    $user = auth_student();
+   
 
         // DEBUG: Check what auth_student returns
         \Log::info('start_exam called:', [
