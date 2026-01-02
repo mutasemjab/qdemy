@@ -65,6 +65,44 @@
             </div>
         </div>
 
+        {{-- All Previous Attempts Section --}}
+        @if(isset($allAttempts) && $allAttempts->count() > 1)
+        <div class="previous-attempts-section">
+            <h2 class="section-title">{{ __('front.all_attempts') }}</h2>
+            <div class="attempts-list">
+                @foreach($allAttempts as $index => $attemptItem)
+                    <div class="attempt-item {{ $attemptItem->id === $attempt->id ? 'current-attempt' : '' }}">
+                        <div class="attempt-header">
+                            <div class="attempt-info">
+                                <span class="attempt-number">{{ __('front.attempt') }} #{{ $allAttempts->count() - $index }}</span>
+                                <span class="attempt-date">{{ $attemptItem->created_at->format('d/m/Y H:i') }}</span>
+                                @if($attemptItem->id === $attempt->id)
+                                    <span class="current-badge">{{ __('front.current') }}</span>
+                                @endif
+                            </div>
+                            <div class="attempt-result">
+                                <span class="attempt-score {{ $attemptItem->is_passed ? 'passed' : 'failed' }}">
+                                    {{ $attemptItem->score }} / {{ $exam->total_grade }}
+                                    ({{ round(($attemptItem->score / $exam->total_grade) * 100, 1) }}%)
+                                </span>
+                                @if($attemptItem->is_passed)
+                                    <i class="fas fa-check-circle text-success"></i>
+                                @else
+                                    <i class="fas fa-times-circle text-danger"></i>
+                                @endif
+                            </div>
+                        </div>
+                        @if($attemptItem->id !== $attempt->id)
+                            <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]) }}" class="view-attempt-btn">
+                                {{ __('front.view_details') }}
+                            </a>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- Questions Review --}}
         <div class="questions-review">
             <h2>{{ __('front.مراجعة الامتحان') }}</h2>
@@ -345,6 +383,116 @@
     font-size: 28px;
     font-weight: bold;
     color: #007bff;
+}
+
+/* Previous Attempts Section */
+.previous-attempts-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.section-title {
+    font-size: 22px;
+    margin: 0 0 20px 0;
+    color: #333;
+}
+
+.attempts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.attempt-item {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    transition: all 0.3s;
+}
+
+.attempt-item.current-attempt {
+    border-color: #007bff;
+    background: #f0f7ff;
+}
+
+.attempt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.attempt-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.attempt-number {
+    font-weight: bold;
+    color: #333;
+    font-size: 16px;
+}
+
+.attempt-date {
+    color: #666;
+    font-size: 14px;
+}
+
+.current-badge {
+    background: #007bff;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.attempt-result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.attempt-score {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.attempt-score.passed {
+    color: #28a745;
+}
+
+.attempt-score.failed {
+    color: #dc3545;
+}
+
+.view-attempt-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.view-attempt-btn:hover {
+    background: #0056b3;
+}
+
+.text-success {
+    color: #28a745;
+}
+
+.text-danger {
+    color: #dc3545;
 }
 
 .questions-review {

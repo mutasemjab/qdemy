@@ -186,7 +186,7 @@ class ExamController extends Controller
         ]);
     }
 
-    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
+      public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
         $user = auth_student();
 
@@ -203,7 +203,14 @@ class ExamController extends Controller
         }
 
         $attempts         = $exam->user_attempts();
-        $result           = $exam->result_attempt($user?->id);
+        
+        // FIXED: Get the LATEST completed attempt instead of first one
+        $result           = $exam->user_attempts()
+            ->where('submitted_at', '!=', null)
+            ->where('status', 'completed')
+            ->orderBy('created_at', 'desc')
+            ->first();
+            
         $current_attempts = $exam->current_user_attempts();
 
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
@@ -751,6 +758,14 @@ class ExamController extends Controller
         $passed = $attempt->is_passed ?? false;
         $canRetake = $exam->can_add_attempt($user?->id);
 
+        // Get all attempts for this exam by this user (newest to oldest)
+        $allAttempts = ExamAttempt::where('exam_id', $exam->id)
+            ->where('user_id', $user?->id)
+            ->where('submitted_at', '!=', null)
+            ->where('status', 'completed')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('web.exam.exam-result', [
             'exam' => $exam,
             'attempt' => $attempt,
@@ -759,6 +774,7 @@ class ExamController extends Controller
             'wrongCount' => $wrongCount,
             'passed' => $passed,
             'canRetake' => $canRetake,
+            'allAttempts' => $allAttempts,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
         ]);
