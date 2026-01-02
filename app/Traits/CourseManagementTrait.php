@@ -680,9 +680,9 @@ trait CourseManagementTrait
             }
 
             if ($request->video_type === 'bunny') {
-                // ✅ Accept video_url as string (the path from Bunny)
-                $rules['video_url'] = 'required|string';
-                // ❌ Don't require upload_video file
+                // For edit: accept either bunny_video_path or video_url
+                $rules['bunny_video_path'] = 'sometimes|string';
+                $rules['video_url'] = 'sometimes|string';
             }
 
             $rules['video_duration'] = 'sometimes|integer|min:1';
@@ -774,8 +774,23 @@ trait CourseManagementTrait
         ];
 
         try {
-            // ✅ Handle direct Bunny upload (when video_url is already provided)
-            if ($request->content_type === 'video' && $request->video_type === 'bunny' && $request->filled('video_url')) {
+            // ✅ Handle direct Bunny upload (when bunny_video_path is provided from edit form)
+            if ($request->content_type === 'video' && $request->video_type === 'bunny' && $request->filled('bunny_video_path')) {
+                $data['video_url'] = $request->bunny_video_path;
+                $data['video_type'] = 'bunny';
+
+                if ($request->has('video_duration')) {
+                    $data['video_duration'] = $request->video_duration;
+                }
+
+                return [
+                    'success' => true,
+                    'data' => $data
+                ];
+            }
+
+            // ✅ Handle direct Bunny upload (when video_url is already provided from create form)
+            if ($request->content_type === 'video' && $request->video_type === 'bunny' && $request->filled('video_url') && !$request->hasFile('upload_video')) {
                 $data['video_url'] = $request->video_url;
                 $data['video_type'] = 'bunny';
 

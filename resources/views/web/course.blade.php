@@ -27,11 +27,21 @@
                     <div class="crs2-side-card">
                         <div class="crs2-side-cover">
                             @if ($freeContents?->video_url)
-                                <div class="playable" data-video="{{ $freeContents->video_url }}"
+                                @php
+                                    $coverVideoSource = $freeContents->video_url;
+                                    if (
+                                        !filter_var($coverVideoSource, FILTER_VALIDATE_URL) &&
+                                        !empty($coverVideoSource)
+                                    ) {
+                                        $coverVideoSource = asset('storage/' . $coverVideoSource);
+                                    }
+                                @endphp
+                                <div class="playable" data-video="{{ $coverVideoSource }}"
                                     data-is-completed="{{ $freeContents->is_completed }}"
                                     data-content-id="{{ $freeContents->id }}"
                                     data-watched-time="{{ $freeContents->watched_time }}"
-                                    data-duration="{{ $freeContents->video_duration }}">
+                                    data-duration="{{ $freeContents->video_duration }}"
+                                    data-is-bunny="{{ filter_var($freeContents->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                     <img data-src="{{ $course->photo_url ?? asset('assets_front/images/ourse-cover-2.webp') }}"
                                         alt="{{ $course->title }}">
                                     <span class="play-overlay"><i class="fas fa-play"></i></span>
@@ -172,6 +182,16 @@
                                                                     100,
                                                             )
                                                             : 0;
+
+                                                    // Check if video_url is actually a Bunny CDN path stored in video_url field
+                                                    $videoSource = $content->video_url;
+                                                    if (
+                                                        !filter_var($videoSource, FILTER_VALIDATE_URL) &&
+                                                        !empty($videoSource)
+                                                    ) {
+                                                        // It's a file path, construct the full URL
+    $videoSource = asset('storage/' . $videoSource);
+                                                    }
                                                 @endphp
 
                                                 {{-- Video Content --}}
@@ -180,11 +200,12 @@
                                                         {{-- Free Video - Always Accessible --}}
                                                         <div class="crs2-resource crs2-resource--video">
                                                             <div class="crs2-resource-main lesson-video"
-                                                                data-video="{{ $content->video_url }}"
+                                                                data-video="{{ $videoSource }}"
                                                                 data-is-completed="{{ $content->is_completed }}"
                                                                 data-content-id="{{ $content->id }}"
                                                                 data-watched-time="{{ $content->watched_time }}"
-                                                                data-duration="{{ $content->video_duration }}">
+                                                                data-duration="{{ $content->video_duration }}"
+                                                                data-is-bunny="{{ filter_var($content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                                                 <span class="crs2-resource-icon">
                                                                     <i class="fa fa-play-circle"></i>
                                                                 </span>
@@ -320,9 +341,9 @@
                                                 @endif
                                             @endforeach
 
-                                            {{-- Section Exams --}}
+                                            {{-- Section Exams - VISIBLE TO ALL --}}
                                             @php $sectionsExams = $section->exams @endphp
-                                            @if ($is_enrolled && $sectionsExams && $sectionsExams->count())
+                                            @if ($sectionsExams && $sectionsExams->count())
                                                 <div class="crs2-subgroup">
                                                     <button type="button" class="crs2-sub-header">
                                                         <span
@@ -331,27 +352,55 @@
                                                     </button>
                                                     <div class="crs2-sub-body">
                                                         @foreach ($sectionsExams as $sectionsExam)
-                                                            <div class="crs2-resource crs2-resource--locked-enrolled">
-                                                                <div class="crs2-resource-main">
-                                                                    <span class="crs2-resource-icon">
-                                                                        <i class="fa fa-mobile-alt"></i>
-                                                                    </span>
-                                                                    <div class="crs2-resource-content">
+                                                            @if ($is_enrolled)
+                                                                <div class="crs2-resource crs2-resource--exam">
+                                                                    <div class="crs2-resource-main">
+                                                                        <span class="crs2-resource-icon">
+                                                                            <i class="fa fa-question-circle"></i>
+                                                                        </span>
                                                                         <span
                                                                             class="crs2-resource-title">{{ $sectionsExam->title }}</span>
-                                                                        <span class="crs2-resource-app-message">
-                                                                            {{ translate_lang('go_to_app_to_take_exam') }}
-                                                                        </span>
+                                                                    </div>
+                                                                    <div class="crs2-resource-actions">
+                                                                        <div class="crs2-resource-meta">
+                                                                            <span class="crs2-meta-chip">
+                                                                                {{ translate_lang('attempts') }}:
+                                                                                {{ $sectionsExam->user_attempts()->count() }}
+                                                                            </span>
+                                                                            @if ($sectionsExam->result_attempt())
+                                                                                <span
+                                                                                    class="crs2-meta-chip {{ $sectionsExam->result_attempt()->is_passed ? 'passed' : 'failed' }}">
+                                                                                    <i
+                                                                                        class="fa fa-{{ $sectionsExam->result_attempt()->is_passed ? 'check' : 'times' }}"></i>
+                                                                                    {{ $sectionsExam->result_attempt()->percentage }}%
+                                                                                </span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <a href="{{ route('exam', ['exam' => $sectionsExam->id, 'slug' => $sectionsExam->slug]) }}"
+                                                                            target="_blank"
+                                                                            class="crs2-pill-btn crs2-pill-btn--red">
+                                                                            {{ translate_lang('enter_exam') }}
+                                                                        </a>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            @else
+                                                                <div class="crs2-resource crs2-resource--locked">
+                                                                    <div class="crs2-resource-main">
+                                                                        <span class="crs2-resource-icon">
+                                                                            <i class="fa fa-lock"></i>
+                                                                        </span>
+                                                                        <span
+                                                                            class="crs2-resource-title">{{ $sectionsExam->title }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endif
                                                         @endforeach
                                                     </div>
                                                 </div>
                                             @endif
                                         @endif
 
-                                        {{-- Sub Sections --}}
+                                        {{-- Sub Sections - Apply same logic --}}
                                         @if ($subSections && $subSections->count())
                                             @foreach ($subSections as $subSection)
                                                 <div class="crs2-subgroup">
@@ -373,19 +422,32 @@
                                                                                     100,
                                                                             )
                                                                             : 0;
+
+                                                                    $subVideoSource = $subContent->video_url;
+                                                                    if (
+                                                                        !filter_var(
+                                                                            $subVideoSource,
+                                                                            FILTER_VALIDATE_URL,
+                                                                        ) &&
+                                                                        !empty($subVideoSource)
+                                                                    ) {
+                                                                        $subVideoSource = asset(
+                                                                            'storage/' . $subVideoSource,
+                                                                        );
+                                                                    }
                                                                 @endphp
 
                                                                 {{-- Video Content --}}
                                                                 @if ($subContent->video_url)
                                                                     @if ($subContent->is_free === 1)
-                                                                        {{-- Free Video - Always Accessible --}}
                                                                         <div class="crs2-resource crs2-resource--video">
                                                                             <div class="crs2-resource-main lesson-video"
-                                                                                data-video="{{ $subContent->video_url }}"
+                                                                                data-video="{{ $subVideoSource }}"
                                                                                 data-is-completed="{{ $subContent->is_completed }}"
                                                                                 data-content-id="{{ $subContent->id }}"
                                                                                 data-watched-time="{{ $subContent->watched_time }}"
-                                                                                data-duration="{{ $subContent->video_duration }}">
+                                                                                data-duration="{{ $subContent->video_duration }}"
+                                                                                data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                                                                 <span class="crs2-resource-icon">
                                                                                     <i class="fa fa-play-circle"></i>
                                                                                 </span>
@@ -418,7 +480,6 @@
                                                                             @endif
                                                                         </div>
                                                                     @elseif($is_enrolled)
-                                                                        {{-- Enrolled but Locked Video - Show App Message --}}
                                                                         <div
                                                                             class="crs2-resource crs2-resource--locked-enrolled">
                                                                             <div class="crs2-resource-main">
@@ -436,7 +497,6 @@
                                                                             </div>
                                                                         </div>
                                                                     @else
-                                                                        {{-- Not Enrolled - Show Lock --}}
                                                                         <div class="crs2-resource crs2-resource--locked">
                                                                             <div class="crs2-resource-main">
                                                                                 <span class="crs2-resource-icon">
@@ -452,7 +512,6 @@
                                                                 {{-- File Content --}}
                                                                 @if ($subContent->file_path)
                                                                     @if ($subContent->is_free === 1)
-                                                                        {{-- Free File - Always Accessible --}}
                                                                         <div class="crs2-resource crs2-resource--file">
                                                                             <div class="crs2-resource-main">
                                                                                 <span class="crs2-resource-icon">
@@ -472,7 +531,6 @@
                                                                             </div>
                                                                         </div>
                                                                     @elseif($is_enrolled)
-                                                                        {{-- Enrolled but Locked File - Show App Message --}}
                                                                         <div
                                                                             class="crs2-resource crs2-resource--locked-enrolled">
                                                                             <div class="crs2-resource-main">
@@ -490,7 +548,6 @@
                                                                             </div>
                                                                         </div>
                                                                     @else
-                                                                        {{-- Not Enrolled - Show Lock --}}
                                                                         <div class="crs2-resource crs2-resource--locked">
                                                                             <div class="crs2-resource-main">
                                                                                 <span class="crs2-resource-icon">
@@ -507,22 +564,50 @@
 
                                                         {{-- Sub Section Exams --}}
                                                         @php $subSectionsExams = $subSection->exams @endphp
-                                                        @if ($is_enrolled && $subSectionsExams && $subSectionsExams->count())
+                                                        @if ($subSectionsExams && $subSectionsExams->count())
                                                             @foreach ($subSectionsExams as $subExam)
-                                                                <div class="crs2-resource crs2-resource--locked-enrolled">
-                                                                    <div class="crs2-resource-main">
-                                                                        <span class="crs2-resource-icon">
-                                                                            <i class="fa fa-mobile-alt"></i>
-                                                                        </span>
-                                                                        <div class="crs2-resource-content">
+                                                                @if ($is_enrolled)
+                                                                    <div class="crs2-resource crs2-resource--exam">
+                                                                        <div class="crs2-resource-main">
+                                                                            <span class="crs2-resource-icon">
+                                                                                <i class="fa fa-question-circle"></i>
+                                                                            </span>
                                                                             <span
                                                                                 class="crs2-resource-title">{{ $subExam->title }}</span>
-                                                                            <span class="crs2-resource-app-message">
-                                                                                {{ translate_lang('go_to_app_to_take_exam') }}
-                                                                            </span>
+                                                                        </div>
+                                                                        <div class="crs2-resource-actions">
+                                                                            <div class="crs2-resource-meta">
+                                                                                <span class="crs2-meta-chip">
+                                                                                    {{ translate_lang('attempts') }}:
+                                                                                    {{ $subExam->user_attempts()->count() }}
+                                                                                </span>
+                                                                                @if ($subExam->result_attempt())
+                                                                                    <span
+                                                                                        class="crs2-meta-chip {{ $subExam->result_attempt()->is_passed ? 'passed' : 'failed' }}">
+                                                                                        <i
+                                                                                            class="fa fa-{{ $subExam->result_attempt()->is_passed ? 'check' : 'times' }}"></i>
+                                                                                        {{ $subExam->result_attempt()->percentage }}%
+                                                                                    </span>
+                                                                                @endif
+                                                                            </div>
+                                                                            <a href="{{ route('exam', ['exam' => $subExam->id, 'slug' => $subExam->slug]) }}"
+                                                                                target="_blank"
+                                                                                class="crs2-pill-btn crs2-pill-btn--red">
+                                                                                {{ translate_lang('enter_exam') }}
+                                                                            </a>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                @else
+                                                                    <div class="crs2-resource crs2-resource--locked">
+                                                                        <div class="crs2-resource-main">
+                                                                            <span class="crs2-resource-icon">
+                                                                                <i class="fa fa-lock"></i>
+                                                                            </span>
+                                                                            <span
+                                                                                class="crs2-resource-title">{{ $subExam->title }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                @endif
                                                             @endforeach
                                                         @endif
                                                     </div>
@@ -563,15 +648,26 @@
 
                                             {{-- Video Content --}}
                                             @if ($_content->video_url)
+                                                @php
+                                                    $unVideoSource = $_content->video_url;
+                                                    if (
+                                                        !filter_var($unVideoSource, FILTER_VALIDATE_URL) &&
+                                                        !empty($unVideoSource)
+                                                    ) {
+                                                        $unVideoSource = asset('storage/' . $unVideoSource);
+                                                    }
+                                                @endphp
+
                                                 @if ($_content->is_free === 1)
                                                     {{-- Free Video - Always Accessible --}}
                                                     <div class="crs2-resource crs2-resource--video">
                                                         <div class="crs2-resource-main lesson-video"
-                                                            data-video="{{ $_content->video_url }}"
+                                                            data-video="{{ $unVideoSource }}"
                                                             data-is-completed="{{ $_content->is_completed }}"
                                                             data-content-id="{{ $_content->id }}"
                                                             data-watched-time="{{ $_content->watched_time }}"
-                                                            data-duration="{{ $_content->video_duration }}">
+                                                            data-duration="{{ $_content->video_duration }}"
+                                                            data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                                             <span class="crs2-resource-icon">
                                                                 <i class="fa fa-play-circle"></i>
                                                             </span>
@@ -883,6 +979,7 @@
                     </script>
 
                     <!-- Video Progress Tracking (Keep the existing script from old version) -->
+                    <!-- Video Progress Tracking -->
                     <script>
                         let currentVideoId = null;
                         let videoStartTime = 0;
@@ -892,54 +989,15 @@
                         let stopProgress = 0;
                         const COMPLETED_MINUTE = {{ env('COMPLETED_WATCHING_COURSES', 5) }};
 
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Handle video click
-                            document.addEventListener('click', function(e) {
-                                if (e.target.closest('.lesson-video, .playable')) {
-                                    const element = e.target.closest('.lesson-video, .playable');
-                                    let videoUrl = element.getAttribute('data-video');
-                                    let contentId = element.getAttribute('data-content-id');
-                                    let isCompleted = element.getAttribute('data-is-completed');
-                                    let duration = element.getAttribute('data-duration') || 0;
-
-                                    stopProgress = 0;
-                                    if (!isEnrolled) {
-                                        stopProgress = 1;
-                                    }
-
-                                    lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
-
-                                    if (videoUrl && contentId) {
-                                        currentVideoId = contentId;
-                                        currentVideoDuration = duration;
-                                        videoStartTime = Date.now();
-                                        videoUrl = fixYouTubeUrl(videoUrl);
-
-                                        document.querySelector('.video-popup iframe').src = videoUrl;
-                                        document.querySelector('.video-popup').classList.add('active');
-
-                                        if (!user) return;
-                                        startProgressTracking();
-                                    }
-                                }
-                            });
-
-                            if (!user) return;
-
-                            const popup = document.querySelector('.video-popup');
-                            const closeButton = document.querySelector('.close-popup');
-
-                            popup.addEventListener('click', function(event) {
-                                if (event.target === closeButton || event.target === popup) {
-                                    document.querySelector('.video-popup').classList.remove('active');
-                                    document.querySelector('.video-popup iframe').src = '';
-                                    stopProgressProgressTracking();
-                                }
-                            });
-                        });
-
                         function fixYouTubeUrl(url) {
                             let start = (lastWatchedTime <= currentVideoDuration) ? lastWatchedTime : 0;
+
+                            // Check if it's a Bunny CDN video (mp4 file)
+                            if (url.includes('.mp4') || url.includes('/storage/')) {
+                                return null; // Will be handled with HTML5 video
+                            }
+
+                            // YouTube URL handling
                             if (url.includes('youtube.com/watch?v=')) {
                                 let videoId = url.split('v=')[1].split('&')[0];
                                 return `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&start=${start}`;
@@ -1057,6 +1115,89 @@
                                 }
                             }
                         }
+
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Handle video click
+                            document.addEventListener('click', function(e) {
+                                if (e.target.closest('.lesson-video, .playable')) {
+                                    const element = e.target.closest('.lesson-video, .playable');
+                                    let videoUrl = element.getAttribute('data-video');
+                                    let contentId = element.getAttribute('data-content-id');
+                                    let isBunny = element.getAttribute('data-is-bunny') === '1';
+                                    let duration = element.getAttribute('data-duration') || 0;
+
+                                    stopProgress = 0;
+                                    if (!isEnrolled) {
+                                        stopProgress = 1;
+                                    }
+
+                                    lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
+
+                                    if (videoUrl && contentId) {
+                                        currentVideoId = contentId;
+                                        currentVideoDuration = duration;
+                                        videoStartTime = Date.now();
+
+                                        const popup = document.querySelector('.video-popup');
+                                        const iframe = popup.querySelector('iframe');
+                                        const videoContainer = popup.querySelector('.video-popup-content');
+
+                                        if (isBunny) {
+                                            // Create HTML5 video player for Bunny
+                                            iframe.style.display = 'none';
+                                            let existingVideo = videoContainer.querySelector('video');
+                                            if (existingVideo) existingVideo.remove();
+
+                                            const video = document.createElement('video');
+                                            video.controls = true;
+                                            video.autoplay = true;
+                                            video.style.width = '100%';
+                                            video.style.height = '70vh';
+                                            video.currentTime = lastWatchedTime;
+
+                                            const source = document.createElement('source');
+                                            source.src = videoUrl;
+                                            source.type = 'video/mp4';
+
+                                            video.appendChild(source);
+                                            videoContainer.appendChild(video);
+                                        } else {
+                                            // YouTube video
+                                            iframe.style.display = 'block';
+                                            let existingVideo = videoContainer.querySelector('video');
+                                            if (existingVideo) existingVideo.remove();
+
+                                            videoUrl = fixYouTubeUrl(videoUrl);
+                                            iframe.src = videoUrl;
+                                        }
+
+                                        popup.classList.add('active');
+
+                                        if (!user) return;
+                                        startProgressTracking();
+                                    }
+                                }
+                            });
+
+                            if (!user) return;
+
+                            // Update close popup to handle both
+                            const popup = document.querySelector('.video-popup');
+                            const closeButton = document.querySelector('.close-popup');
+
+                            popup.addEventListener('click', function(event) {
+                                if (event.target === closeButton || event.target === popup) {
+                                    popup.classList.remove('active');
+                                    const iframe = popup.querySelector('iframe');
+                                    const video = popup.querySelector('video');
+
+                                    if (iframe) iframe.src = '';
+                                    if (video) video.remove();
+
+                                    stopProgressProgressTracking();
+                                }
+                            });
+                        });
                     </script>
                 @endpush
             @endif
@@ -1929,6 +2070,29 @@
                             flex-direction: column;
                             text-align: center;
                         }
+                    }
+
+                    /* Locked Enrolled Resources Styles */
+                    .crs2-resource--locked-enrolled .crs2-resource-icon {
+                        background: #dbeafe;
+                        color: #2563eb;
+                    }
+
+                    .crs2-resource-app-message {
+                        font-size: 12px;
+                        color: #2563eb;
+                        font-weight: 600;
+                    }
+
+                    .crs2-resource--locked-enrolled .crs2-resource-title {
+                        color: #374151;
+                    }
+
+                    .crs2-resource--locked-enrolled .crs2-resource-content {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+                        flex: 1;
                     }
                 </style>
             @endpush

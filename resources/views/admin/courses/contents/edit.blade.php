@@ -105,6 +105,7 @@
                                     @enderror
                                 </div>
                             </div>
+                            
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
                                     <label for="is_main_video" class="form-label">
@@ -186,7 +187,7 @@
                                     <label for="video_type" class="form-label">
                                         {{ __('messages.video_type') }} <span class="text-danger">*</span>
                                     </label>
-                                    <select  onchange="toggleContentFields()" class="form-control @error('video_type') is-invalid @enderror"
+                                    <select onchange="toggleContentFields()" class="form-control @error('video_type') is-invalid @enderror"
                                             id="video_type"
                                             name="video_type">
                                         <option value="">{{ __('messages.select_video_type') }}</option>
@@ -213,8 +214,7 @@
                                            id="video_url"
                                            name="video_url"
                                            value="{{ old('video_url', $content->video_url) }}"
-                                           placeholder="https://example.com/video"
-                                           >
+                                           placeholder="https://example.com/video">
                                     @error('video_url')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -237,6 +237,9 @@
                                     @enderror
                                 </div>
                             </div>
+                            
+                            <!-- Hidden field for Bunny path -->
+                            <input type="hidden" name="bunny_video_path" id="bunny_video_path">
 
                             <div class="col-md-4">
                                 <div class="form-group mb-3">
@@ -259,9 +262,13 @@
                                 <div class="col-12">
                                     <div class="alert alert-info">
                                         <strong>{{ __('messages.current_video') }}:</strong>
-                                        <a href="{{ $content->video_url }}" target="_blank" class="btn btn-sm btn-primary ms-2">
-                                            <i class="fas fa-external-link-alt"></i> {{ __('messages.view_current_video') }}
-                                        </a>
+                                        @if($content->video_type === 'youtube')
+                                            <a href="{{ $content->video_url }}" target="_blank" class="btn btn-sm btn-primary ms-2">
+                                                <i class="fas fa-external-link-alt"></i> {{ __('messages.view_current_video') }}
+                                            </a>
+                                        @else
+                                            <span class="badge bg-success">{{ __('messages.bunny_video_uploaded') }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             @endif
@@ -317,6 +324,7 @@
                                     @enderror
                                 </div>
                             </div>
+                            
                             @if($content->content_type != 'video' && $content->file_path)
                                 <div class="col-12">
                                     <div class="alert alert-info">
@@ -355,7 +363,6 @@ function toggleContentFields() {
     const videoUrl    = document.getElementById('video_url_field');
     const pdfFields   = document.getElementById('pdf-fields');
 
-
     // Hide all fields
     videoFields.style.display = 'none';
     videoUpload.style.display = 'none';
@@ -373,13 +380,139 @@ function toggleContentFields() {
     } else if (contentType === 'pdf') {
         pdfFields.style.display = 'block';
     }
-
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     toggleContentFields();
 });
-
 </script>
+
+<!-- Bunny Upload Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const videoInput = document.getElementById('upload_video');
+    const videoTypeInput = document.getElementById('video_type');
+    const videoUrlInput = document.getElementById('video_url');
+    const bunnyVideoPathInput = document.getElementById('bunny_video_path');
+    const videoDurationInput = document.getElementById('video_duration');
+
+    // Create loading indicator
+    const loadingDiv = document.createElement('div');
+    loadingDiv.id = 'upload-loading';
+    loadingDiv.style.position = 'fixed';
+    loadingDiv.style.top = '0';
+    loadingDiv.style.left = '0';
+    loadingDiv.style.width = '100%';
+    loadingDiv.style.height = '100%';
+    loadingDiv.style.background = 'rgba(0,0,0,0.7)';
+    loadingDiv.style.color = 'white';
+    loadingDiv.style.fontSize = '1.5rem';
+    loadingDiv.style.display = 'none';
+    loadingDiv.style.justifyContent = 'center';
+    loadingDiv.style.alignItems = 'center';
+    loadingDiv.style.zIndex = '9999';
+    loadingDiv.style.flexDirection = 'column';
+    loadingDiv.innerHTML = `
+        <div style="text-align: center;">
+            <i class="fas fa-spinner fa-spin fa-3x mb-3"></i>
+            <p>Uploading video... Please wait</p>
+            <small>Do not close this window</small>
+        </div>
+    `;
+    document.body.appendChild(loadingDiv);
+
+    async function uploadToBunny(file, courseId) {
+        const res = await fetch('/api/bunny/sign-upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                course_id: courseId
+            })
+        });
+
+        const data = await res.json();
+
+        if (!data.upload_url || !data.file_path) {
+            throw new Error('Failed to get upload URL from server');
+        }
+
+        const uploadRes = await fetch(data.upload_url, {
+            method: 'PUT',
+            headers: {
+                'AccessKey': data.access_key,
+                'Content-Type': file.type
+            },
+            body: file
+        });
+
+        if (!uploadRes.ok) {
+            throw new Error('Video upload failed at Bunny CDN');
+        }
+
+        return data.file_path;
+    }
+
+    form.addEventListener('submit', async function(e) {
+        const contentType = document.getElementById('content_type').value;
+        const videoType = videoTypeInput.value;
+
+        // Only intercept if:
+        // 1. It's a video content type
+        // 2. Video type is bunny
+        // 3. A new video file is being uploaded
+        if (contentType === 'video' && videoType === 'bunny' && videoInput.files.length > 0) {
+            e.preventDefault();
+
+            const file = videoInput.files[0];
+            loadingDiv.style.display = 'flex';
+
+            try {
+                // Upload video to Bunny CDN
+                const path = await uploadToBunny(file, {{ $course->id }});
+
+                // Set the hidden field with Bunny path
+                bunnyVideoPathInput.value = path;
+                
+                // Clear the video_url field (it's for YouTube only)
+                videoUrlInput.value = '';
+
+                // Calculate duration if not provided
+                if (!videoDurationInput.value) {
+                    const video = document.createElement('video');
+                    video.preload = 'metadata';
+                    video.src = URL.createObjectURL(file);
+                    video.onloadedmetadata = function() {
+                        window.URL.revokeObjectURL(video.src);
+                        videoDurationInput.value = Math.floor(video.duration);
+                        
+                        // Clear file input
+                        videoInput.value = '';
+                        
+                        // Submit form
+                        form.submit();
+                    };
+                    return;
+                }
+
+                // Clear file input
+                videoInput.value = '';
+                
+                // Submit form
+                form.submit();
+
+            } catch (err) {
+                alert('Video upload failed: ' + err.message + '. Please try again.');
+                console.error(err);
+                loadingDiv.style.display = 'none';
+            }
+        }
+    });
+});
+</script>
+
 @endsection
