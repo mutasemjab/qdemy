@@ -103,71 +103,71 @@ class CourseController extends Controller
     }
 
    public function course(Course $course, $slug = null)
-{
-    $user = auth_student();
-    $contents = $course->contents;
-    $mainSections = $course->sections?->where('parent_id', null);
-    $freeContents = $contents?->where('is_free', 1)->first();
-    $user_courses = session()->get('courses', []);
-    $user_enrollment_courses = CourseRepository()->getUserCoursesIds($user?->id);
-    $is_enrolled = in_array($course->id, $user_enrollment_courses) ? 1 : 0;
+    {
+        $user = auth_student();
+        $contents = $course->contents;
+        $mainSections = $course->sections?->where('parent_id', null);
+        $freeContents = $contents?->where('is_free', 1)->first();
+        $user_courses = session()->get('courses', []);
+        $user_enrollment_courses = CourseRepository()->getUserCoursesIds($user?->id);
+        $is_enrolled = in_array($course->id, $user_enrollment_courses) ? 1 : 0;
 
-    // Prepare locked content information for sequential courses
-    $lockedContents = [];
-    if($is_enrolled && $user && $course->is_sequential) {
-        $lockedContents = $this->getLockedContentsInfo($course, $user->id);
-    }
+        // Prepare locked content information for sequential courses
+        $lockedContents = [];
+        if($is_enrolled && $user && $course->is_sequential) {
+            $lockedContents = $this->getLockedContentsInfo($course, $user->id);
+        }
 
-    if($is_enrolled && $user){
-        $exams = $course->exams;
-        $calculateCourseProgress = $course->calculateCourseProgress($user->id);
-    }
+        if($is_enrolled && $user){
+            $exams = $course->exams;
+            $calculateCourseProgress = $course->calculateCourseProgress($user->id);
+        }
 
-    // LOGS للتحقق من البيانات
-    \Log::info('Course Debug Info', [
-        'course_id' => $course->id,
-        'user_id' => $user?->id,
-        'is_enrolled' => $is_enrolled,
-        'is_sequential' => $course->is_sequential,
-        'total_contents' => $contents->count(),
-        'free_contents_count' => $contents->where('is_free', 1)->count(),
-        'locked_contents' => $lockedContents,
-    ]);
+        // LOGS للتحقق من البيانات
+        \Log::info('Course Debug Info', [
+            'course_id' => $course->id,
+            'user_id' => $user?->id,
+            'is_enrolled' => $is_enrolled,
+            'is_sequential' => $course->is_sequential,
+            'total_contents' => $contents->count(),
+            'free_contents_count' => $contents->where('is_free', 1)->count(),
+            'locked_contents' => $lockedContents,
+        ]);
 
-    // Log each content's details
-    foreach($contents as $content) {
-        \Log::info('Content Details', [
-            'content_id' => $content->id,
-            'title' => $content->title,
-            'is_free' => $content->is_free,
-            'is_free_type' => gettype($content->is_free),
-            'is_free_strict' => $content->is_free === 1,
-            'is_free_loose' => $content->is_free == 1,
-            'has_video' => !empty($content->video_url),
-            'has_file' => !empty($content->file_path),
+        // Log each content's details
+        foreach($contents as $content) {
+            \Log::info('Content Details', [
+                'content_id' => $content->id,
+                'title' => $content->title,
+                'is_free' => $content->is_free,
+                'is_free_type' => gettype($content->is_free),
+                'is_free_strict' => $content->is_free === 1,
+                'is_free_loose' => $content->is_free == 1,
+                'has_video' => !empty($content->video_url),
+                'has_file' => !empty($content->file_path),
+            ]);
+        }
+
+        return view('web.course', [
+            'user'         => $user,
+            'course'       => $course,
+            'exams'        => $exams ?? null,
+            'mainSections' => $mainSections,
+            'contents'     => $contents,
+            'freeContents' => $freeContents,
+            'user_courses' => $user_courses,
+            'user_enrollment_courses' => $user_enrollment_courses,
+            'is_enrolled'  => $is_enrolled,
+            'lockedContents' => $lockedContents,
+
+            'course_progress'     => $calculateCourseProgress['total_progress'] ?? 0,
+            'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,
+            'watching_videos'     => $calculateCourseProgress['watching_videos'] ?? 0,
+            'total_videos'        => $calculateCourseProgress['total_videos'] ?? 0,
+            'completed_exams'     => $calculateCourseProgress['completed_exams'] ?? 0,
+            'total_exams'         => $calculateCourseProgress['total_exams'] ?? 0,
         ]);
     }
-
-    return view('web.course', [
-        'user'         => $user,
-        'course'       => $course,
-        'exams'        => $exams ?? null,
-        'mainSections' => $mainSections,
-        'contents'     => $contents,
-        'freeContents' => $freeContents,
-        'user_courses' => $user_courses,
-        'user_enrollment_courses' => $user_enrollment_courses,
-        'is_enrolled'  => $is_enrolled,
-        'lockedContents' => $lockedContents,
-
-        'course_progress'     => $calculateCourseProgress['total_progress'] ?? 0,
-        'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,
-        'watching_videos'     => $calculateCourseProgress['watching_videos'] ?? 0,
-        'total_videos'        => $calculateCourseProgress['total_videos'] ?? 0,
-        'completed_exams'     => $calculateCourseProgress['completed_exams'] ?? 0,
-        'total_exams'         => $calculateCourseProgress['total_exams'] ?? 0,
-    ]);
-}
 
     /**
      * Get information about locked contents in a sequential course
