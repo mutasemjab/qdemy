@@ -314,14 +314,13 @@ Route::group(['prefix' => 'v1/parent'], function () {
 Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exam.index');
 Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam');
 
-// middleware(['auth:user-api'])->
-Route::prefix('v1/exam')->name(API_ROUTE_PREFIX)->group(function () {
-
-    Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
-
-    Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
-
-    Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
-
-    Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
-});
+// Add 'web' middleware here for webview support
+Route::prefix('v1/exam')
+    ->middleware(['web', 'auth:user-api']) // Add 'web' middleware
+    ->name(API_ROUTE_PREFIX)
+    ->group(function () {
+        Route::post('/{exam}/{slug?}/start', [ExamController::class, 'start_exam'])->name('start.exam');
+        Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
+        Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
+        Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
+    });
