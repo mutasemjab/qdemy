@@ -32,8 +32,8 @@ class ExamController extends Controller
 
     public function __construct(Request $request)
     {
-        // Check if request is API
-        if ($request->expectsJson() || $request->is('api/*')) {
+        // Check if request is API - check for UserId header as indicator
+        if ($request->expectsJson() || $request->is('api/*') || $request->hasHeader('UserId')) {
             $this->isApi          = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
 
@@ -52,7 +52,9 @@ class ExamController extends Controller
                     \Log::info('User authenticated in API:', [
                         'user_id' => auth('user')->id(),
                         'is_authenticated' => auth('user')->check(),
-                        'role' => auth('user')->user()?->role_name
+                        'role' => auth('user')->user()?->role_name,
+                        'isApi' => $this->isApi,
+                        'apiRoutePrefix' => $this->apiRoutePrefix
                     ]);
                 } else {
                     \Log::error('User not found or not a student:', ['userId' => $userId]);
@@ -294,7 +296,7 @@ class ExamController extends Controller
             'status' => 'in_progress'
         ]);
 
-       $routeName = $this->apiRoutePrefix . 'exam.take';
+        $routeName = $this->apiRoutePrefix . 'exam.take';
         \Log::info('Attempting to redirect:', [
             'route_name' => $routeName,
             'route_exists' => \Route::has($routeName),
