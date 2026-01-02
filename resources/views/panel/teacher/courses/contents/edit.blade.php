@@ -289,7 +289,6 @@
 }
 </style>
 @endsection
-
 @section('scripts')
 <script>
 function toggleContentFields(){
@@ -313,6 +312,7 @@ function toggleContentFields(){
     if(pdfFields) pdfFields.style.display='block';
   }
 }
+
 document.addEventListener('DOMContentLoaded',function(){
   var ct=document.getElementById('content_type');
   var vt=document.getElementById('video_type');
@@ -320,9 +320,12 @@ document.addEventListener('DOMContentLoaded',function(){
   var pdfInput=document.getElementById('file_path');
   var submitBtn=document.getElementById('submitBtn');
   var form=document.getElementById('contentForm');
+  
   toggleContentFields();
+  
   if(ct){ ct.addEventListener('change',toggleContentFields); }
   if(vt){ vt.addEventListener('change',toggleContentFields); }
+  
   if(uploadVideo){
     uploadVideo.addEventListener('change',function(e){
       var f=e.target.files&&e.target.files[0];
@@ -332,6 +335,7 @@ document.addEventListener('DOMContentLoaded',function(){
       if(v&&prev){ v.src=URL.createObjectURL(f); prev.style.display='block'; }
     });
   }
+  
   if(pdfInput){
     pdfInput.addEventListener('change',function(e){
       var f=e.target.files&&e.target.files[0];
@@ -345,8 +349,101 @@ document.addEventListener('DOMContentLoaded',function(){
       prev.style.display='block';
     });
   }
+
+  // ✅ BUNNY UPLOAD HANDLER FOR EDIT
+  var loadingDiv = document.createElement('div');
+  loadingDiv.id = 'upload-loading';
+  loadingDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);color:#fff;font-size:1.5rem;display:none;justify-content:center;align-items:center;z-index:9999;flex-direction:column';
+  loadingDiv.innerHTML = '<div style="text-align:center"><i class="fas fa-spinner fa-spin fa-3x" style="margin-bottom:16px"></i><p>{{ __("panel.uploading_video") }}</p><small>{{ __("panel.please_wait") }}</small></div>';
+  document.body.appendChild(loadingDiv);
+
+  async function uploadToBunny(file, courseId) {
+    const res = await fetch('/api/bunny/sign-upload', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      body: JSON.stringify({ course_id: courseId })
+    });
+
+    const data = await res.json();
+    if (!data.upload_url || !data.file_path) {
+      throw new Error('Failed to get upload URL from server');
+    }
+
+    const uploadRes = await fetch(data.upload_url, {
+      method: 'PUT',
+      headers: {
+        'AccessKey': data.access_key,
+        'Content-Type': file.type
+      },
+      body: file
+    });
+
+    if (!uploadRes.ok) {
+      throw new Error('Video upload failed at Bunny CDN');
+    }
+
+    return data.file_path;
+  }
+
   if(form){
-    form.addEventListener('submit',function(){
+    form.addEventListener('submit', async function(e){
+      var contentType = document.getElementById('content_type').value;
+      var videoType = vt ? vt.value : '';
+      
+      // ✅ Check if it's a Bunny video upload (new file uploaded)
+      if (contentType === 'video' && videoType === 'bunny' && uploadVideo && uploadVideo.files.length > 0) {
+        e.preventDefault();
+        
+        var file = uploadVideo.files[0];
+        loadingDiv.style.display = 'flex';
+
+        try {
+          // Upload to Bunny
+          var path = await uploadToBunny(file, {{ $course->id }});
+
+          // Create hidden input for bunny_video_path
+          var hiddenInput = document.createElement('input');
+          hiddenInput.type = 'hidden';
+          hiddenInput.name = 'bunny_video_path';
+          hiddenInput.value = path;
+          form.appendChild(hiddenInput);
+
+          // Clear the video_url field if it exists (for YouTube)
+          var videoUrlInput = document.getElementById('video_url');
+          if (videoUrlInput) {
+            videoUrlInput.value = '';
+          }
+
+          // Calculate duration if not provided
+          var durationInput = document.getElementById('video_duration');
+          if (!durationInput.value) {
+            var video = document.createElement('video');
+            video.preload = 'metadata';
+            video.src = URL.createObjectURL(file);
+            video.onloadedmetadata = function() {
+              window.URL.revokeObjectURL(video.src);
+              durationInput.value = Math.floor(video.duration);
+              uploadVideo.value = '';
+              form.submit();
+            };
+            return;
+          }
+
+          uploadVideo.value = '';
+          form.submit();
+
+        } catch (err) {
+          alert('{{ __("panel.video_upload_failed") }}: ' + err.message);
+          console.error(err);
+          loadingDiv.style.display = 'none';
+        }
+        return;
+      }
+
+      // ✅ Normal form submission (no new video or other content types)
       if(!submitBtn) return;
       submitBtn.disabled=true;
       submitBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> {{ __("panel.updating") }}...';
