@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class CourseContent extends Model
 {
     use HasFactory;
-    CONST BUNNY_PATH = 'courses_contents';
+    const BUNNY_PATH = 'courses_contents';
 
     protected $guarded = [];
 
-     protected $casts = [
+    protected $casts = [
         'is_free' => 'integer',
         'is_main_video' => 'integer',
         'order' => 'integer',
@@ -44,68 +44,125 @@ class CourseContent extends Model
     }
 
     /**
-     * Get file URL
+     * Get file URL with token authentication
      */
     public function getFileUrlAttribute()
     {
-        return  $this->attributes['file_path'] ? env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['file_path'] : null;
+        if (!$this->attributes['file_path']) {
+            return null;
+        }
+
+        $url = env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['file_path'];
+        
+        // Add token authentication if security key is configured
+        if (env('BUNNY_TOKEN_KEY')) {
+            return $this->generateSignedUrl($url);
+        }
+
+        return $url;
     }
+
     public function getFilePathAttribute()
     {
-        return  $this->attributes['file_path'] ? env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['file_path'] : null;
+        return $this->attributes['file_path'] ? env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['file_path'] : null;
     }
 
     /**
-     * Get video URL in bunny if video_type == 'bunny'
-    */
+     * Get video URL in bunny if video_type == 'bunny' with token authentication
+     */
     public function getVideoUrlAttribute()
     {
-        return  $this->attributes['video_type'] == 'bunny' ? env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['video_url'] : $this->attributes['video_url'];
+        if ($this->attributes['video_type'] == 'bunny') {
+            $url = env('BUNNY_PREVIEW_DOMAIN') . $this->attributes['video_url'];
+            
+            // Add token authentication if security key is configured
+            if (env('BUNNY_TOKEN_KEY')) {
+                return $this->generateSignedUrl($url);
+            }
+            
+            return $url;
+        }
+        
+        return $this->attributes['video_url'];
+    }
+
+    /**
+     * Generate signed URL for Bunny CDN token authentication
+     * 
+     * @param string $url The full URL to sign
+     * @param int $expirationTime Expiration time in seconds (default: 1 hour)
+     * @return string Signed URL with token
+     */
+    private function generateSignedUrl($url, $expirationTime = 3600)
+    {
+        $securityKey = env('BUNNY_TOKEN_KEY');
+        
+        if (!$securityKey) {
+            return $url;
+        }
+
+        $expires = time() + $expirationTime;
+        $parsedUrl = parse_url($url);
+        $path = $parsedUrl['path'] ?? '';
+        
+        // Create the signature base
+        $hashableBase = $securityKey . $path . $expires;
+        
+        // Generate token
+        $token = base64_encode(md5($hashableBase, true));
+        $token = strtr($token, '+/', '-_');
+        $token = str_replace('=', '', $token);
+        
+        // Append token and expiration to URL
+        $separator = strpos($url, '?') === false ? '?' : '&';
+        return $url . $separator . 'token=' . $token . '&expires=' . $expires;
     }
 
     public function content_user_progress()
     {
-        return $this->hasOne(ContentUserProgress::class)->where('user_id',auth_student()?->id);
+        return $this->hasOne(ContentUserProgress::class)->where('user_id', auth_student()?->id);
     }
+
     public function getIsCompletedAttribute()
     {
-        return  $this->content_user_progress?->completed;
+        return $this->content_user_progress?->completed;
     }
+
     public function getWatchedTimeAttribute()
     {
-        return  $this->content_user_progress?->watch_time;
+        return $this->content_user_progress?->watch_time;
     }
 
     public function getLastWatchedTimeAttribute()
     {
         $video_duration = $this->video_duration;
-        $watch_time     = $this->content_user_progress?->watch_time;
+        $watch_time = $this->content_user_progress?->watch_time;
 
-        if($watch_time && $video_duration && $watch_time > $video_duration) return ($watch_time % $video_duration) / $video_duration;
+        if ($watch_time && $video_duration && $watch_time > $video_duration) {
+            return ($watch_time % $video_duration) / $video_duration;
+        }
         return $watch_time;
     }
 
-
     /**
-     * Get original video URL
-    */
+     * Get original video URL (without token)
+     */
     public function getOriginalVideoUrlAttribute()
     {
-        return  $this->attributes['video_url'];
+        return $this->attributes['video_url'];
     }
 
-
     /**
-     * Get original file path
-    */
+     * Get original file path (without domain)
+     */
     public function getOriginalFilePathAttribute()
     {
-        return  $this->attributes['file_path'];
+        return $this->attributes['file_path'];
     }
 
     /**
      * Get formatted duration
-    */
+     */
     public function getFormattedDurationAttribute()
     {
         if (!$this->video_duration) {
@@ -117,7 +174,7 @@ class CourseContent extends Model
 
     /**
      * Check if content is video
-    */
+     */
     public function isVideo()
     {
         return $this->content_type === 'video';
@@ -146,7 +203,4 @@ class CourseContent extends Model
     {
         return $this->content_type === 'assignment';
     }
-
-
-
 }
