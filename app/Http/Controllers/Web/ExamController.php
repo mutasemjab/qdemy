@@ -24,6 +24,14 @@ class ExamController extends Controller
     public $isApi          = false;
     public $apiRoutePrefix = '';
 
+    protected function checkIfApi()
+    {
+        if (request()->hasHeader('UserId') || request()->expectsJson() || request()->is('api/*')) {
+            $this->isApi = true;
+            $this->apiRoutePrefix = API_ROUTE_PREFIX;
+        }
+    }
+
     // ملحوظة هامة تخص تسليم وتصحيح الامتحان
     // يتم السماح بالتسليم سواء اجاب الطالب كل الاسئلة ام لا وعندها تصير submitted_at = now(),
     // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
@@ -175,6 +183,7 @@ class ExamController extends Controller
     {
         $user = auth_student();
 
+        $this->checkIfApi();
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
             return redirect()->route($this->apiRoutePrefix . 'exam.index')->with('error', 'الامتحان غير متاح حاليا');
