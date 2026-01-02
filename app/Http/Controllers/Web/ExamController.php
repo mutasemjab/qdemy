@@ -29,9 +29,11 @@ class ExamController extends Controller
         // Check if this is coming from mobile webview
         if (
             request()->hasHeader('UserId') ||
-            request()->hasHeader('X-Mobile-App') ||  // Add a custom header from your app
+            request()->hasHeader('X-Mobile-App') ||
             request()->expectsJson() ||
-            request()->is('api/*')
+            request()->is('api/*') ||
+            request()->has('_api') || // NEW: Check for API flag in query string
+            session('is_mobile_app')
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
@@ -467,17 +469,18 @@ class ExamController extends Controller
         }
         // Redirect to next question
         $next_page = $request->get('next_page', $request->get('page', 1) + 1);
-        // Use absolute URL to ensure we stay on API routes
         if ($this->isApi) {
-            $url = url("/api/v1/exam/{$exam->id}/{$exam->slug}?page={$next_page}");
-            return redirect($url)->with($error ?? '', $message_status ?? '');
+            // Force API URL with query parameter to maintain API mode
+            $redirectUrl = url("/api/v1/exam/{$exam->id}/{$exam->slug}") . "?page={$next_page}&_api=1";
         } else {
-            return redirect()->route($this->apiRoutePrefix . 'exam', [
+            $redirectUrl = route('exam', [
                 'exam' => $exam->id,
                 'slug' => $exam->slug,
                 'page' => $next_page
-            ])->with($error ?? '', $message_status ?? '');
+            ]);
         }
+
+        return redirect($redirectUrl)->with($error ?? '', $message_status ?? '');
     }
 
     // تسليم الامتحان
