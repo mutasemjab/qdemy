@@ -127,15 +127,40 @@
                         </p>
                     @else
                         {{-- Start Button --}}
+{{-- DEBUG: Check route generation --}}
+@php
+    $routeName = $apiRoutePrefix.'exam.start';
+    $routeExists = Route::has($routeName);
+    $generatedUrl = $routeExists ? route($routeName, ['exam' => $exam->id]) : 'ROUTE DOES NOT EXIST';
+    
+    Log::info('Form route debug:', [
+        'route_name' => $routeName,
+        'route_exists' => $routeExists,
+        'generated_url' => $generatedUrl,
+        'exam_id' => $exam->id,
+        'isApi' => $isApi,
+        'apiRoutePrefix' => $apiRoutePrefix
+    ]);
+@endphp
+
+<p style="background: yellow; padding: 10px;">
+    DEBUG INFO:<br>
+    Route Name: {{ $routeName }}<br>
+    Route Exists: {{ $routeExists ? 'YES' : 'NO' }}<br>
+    Generated URL: {{ $generatedUrl }}<br>
+    Is API: {{ $isApi ? 'YES' : 'NO' }}
+</p>
+
+{{-- Start Button --}}
 <form method="POST" action="{{ route($apiRoutePrefix.'exam.start', ['exam' => $exam->id]) }}">
-                              @if(!$isApi)
+    @if(!$isApi)
         @csrf
     @endif
-                            <button type="submit" class="btn btn-success btn-large">
-                                <i class="fas fa-play-circle"></i>
-                                {{ __('front.start_exam') }}
-                            </button>
-                        </form>
+    <button type="submit" class="btn btn-success btn-large">
+        <i class="fas fa-play-circle"></i>
+        {{ __('front.start_exam') }}
+    </button>
+</form>
                     @endif
 
                     {{-- Info Card --}}
