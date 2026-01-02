@@ -60,7 +60,9 @@ class ExamController extends Controller
             if ($user) {
                 auth('user')->login($user);
 
-                // DEBUG: Log to verify authentication worked
+                // ✅ Set session flag for subsequent requests
+                session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
+
                 \Log::info('User authenticated in API:', [
                     'user_id' => auth('user')->id(),
                     'is_authenticated' => auth('user')->check(),
@@ -70,6 +72,20 @@ class ExamController extends Controller
                 ]);
             } else {
                 \Log::error('User not found or not a student:', ['userId' => $userId]);
+            }
+        }
+
+        // ✅ Check session flag - this will persist across redirects
+        if (session('is_mobile_app')) {
+            $this->isApi = true;
+            $this->apiRoutePrefix = API_ROUTE_PREFIX;
+
+            // Re-authenticate user from session if not already authenticated
+            if (!auth('user')->check() && session('mobile_user_id')) {
+                $user = \App\Models\User::find(session('mobile_user_id'));
+                if ($user) {
+                    auth('user')->login($user);
+                }
             }
         }
 
