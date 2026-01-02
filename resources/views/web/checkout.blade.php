@@ -20,7 +20,7 @@
           <div data-aos="fade" data-aos-duration="1000" data-aos-delay="200" class="cart-item @if(!$canPurchase) disabled-row @endif" id="cart_row_{{ $course->id }}">
               
             <a class="course-col" href="{{ route('course',['course'=>$course->id,'slug'=>$course->slug]) }}">
-              <div class="thumb"><img src="{{ asset('assets_front/images/course-img2.png') }}" alt=""></div>
+              <div class="thumb"><img src="{{ asset('assets/admin/uploads/'.$course->photo) }}" alt=""></div>
               <div class="info">
                 <h3>{{ $course->subject?->localized_name }}</h3>
                 <p>{{ $course->title }}</p>
