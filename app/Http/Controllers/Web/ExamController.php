@@ -260,6 +260,7 @@ class ExamController extends Controller
 
     public function start_exam(Exam $exam)
     {
+        $this->checkIfApi();
         $user = auth_student();
 
         // DEBUG: Check what auth_student returns
@@ -322,6 +323,7 @@ class ExamController extends Controller
     // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
+        $this->checkIfApi();
         $user = auth_student();
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
@@ -443,6 +445,7 @@ class ExamController extends Controller
     // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
     public function submit_exam(ExamAttempt $attempt)
     {
+        $this->checkIfApi(); 
         if ($attempt->status !== 'in_progress') {
             return abort(403, 'unavailable exam');
         }
@@ -523,6 +526,7 @@ class ExamController extends Controller
     // بعد التصحيح الالكتروني للاسئله غير المجابة وجعل نتيجتها is_correct = false
     public function auto_submit_exam(ExamAttempt $attempt)
     {
+        $this->checkIfApi(); 
         // Mark unanswered questions as incorrect
         $exam = $attempt->exam;
         $question_order = $attempt->question_order;
@@ -546,6 +550,7 @@ class ExamController extends Controller
     // تسليم الامتحان
     public function finish_exam(Request $request, Exam $exam)
     {
+        $this->checkIfApi(); 
         $user = auth_student();
 
         $current_attempt = ExamAttempt::where('user_id', $user?->id)
@@ -569,6 +574,7 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
+        $this->checkIfApi(); 
         $user = auth_student();
 
         if (!$exam->is_available()) {
@@ -655,6 +661,7 @@ class ExamController extends Controller
      */
     public function result(Exam $exam, ExamAttempt $attempt)
     {
+        $this->checkIfApi(); 
         $user = auth_student();
 
         // Check if user owns this attempt
@@ -718,6 +725,7 @@ class ExamController extends Controller
      */
     public function history(Request $request)
     {
+        $this->checkIfApi(); 
         $user = auth_student();
 
         // Get all exam attempts for the user
@@ -749,6 +757,7 @@ class ExamController extends Controller
     // review attempts answers (قديم)
     public function review_attempt(Exam $exam, ExamAttempt $attempt)
     {
+        $this->checkIfApi(); 
         $user = auth_student();
 
         // // Check if user owns this attempt
