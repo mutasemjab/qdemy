@@ -37,9 +37,7 @@
                                     }
                                 @endphp
                                 <div class="playable" data-video="{{ $coverVideoSource }}"
-                                    data-is-completed="{{ $freeContents->is_completed }}"
                                     data-content-id="{{ $freeContents->id }}"
-                                    data-watched-time="{{ $freeContents->watched_time }}"
                                     data-duration="{{ $freeContents->video_duration }}"
                                     data-is-bunny="{{ filter_var($freeContents->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                     <img data-src="{{ $course->photo_url ?? asset('assets_front/images/ourse-cover-2.webp') }}"
@@ -68,20 +66,6 @@
                                 <button class="crs2-side-btn-enrolled" disabled>
                                     {{ translate_lang('enrolled') }}
                                 </button>
-
-                                <!-- Progress Display -->
-                                <div class="crs2-progress-info">
-                                    <div class="crs2-progress-bar-container">
-                                        <div class="crs2-progress-bar" style="width: {{ $course_progress }}%"></div>
-                                        <span class="crs2-progress-text">{{ round($course_progress) }}%
-                                            {{ translate_lang('completed') }}</span>
-                                    </div>
-                                    <div class="crs2-progress-stats">
-                                        <span>{{ translate_lang('completed') }}: {{ $completed_videos }}</span>
-                                        <span>{{ translate_lang('watching') }}: {{ $watching_videos }}</span>
-                                        <span>{{ translate_lang('total_videos') }}: {{ $total_videos }}</span>
-                                    </div>
-                                </div>
                             @elseif(is_array($user_courses) && in_array($course->id, $user_courses))
                                 <a href="{{ route('checkout') }}" class="crs2-side-btn-primary">
                                     {{ translate_lang('go_to_checkout') }}
@@ -174,59 +158,27 @@
                                         @if ($sectionContents && $sectionContents->count())
                                             @foreach ($sectionContents as $content)
                                                 @php
-                                                    $progressPercent =
-                                                        $content->video_duration > 0
-                                                            ? min(
-                                                                100,
-                                                                ($content->watched_time / $content->video_duration) *
-                                                                    100,
-                                                            )
-                                                            : 0;
-
-                                                    // Check if video_url is actually a Bunny CDN path stored in video_url field
                                                     $videoSource = $content->video_url;
-                                                    if (
-                                                        !filter_var($videoSource, FILTER_VALIDATE_URL) &&
-                                                        !empty($videoSource)
-                                                    ) {
-                                                        // It's a file path, construct the full URL
-                                                 $videoSource = asset('assets/admin/uploads/' . $videoSource);
+                                                    if (!filter_var($videoSource, FILTER_VALIDATE_URL) && !empty($videoSource)) {
+                                                        $videoSource = asset('assets/admin/uploads/' . $videoSource);
                                                     }
                                                 @endphp
 
                                                 {{-- Video Content --}}
 @if ($content->video_url)
-    @php
-        $progressPercent = $content->video_duration > 0
-            ? min(100, ($content->watched_time / $content->video_duration) * 100)
-            : 0;
-
-        $videoSource = $content->video_url;
-        if (!filter_var($videoSource, FILTER_VALIDATE_URL) && !empty($videoSource)) {
-            $videoSource = asset('assets/admin/uploads/' . $videoSource);
-        }
-    @endphp
 
     @if ($content->is_free == 1 || ($is_enrolled && !isset($lockedContents[$content->id])))
         {{-- Free Video OR Enrolled & Unlocked - Always Accessible --}}
         <div class="crs2-resource crs2-resource--video">
             <div class="crs2-resource-main lesson-video"
                 data-video="{{ $videoSource }}"
-                data-is-completed="{{ $is_enrolled ? $content->is_completed : 0 }}"
                 data-content-id="{{ $content->id }}"
-                data-watched-time="{{ $is_enrolled ? $content->watched_time : 0 }}"
                 data-duration="{{ $content->video_duration }}"
                 data-is-bunny="{{ filter_var($content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
                 <span class="crs2-resource-title">{{ $content->title }}</span>
-
-                @if ($is_enrolled && $content->is_completed)
-                    <span class="completion-badge">✓</span>
-                @elseif($is_enrolled && $content->watched_time > 0)
-                    <span class="progress-badge">{{ round($progressPercent) }}%</span>
-                @endif
 
                 @if ($content->is_free == 1)
                     <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
@@ -237,12 +189,6 @@
                     {{ translate_lang('watch') }}
                 </a>
             </div>
-
-            @if ($is_enrolled && $content->content_type === 'video')
-                <div class="crs2-video-progress-bar">
-                    <div class="crs2-progress-fill" style="width: {{ $progressPercent }}%"></div>
-                </div>
-            @endif
         </div>
     @elseif($is_enrolled && isset($lockedContents[$content->id]) && $lockedContents[$content->id]['is_locked'])
         {{-- Enrolled but LOCKED Content --}}
@@ -396,27 +342,9 @@
                                                         @if ($subSectionContents && $subSectionContents->count())
                                                             @foreach ($subSectionContents as $subContent)
                                                                 @php
-                                                                    $subProgressPercent =
-                                                                        $subContent->video_duration > 0
-                                                                            ? min(
-                                                                                100,
-                                                                                ($subContent->watched_time /
-                                                                                    $subContent->video_duration) *
-                                                                                    100,
-                                                                            )
-                                                                            : 0;
-
                                                                     $subVideoSource = $subContent->video_url;
-                                                                    if (
-                                                                        !filter_var(
-                                                                            $subVideoSource,
-                                                                            FILTER_VALIDATE_URL,
-                                                                        ) &&
-                                                                        !empty($subVideoSource)
-                                                                    ) {
-                                                                        $subVideoSource = asset(
-                                                                            'assets/admin/uploads/' . $subVideoSource,
-                                                                        );
+                                                                    if (!filter_var($subVideoSource, FILTER_VALIDATE_URL) && !empty($subVideoSource)) {
+                                                                        $subVideoSource = asset('assets/admin/uploads/' . $subVideoSource);
                                                                     }
                                                                 @endphp
 {{-- Video Content in Sub Sections --}}
@@ -426,21 +354,13 @@
         <div class="crs2-resource crs2-resource--video">
             <div class="crs2-resource-main lesson-video"
                 data-video="{{ $subVideoSource }}"
-                data-is-completed="{{ $is_enrolled ? $subContent->is_completed : 0 }}"
                 data-content-id="{{ $subContent->id }}"
-                data-watched-time="{{ $is_enrolled ? $subContent->watched_time : 0 }}"
                 data-duration="{{ $subContent->video_duration }}"
                 data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
                 <span class="crs2-resource-title">{{ $subContent->title }}</span>
-
-                @if ($is_enrolled && $subContent->is_completed)
-                    <span class="completion-badge">✓</span>
-                @elseif($is_enrolled && $subContent->watched_time > 0)
-                    <span class="progress-badge">{{ round($subProgressPercent) }}%</span>
-                @endif
 
                 @if ($subContent->is_free == 1)
                     <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
@@ -451,12 +371,6 @@
                     {{ translate_lang('watch') }}
                 </a>
             </div>
-
-            @if ($is_enrolled && $subContent->content_type === 'video')
-                <div class="crs2-video-progress-bar">
-                    <div class="crs2-progress-fill" style="width: {{ $subProgressPercent }}%"></div>
-                </div>
-            @endif
         </div>
     @elseif($is_enrolled && isset($lockedContents[$subContent->id]) && $lockedContents[$subContent->id]['is_locked'])
         {{-- Enrolled but LOCKED --}}
@@ -613,10 +527,6 @@
         <div class="crs2-section-body">
             @foreach ($unassignedContents as $_content)
                 @php
-                    $unProgressPercent = $_content->video_duration > 0
-                        ? min(100, ($_content->watched_time / $_content->video_duration) * 100)
-                        : 0;
-                    
                     $unVideoSource = $_content->video_url;
                     if (!filter_var($unVideoSource, FILTER_VALIDATE_URL) && !empty($unVideoSource)) {
                         $unVideoSource = asset('assets/admin/uploads/' . $unVideoSource);
@@ -630,21 +540,13 @@
                         <div class="crs2-resource crs2-resource--video">
                             <div class="crs2-resource-main lesson-video"
                                 data-video="{{ $unVideoSource }}"
-                                data-is-completed="{{ $is_enrolled ? $_content->is_completed : 0 }}"
                                 data-content-id="{{ $_content->id }}"
-                                data-watched-time="{{ $is_enrolled ? $_content->watched_time : 0 }}"
                                 data-duration="{{ $_content->video_duration }}"
                                 data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                 <span class="crs2-resource-icon">
                                     <i class="fa fa-play-circle"></i>
                                 </span>
                                 <span class="crs2-resource-title">{{ $_content->title }}</span>
-
-                                @if ($is_enrolled && $_content->is_completed)
-                                    <span class="completion-badge">✓</span>
-                                @elseif($is_enrolled && $_content->watched_time > 0)
-                                    <span class="progress-badge">{{ round($unProgressPercent) }}%</span>
-                                @endif
 
                                 <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
                             </div>
@@ -653,12 +555,6 @@
                                     {{ translate_lang('watch') }}
                                 </a>
                             </div>
-
-                            @if ($is_enrolled && $_content->content_type === 'video')
-                                <div class="crs2-video-progress-bar">
-                                    <div class="crs2-progress-fill" style="width: {{ $unProgressPercent }}%"></div>
-                                </div>
-                            @endif
                         </div>
                     @elseif($is_enrolled)
                         {{-- Enrolled User - Check if locked --}}
@@ -683,33 +579,19 @@
                             <div class="crs2-resource crs2-resource--video">
                                 <div class="crs2-resource-main lesson-video"
                                     data-video="{{ $unVideoSource }}"
-                                    data-is-completed="{{ $_content->is_completed }}"
                                     data-content-id="{{ $_content->id }}"
-                                    data-watched-time="{{ $_content->watched_time }}"
                                     data-duration="{{ $_content->video_duration }}"
                                     data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
                                     <span class="crs2-resource-icon">
                                         <i class="fa fa-play-circle"></i>
                                     </span>
                                     <span class="crs2-resource-title">{{ $_content->title }}</span>
-
-                                    @if ($_content->is_completed)
-                                        <span class="completion-badge">✓</span>
-                                    @elseif($_content->watched_time > 0)
-                                        <span class="progress-badge">{{ round($unProgressPercent) }}%</span>
-                                    @endif
                                 </div>
                                 <div class="crs2-resource-actions">
                                     <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">
                                         {{ translate_lang('watch') }}
                                     </a>
                                 </div>
-
-                                @if ($_content->content_type === 'video')
-                                    <div class="crs2-video-progress-bar">
-                                        <div class="crs2-progress-fill" style="width: {{ $unProgressPercent }}%"></div>
-                                    </div>
-                                @endif
                             </div>
                         @endif
                     @else
