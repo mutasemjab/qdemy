@@ -143,8 +143,7 @@ class ForgotPasswordController extends Controller
             // Validation rules
             $validator = Validator::make($request->all(), [
                 'phone' => 'required|string',
-                'otp' => 'required|string',
-                'password' => 'required|string|min:6|confirmed'
+                'password' => 'required|string|min:6'
             ]);
 
             if ($validator->fails()) {
@@ -165,22 +164,10 @@ class ForgotPasswordController extends Controller
                 return $this->error_response('Account is deactivated. Please contact support.', null);
             }
 
-            // Verify OTP one more time for security
-            $isTestOtp = $this->otpService->isTestOtp($request->phone, $request->otp);
-            $isValidOtp = $this->otpService->verifyOtp($request->phone, $request->otp);
-
-            if (!$isTestOtp && !$isValidOtp) {
-                // Check if OTP exists
-                if (!$this->otpService->otpExists($request->phone)) {
-                    return $this->error_response('OTP has expired. Please request a new one.', null);
-                }
-                return $this->error_response('Invalid OTP. Please verify OTP first.', null);
-            }
 
             // Update password
             $user->update([
                 'password' => Hash::make($request->password),
-                'ip_address' => $request->ip()
             ]);
 
             // Revoke all existing tokens for security
