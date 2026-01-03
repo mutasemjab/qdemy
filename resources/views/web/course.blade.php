@@ -1085,6 +1085,7 @@
 
                                     if (isBunny) {
                                         // Create HTML5 video player for Bunny
+                                        console.log('Creating Bunny video player with URL:', videoUrl);
                                         iframe.style.display = 'none';
                                         let existingVideo = videoContainer.querySelector('video');
                                         if (existingVideo) existingVideo.remove();
@@ -1101,6 +1102,16 @@
 
                                         video.appendChild(source);
                                         videoContainer.appendChild(video);
+                                        
+                                        // Log video events for debugging
+                                        video.addEventListener('loadeddata', function() {
+                                            console.log('Video loaded successfully');
+                                        });
+                                        video.addEventListener('error', function(e) {
+                                            console.error('Video error:', e);
+                                            console.error('Video URL that failed:', videoUrl);
+                                            console.error('Video error code:', video.error ? video.error.code : 'unknown');
+                                        });
                                     } else {
                                         // YouTube video
                                         iframe.style.display = 'block';
