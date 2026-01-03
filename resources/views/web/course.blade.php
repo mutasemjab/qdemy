@@ -1071,7 +1071,6 @@
                                 let videoUrl = element.getAttribute('data-video');
                                 let contentId = element.getAttribute('data-content-id');
                                 let isBunny = element.getAttribute('data-is-bunny') === '1';
-                                let duration = element.getAttribute('data-duration') || 0;
 
                                 console.log('Video clicked:', {
                                     videoUrl,
@@ -1079,21 +1078,10 @@
                                     isBunny
                                 }); // Debug log
 
-                                stopProgress = 0;
-                                if (!isEnrolled) {
-                                    stopProgress = 1;
-                                }
-
-                                lastWatchedTime = parseInt(element.getAttribute('data-watched-time')) || 0;
-
                                 if (videoUrl && contentId) {
-                                    currentVideoId = contentId;
-                                    currentVideoDuration = duration;
-                                    videoStartTime = Date.now();
-
                                     const popup = document.querySelector('.video-popup');
                                     const iframe = popup.querySelector('iframe');
-                                    const videoContainer = popup.querySelector('.video-popup-content');
+                  const videoContainer = popup.querySelector('.video-popup-content');
 
                                     if (isBunny) {
                                         // Create HTML5 video player for Bunny
@@ -1106,7 +1094,6 @@
                                         video.autoplay = true;
                                         video.style.width = '100%';
                                         video.style.height = '70vh';
-                                        video.currentTime = lastWatchedTime;
 
                                         const source = document.createElement('source');
                                         source.src = videoUrl;
@@ -1125,10 +1112,6 @@
                                     }
 
                                     popup.classList.add('active');
-
-                                    if (user) {
-                                        startProgressTracking();
-                                    }
                                 }
                             }
                         });
@@ -1146,8 +1129,6 @@
 
                                 if (iframe) iframe.src = '';
                                 if (video) video.remove();
-
-                                stopProgressProgressTracking();
                             });
                         }
 
@@ -1160,8 +1141,6 @@
 
                                     if (iframe) iframe.src = '';
                                     if (video) video.remove();
-
-                                    stopProgressProgressTracking();
                                 }
                             });
                         }
