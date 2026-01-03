@@ -28,18 +28,13 @@
                         <div class="crs2-side-cover">
                             @if ($freeContents?->video_url)
                                 @php
+                                    // video_url accessor handles Bunny CDN URLs automatically
                                     $coverVideoSource = $freeContents->video_url;
-                                    if (
-                                        !filter_var($coverVideoSource, FILTER_VALIDATE_URL) &&
-                                        !empty($coverVideoSource)
-                                    ) {
-                                        $coverVideoSource = asset('assets/admin/uploads/' . $coverVideoSource);
-                                    }
                                 @endphp
                                 <div class="playable" data-video="{{ $coverVideoSource }}"
                                     data-content-id="{{ $freeContents->id }}"
                                     data-duration="{{ $freeContents->video_duration }}"
-                                    data-is-bunny="{{ filter_var($freeContents->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                                    data-is-bunny="{{ $freeContents->video_type === 'bunny' ? 1 : 0 }}">
                                     <img data-src="{{ $course->photo_url ?? asset('assets_front/images/ourse-cover-2.webp') }}"
                                         alt="{{ $course->title }}">
                                     <span class="play-overlay"><i class="fas fa-play"></i></span>
@@ -158,10 +153,8 @@
                                         @if ($sectionContents && $sectionContents->count())
                                             @foreach ($sectionContents as $content)
                                                 @php
+                                                    // video_url accessor handles Bunny CDN URLs automatically
                                                     $videoSource = $content->video_url;
-                                                    if (!filter_var($videoSource, FILTER_VALIDATE_URL) && !empty($videoSource)) {
-                                                        $videoSource = asset('assets/admin/uploads/' . $videoSource);
-                                                    }
                                                 @endphp
 
                                                 {{-- Video Content --}}
@@ -174,7 +167,7 @@
                 data-video="{{ $videoSource }}"
                 data-content-id="{{ $content->id }}"
                 data-duration="{{ $content->video_duration }}"
-                data-is-bunny="{{ filter_var($content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                data-is-bunny="{{ $content->video_type === 'bunny' ? 1 : 0 }}">
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
@@ -342,10 +335,8 @@
                                                         @if ($subSectionContents && $subSectionContents->count())
                                                             @foreach ($subSectionContents as $subContent)
                                                                 @php
+                                                                    // video_url accessor handles Bunny CDN URLs automatically
                                                                     $subVideoSource = $subContent->video_url;
-                                                                    if (!filter_var($subVideoSource, FILTER_VALIDATE_URL) && !empty($subVideoSource)) {
-                                                                        $subVideoSource = asset('assets/admin/uploads/' . $subVideoSource);
-                                                                    }
                                                                 @endphp
 {{-- Video Content in Sub Sections --}}
 @if ($subContent->video_url)
@@ -356,7 +347,7 @@
                 data-video="{{ $subVideoSource }}"
                 data-content-id="{{ $subContent->id }}"
                 data-duration="{{ $subContent->video_duration }}"
-                data-is-bunny="{{ filter_var($subContent->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                data-is-bunny="{{ $subContent->video_type === 'bunny' ? 1 : 0 }}">
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
@@ -527,10 +518,8 @@
         <div class="crs2-section-body">
             @foreach ($unassignedContents as $_content)
                 @php
+                    // video_url accessor handles Bunny CDN URLs automatically
                     $unVideoSource = $_content->video_url;
-                    if (!filter_var($unVideoSource, FILTER_VALIDATE_URL) && !empty($unVideoSource)) {
-                        $unVideoSource = asset('assets/admin/uploads/' . $unVideoSource);
-                    }
                 @endphp
 
                 {{-- Video Content --}}
@@ -542,7 +531,7 @@
                                 data-video="{{ $unVideoSource }}"
                                 data-content-id="{{ $_content->id }}"
                                 data-duration="{{ $_content->video_duration }}"
-                                data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                                data-is-bunny="{{ $_content->video_type === 'bunny' ? 1 : 0 }}">
                                 <span class="crs2-resource-icon">
                                     <i class="fa fa-play-circle"></i>
                                 </span>
@@ -581,7 +570,7 @@
                                     data-video="{{ $unVideoSource }}"
                                     data-content-id="{{ $_content->id }}"
                                     data-duration="{{ $_content->video_duration }}"
-                                    data-is-bunny="{{ filter_var($_content->video_url, FILTER_VALIDATE_URL) ? 0 : 1 }}">
+                                    data-is-bunny="{{ $_content->video_type === 'bunny' ? 1 : 0 }}">
                                     <span class="crs2-resource-icon">
                                         <i class="fa fa-play-circle"></i>
                                     </span>
@@ -1075,8 +1064,16 @@
                                 console.log('Video clicked:', {
                                     videoUrl,
                                     contentId,
-                                    isBunny
+                                    isBunny,
+                                    videoUrlLength: videoUrl ? videoUrl.length : 0
                                 }); // Debug log
+                                
+                                // Validate videoUrl
+                                if (!videoUrl || videoUrl.trim() === '' || videoUrl === window.location.href) {
+                                    console.error('Invalid video URL:', videoUrl);
+                                    alert('Error: Video URL is missing or invalid. Please contact administrator.');
+                                    return;
+                                }
 
                                 if (videoUrl && contentId) {
                                     const popup = document.querySelector('.video-popup');
