@@ -304,12 +304,12 @@ class AuthController extends Controller
                 return $this->error_response('بيانات الاعتماد غير صحيحة', null);
             }
 
-            if ($user->ip_address != $request->ip_address) {
-                return $this->error_response(
-                    'تم رفض تسجيل الدخول من جهاز أو شبكة مختلفة',
-                    null
-                );
-            }
+            // if ($user->ip_address != $request->ip_address) {
+            //     return $this->error_response(
+            //         'تم رفض تسجيل الدخول من جهاز أو شبكة مختلفة',
+            //         null
+            //     );
+            // }
 
             // Check if account is activated
             if ($user->activate != 1) {
