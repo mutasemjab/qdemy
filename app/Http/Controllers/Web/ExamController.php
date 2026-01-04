@@ -39,6 +39,7 @@ class ExamController extends Controller
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
         }
     }
+
     // ملحوظة هامة تخص تسليم وتصحيح الامتحان
     // يتم السماح بالتسليم سواء اجاب الطالب كل الاسئلة ام لا وعندها تصير submitted_at = now(),
     // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
@@ -183,6 +184,8 @@ class ExamController extends Controller
             'subjects' => $subjects,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 
@@ -275,6 +278,8 @@ class ExamController extends Controller
             '_questions'      => $_questions,
             'isApi'           => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 
@@ -691,6 +696,8 @@ class ExamController extends Controller
             'remainingSeconds' => $remainingSeconds,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 
@@ -863,6 +870,8 @@ class ExamController extends Controller
             'allAttempts' => $allAttempts,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 
@@ -897,6 +906,8 @@ class ExamController extends Controller
             'overallPercentage' => $overallPercentage,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 
@@ -919,6 +930,8 @@ class ExamController extends Controller
             'answers' => $answers,
             'isApi'   => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => true,
+            'hideFooter' => true,
         ]);
     }
 }

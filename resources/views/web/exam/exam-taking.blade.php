@@ -2,6 +2,37 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Hide header and footer in mobile webview */
+    @media (max-width: 480px) {
+        /* Hide common header classes */
+        nav,
+        header,
+        .navbar,
+        .navbar-header,
+        .topbar,
+        .app-header,
+        [class*="header"],
+        /* Hide common footer classes */
+        footer,
+        .footer,
+        .app-footer,
+        [class*="footer"] {
+            display: none !important;
+        }
+
+        body {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .exam-taking-section {
+            padding: 0 !important;
+            min-height: 100vh !important;
+        }
+    }
+</style>
+
 <div class="exam-taking-section" style="display: block;">
     <!-- Exam Header -->
     <div class="exam-header-bar">
@@ -334,11 +365,13 @@
     display: grid;
     grid-template-columns: 1fr 300px;
     gap: 30px;
+    padding: 20px 20px 30px 20px;
 }
 
 .nav-buttons {
     display: flex;
     gap: 10px;
+    padding: 0 10px;
 }
 
 .btn-nav {

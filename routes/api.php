@@ -323,6 +323,7 @@ Route::prefix('v1/exam')
         Route::get('/{exam}/take', [ExamController::class, 'take'])->name('take');
         Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish');
+        Route::get('/{exam}/result/{attempt}', [ExamController::class, 'result'])->name('result');
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
