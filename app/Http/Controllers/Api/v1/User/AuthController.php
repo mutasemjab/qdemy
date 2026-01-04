@@ -72,7 +72,7 @@ class AuthController extends Controller
             // Validation
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|max:255',
-                'ip_address' => 'required',
+                'ip_address' => 'nullable',
                 'email' => 'nullable|email|unique:users,email',
                 'phone' => 'nullable|string|unique:users,phone',
                 'password' => 'required|string|min:4|confirmed',
@@ -284,7 +284,7 @@ class AuthController extends Controller
             $validator = Validator::make($request->all(), [
                 'login' => 'required|string', // can be email or phone
                 'password' => 'required|string',
-                'ip_address' => 'required',
+                'ip_address' => 'nullable',
                 'fcm_token' => 'nullable|string'
             ]);
 
