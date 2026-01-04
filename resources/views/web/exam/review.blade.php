@@ -1,9 +1,4 @@
-@if($isApi)
-@php $hideFooter = true; @endphp
-@php $hideHeader = true; @endphp
-@endif
-
-@extends('layouts.app')
+@extends('layouts.exam')
 
 @section('title', translate_lang('مراجعة الامتحان') . ' - ' . $exam->title)
 

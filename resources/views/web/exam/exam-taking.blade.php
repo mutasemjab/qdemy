@@ -1,37 +1,7 @@
 {{-- resources/views/web/exam/exam-taking.blade.php --}}
-@extends('layouts.app')
+@extends('layouts.exam')
 
 @section('content')
-<style>
-    /* Hide header and footer in mobile webview */
-    @media (max-width: 480px) {
-        /* Hide common header classes */
-        nav,
-        header,
-        .navbar,
-        .navbar-header,
-        .topbar,
-        .app-header,
-        [class*="header"],
-        /* Hide common footer classes */
-        footer,
-        .footer,
-        .app-footer,
-        [class*="footer"] {
-            display: none !important;
-        }
-
-        body {
-            padding: 0 !important;
-            margin: 0 !important;
-        }
-
-        .exam-taking-section {
-            padding: 0 !important;
-            min-height: 100vh !important;
-        }
-    }
-</style>
 
 <div class="exam-taking-section" style="display: block;">
     <!-- Exam Header -->

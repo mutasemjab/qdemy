@@ -89,10 +89,15 @@
         font-weight: 400 !important;
     }
 
-    /* Hide header and footer in mobile webview */
-    @media (max-width: 480px) {
-        .hide-on-mobile {
+    /* Hide header and footer in mobile and tablet webview for exam pages */
+    @media (max-width: 1024px) {
+        .exam-hide-on-mobile {
             display: none !important;
+        }
+
+        body {
+            padding: 0 !important;
+            margin: 0 !important;
         }
     }
 </style>
@@ -102,7 +107,9 @@
 <body>
 
     @if (!isset($hideHeader))
-        @include('layouts.header')
+        <div class="exam-hide-on-mobile">
+            @include('layouts.header')
+        </div>
     @endif
 
     <main>
@@ -112,7 +119,9 @@
     </main>
 
     @if (!isset($hideFooter))
-        @include('layouts.footer')
+        <div class="exam-hide-on-mobile">
+            @include('layouts.footer')
+        </div>
     @endif
 
     <!-- <script src="{{ asset('assets_front/js/app.js') }}"></script> -->
