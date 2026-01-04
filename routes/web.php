@@ -156,6 +156,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
 
         Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
 
+        Route::post('/{exam}/save-answer-ajax', [ExamController::class, 'save_answer_ajax'])->name('exam.save.answer.ajax');
+
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
 
         Route::get('/{exam}/result/{attempt}', [ExamController::class, 'result'])->name('exam.result');

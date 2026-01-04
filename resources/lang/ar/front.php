@@ -663,4 +663,13 @@ return array (
     "attempt"=> "محاولة",
     "current"=> "الحالية",
     "view_details"=> "عرض التفاصيل",
+
+    // Exam Taking - Additional Translations
+    'no_options_available' => 'لا توجد خيارات متاحة',
+    'question_text_not_available' => 'نص السؤال غير متاح',
+    'option_not_available' => 'الخيار غير متاح',
+    'loading_exam' => 'جاري تحميل الامتحان...',
+    'submitting_exam' => 'جاري تسليم الامتحان...',
+    'error_submitting_exam' => 'حدث خطأ أثناء تسليم الامتحان',
+    'exam_data_invalid' => 'بيانات الامتحان غير صحيحة. يرجى المحاولة مرة أخرى.',
 );

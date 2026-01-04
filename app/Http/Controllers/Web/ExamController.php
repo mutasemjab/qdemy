@@ -472,17 +472,17 @@ class ExamController extends Controller
             $message_status = 'error';
         }
         // Redirect to next question
-        $next_page = $request->get('next_page', $request->get('page', 1) + 1);
+        $next_page = $request->get('next_page');
+        if (!$next_page) {
+            $next_page = $request->get('page', 1) + 1;
+        }
+
         if ($this->isApi) {
             // Force API URL with query parameter to maintain API mode
             $redirectUrl = url("/api/v1/exam/{$exam->id}/{$exam->slug}") . "?page={$next_page}&_api=1";
             \Log::info('Redirecting to API URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         } else {
-            $redirectUrl = route('exam', [
-                'exam' => $exam->id,
-                'slug' => $exam->slug,
-                'page' => $next_page
-            ]);
+            $redirectUrl = route('exam.take', ['exam' => $exam->id]) . "?page={$next_page}";
             \Log::info('Redirecting to WEB URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         }
 
@@ -649,41 +649,31 @@ class ExamController extends Controller
             }
         }
 
-        // Get questions
+        // Get questions with options (eager load)
         $question_order = $current_attempt->question_order;
-        $questions = Question::whereIn('id', $question_order)
-            ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')');
 
-        // Get all questions for the navigator
-        $allQuestions = (clone $questions)->get();
-        $total_questions = $allQuestions->count();
-
-        // Get page number with validation
-        $question_nm = (int)request()->get('page', 1);
-
-        // If page exceeds total questions, submit exam and redirect to results
-        if ($question_nm > $total_questions) {
-            $this->submit_exam($current_attempt);
-            return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])
-                ->with('success', __('front.exam_submitted_successfully'));
+        // Ensure question_order is a valid array
+        if (!is_array($question_order) || empty($question_order)) {
+            return redirect()->route('exams')->with('error', __('front.exam_data_invalid'));
         }
 
-        $pgQuestions = (clone $questions)->paginate(1);
-        $question = $pgQuestions->first();
+        $allQuestions = Question::whereIn('id', $question_order)
+            ->with('options')
+            ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')')
+            ->get();
 
-        // Ensure we have a valid question
-        if (!$question) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', __('front.question_not_found'));
-        }
-
-        // Get previous answer for current question
-        $previousAnswer = null;
-        if ($question) {
-            $previousAnswer = $current_attempt->answers()
-                ->where('question_id', $question->id)
-                ->first();
-        }
+        // Get saved answers in JSON format
+        $savedAnswers = $current_attempt->answers()
+            ->get()
+            ->keyBy('question_id')
+            ->map(function($answer) {
+                return [
+                    'selected_options' => $answer->selected_options ?? [],
+                    'essay_answer' => $answer->essay_answer,
+                    'is_correct' => $answer->is_correct,
+                    'answered_at' => $answer->answered_at
+                ];
+            });
 
         // Calculate remaining time in seconds
         $remainingSeconds = 0;
@@ -695,16 +685,112 @@ class ExamController extends Controller
 
         return view('web.exam.exam-taking', [
             'exam' => $exam,
-            'questions' => $pgQuestions,
             'allQuestions' => $allQuestions,
-            'question' => $question,
+            'savedAnswers' => $savedAnswers,
             'current_attempt' => $current_attempt,
-            'question_nm' => $question_nm,
-            'previousAnswer' => $previousAnswer,
             'remainingSeconds' => $remainingSeconds,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
         ]);
+    }
+
+    /**
+     * Save answer via AJAX
+     */
+    public function save_answer_ajax(Request $request, Exam $exam)
+    {
+        $user = auth_student();
+
+        // Get current attempt
+        $current_attempt = $exam->current_user_attempt();
+
+        if (!$current_attempt) {
+            return response()->json(['success' => false, 'message' => 'No active attempt'], 404);
+        }
+
+        // Validate request
+        $validator = Validator::make($request->all(), [
+            'question_id' => 'required|exists:questions,id',
+            'answer_type' => 'required|in:multiple_choice,true_false,essay',
+            'answer' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $question = Question::findOrFail($request->question_id);
+
+        // Check time limit (in seconds)
+        if ($exam->duration_minutes) {
+            $elapsed_seconds = $current_attempt->started_at->diffInSeconds(now());
+            $total_seconds = $exam->duration_minutes * 60;
+
+            if ($elapsed_seconds >= $total_seconds) {
+                $this->auto_submit_exam($current_attempt);
+                return response()->json(['success' => false, 'message' => 'Time expired', 'expired' => true], 403);
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $exam_answer = ExamAnswer::updateOrCreate(
+                [
+                    'exam_attempt_id' => $current_attempt->id,
+                    'question_id' => $question->id
+                ],
+                [
+                    'answered_at' => now()
+                ]
+            );
+
+            // Process based on type
+            if ($question->type === 'multiple_choice') {
+                $selected_options = is_array($request->answer) ? $request->answer : [$request->answer];
+                // Cast to integers to ensure consistency when retrieving
+                $selected_options = array_map(function($opt) { return (int)$opt; }, $selected_options);
+                $exam_answer->selected_options = $selected_options;
+
+                $correct_options = $question->options()->where('is_correct', true)->pluck('id')->toArray();
+                $is_correct = count($selected_options) === count($correct_options) &&
+                    empty(array_diff($selected_options, $correct_options));
+
+                $exam_answer->is_correct = $is_correct;
+                $exam_answer->score = $is_correct ? $question->grade : 0;
+
+            } elseif ($question->type === 'true_false') {
+                $selected_answer = $request->answer === 'true' || $request->answer === true;
+                $exam_answer->selected_options = [$selected_answer];
+
+                $correct_option = $question->options()->where('is_correct', true)->first();
+                $is_correct = false;
+
+                if ($correct_option) {
+                    $correct_answer = strtolower($correct_option->option_en) === 'true';
+                    $is_correct = $selected_answer === $correct_answer;
+                }
+
+                $exam_answer->is_correct = $is_correct;
+                $exam_answer->score = $is_correct ? $question->grade : 0;
+
+            } elseif ($question->type === 'essay') {
+                $exam_answer->essay_answer = $request->answer;
+                $exam_answer->is_correct = null;
+                $exam_answer->score = 0;
+            }
+
+            $exam_answer->save();
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Answer saved'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
     /**
