@@ -28,15 +28,13 @@ class ExamController extends Controller
     {
         // Check if this is coming from mobile webview
         if (
-            request()->hasHeader('UserId') ||
-            request()->hasHeader('X-Mobile-App') ||
             request()->expectsJson() ||
             request()->is('api/*') ||
-            request()->has('_api') || // NEW: Check for API flag in query string
             session('is_mobile_app')
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
+            session(['is_mobile_app' => true]);
         }
     }
 
@@ -532,43 +530,44 @@ class ExamController extends Controller
                 'status'       => 'completed',
             ]);
 
-            // Track exam progress in content_user_progress table
-            ContentUserProgress::updateOrCreate(
-                [
+            // Check if this is the FIRST attempt (for tracking progress only on first submission)
+            $isFirstAttempt = ContentUserProgress::where('user_id', $attempt->user_id)
+                ->where('exam_id', $exam->id)
+                ->doesntExist();
+
+            // Only track progress on FIRST attempt
+            if ($isFirstAttempt) {
+                // Track exam progress (standalone exam record)
+                // This record indicates the student attempted the exam
+                ContentUserProgress::create([
                     'user_id' => $attempt->user_id,
                     'exam_id' => $exam->id,
-                    'course_content_id' => null, // Important: null for exam progress
-                ],
-                [
+                    'course_content_id' => null,
                     'exam_attempt_id' => $attempt->id,
-                    'completed' => true,
+                    'completed' => true,  // ✅ Always true on submission (not based on passing)
                     'score' => $total_score,
                     'percentage' => round($percentage, 2),
                     'is_passed' => $is_passed,
                     'viewed_at' => now(),
                     'watch_time' => null,
-                ]
-            );
+                ]);
 
-            // If exam is linked to a course content (lesson), also track course content progress
-            // This ensures the lesson is marked as completed when the exam is passed
-            if ($exam->course_content_id) {
-                ContentUserProgress::updateOrCreate(
-                    [
+                // If exam is linked to a course content (lesson), also track course content progress
+                // ONLY if the exam is explicitly linked to a lesson (course_content_id is NOT NULL)
+                if ($exam->course_content_id) {
+                    ContentUserProgress::create([
                         'user_id' => $attempt->user_id,
                         'course_content_id' => $exam->course_content_id,
                         'exam_id' => $exam->id,
-                    ],
-                    [
                         'exam_attempt_id' => $attempt->id,
-                        'completed' => $is_passed, // Only mark as completed if passed
+                        'completed' => true,  // ✅ Always true on submission (not based on passing)
                         'score' => $total_score,
                         'percentage' => round($percentage, 2),
                         'is_passed' => $is_passed,
                         'viewed_at' => now(),
                         'watch_time' => null,
-                    ]
-                );
+                    ]);
+                }
             }
         } else {
             $attempt->update([

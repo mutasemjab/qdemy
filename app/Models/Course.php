@@ -79,10 +79,14 @@ class Course extends Model
     }
     
     // Get user progress for this course
+    // Formula:
+    // - For each lesson with exam linked: lesson_progress = (video_completed ? 50 : 0) + (exam_completed ? 50 : 0)
+    // - For each lesson without exam: lesson_progress = (video_completed ? 100 : 0)
+    // - Total course progress = average of all lessons
     public function calculateCourseProgress($userId = null)
     {
         $user_id = $userId ? $userId : auth_student()?->id;
-        
+
         if (!$user_id) {
             return [
                 'total_progress' => 0,
@@ -95,79 +99,93 @@ class Course extends Model
                 'total_exams' => 0,
             ];
         }
-        
-        // Get total videos for this course
-        $totalVideos = CourseContent::where('course_id', $this->id)
+
+        // Get all video contents for this course
+        $allVideos = CourseContent::where('course_id', $this->id)
             ->where('content_type', 'video')
-            ->count();
-        
-        // Get completed videos
+            ->with('exams') // Load related exams
+            ->get();
+
+        $totalVideos = $allVideos->count();
         $completedVideos = 0;
         $watchingVideos = 0;
-        
-        if ($totalVideos > 0) {
-            // Get all video content IDs for this course
-            $videoContentIds = CourseContent::where('course_id', $this->id)
-                ->where('content_type', 'video')
-                ->pluck('id')
-                ->toArray();
+        $lessonsProgress = [];
 
-            // Count videos completed by watching
-            $completedByWatching = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('course_content_id', $videoContentIds)
-                ->whereNull('exam_id') // Only video progress
-                ->where('completed', true)
-                ->count();
+        foreach ($allVideos as $video) {
+            // Check if this video/lesson has an exam linked to it
+            $linkedExam = $video->exams()->where('is_active', 1)->first();
 
-            // Count videos completed by exam (if exam is linked to the video content)
-            $completedByExam = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('course_content_id', $videoContentIds)
-                ->whereNotNull('exam_id') // Has exam linked
-                ->where('completed', true) // Exam passed
-                ->get()
-                ->unique('course_content_id') // Count unique content IDs
-                ->count();
-
-            $completedVideos = $completedByWatching + $completedByExam;
-
-            $watchingVideos = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('course_content_id', $videoContentIds)
+            // Get video progress
+            $videoProgress = ContentUserProgress::where('user_id', $user_id)
+                ->where('course_content_id', $video->id)
                 ->whereNull('exam_id')
-                ->where('completed', false)
-                ->where('watch_time', '>', 0)
-                ->count();
+                ->first();
+
+            $isVideoCompleted = $videoProgress && $videoProgress->completed;
+
+            if ($isVideoCompleted) {
+                $completedVideos++;
+            } elseif ($videoProgress && $videoProgress->watch_time > 0 && !$videoProgress->completed) {
+                $watchingVideos++;
+            }
+
+            // Calculate lesson progress
+            if ($linkedExam) {
+                // Lesson has exam: 50% video + 50% exam
+                $lessonProgress = 0;
+
+                // Add 50% if video is completed
+                if ($isVideoCompleted) {
+                    $lessonProgress += 50;
+                }
+
+                // Add 50% if exam is completed
+                $examProgress = ContentUserProgress::where('user_id', $user_id)
+                    ->where('exam_id', $linkedExam->id)
+                    ->where('completed', true)
+                    ->first();
+
+                if ($examProgress) {
+                    $lessonProgress += 50;
+                }
+
+                $lessonsProgress[] = $lessonProgress;
+            } else {
+                // Lesson has NO exam: 100% video
+                if ($isVideoCompleted) {
+                    $lessonsProgress[] = 100;
+                } else {
+                    $lessonsProgress[] = 0;
+                }
+            }
         }
-        
+
+        // Calculate overall course progress (average of all lessons)
+        $totalProgress = count($lessonsProgress) > 0 ? array_sum($lessonsProgress) / count($lessonsProgress) : 0;
+
+        // Get video progress percentage
         $videoProgress = $totalVideos > 0 ? ($completedVideos / $totalVideos) * 100 : 0;
-        
-        // Get total exams for this course
-        $totalExams = $this->exams()->where('is_active', 1)->count();
-        
+
+        // Get total active exams for this course
+        $totalExams = Exam::where('course_id', $this->id)
+            ->where('is_active', 1)
+            ->whereNotNull('course_content_id') // Only exams linked to lessons
+            ->count();
+
         // Get completed exams
         $completedExams = 0;
-        
         if ($totalExams > 0) {
             $completedExams = ContentUserProgress::where('user_id', $user_id)
-                ->whereIn('exam_id', $this->exams()->pluck('id'))
-                ->whereNull('course_content_id') // Only exam progress
+                ->whereIn('exam_id', Exam::where('course_id', $this->id)
+                    ->where('is_active', 1)
+                    ->whereNotNull('course_content_id')
+                    ->pluck('id'))
                 ->where('completed', true)
                 ->count();
         }
-        
+
         $examProgress = $totalExams > 0 ? ($completedExams / $totalExams) * 100 : 0;
-        
-        // Calculate total progress (weighted average)
-        // If course has both videos and exams, give 50% weight to videos, 50% to exams
-        // If only videos or only exams, use 100% of that component
-        $totalProgress = 0;
-        if ($totalVideos > 0 && $totalExams > 0) {
-            $totalProgress = ($videoProgress * 0.5) + ($examProgress * 0.5);
-        } elseif ($totalVideos > 0) {
-            $totalProgress = $videoProgress;
-        } elseif ($totalExams > 0) {
-            $totalProgress = $examProgress;
-        }
-        
+
         return [
             'total_progress' => round($totalProgress, 2),
             'video_progress' => round($videoProgress, 2),

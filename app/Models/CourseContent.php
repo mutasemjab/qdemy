@@ -36,6 +36,14 @@ class CourseContent extends Model
     }
 
     /**
+     * Get the exams linked to this course content (lesson).
+     */
+    public function exams()
+    {
+        return $this->hasMany(Exam::class, 'course_content_id');
+    }
+
+    /**
      * Get content title based on current locale
      */
     public function getTitleAttribute()
