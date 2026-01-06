@@ -95,7 +95,7 @@
                             @php
                                 $takeUrl = route('exam.take', ['exam' => $exam->id]);
                                 if(isset($isApi) && $isApi) {
-                                    $takeUrl .= '?_mobile=1';
+                                    $takeUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                                 }
                             @endphp
                             <a href="{{ $takeUrl }}" class="btn btn-primary btn-large">
@@ -110,7 +110,7 @@
                             @php
                                 $resultUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]);
                                 if(isset($isApi) && $isApi) {
-                                    $resultUrl .= '?_mobile=1';
+                                    $resultUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                                 }
                             @endphp
                             <a href="{{ $resultUrl }}"

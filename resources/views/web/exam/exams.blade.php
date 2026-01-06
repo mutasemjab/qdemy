@@ -86,7 +86,7 @@
                             @php
                                 $examUrl = route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
                                 if(isset($isApi) && $isApi) {
-                                    $examUrl .= '?_mobile=1';
+                                    $examUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                                 }
                             @endphp
                             <a href="{{ $examUrl }}" class="btn btn-primary">

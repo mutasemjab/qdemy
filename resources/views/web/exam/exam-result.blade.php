@@ -223,7 +223,7 @@
                 @php
                     $retakeUrl = route('exam.start', ['exam' => $exam->id]);
                     if(isset($isApi) && $isApi) {
-                        $retakeUrl .= '?_mobile=1';
+                        $retakeUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                     }
                 @endphp
                 <a href="{{ $retakeUrl }}" class="btn btn-primary">

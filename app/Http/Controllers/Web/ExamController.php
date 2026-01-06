@@ -26,51 +26,60 @@ class ExamController extends Controller
 
     private function ensureAuthenticatedForMobile()
     {
-        \Log::info('=== ensureAuthenticatedForMobile START ===', [
-            'is_mobile_app' => session('is_mobile_app'),
-            'mobile_user_id' => session('mobile_user_id'),
-            'auth_check' => auth('user')->check(),
-            'auth_id' => auth('user')->id(),
-        ]);
+        // إذا كان المستخدم مسجل دخول بالفعل، لا تفعل شيء
+        if (auth('user')->check()) {
+            return;
+        }
 
-        if (session('is_mobile_app') && session('mobile_user_id') && !auth('user')->check()) {
-            \Log::info('Attempting to re-authenticate user', [
-                'mobile_user_id' => session('mobile_user_id')
+        // جرب الحصول على user ID من parameter _user_id
+        $userId = request()->get('_user_id') ?? request()->query('_user_id');
+
+        if ($userId) {
+            \Log::info('Attempting to authenticate from _user_id parameter', [
+                'userId' => $userId,
+                'is_mobile_app' => session('is_mobile_app')
             ]);
 
-            $user = \App\Models\User::find(session('mobile_user_id'));
-
-            \Log::info('User lookup result', [
-                'user_found' => $user ? true : false,
-                'user_id' => $user?->id
-            ]);
+            $user = \App\Models\User::find($userId);
 
             if ($user) {
                 auth('user')->login($user);
-                \Log::info('User re-authenticated successfully', [
+                \Log::info('User authenticated successfully from parameter', [
                     'user_id' => $user->id,
                     'auth_check_after' => auth('user')->check()
                 ]);
+            } else {
+                \Log::warning('User not found', ['userId' => $userId]);
             }
         } else {
-            \Log::info('ensureAuthenticatedForMobile conditions not met', [
+            \Log::info('No _user_id parameter provided', [
                 'is_mobile_app' => session('is_mobile_app'),
-                'has_mobile_user_id' => !empty(session('mobile_user_id')),
-                'is_not_authenticated' => !auth('user')->check()
+                'available_params' => request()->all()
             ]);
         }
-
-        \Log::info('=== ensureAuthenticatedForMobile END ===', [
-            'auth_check_final' => auth('user')->check(),
-            'auth_id_final' => auth('user')->id(),
-        ]);
     }
 
     protected function checkIfApi()
     {
+        $checks = [
+            'has_UserId_header' => request()->hasHeader("UserId"),
+            'has_user_id_param' => (bool)request()->get('_user_id'),
+            'expects_json' => request()->expectsJson(),
+            'is_api_route' => request()->is('api/*'),
+            'has_mobile_param' => request()->get('_mobile') == 1,
+            'session_is_mobile_app' => session('is_mobile_app')
+        ];
+
+        \Log::info('=== checkIfApi() ===', [
+            'url' => request()->url(),
+            'checks' => $checks,
+            'any_check_passed' => array_filter($checks)
+        ]);
+
         // Check if this is coming from mobile webview
         if (
             request()->hasHeader("UserId") ||
+            request()->get('_user_id') ||  // ✅ أضفنا check للـ _user_id param
             request()->expectsJson() ||
             request()->is('api/*') ||
             request()->get('_mobile') == 1 ||
@@ -79,6 +88,15 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             session(['is_mobile_app' => true]);
+
+            \Log::info('✓ Detected as MOBILE/API', [
+                'isApi' => true,
+                'apiRoutePrefix' => $this->apiRoutePrefix
+            ]);
+        } else {
+            \Log::info('✗ Detected as WEB', [
+                'isApi' => false
+            ]);
         }
     }
 

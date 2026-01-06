@@ -105,7 +105,7 @@
                                     @php
                                         $reviewUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]);
                                         if(isset($isApi) && $isApi) {
-                                            $reviewUrl .= '?_mobile=1';
+                                            $reviewUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                                         }
                                     @endphp
                                     <a href="{{ $reviewUrl }}" class="action-btn">
