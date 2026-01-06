@@ -220,7 +220,13 @@
                 {{ __('front.back') }}
             </a>
             @if($canRetake)
-                <a href="{{ route('exam.start', ['exam' => $exam->id]) }}" class="btn btn-primary">
+                @php
+                    $retakeUrl = route('exam.start', ['exam' => $exam->id]);
+                    if(isset($isApi) && $isApi) {
+                        $retakeUrl .= '?_mobile=1';
+                    }
+                @endphp
+                <a href="{{ $retakeUrl }}" class="btn btn-primary">
                     <i class="fas fa-redo"></i>
                     {{ __('front.محاولة جديدة') }}
                 </a>

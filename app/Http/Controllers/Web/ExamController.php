@@ -30,11 +30,10 @@ class ExamController extends Controller
         if (
             request()->expectsJson() ||
             request()->is('api/*') ||
-            session('is_mobile_app')
+            request()->get('_mobile') == 1
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
-            session(['is_mobile_app' => true]);
         }
     }
 

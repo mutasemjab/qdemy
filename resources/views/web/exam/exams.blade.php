@@ -83,7 +83,13 @@
                                 {{ __('front.students_only') }}
                             </button>
                         @elseif($exam->isAvailable())
-                            <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="btn btn-primary">
+                            @php
+                                $examUrl = route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+                                if(isset($isApi) && $isApi) {
+                                    $examUrl .= '?_mobile=1';
+                                }
+                            @endphp
+                            <a href="{{ $examUrl }}" class="btn btn-primary">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.start_exam') }}
                             </a>

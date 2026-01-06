@@ -92,7 +92,13 @@
 
                         @if ($current_attempt && !$current_attempt->submitted_at)
                             {{-- Continue Button --}}
-                            <a href="{{ route('exam.take', ['exam' => $exam->id]) }}" class="btn btn-primary btn-large">
+                            @php
+                                $takeUrl = route('exam.take', ['exam' => $exam->id]);
+                                if(isset($isApi) && $isApi) {
+                                    $takeUrl .= '?_mobile=1';
+                                }
+                            @endphp
+                            <a href="{{ $takeUrl }}" class="btn btn-primary btn-large">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.continue_exam') }}
                             </a>
@@ -101,7 +107,13 @@
                             </p>
                         @elseif($result && $exam->show_results_immediately && $result->status === 'completed')
                             {{-- View Results Button --}}
-                            <a href="{{ route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}"
+                            @php
+                                $resultUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]);
+                                if(isset($isApi) && $isApi) {
+                                    $resultUrl .= '?_mobile=1';
+                                }
+                            @endphp
+                            <a href="{{ $resultUrl }}"
                                 class="btn btn-info btn-large">
                                 <i class="fas fa-chart-bar"></i>
                                 {{ __('front.view_results') }}
