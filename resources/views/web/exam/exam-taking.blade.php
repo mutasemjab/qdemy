@@ -579,7 +579,7 @@ const examData = {
     title: "{{ $exam->title }}",
     totalQuestions: {{ $allQuestions->count() }},
     remainingSeconds: {{ $remainingSeconds }},
-    saveAnswerUrl: "{{ route($apiRoutePrefix . 'save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
+    saveAnswerUrl: "{{ route(($isApi ? 'api.' : 'exam.') . 'save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
     finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}",
     csrfToken: "{{ csrf_token() }}"
 };
