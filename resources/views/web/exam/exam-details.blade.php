@@ -6,7 +6,13 @@
         <div class="exam-details-container">
             {{-- Header --}}
             <div class="exam-details-header">
-                <a href="{{ route('exams') }}" class="back-btn">
+                @php
+                    $backUrl = route('exams');
+                    if(isset($isApi) && $isApi) {
+                        $backUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                    }
+                @endphp
+                <a href="{{ $backUrl }}" class="back-btn">
                     <i class="fas fa-arrow-right"></i>
                     {{ __('front.back') }}
                 </a>

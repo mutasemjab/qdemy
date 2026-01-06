@@ -5,7 +5,13 @@
 <div class="exam-result-section">
     <div class="result-container">
         {{-- Back Button --}}
-        <a href="{{ route('exams') }}" class="back-btn">
+        @php
+            $backUrl = route('exams');
+            if(isset($isApi) && $isApi) {
+                $backUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            }
+        @endphp
+        <a href="{{ $backUrl }}" class="back-btn">
             <i class="fas fa-arrow-left"></i>
             {{ __('front.back') }}
         </a>
@@ -93,7 +99,13 @@
                             </div>
                         </div>
                         @if($attemptItem->id !== $attempt->id)
-                            <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]) }}" class="view-attempt-btn">
+                            @php
+                                $viewUrl = route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]);
+                                if(isset($isApi) && $isApi) {
+                                    $viewUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                                }
+                            @endphp
+                            <a href="{{ $viewUrl }}" class="view-attempt-btn">
                                 {{ __('front.view_details') }}
                             </a>
                         @endif
@@ -215,7 +227,13 @@
 
         {{-- Actions --}}
         <div class="result-actions">
-            <a href="{{ route('exams') }}" class="btn btn-secondary">
+            @php
+                $actionBackUrl = route('exams');
+                if(isset($isApi) && $isApi) {
+                    $actionBackUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                }
+            @endphp
+            <a href="{{ $actionBackUrl }}" class="btn btn-secondary">
                 <i class="fas fa-list"></i>
                 {{ __('front.back') }}
             </a>

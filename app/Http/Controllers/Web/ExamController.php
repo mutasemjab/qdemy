@@ -35,47 +35,16 @@ class ExamController extends Controller
         $userId = request()->get('_user_id') ?? request()->query('_user_id');
 
         if ($userId) {
-            \Log::info('Attempting to authenticate from _user_id parameter', [
-                'userId' => $userId,
-                'is_mobile_app' => session('is_mobile_app')
-            ]);
-
             $user = \App\Models\User::find($userId);
 
             if ($user) {
                 auth('user')->login($user);
-                \Log::info('User authenticated successfully from parameter', [
-                    'user_id' => $user->id,
-                    'auth_check_after' => auth('user')->check()
-                ]);
-            } else {
-                \Log::warning('User not found', ['userId' => $userId]);
             }
-        } else {
-            \Log::info('No _user_id parameter provided', [
-                'is_mobile_app' => session('is_mobile_app'),
-                'available_params' => request()->all()
-            ]);
         }
     }
 
     protected function checkIfApi()
     {
-        $checks = [
-            'has_UserId_header' => request()->hasHeader("UserId"),
-            'has_user_id_param' => (bool)request()->get('_user_id'),
-            'expects_json' => request()->expectsJson(),
-            'is_api_route' => request()->is('api/*'),
-            'has_mobile_param' => request()->get('_mobile') == 1,
-            'session_is_mobile_app' => session('is_mobile_app')
-        ];
-
-        \Log::info('=== checkIfApi() ===', [
-            'url' => request()->url(),
-            'checks' => $checks,
-            'any_check_passed' => array_filter($checks)
-        ]);
-
         // Check if this is coming from mobile webview
         if (
             request()->hasHeader("UserId") ||
@@ -88,15 +57,6 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             session(['is_mobile_app' => true]);
-
-            \Log::info('✓ Detected as MOBILE/API', [
-                'isApi' => true,
-                'apiRoutePrefix' => $this->apiRoutePrefix
-            ]);
-        } else {
-            \Log::info('✗ Detected as WEB', [
-                'isApi' => false
-            ]);
         }
     }
 
@@ -111,12 +71,6 @@ class ExamController extends Controller
         // IMPORTANT: Call checkIfApi FIRST
         $this->checkIfApi();
 
-        \Log::info('Constructor - After checkIfApi', [
-            'isApi' => $this->isApi,
-            'auth_user_check' => auth('user')->check(),
-            'auth_user_id' => auth('user')->id(),
-        ]);
-
         // API-specific authentication via UserId header
         if ($this->isApi && $request->hasHeader('UserId')) {
             $userId = $request->header('UserId');
@@ -128,7 +82,6 @@ class ExamController extends Controller
             if ($user) {
                 auth('user')->login($user);
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
-                \Log::info('Logged in via UserId header', ['userId' => $userId]);
             }
         }
 
@@ -137,17 +90,8 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
 
-            \Log::info('is_mobile_app session found', [
-                'mobile_user_id_in_session' => session('mobile_user_id'),
-                'auth_user_check' => auth('user')->check(),
-                'auth_user_id' => auth('user')->id()
-            ]);
-
             // إذا لم يكن mobile_user_id محفوظ، حاول الحصول عليه من auth()
             if (!session('mobile_user_id') && auth('user')->check()) {
-                \Log::info('mobile_user_id is null, getting from auth()', [
-                    'auth_user_id' => auth('user')->id()
-                ]);
                 session(['mobile_user_id' => auth('user')->id()]);
             }
 
@@ -156,9 +100,6 @@ class ExamController extends Controller
                 $user = \App\Models\User::find(session('mobile_user_id'));
                 if ($user) {
                     auth('user')->login($user);
-                    \Log::info('Re-authenticated from session mobile_user_id', [
-                        'user_id' => $user->id
-                    ]);
                 }
             }
         }
@@ -276,30 +217,9 @@ class ExamController extends Controller
 
    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
-        \Log::info('=== show() START ===', [
-            'exam_id' => $exam->id,
-            'before_ensure_auth' => auth('user')->check(),
-            'before_user_id' => auth('user')->id()
-        ]);
-
         $this->ensureAuthenticatedForMobile();
 
-        \Log::info('show() after ensureAuthenticatedForMobile', [
-            'auth_check' => auth('user')->check(),
-            'auth_id' => auth('user')->id()
-        ]);
-
         $user = auth_student();
-
-        \Log::info('show() after auth_student()', [
-            'user' => $user ? $user->id : 'null',
-            'isApi' => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'has_userId_header' => request()->hasHeader('UserId'),
-            'url' => request()->url(),
-            'session_is_mobile_app' => session('is_mobile_app'),
-            'session_mobile_user_id' => session('mobile_user_id')
-        ]);
 
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
@@ -388,30 +308,10 @@ class ExamController extends Controller
     {
         $this->ensureAuthenticatedForMobile();
 
-        // Detailed debugging
-        \Log::info('start_exam - Auth Debug:', [
-            'auth_user_check' => auth('user')->check(),
-            'auth_user_id' => auth('user')->id(),
-            'auth_user' => auth('user')->user(),
-            'default_auth_check' => auth()->check(),
-            'default_auth_id' => auth()->id(),
-            'default_auth_user' => auth()->user(),
-        ]);
-
         $user = auth_student();
-
-
-        // DEBUG: Check what auth_student returns
-        \Log::info('start_exam called:', [
-            'auth_student_result' => $user ? $user->id : 'null',
-            'auth_user_check' => auth('user')->check(),
-            'auth_user_id' => auth('user')->id(),
-            'exam_id' => $exam->id
-        ]);
 
         // Check if user can start new attempt
         if (!$exam->can_add_attempt($user?->id)) {
-            \Log::info('Cannot add attempt, redirecting');
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
@@ -420,12 +320,9 @@ class ExamController extends Controller
         $active_attempt = $exam->current_user_attempt();
 
         if ($active_attempt) {
-            \Log::info('Active attempt found, redirecting');
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لديك محاولة جارية بالفعل'));
         }
-
-        \Log::info('Creating new attempt');
 
         // Get questions and shuffle if needed
         $questions = $exam->questions;
@@ -444,13 +341,6 @@ class ExamController extends Controller
             'status' => 'in_progress'
         ]);
 
-        $routeName = $this->apiRoutePrefix . 'exam.take';
-        \Log::info('Attempting to redirect:', [
-            'route_name' => $routeName,
-            'route_exists' => \Route::has($routeName),
-            'available_routes' => collect(\Route::getRoutes())->map(fn($r) => $r->getName())->filter(fn($n) => str_contains($n, 'exam'))->values()
-        ]);
-
         // Redirect to exam taking page
         return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
     }
@@ -465,13 +355,6 @@ class ExamController extends Controller
 
         $user = auth_student();
 
-        \Log::info('answer_question called:', [
-            'exam_id' => $exam->id,
-            'question_id' => $question->id,
-            'isApi' => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'has_answer' => $request->has('answer')
-        ]);
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {
@@ -588,10 +471,8 @@ class ExamController extends Controller
         if ($this->isApi) {
             // Force API URL with query parameter to maintain API mode
             $redirectUrl = url("/api/v1/exam/{$exam->id}/{$exam->slug}") . "?page={$next_page}&_api=1";
-            \Log::info('Redirecting to API URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         } else {
             $redirectUrl = route('exam.take', ['exam' => $exam->id]) . "?page={$next_page}";
-            \Log::info('Redirecting to WEB URL:', ['url' => $redirectUrl]);  // ADD THIS LINE
         }
 
         return redirect($redirectUrl)->with($error ?? '', $message_status ?? '');
