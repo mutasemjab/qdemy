@@ -26,12 +26,44 @@ class ExamController extends Controller
 
     private function ensureAuthenticatedForMobile()
     {
+        \Log::info('=== ensureAuthenticatedForMobile START ===', [
+            'is_mobile_app' => session('is_mobile_app'),
+            'mobile_user_id' => session('mobile_user_id'),
+            'auth_check' => auth('user')->check(),
+            'auth_id' => auth('user')->id(),
+        ]);
+
         if (session('is_mobile_app') && session('mobile_user_id') && !auth('user')->check()) {
+            \Log::info('Attempting to re-authenticate user', [
+                'mobile_user_id' => session('mobile_user_id')
+            ]);
+
             $user = \App\Models\User::find(session('mobile_user_id'));
+
+            \Log::info('User lookup result', [
+                'user_found' => $user ? true : false,
+                'user_id' => $user?->id
+            ]);
+
             if ($user) {
                 auth('user')->login($user);
+                \Log::info('User re-authenticated successfully', [
+                    'user_id' => $user->id,
+                    'auth_check_after' => auth('user')->check()
+                ]);
             }
+        } else {
+            \Log::info('ensureAuthenticatedForMobile conditions not met', [
+                'is_mobile_app' => session('is_mobile_app'),
+                'has_mobile_user_id' => !empty(session('mobile_user_id')),
+                'is_not_authenticated' => !auth('user')->check()
+            ]);
         }
+
+        \Log::info('=== ensureAuthenticatedForMobile END ===', [
+            'auth_check_final' => auth('user')->check(),
+            'auth_id_final' => auth('user')->id(),
+        ]);
     }
 
     protected function checkIfApi()
@@ -201,14 +233,29 @@ class ExamController extends Controller
 
    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
+        \Log::info('=== show() START ===', [
+            'exam_id' => $exam->id,
+            'before_ensure_auth' => auth('user')->check(),
+            'before_user_id' => auth('user')->id()
+        ]);
+
         $this->ensureAuthenticatedForMobile();
+
+        \Log::info('show() after ensureAuthenticatedForMobile', [
+            'auth_check' => auth('user')->check(),
+            'auth_id' => auth('user')->id()
+        ]);
+
         $user = auth_student();
 
-        \Log::info('show() rendering view:', [
+        \Log::info('show() after auth_student()', [
+            'user' => $user ? $user->id : 'null',
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
             'has_userId_header' => request()->hasHeader('UserId'),
-            'url' => request()->url()
+            'url' => request()->url(),
+            'session_is_mobile_app' => session('is_mobile_app'),
+            'session_mobile_user_id' => session('mobile_user_id')
         ]);
 
         // Check if exam is active and within date range
