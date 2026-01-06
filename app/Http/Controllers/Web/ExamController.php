@@ -351,7 +351,14 @@ class ExamController extends Controller
         ]);
 
         // Redirect to exam taking page
-        return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
+        $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
+
+        // Add mobile query params if in mobile mode
+        if ($this->isApi) {
+            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+        }
+
+        return redirect($redirectUrl);
     }
 
     // تصحيح سؤال
