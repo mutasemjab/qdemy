@@ -83,8 +83,12 @@
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeSubmitModal()">{{ __('front.cancel') }}</button>
-            <form id="finishForm" action="{{ route($apiRoutePrefix . 'finish.exam', [$exam->id]) . $queryParams }}" method="POST" style="display: inline;">
+            <form id="finishForm" action="{{ route($apiRoutePrefix . 'finish.exam', [$exam->id]) }}" method="POST" style="display: inline;">
                 @csrf
+                @if ($isApi)
+                    <input type="hidden" name="_mobile" value="1">
+                    <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
+                @endif
                 <button type="submit" class="btn-confirm" onclick="disableWarningBeforeSubmit()">{{ __('front.confirm_finish') }}</button>
             </form>
         </div>

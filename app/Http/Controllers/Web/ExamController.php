@@ -623,8 +623,14 @@ class ExamController extends Controller
 
         $this->submit_exam($current_attempt);
 
-        return redirect()->route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])
-            ->with('success', 'تم تسليم الامتحان بنجاح');
+        $redirectUrl = route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+
+        // Add mobile query params if in mobile mode
+        if ($this->isApi) {
+            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+        }
+
+        return redirect($redirectUrl)->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
     /**
