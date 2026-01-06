@@ -692,11 +692,12 @@ trait CourseManagementTrait
             }
 
             if ($request->video_type === 'bunny') {
-                // For Bunny: Either bunny_video_path (edit with new upload) OR video_url (create or no new upload)
-                // At least one must be present for create, but for update it's optional (keeps existing)
+                // For Bunny: Either bunny_video_path (new upload) OR video_url (keep existing)
+                // At least one must be present for create
                 if (!$contentId) {
-                    // CREATE: Must have video_url (from direct upload)
-                    $rules['video_url'] = 'required|string';
+                    // CREATE: Must have bunny_video_path (from JavaScript upload) or video_url
+                    $rules['bunny_video_path'] = 'required_without:video_url|nullable|string';
+                    $rules['video_url'] = 'required_without:bunny_video_path|nullable|string';
                 } else {
                     // EDIT: Optional - either bunny_video_path or video_url or neither (keep existing)
                     $rules['bunny_video_path'] = 'nullable|string';

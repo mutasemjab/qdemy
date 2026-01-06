@@ -38,6 +38,7 @@ class ExamController extends Controller
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
+            session(['is_mobile_app' => true]);
         }
     }
 

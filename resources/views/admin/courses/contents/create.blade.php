@@ -220,7 +220,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <input type="hidden" name="video_url" id="bunny_video_path">
+                                <input type="hidden" name="bunny_video_path" id="bunny_video_path">
 
                                 <div class="col-md-4">
                                     <div class="form-group mb-3">
