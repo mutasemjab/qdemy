@@ -239,7 +239,7 @@
             </a>
             @if($canRetake)
                 @php
-                    $retakeUrl = route('exam.start', ['exam' => $exam->id]);
+                    $retakeUrl = route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]);
                     if(isset($isApi) && $isApi) {
                         $retakeUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                     }

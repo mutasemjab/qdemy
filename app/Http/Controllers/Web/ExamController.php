@@ -323,8 +323,10 @@ class ExamController extends Controller
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
 
-        // Check if there's already an active attempt
-        $active_attempt = $exam->current_user_attempt();
+        // Check if there's already an active attempt (not submitted)
+        $active_attempt = $exam->current_user_attempts()
+            ->where('submitted_at', null)
+            ->first();
 
         if ($active_attempt) {
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
