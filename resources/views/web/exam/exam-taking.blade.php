@@ -1,6 +1,13 @@
 {{-- resources/views/web/exam/exam-taking.blade.php --}}
 @extends('layouts.app')
 
+@php
+    $queryParams = '';
+    if(isset($isApi) && $isApi) {
+        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    }
+@endphp
+
 @section('content')
 
 <div class="exam-taking-section" style="display: block;">
@@ -76,7 +83,7 @@
         </div>
         <div class="modal-actions">
             <button class="btn-cancel" onclick="closeSubmitModal()">{{ __('front.cancel') }}</button>
-            <form id="finishForm" action="{{ route($apiRoutePrefix . 'finish.exam', [$exam->id]) }}" method="POST" style="display: inline;">
+            <form id="finishForm" action="{{ route($apiRoutePrefix . 'finish.exam', [$exam->id]) . $queryParams }}" method="POST" style="display: inline;">
                 @csrf
                 <button type="submit" class="btn-confirm" onclick="disableWarningBeforeSubmit()">{{ __('front.confirm_finish') }}</button>
             </form>
@@ -572,8 +579,8 @@ const examData = {
     title: "{{ $exam->title }}",
     totalQuestions: {{ $allQuestions->count() }},
     remainingSeconds: {{ $remainingSeconds }},
-    saveAnswerUrl: "{{ route($apiRoutePrefix . 'exam.save.answer.ajax', ['exam' => $exam->id]) }}",
-    finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) }}",
+    saveAnswerUrl: "{{ route($apiRoutePrefix . 'exam.save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
+    finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}",
     csrfToken: "{{ csrf_token() }}"
 };
 

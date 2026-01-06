@@ -1,6 +1,13 @@
 {{-- resources/views/web/exam/exam-history.blade.php --}}
 @extends('layouts.app')
 
+@php
+    $queryParams = '';
+    if(isset($isApi) && $isApi) {
+        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    }
+@endphp
+
 @section('content')
 <div class="exam-history-section">
     <div class="history-container">
@@ -131,7 +138,7 @@
                 </div>
                 <h3>{{ __('front.no_exams_found') }}</h3>
                 <p>{{ __('front.no_exams_description') }}</p>
-                <a href="{{ route('exams') }}" class="btn btn-primary">
+                <a href="{{ route('exams') . $queryParams }}" class="btn btn-primary">
                     <i class="fas fa-arrow-left"></i>
                     {{ __('front.go_to_exams') }}
                 </a>

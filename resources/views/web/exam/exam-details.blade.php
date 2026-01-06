@@ -1,6 +1,13 @@
 {{-- resources/views/web/exam/exam-details.blade.php --}}
 @extends('layouts.app')
 
+@php
+    $queryParams = '';
+    if(isset($isApi) && $isApi) {
+        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    }
+@endphp
+
 @section('content')
     <div class="exam-details-section">
         <div class="exam-details-container">
@@ -129,7 +136,7 @@
                             </p>
                             @if ($can_add_attempt)
                                 <form method="POST"
-                                    action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}"
+                                    action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) . $queryParams }}"
                                     style="margin-top: 12px;">
                                     @if (!$isApi)
                                         @csrf
@@ -154,7 +161,7 @@
 
 
                             {{-- Start Button --}}
-                            <form method="POST" action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}">
+                            <form method="POST" action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) . $queryParams }}">
                                 @if (!$isApi)
                                     @csrf
                                 @endif

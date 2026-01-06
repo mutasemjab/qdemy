@@ -2,6 +2,13 @@
 
 @section('title', translate_lang('مراجعة الامتحان') . ' - ' . $exam->title)
 
+@php
+    $queryParams = '';
+    if(isset($isApi) && $isApi) {
+        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    }
+@endphp
+
 @section('content')
 <section class="cmty-page">
     <div class="universities-header-wrapper">
@@ -43,7 +50,7 @@
             </div>
 
             <div class="cmty-actions">
-                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
             </div>
         </article>
 
@@ -232,9 +239,9 @@
 
             <div class="cmty-actions">
                 @if($exam->result_attempts()?->count())
-                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('عرض جميع المحاولات') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}" class="cmty-like">{{ translate_lang('عرض جميع المحاولات') }}</a>
                 @else
-                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
+                <a href="{{ route($apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}" class="cmty-like">{{ translate_lang('العودة للامتحان') }}</a>
                 @endif
             </div>
         </article>

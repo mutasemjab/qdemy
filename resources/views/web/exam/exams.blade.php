@@ -1,6 +1,13 @@
 {{-- resources/views/web/exam/exams.blade.php --}}
 @extends('layouts.app')
 
+@php
+    $queryParams = '';
+    if(isset($isApi) && $isApi) {
+        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    }
+@endphp
+
 @section('content')
 <div class="exams-section">
     @if(isset($backRoute) && $backRoute == 'home')
@@ -83,13 +90,7 @@
                                 {{ __('front.students_only') }}
                             </button>
                         @elseif($exam->isAvailable())
-                            @php
-                                $examUrl = route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
-                                if(isset($isApi) && $isApi) {
-                                    $examUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                                }
-                            @endphp
-                            <a href="{{ $examUrl }}" class="btn btn-primary">
+                            <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}" class="btn btn-primary">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.start_exam') }}
                             </a>
