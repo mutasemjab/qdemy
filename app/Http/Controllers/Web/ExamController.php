@@ -24,17 +24,25 @@ class ExamController extends Controller
     public $isApi          = false;
     public $apiRoutePrefix = '';
 
+    private function ensureAuthenticatedForMobile()
+    {
+        if (session('is_mobile_app') && session('mobile_user_id') && !auth('user')->check()) {
+            $user = \App\Models\User::find(session('mobile_user_id'));
+            if ($user) {
+                auth('user')->login($user);
+            }
+        }
+    }
+
     protected function checkIfApi()
     {
         // Check if this is coming from mobile webview
         if (
             request()->hasHeader("UserId") ||
-            request()->hasHeader('X-Mobile-App') ||
             request()->expectsJson() ||
             request()->is('api/*') ||
             request()->get('_mobile') == 1 ||
             session('is_mobile_app')
-
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
@@ -193,6 +201,7 @@ class ExamController extends Controller
 
    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
+        $this->ensureAuthenticatedForMobile();
         $user = auth_student();
 
         \Log::info('show() rendering view:', [
@@ -287,6 +296,7 @@ class ExamController extends Controller
 
     public function start_exam(Exam $exam)
     {
+        $this->ensureAuthenticatedForMobile();
 
         // Detailed debugging
         \Log::info('start_exam - Auth Debug:', [
@@ -361,6 +371,7 @@ class ExamController extends Controller
     // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
+        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -609,6 +620,7 @@ class ExamController extends Controller
     // تسليم الامتحان
     public function finish_exam(Request $request, Exam $exam)
     {
+        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -633,6 +645,7 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
+        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -709,6 +722,8 @@ class ExamController extends Controller
      */
     public function save_answer_ajax(Request $request, Exam $exam)
     {
+        $this->ensureAuthenticatedForMobile();
+
         $user = auth_student();
 
         // Get current attempt
@@ -808,6 +823,7 @@ class ExamController extends Controller
      */
     public function result(Exam $exam, ExamAttempt $attempt)
     {
+        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
