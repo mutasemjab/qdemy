@@ -184,6 +184,8 @@ class ExamController extends Controller
             'subjects' => $subjects,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -276,6 +278,8 @@ class ExamController extends Controller
             '_questions'      => $_questions,
             'isApi'           => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -692,6 +696,8 @@ class ExamController extends Controller
             'remainingSeconds' => $remainingSeconds,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -864,6 +870,8 @@ class ExamController extends Controller
             'allAttempts' => $allAttempts,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -898,6 +906,8 @@ class ExamController extends Controller
             'overallPercentage' => $overallPercentage,
             'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -920,6 +930,8 @@ class ExamController extends Controller
             'answers' => $answers,
             'isApi'   => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi,
         ]);
     }
 }

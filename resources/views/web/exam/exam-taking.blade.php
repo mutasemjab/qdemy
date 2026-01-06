@@ -1,5 +1,5 @@
 {{-- resources/views/web/exam/exam-taking.blade.php --}}
-@extends('layouts.exam')
+@extends('layouts.app')
 
 @section('content')
 

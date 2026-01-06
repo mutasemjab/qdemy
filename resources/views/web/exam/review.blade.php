@@ -1,4 +1,4 @@
-@extends('layouts.exam')
+@extends('layouts.app')
 
 @section('title', translate_lang('مراجعة الامتحان') . ' - ' . $exam->title)
 

@@ -1,5 +1,5 @@
 {{-- resources/views/web/exam/exam-details.blade.php --}}
-@extends('layouts.exam')
+@extends('layouts.app')
 
 @section('content')
     <div class="exam-details-section">
