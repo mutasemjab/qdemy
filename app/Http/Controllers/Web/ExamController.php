@@ -22,7 +22,7 @@ class ExamController extends Controller
     use Responses;
 
     public $isApi          = false;
-    public $apiRoutePrefix = API_ROUTE_PREFIX;
+    public $apiRoutePrefix = '';  // Will be set in constructor
 
     private function ensureAuthenticatedForMobile()
     {
@@ -111,6 +111,13 @@ class ExamController extends Controller
                 app()->setLocale($lang);
                 session(['locale' => $lang]);
             }
+        }
+
+        // Set apiRoutePrefix based on isApi flag
+        if ($this->isApi) {
+            $this->apiRoutePrefix = API_ROUTE_PREFIX;  // 'api.'
+        } else {
+            $this->apiRoutePrefix = '';  // Empty string for web routes
         }
     }
 
