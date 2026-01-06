@@ -93,6 +93,12 @@ class ExamController extends Controller
         // IMPORTANT: Call checkIfApi FIRST
         $this->checkIfApi();
 
+        \Log::info('Constructor - After checkIfApi', [
+            'isApi' => $this->isApi,
+            'auth_user_check' => auth('user')->check(),
+            'auth_user_id' => auth('user')->id(),
+        ]);
+
         // API-specific authentication via UserId header
         if ($this->isApi && $request->hasHeader('UserId')) {
             $userId = $request->header('UserId');
@@ -104,6 +110,7 @@ class ExamController extends Controller
             if ($user) {
                 auth('user')->login($user);
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
+                \Log::info('Logged in via UserId header', ['userId' => $userId]);
             }
         }
 
@@ -112,10 +119,28 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
 
+            \Log::info('is_mobile_app session found', [
+                'mobile_user_id_in_session' => session('mobile_user_id'),
+                'auth_user_check' => auth('user')->check(),
+                'auth_user_id' => auth('user')->id()
+            ]);
+
+            // إذا لم يكن mobile_user_id محفوظ، حاول الحصول عليه من auth()
+            if (!session('mobile_user_id') && auth('user')->check()) {
+                \Log::info('mobile_user_id is null, getting from auth()', [
+                    'auth_user_id' => auth('user')->id()
+                ]);
+                session(['mobile_user_id' => auth('user')->id()]);
+            }
+
+            // الآن حاول تسجيل الدخول إذا كان mobile_user_id موجود
             if (!auth('user')->check() && session('mobile_user_id')) {
                 $user = \App\Models\User::find(session('mobile_user_id'));
                 if ($user) {
                     auth('user')->login($user);
+                    \Log::info('Re-authenticated from session mobile_user_id', [
+                        'user_id' => $user->id
+                    ]);
                 }
             }
         }
