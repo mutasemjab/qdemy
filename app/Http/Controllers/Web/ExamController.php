@@ -22,7 +22,7 @@ class ExamController extends Controller
     use Responses;
 
     public $isApi          = false;
-    public $apiRoutePrefix = '';
+    public $apiRoutePrefix = API_ROUTE_PREFIX;
 
     private function ensureAuthenticatedForMobile()
     {
