@@ -136,10 +136,14 @@
                             </p>
                             @if ($can_add_attempt)
                                 <form method="POST"
-                                    action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) . $queryParams }}"
+                                    action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}"
                                     style="margin-top: 12px;">
                                     @if (!$isApi)
                                         @csrf
+                                    @endif
+                                    @if ($isApi)
+                                        <input type="hidden" name="_mobile" value="1">
+                                        <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
                                     @endif
                                     <button type="submit" class="btn btn-success btn-large">
                                         <i class="fas fa-redo"></i>
@@ -158,12 +162,13 @@
                             </p>
                         @else
                             {{-- Start Button --}}
-
-
-                            {{-- Start Button --}}
-                            <form method="POST" action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) . $queryParams }}">
+                            <form method="POST" action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}">
                                 @if (!$isApi)
                                     @csrf
+                                @endif
+                                @if ($isApi)
+                                    <input type="hidden" name="_mobile" value="1">
+                                    <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
                                 @endif
                                 <button type="submit" class="btn btn-success btn-large">
                                     <i class="fas fa-play-circle"></i>
