@@ -28,9 +28,13 @@ class ExamController extends Controller
     {
         // Check if this is coming from mobile webview
         if (
+            request()->hasHeader("UserId") ||
+            request()->hasHeader('X-Mobile-App') ||
             request()->expectsJson() ||
             request()->is('api/*') ||
-            request()->get('_mobile') == 1
+            request()->get('_mobile') == 1 ||
+            session('is_mobile_app')
+
         ) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
@@ -48,7 +52,7 @@ class ExamController extends Controller
         // IMPORTANT: Call checkIfApi FIRST
         $this->checkIfApi();
 
-        // API-specific authentication
+        // API-specific authentication via UserId header
         if ($this->isApi && $request->hasHeader('UserId')) {
             $userId = $request->header('UserId');
 
@@ -62,7 +66,7 @@ class ExamController extends Controller
             }
         }
 
-        // Check session flag for API mode
+        // Persist authentication across requests using session
         if (session('is_mobile_app')) {
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
