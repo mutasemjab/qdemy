@@ -200,6 +200,7 @@ class ExamController extends Controller
     public function show(Exam $exam, $slug = null, ?ExamAttempt $attempt = null)
     {
         $user = auth_student();
+        $user_id = auth('user')->id();
 
         // Check if exam is active and within date range
         if (!$exam->is_available()) {
@@ -220,8 +221,12 @@ class ExamController extends Controller
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
         $can_add_attempt  = $exam->can_add_attempt($user?->id);
 
-        // Get current attempt or create one if needed
-        $current_attempt = $attempt ?? $exam->current_user_attempt();
+        // Get current attempt using auth('user') directly
+        $current_attempt = $attempt ?? $exam->attempts()
+            ->where('user_id', $user_id)
+            ->where('status', 'in_progress')
+            ->whereNull('submitted_at')
+            ->first();
 
         // Check time limit
         if ($current_attempt && $exam->duration_minutes && $current_attempt->started_at) {
@@ -240,24 +245,8 @@ class ExamController extends Controller
         $question_nm  = 1;
 
         if ($current_attempt) {
-
-            // Get questions in the order stored for this attempt
-            $question_order = $current_attempt->question_order;
-            if ($question_order) {
-                $questions = Question::whereIn('id', $question_order)
-                    ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')');
-            } else {
-                $questions = (clone $_questions);
-            }
-            $pgQquestions = (clone $questions)->paginate(1);
-
-            if ($current_attempt->answers?->count() && !request()->get('page')) {
-                // Redirect to exam.take page instead of exam details
-                return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
-            } else {
-                $question_nm = request()->get('page');
-                $question    = $pgQquestions?->first();
-            }
+            // Redirect to exam.take page directly if there's an active attempt
+            return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
         }
 
         return view('web.exam.exam-details', [
@@ -544,8 +533,13 @@ class ExamController extends Controller
             return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.unavailable'));
         }
 
-        // Get current attempt
-        $current_attempt = $exam->current_user_attempt();
+        // Get current attempt using auth('user') directly
+        $user_id = auth('user')->id();
+        $current_attempt = $exam->attempts()
+            ->where('user_id', $user_id)
+            ->where('status', 'in_progress')
+            ->whereNull('submitted_at')
+            ->first();
 
         if (!$current_attempt) {
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
