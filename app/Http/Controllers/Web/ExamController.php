@@ -24,30 +24,6 @@ class ExamController extends Controller
     public $isApi          = false;
     public $apiRoutePrefix = '';  // Will be set in constructor
 
-    private function ensureAuthenticatedForMobile()
-    {
-        // إذا كان المستخدم مسجل دخول بالفعل، لا تفعل شيء
-        if (auth('user')->check()) {
-            return;
-        }
-
-        // جرب الحصول على user ID من parameter _user_id
-        // Try all possible sources: query string, POST body, form data
-        $userId = request()->query('_user_id')
-            ?? request()->post('_user_id')
-            ?? request()->input('_user_id')
-            ?? request('_user_id');
-
-        if ($userId) {
-            $user = \App\Models\User::find($userId);
-
-            if ($user && $user->role_name === 'student') {
-                auth('user')->login($user);
-                session(['mobile_user_id' => $user->id]);
-            }
-        }
-    }
-
     protected function checkIfApi()
     {
         // Check if this is coming from mobile webview
@@ -76,7 +52,20 @@ class ExamController extends Controller
 
     public function __construct(Request $request)
     {
-        // IMPORTANT: Call checkIfApi FIRST
+        $this->middleware(function ($request, $next) {
+
+            $this->checkIfApi();
+
+            // share isApi and api route prefix in all views 
+            view()->share([
+                'isApi' =>  $this->isApi,
+                "apiRoutePrefix" => $this->apiRoutePrefix,
+                'hideHeader' => $this->isApi,
+                'hideFooter' => $this->isApi
+            ]);
+
+            return $next($request);
+        });
         $this->checkIfApi();
 
         // API-specific authentication via UserId header
@@ -92,14 +81,6 @@ class ExamController extends Controller
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
             }
         }
-
-        // share isApi and api route prefix in all views 
-        view()->share([
-            'isApi' =>  $this->isApi,
-            "apiRoutePrefix" => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi
-        ]);
 
         // Handle _user_id from query/form parameters (try all sources)
         $paramUserId = $request->query('_user_id')
@@ -248,8 +229,6 @@ class ExamController extends Controller
 
     public function show(Exam $exam, $slug = null, ?ExamAttempt $attempt)
     {
-        //        $this->ensureAuthenticatedForMobile();
-
         $user = auth_student();
 
         // Check if exam is active and within date range
@@ -344,8 +323,6 @@ class ExamController extends Controller
             }
         }
 
-        //        $this->ensureAuthenticatedForMobile();
-
         $user = auth_student();
 
         // Check if user can start new attempt
@@ -398,8 +375,6 @@ class ExamController extends Controller
     // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
-        //        $this->ensureAuthenticatedForMobile();
-
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {
@@ -637,8 +612,6 @@ class ExamController extends Controller
             }
         }
 
-        //        $this->ensureAuthenticatedForMobile();
-
         $user = auth_student();
 
         $current_attempt = ExamAttempt::where('user_id', $user?->id)
@@ -668,8 +641,6 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
-        //        $this->ensureAuthenticatedForMobile();
-
         $user = auth_student();
 
         if (!$exam->is_available()) {
@@ -764,8 +735,6 @@ class ExamController extends Controller
                 auth('user')->login($user);
             }
         }
-
-        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -874,8 +843,6 @@ class ExamController extends Controller
      */
     public function result(Exam $exam, ExamAttempt $attempt)
     {
-        //        $this->ensureAuthenticatedForMobile();
-
         $user = auth_student();
 
         // Check if user owns this attempt
