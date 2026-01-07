@@ -16,10 +16,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(public_path('assets_front/css/style.css')) }}">
+    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(base_path('assets_front/css/style.css')) }}">
     
     @if (app()->getLocale() === 'en')
-        <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(public_path('assets_front/css/en.css')) }}">
+        <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(base_path('assets_front/css/en.css')) }}">
     @endif
 
     @stack('styles')
