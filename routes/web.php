@@ -6,26 +6,17 @@ use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\BankQuestionController;
 use App\Http\Controllers\Web\CommunityController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\ExamController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Web\PagesController;
 use App\Http\Controllers\Web\CourseController;
-use App\Http\Controllers\Web\LessonController;
-use App\Http\Controllers\Web\ContactController;
-use App\Http\Controllers\Web\PackageController;
-use App\Http\Controllers\Web\ProductController;
-
-use App\Http\Controllers\Web\ProfileController;
 use App\Http\Controllers\Web\TawjihiController;
 use App\Http\Controllers\Web\TeacherController;
 use App\Http\Controllers\Web\ContactUsController;
 use App\Http\Controllers\Web\DoseyatController;
 use App\Http\Controllers\Web\EnrollmentController;
 use App\Http\Controllers\Web\VideoProgressController;
-use App\Http\Controllers\Web\StudentAccountController;
-
 use App\Http\Controllers\Web\PackageAndOfferController;
 use App\Http\Controllers\Web\UniversityProgramController;
 use App\Http\Controllers\Web\ElementaryProgrammController;
@@ -34,8 +25,6 @@ use App\Http\Controllers\Web\MinisterialYearsQuestionController;
 use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\ForgotPasswordController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Models\BannedWord;
-use App\Services\ContentModerationService;
 use Illuminate\Support\Facades\Hash;
 
 /*
@@ -166,7 +155,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
-    Route::get('exam/{exam}/{slug?}/{attempt?}', [ExamController::class, 'show'])->name('exam');
+    Route::get('exam/{exam}/{slug?}', [ExamController::class, 'show'])->name('exam');
 
     Route::get('exam-history', [ExamController::class, 'history'])->name('exam.history')->middleware('auth:user');
 

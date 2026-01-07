@@ -221,7 +221,7 @@ class ExamController extends Controller
         ]);
     }
 
-    public function show(Exam $exam, $slug = null, ?ExamAttempt $attempt)
+    public function show(Exam $exam, $slug = null, ?ExamAttempt $attempt = null)
     {
         $user = auth_student();
 
