@@ -275,7 +275,7 @@ class ExamController extends Controller
         $current_attempt = $attempt ?? $exam->current_user_attempt();
 
         // Check time limit
-        if ($current_attempt && $exam->duration_minutes) {
+        if ($current_attempt && $exam->duration_minutes && $current_attempt->started_at) {
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
@@ -411,7 +411,7 @@ class ExamController extends Controller
         }
 
         // Check time limit
-        if ($exam->duration_minutes) {
+        if ($exam->duration_minutes && $current_attempt->started_at) {
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
@@ -692,7 +692,7 @@ class ExamController extends Controller
         }
 
         // Check time limit
-        if ($exam->duration_minutes) {
+        if ($exam->duration_minutes && $current_attempt->started_at) {
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
@@ -736,7 +736,7 @@ class ExamController extends Controller
 
         // Calculate remaining time in seconds
         $remainingSeconds = 0;
-        if ($exam->duration_minutes) {
+        if ($exam->duration_minutes && $current_attempt->started_at) {
             $elapsed_seconds = $current_attempt->started_at->diffInSeconds(now());
             $total_seconds = $exam->duration_minutes * 60;
             $remainingSeconds = max(0, $total_seconds - $elapsed_seconds);
@@ -799,7 +799,7 @@ class ExamController extends Controller
         $question = Question::findOrFail($request->question_id);
 
         // Check time limit (in seconds)
-        if ($exam->duration_minutes) {
+        if ($exam->duration_minutes && $current_attempt->started_at) {
             $elapsed_seconds = $current_attempt->started_at->diffInSeconds(now());
             $total_seconds = $exam->duration_minutes * 60;
 
