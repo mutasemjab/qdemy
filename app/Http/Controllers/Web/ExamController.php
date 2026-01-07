@@ -247,7 +247,7 @@ class ExamController extends Controller
 
    public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
     {
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -347,7 +347,7 @@ class ExamController extends Controller
             }
         }
 
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -401,7 +401,7 @@ class ExamController extends Controller
     // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
@@ -640,7 +640,7 @@ class ExamController extends Controller
             }
         }
 
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -671,7 +671,7 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -772,7 +772,7 @@ class ExamController extends Controller
             }
         }
 
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -882,7 +882,7 @@ class ExamController extends Controller
      */
     public function result(Exam $exam, ExamAttempt $attempt)
     {
-        $this->ensureAuthenticatedForMobile();
+//        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
