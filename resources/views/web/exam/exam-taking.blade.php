@@ -998,6 +998,12 @@ function saveAnswerToBackend(questionId, answerType, answer) {
 
     alert('📤 إرسال الطلب إلى: ' + examData.saveAnswerUrl);
 
+    console.log('Fetch started for:', examData.saveAnswerUrl);
+    console.log('FormData contents:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key + ': ' + value);
+    }
+
     fetch(examData.saveAnswerUrl, {
         method: 'POST',
         headers: {
@@ -1006,10 +1012,15 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         body: formData
     })
     .then(response => {
+        console.log('Response received:', response.status, response.statusText);
         alert('📡 تم الرد من السيرفر - Status: ' + response.status);
-        return response.json();
+        return response.json().catch(err => {
+            alert('❌ خطأ في قراءة الرد: ' + err.message);
+            throw err;
+        });
     })
     .then(data => {
+        console.log('Response data:', data);
         alert('✅ تم استقبال الرد: ' + JSON.stringify(data));
         if (data.success) {
             currentState.answers[questionId].saved = true;
@@ -1023,7 +1034,8 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         }
     })
     .catch(error => {
-        alert('❌ خطأ في الاتصال: ' + error.message);
+        console.error('Fetch error:', error);
+        alert('❌ خطأ في الاتصال: ' + error.message + '\n\nStack: ' + error.stack);
     })
     .finally(() => {
         currentState.isSaving = false;
