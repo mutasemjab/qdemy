@@ -33,37 +33,42 @@
     @yield('styles')
 
     <style>
-        /* Font-face declarations for ALL OTF fonts */
+        /* CRITICAL: Disable font synthesis */
+        * {
+            font-synthesis: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Force exact font matching */
         @font-face {
             font-family: 'Somar';
-            src: url('{{ asset('assets_front/fonts/Somar-Regular.otf') }}') format('opentype');
+            src: url('/assets_front/fonts/Somar-Regular.otf') format('opentype');
             font-weight: 400;
             font-style: normal;
             font-display: block;
+            font-synthesis: none;
+            /* Don't fake bold */
         }
 
         @font-face {
             font-family: 'Somar';
-            src: url('{{ asset('assets_front/fonts/Somar-Bold.otf') }}') format('opentype');
+            src: url('/assets_front/fonts/Somar-Bold.otf') format('opentype');
             font-weight: 700;
             font-style: normal;
             font-display: block;
+            font-synthesis: none;
+            /* Use actual bold file */
         }
 
         @font-face {
             font-family: 'Somar';
-            src: url('{{ asset('assets_front/fonts/Somar-Black.otf') }}') format('opentype');
+            src: url('/assets_front/fonts/Somar-Black.otf') format('opentype');
             font-weight: 900;
             font-style: normal;
             font-display: block;
-        }
-
-        /* CRITICAL: Prevent font size jumping */
-        * {
-            -webkit-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            text-size-adjust: 100%;
+            font-synthesis: none;
+            /* Use actual black file */
         }
 
         html {
