@@ -1011,7 +1011,6 @@ async function saveAnswerToBackend(questionId, answerType, answer) {
         const response = await fetch(examData.saveAnswerUrl, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': examData.csrfToken,
                 'Accept': 'application/json'
             },
             body: formData,
