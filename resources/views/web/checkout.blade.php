@@ -410,7 +410,9 @@
                 activateCard: @json(__('front.activate_card')),
                 confirmDeletePackage: @json(__('front.confirm_delete_package')),
                 packageDeletedSuccess: @json(__('front.package_deleted_success')),
-                deletePackage: @json(__('front.delete_package'))
+                deletePackage: @json(__('front.delete_package')),
+                paymentSubmitted: @json(__('front.payment_submitted')),
+                cashPaymentSuccess: @json(__('front.cash_payment_success'))
             };
 
             const tabs = document.querySelectorAll('.pay-tabs .tab');
@@ -551,7 +553,45 @@
             if (paymentForm) {
                 paymentForm.addEventListener('submit', function(e) {
                     e.preventDefault();
+
+                    const activeTab = document.querySelector('.pay-tabs .tab.active');
+                    const paymentType = activeTab?.dataset.type;
+
+                    if (paymentType === 'cash') {
+                        handleCashPayment();
+                    } else if (paymentType === 'visa') {
+                        alert(translations.paymentSubmitted);
+                    }
                 });
+            }
+
+            async function handleCashPayment() {
+                try {
+                    const response = await fetch('{{ route("payment.cash") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            payment_type: @json($is_package ? 'package' : 'courses')
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data && data.success && data.whatsapp_url) {
+                        alert(translations.cashPaymentSuccess);
+                        window.open(data.whatsapp_url, '_blank');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        alert(data?.message || translations.errorOccurred);
+                    }
+                } catch (error) {
+                    alert(translations.serverConnectionError);
+                }
             }
 
             recalculateTotals();

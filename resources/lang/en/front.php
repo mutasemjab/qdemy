@@ -674,4 +674,12 @@ return array(
     'submitting_exam' => 'Submitting exam...',
     'error_submitting_exam' => 'Error submitting exam',
     'exam_data_invalid' => 'Invalid exam data. Please try again.',
+
+    // Cash Payment - Translations
+    'payment_submitted' => 'Your request has been sent successfully',
+    'cash_payment_success' => 'Redirecting to WhatsApp',
+    'login_first' => 'Please log in first',
+    'cart_empty' => 'Cart is empty',
+    'no_package_in_cart' => 'No package in cart',
+    'payment_error' => 'Error processing your request',
 );

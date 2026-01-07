@@ -311,6 +311,109 @@ class EnrollmentController extends Controller
     }
 
     /**
+     * الدفع النقدي عبر WhatsApp
+     */
+    public function paymentWithCash(Request $request)
+    {
+        $user = auth_student();
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => translate_lang('login_first')
+            ]);
+        }
+
+        $paymentType = $request->input('payment_type', 'courses');
+
+        if ($paymentType === 'package') {
+            $packageCart = CartRepository()->getPackageCart();
+            if (!$packageCart || empty($packageCart['courses'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => translate_lang('no_package_in_cart')
+                ]);
+            }
+
+            $courses = Course::whereIn('id', $packageCart['courses'] ?? [])->get();
+            $total = $packageCart['package_price'];
+        } else {
+            $courseIds = CartRepository()->getCourseCart();
+            $courses = Course::whereIn('id', $courseIds)->get();
+
+            if ($courses->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => translate_lang('cart_empty')
+                ]);
+            }
+
+            $total = $courses->sum('selling_price');
+        }
+
+        // رقم WhatsApp بكود الأردن
+        $whatsappNumber = '962775743580';
+
+        // بناء رسالة WhatsApp مع روابط الكورسات
+        $message = "مرحبا، أود الاشتراك في الكورسات التالية:\n\n";
+
+        foreach ($courses as $index => $course) {
+            $courseUrl = route('course', ['course' => $course->id, 'slug' => $course->slug]);
+            $message .= ($index + 1) . ". " . $course->title_ar . "\n";
+            $message .= "الرابط: " . $courseUrl . "\n";
+            $message .= "السعر: " . $course->selling_price . " " . CURRENCY . "\n\n";
+        }
+
+        $message .= "الإجمالي: " . $total . " " . CURRENCY . "\n";
+        $message .= "الاسم: " . $user->name . "\n";
+        $message .= "الهاتف: " . ($user->phone ?? 'لم يتم تحديده');
+
+        // تحويل الرقم إلى صيغة WhatsApp
+        $whatsappUrl = 'https://wa.me/' . $whatsappNumber . '?text=' . urlencode($message);
+
+        // حفظ سجل الطلب
+        DB::beginTransaction();
+        try {
+            $courseList = $courses->pluck('id')->toArray();
+
+            $payment = CoursePayment::create([
+                'user_id' => $user->id,
+                'course_no' => count($courseList),
+                'sum_amount' => $total,
+                'payment_method' => 'cash',
+                'status' => 'pending',
+                'deal_type' => $paymentType === 'package' ? 'package' : 'course'
+            ]);
+
+            foreach ($courses as $course) {
+                CoursePaymentDetail::create([
+                    'user_id' => $user->id,
+                    'course_id' => $course->id,
+                    'teacher_id' => $course->teacher_id ?? null,
+                    'amount' => $paymentType === 'package' ? null : $course->selling_price,
+                    'notes' => 'طلب دفع نقدي عبر WhatsApp'
+                ]);
+            }
+
+            CartRepository()->clearCart();
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'whatsapp_url' => $whatsappUrl,
+                'message' => translate_lang('cash_payment_success')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => translate_lang('payment_error')
+            ]);
+        }
+    }
+
+    /**
      * الدفع بالبطاقة للباكدج
      */
     public function paymentForPackageWithCard(Request $request)

@@ -165,7 +165,7 @@ class ParentController extends Controller
             $averageProgress = 0;
             if ($totalCourses > 0) {
                 $totalProgress = $enrolledCourses->sum(function ($enrollment) use ($child) {
-                    return $enrollment->course ? $enrollment->course->calculateCourseProgress($child->id) : 0;
+                    return $enrollment->course ? $enrollment->course->calculateCourseProgress($child->id)['total_progress'] : 0;
                 });
                 $averageProgress = $totalProgress / $totalCourses;
             }

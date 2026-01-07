@@ -141,8 +141,7 @@ class ExamController extends Controller
                         $q->whereNull('end_date')
                             ->orWhere('end_date', '>=', $now);
                     });
-            })
-            ->where('course_id', null);
+            });
 
         // Program filter
         if ($request->filled('programm_id')) {

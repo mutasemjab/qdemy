@@ -672,4 +672,12 @@ return array (
     'submitting_exam' => 'جاري تسليم الامتحان...',
     'error_submitting_exam' => 'حدث خطأ أثناء تسليم الامتحان',
     'exam_data_invalid' => 'بيانات الامتحان غير صحيحة. يرجى المحاولة مرة أخرى.',
+
+    // Cash Payment - Translations
+    'payment_submitted' => 'تم إرسال طلبك بنجاح',
+    'cash_payment_success' => 'يتم تحويلك إلى WhatsApp',
+    'login_first' => 'يجب تسجيل الدخول أولاً',
+    'cart_empty' => 'السلة فارغة',
+    'no_package_in_cart' => 'لا توجد باكدج في السلة',
+    'payment_error' => 'حدث خطأ أثناء معالجة الطلب',
 );

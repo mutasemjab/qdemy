@@ -585,9 +585,14 @@ class TeacherController extends Controller
     public function examsMethod(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Exam::with(['course', 'subject', 'section'])
-                     ->where('created_by', $user->id);
+                     ->where(function($q) use ($user) {
+                         $q->where('created_by', $user->id)
+                           ->orWhereHas('course', function($courseQ) use ($user) {
+                               $courseQ->where('teacher_id', $user->id);
+                           });
+                     });
 
         // Filter by course
         if ($request->filled('course_id')) {

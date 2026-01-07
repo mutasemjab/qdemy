@@ -129,6 +129,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/activate-card', [EnrollmentController::class, 'activateCard'])->name('activate.card');
         Route::post('/payment-for-course-with-card', [EnrollmentController::class, 'paymentForCourseWithCard'])->name('payment.card');
         Route::post('/payment-for-package-with-card', [EnrollmentController::class, 'paymentForPackageWithCard'])->name('payment.package.card');
+        Route::post('/payment-cash', [EnrollmentController::class, 'paymentWithCash'])->name('payment.cash');
         Route::post('/remove-course', [EnrollmentController::class, 'removeCourseFromCart'])->name('remove.course');
         Route::post('/remove-package', [EnrollmentController::class, 'removeCartFromAnyPackage'])->name('remove.package');
         Route::post('/remove-course-from-package', [EnrollmentController::class, 'removeCourseFromPackage'])->name('remove.course.from.package');

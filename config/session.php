@@ -133,6 +133,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Guard-Specific Session Cookies
+    |--------------------------------------------------------------------------
+    | Each authentication guard should use its own session cookie to prevent
+    | interference when multiple users are logged in simultaneously
+    */
+    'guard_cookies' => [
+        'web' => 'qdemy_web_session',
+        'admin' => 'qdemy_admin_session',
+        'user' => 'qdemy_user_session',
+        'user-api' => 'qdemy_api_session',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Session Cookie Path
     |--------------------------------------------------------------------------
     |
