@@ -103,7 +103,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}" class="action-btn">
+                                        <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}" class="action-btn">
                                             <i class="fas fa-eye"></i>
                                             {{ __('front.review') }}
                                         </a>

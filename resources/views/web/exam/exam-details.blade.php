@@ -93,7 +93,7 @@
 
                         @if ($current_attempt && !$current_attempt->submitted_at)
                             {{-- Continue Button --}}
-                            <a href="{{ route('exam.take', ['exam' => $exam->id]) }}" class="btn btn-primary btn-large">
+                            <a href="{{ route($apiRoutePrefix . 'exam.take', ['exam' => $exam->id]) }}" class="btn btn-primary btn-large">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.continue_exam') }}
                             </a>
@@ -102,7 +102,7 @@
                             </p>
                         @elseif($result && $exam->show_results_immediately && $result->status === 'completed')
                             {{-- View Results Button --}}
-                            <a href="{{ route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="btn btn-info btn-large">
+                            <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="btn btn-info btn-large">
                                 <i class="fas fa-chart-bar"></i>
                                 {{ __('front.view_results') }}
                             </a>
