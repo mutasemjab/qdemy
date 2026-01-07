@@ -403,13 +403,14 @@ class ExamController extends Controller
     {
         $this->ensureAuthenticatedForMobile();
 
-        $user = auth_student();
-
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', translate_lang('لا توجد محاولة جارية'));
+            $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+            if ($this->isApi) {
+                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            }
+            return redirect($redirectUrl)->with('error', translate_lang('لا توجد محاولة جارية'));
         }
 
         // Check time limit
@@ -417,8 +418,11 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                    ->with('error', translate_lang('تم انتهاء الوقت المحدد'));
+                $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+                if ($this->isApi) {
+                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                }
+                return redirect($redirectUrl)->with('error', translate_lang('تم انتهاء الوقت المحدد'));
             }
         }
 
@@ -502,8 +506,11 @@ class ExamController extends Controller
                 // Auto-submit exam if all questions are answered
                 $this->submit_exam($current_attempt);
                 DB::commit();
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                    ->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
+                $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+                if ($this->isApi) {
+                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                }
+                return redirect($redirectUrl)->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
             } else {
                 DB::commit();
             }
@@ -520,7 +527,7 @@ class ExamController extends Controller
 
         if ($this->isApi) {
             // Force API URL with query parameter to maintain API mode
-            $redirectUrl = url("/api/v1/exam/{$exam->id}/{$exam->slug}") . "?page={$next_page}&_api=1";
+            $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]) . "?page={$next_page}&_mobile=1&_user_id=" . auth('user')->id();
         } else {
             $redirectUrl = route('exam.take', ['exam' => $exam->id]) . "?page={$next_page}";
         }
@@ -669,15 +676,22 @@ class ExamController extends Controller
         $user = auth_student();
 
         if (!$exam->is_available()) {
-            return redirect()->route('exams')->with('error', __('front.unavailable'));
+            $redirectUrl = route('exams');
+            if ($this->isApi) {
+                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            }
+            return redirect($redirectUrl)->with('error', __('front.unavailable'));
         }
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
 
         if (!$current_attempt) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])
-                ->with('error', __('front.no_ongoing_attempt'));
+            $redirectUrl = route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
+            if ($this->isApi) {
+                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            }
+            return redirect($redirectUrl)->with('error', __('front.no_ongoing_attempt'));
         }
 
         // Check time limit
@@ -685,7 +699,11 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+                $redirectUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+                if ($this->isApi) {
+                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                }
+                return redirect($redirectUrl);
             }
         }
 
@@ -694,7 +712,11 @@ class ExamController extends Controller
 
         // Ensure question_order is a valid array
         if (!is_array($question_order) || empty($question_order)) {
-            return redirect()->route('exams')->with('error', __('front.exam_data_invalid'));
+            $redirectUrl = route('exams');
+            if ($this->isApi) {
+                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            }
+            return redirect($redirectUrl)->with('error', __('front.exam_data_invalid'));
         }
 
         $allQuestions = Question::whereIn('id', $question_order)
@@ -867,6 +889,13 @@ class ExamController extends Controller
         // Check if user owns this attempt
         if ($attempt->user_id !== $user?->id) {
             abort(403);
+        }
+
+        // Ensure mobile query params are preserved
+        if ($this->isApi && !request()->has('_user_id')) {
+            $redirectUrl = route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]);
+            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+            return redirect($redirectUrl);
         }
 
         // Get all questions in the order they were presented
