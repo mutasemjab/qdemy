@@ -973,63 +973,90 @@ function handleAnswerChange(question, answer) {
 
 // ==================== AJAX SAVE ====================
 
-function saveAnswerToBackend(questionId, answerType, answer) {
-    if (currentState.isSaving) return;
+async function saveAnswerToBackend(questionId, answerType, answer) {
+    try {
+        if (currentState.isSaving) {
+            alert('⏳ جاري حفظ إجابة أخرى، انتظر قليلاً');
+            return;
+        }
 
-    currentState.isSaving = true;
+        currentState.isSaving = true;
 
-    const formData = new FormData();
-    formData.append('_token', examData.csrfToken);
-    @if($isApi)
-        formData.append('_mobile', '1');
-        formData.append('_user_id', '{{ auth("user")->id() }}');
-    @endif
-    formData.append('question_id', questionId);
-    formData.append('answer_type', answerType);
+        const formData = new FormData();
+        formData.append('_token', examData.csrfToken);
+        @if($isApi)
+            formData.append('_mobile', '1');
+            formData.append('_user_id', '{{ auth("user")->id() }}');
+        @endif
+        formData.append('question_id', questionId);
+        formData.append('answer_type', answerType);
 
-    if (answerType === 'essay') {
-        formData.append('answer', answer);
-    } else if (answerType === 'true_false') {
-        formData.append('answer', answer);
-    } else {
-        answer.forEach(opt => formData.append('answer[]', opt));
-    }
+        if (answerType === 'essay') {
+            formData.append('answer', answer);
+        } else if (answerType === 'true_false') {
+            formData.append('answer', answer);
+        } else {
+            if (Array.isArray(answer)) {
+                answer.forEach(opt => formData.append('answer[]', opt));
+            }
+        }
 
-    alert('جاهز نبعت الإجابة للـ URL: ' + examData.saveAnswerUrl);
+        // التفاصيل كاملة
+        alert('📤 جاهز نبعت الإجابة:\n' +
+              'URL: ' + examData.saveAnswerUrl + '\n' +
+              'Question ID: ' + questionId + '\n' +
+              'Answer Type: ' + answerType + '\n' +
+              'Is API: ' + examData.isApi);
 
-    fetch(examData.saveAnswerUrl, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': examData.csrfToken,
-            'Accept': 'application/json'
-        },
-        body: formData,
-        credentials: 'same-origin'
-    })
-    .then(response => {
-        alert('استقبلنا رد من السيرفر - Status: ' + response.status);
-        return response.json();
-    })
-    .then(data => {
-        alert('البيانات: ' + JSON.stringify(data));
+        const response = await fetch(examData.saveAnswerUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': examData.csrfToken,
+                'Accept': 'application/json'
+            },
+            body: formData,
+            credentials: 'same-origin'
+        });
+
+        alert('📥 رد من السيرفر:\n' +
+              'Status: ' + response.status + '\n' +
+              'Status Text: ' + response.statusText + '\n' +
+              'Content-Type: ' + (response.headers.get('content-type') || 'Unknown'));
+
+        // Check if response is HTML (error/redirect)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('text/html')) {
+            const htmlContent = await response.text();
+            alert('❌ خطأ: السيرفر أرجع HTML بدل JSON!\n\n' +
+                  'أول 300 حرف:\n' + htmlContent.substring(0, 300) + '\n\n...');
+            return;
+        }
+
+        const data = await response.json();
+
+        alert('📋 البيانات من السيرفر:\n' + JSON.stringify(data, null, 2));
+
         if (data.success) {
             currentState.answers[questionId].saved = true;
             showAutoSaveNotification();
-            alert('تم حفظ الإجابة بنجاح!');
+            alert('✅ تم حفظ الإجابة بنجاح!');
         } else {
-            alert('فشل حفظ الإجابة: ' + (data.message || 'خطأ غير معروف'));
+            alert('❌ فشل حفظ الإجابة:\n' + (data.message || 'خطأ غير معروف'));
             if (data.expired) {
-                alert('{{ __("front.time_expired") }}');
+                alert('⏰ انتهى الوقت المحدد للامتحان');
                 window.location.reload();
             }
         }
-    })
-    .catch(error => {
-        alert('خطأ في الاتصال: ' + error.toString());
-    })
-    .finally(() => {
+
+    } catch (error) {
+        alert('💥 خطأ في العملية:\n\n' +
+              'Message: ' + error.message + '\n\n' +
+              'Type: ' + error.name + '\n\n' +
+              'Stack: ' + (error.stack ? error.stack.substring(0, 200) : 'N/A') + '\n\n' +
+              'تفاصيل كاملة: ' + JSON.stringify(error, null, 2));
+    } finally {
         currentState.isSaving = false;
-    });
+    }
 }
 
 function showAutoSaveNotification() {
