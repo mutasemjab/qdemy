@@ -1,3 +1,9 @@
+@php
+    if ($isApi == true) {
+        $hideFooter = true;
+        $hideHeader = true;
+    }
+@endphp
 {{-- resources/views/web/exam/exam-taking.blade.php --}}
 @extends('layouts.app')
 
@@ -9,14 +15,13 @@
 @endphp
 
 @section('content')
+    {{-- DEBUG: Student Info --}}
+    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
+    @dump(auth('user')->user())
 
-{{-- DEBUG: Student Info --}}
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-@dump(auth('user')->user())
-
-{{-- DEBUG: Session Data --}}
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-@dump(session()->all())
+    {{-- DEBUG: Session Data --}}
+    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
+    @dump(session()->all())
 
     <div class="exam-taking-section" style="display: block;">
         <!-- Exam Header -->
@@ -789,10 +794,10 @@
 
             <div class="question-content">
                 ${photoUrl ? `
-                                <div class="question-image">
-                                    <img src="${photoUrl}" alt="Question Image" />
-                                </div>
-                            ` : ''}
+                                        <div class="question-image">
+                                            <img src="${photoUrl}" alt="Question Image" />
+                                        </div>
+                                    ` : ''}
 
                 <div class="question-text">
                     ${escapeHtml(questionText) || '{{ __('front.question_text_not_available') }}'}

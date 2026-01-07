@@ -1,3 +1,9 @@
+@php
+    if ($isApi == true) {
+        $hideFooter = true;
+        $hideHeader = true;
+    }
+@endphp
 {{-- resources/views/web/exam/exam-details.blade.php --}}
 @extends('layouts.app')
 
@@ -13,13 +19,13 @@
 
 @section('content')
 
-{{-- DEBUG: Student Info --}}
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-@dump(auth('user')->user())
+    {{-- DEBUG: Student Info --}}
+    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
+    @dump(auth('user')->user())
 
-{{-- DEBUG: Session Data --}}
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-@dump(session()->all())
+    {{-- DEBUG: Session Data --}}
+    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
+    @dump(session()->all())
 
     <div class="exam-details-section">
         <div class="exam-details-container">
@@ -141,8 +147,7 @@
                                 //     $resultUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
                                 // }
                             @endphp
-                            <a href="{{ $resultUrl }}"
-                                class="btn btn-info btn-large">
+                            <a href="{{ $resultUrl }}" class="btn btn-info btn-large">
                                 <i class="fas fa-chart-bar"></i>
                                 {{ __('front.view_results') }}
                             </a>
@@ -179,7 +184,8 @@
                             </p>
                         @else
                             {{-- Start Button --}}
-                            <form method="POST" action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}">
+                            <form method="POST"
+                                action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}">
                                 @if (!$isApi)
                                     @csrf
                                 @endif

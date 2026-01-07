@@ -1,11 +1,13 @@
-@if ($isApi == true)
-    @php $hideFooter = true; @endphp
-    @php $hideHeader = true; @endphp
-@endif
+@php
+    if ($isApi == true) {
+        $hideFooter = true;
+        $hideHeader = true;
+    }
+@endphp
 
 @php
     $queryParams = '';
-    if(isset($isApi) && $isApi) {
+    if (isset($isApi) && $isApi) {
         $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
     }
 @endphp
@@ -92,7 +94,8 @@
 
                     @if (!$result && !$current_attempts->count() && $can_add_attempt)
                         <div class="cmty-actions">
-                            <form action="{{ route('exam.start', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}"
+                            <form
+                                action="{{ route('exam.start', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}"
                                 method='post'>
                                 @csrf
                                 <button type='submit' class="cmty-like">
@@ -140,7 +143,8 @@
 
                     @if (!$current_attempts->count() && $can_add_attempt)
                         <div class="cmty-actions">
-                            <form action="{{ route('exam.start', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}"
+                            <form
+                                action="{{ route('exam.start', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}"
                                 method='post'>
                                 @csrf
                                 <button type='submit' class="cmty-like">{{ translate_lang('محاولة جديدة') }}</button>
@@ -247,7 +251,9 @@
                     <!-- Finish Exam Button -->
                     @if ($current_attempt->answers->count() > 0)
                         <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                            <form action="{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}" method='post'
+                            <form
+                                action="{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}"
+                                method='post'
                                 onsubmit="return confirm('{{ translate_lang('هل أنت متأكد من تسليم الامتحان؟ لن تتمكن من التراجع.') }}')">
                                 @csrf
                                 <button type='submit' class="cmty-like"
