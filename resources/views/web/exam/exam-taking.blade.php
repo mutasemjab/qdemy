@@ -583,9 +583,11 @@ const examData = {
     title: "{{ $exam->title }}",
     totalQuestions: {{ $allQuestions->count() }},
     remainingSeconds: {{ $remainingSeconds }},
-    saveAnswerUrl: "{{ route('exam.save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
+    saveAnswerUrl: "{{ route($apiRoutePrefix . 'exam.save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
     finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}",
-    csrfToken: "{{ csrf_token() }}"
+    csrfToken: "{{ csrf_token() }}",
+    isApi: {{ $isApi ? 'true' : 'false' }},
+    userId: {{ auth('user')->id() ?? 'null' }}
 };
 
 
@@ -996,9 +998,11 @@ function saveAnswerToBackend(questionId, answerType, answer) {
     fetch(examData.saveAnswerUrl, {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': examData.csrfToken
+            'X-CSRF-TOKEN': examData.csrfToken,
+            'Accept': 'application/json'
         },
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
     })
     .then(response => response.json())
     .then(data => {

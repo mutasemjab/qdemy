@@ -334,8 +334,17 @@ class ExamController extends Controller
         ]);
     }
 
-    public function start_exam(Exam $exam)
+    public function start_exam(Request $request, Exam $exam)
     {
+        // Try to authenticate from _user_id parameter first (for mobile WebView)
+        $userId = $request->input('_user_id');
+        if ($userId && !auth('user')->check()) {
+            $user = \App\Models\User::find($userId);
+            if ($user && $user->role_name === 'student') {
+                auth('user')->login($user);
+            }
+        }
+
         $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
@@ -613,6 +622,15 @@ class ExamController extends Controller
     // تسليم الامتحان
     public function finish_exam(Request $request, Exam $exam)
     {
+        // Try to authenticate from _user_id parameter first (for mobile WebView)
+        $userId = $request->input('_user_id');
+        if ($userId && !auth('user')->check()) {
+            $user = \App\Models\User::find($userId);
+            if ($user && $user->role_name === 'student') {
+                auth('user')->login($user);
+            }
+        }
+
         $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
@@ -721,6 +739,15 @@ class ExamController extends Controller
      */
     public function save_answer_ajax(Request $request, Exam $exam)
     {
+        // Try to authenticate from _user_id parameter first (for mobile WebView)
+        $userId = $request->input('_user_id');
+        if ($userId && !auth('user')->check()) {
+            $user = \App\Models\User::find($userId);
+            if ($user && $user->role_name === 'student') {
+                auth('user')->login($user);
+            }
+        }
+
         $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();

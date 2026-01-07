@@ -15,11 +15,15 @@ class VerifyCsrfToken extends Middleware
         // Add specific localized routes if needed
         'en/register',
         'ar/register',
-        'en/login', 
+        'en/login',
         'ar/login',
         'en/password/reset',
         'ar/password/reset',
         'api/*',
+        // Exam routes for mobile WebView (they handle their own authentication via _user_id)
+        '*/exam/*/save-answer-ajax',
+        '*/exam/*/finish',
+        '*/exam/*/start',
     ];
 
     /**

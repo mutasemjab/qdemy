@@ -322,7 +322,7 @@ Route::prefix('v1/exam')
         Route::post('/{exam}/start', [ExamController::class, 'start_exam'])->name('exam.start');
         Route::get('/{exam}/take', [ExamController::class, 'take'])->name('exam.take');
         Route::post('/{exam}/question/{question}/answer', [ExamController::class, 'answer_question'])->name('answer.question');
-        Route::post('/{exam}/save-answer-ajax', [ExamController::class, 'save_answer_ajax'])->name('save.answer.ajax');
+        Route::post('/{exam}/save-answer-ajax', [ExamController::class, 'save_answer_ajax'])->name('exam.save.answer.ajax');
         Route::post('/{exam}/finish', [ExamController::class, 'finish_exam'])->name('finish.exam');
         Route::get('/{exam}/result/{attempt}', [ExamController::class, 'result'])->name('exam.result');
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
