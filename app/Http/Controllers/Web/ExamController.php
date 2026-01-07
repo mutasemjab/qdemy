@@ -763,6 +763,14 @@ class ExamController extends Controller
      */
     public function save_answer_ajax(Request $request, Exam $exam)
     {
+        \Log::info('save_answer_ajax called', [
+            'exam_id' => $exam->id,
+            'has_question_id' => $request->has('question_id'),
+            'user_authenticated' => auth('user')->check(),
+            'request_path' => $request->path(),
+            'route_name' => \Route::currentRouteName()
+        ]);
+
         // Try to authenticate from _user_id parameter first (for mobile WebView)
         $userId = $request->input('_user_id');
         if ($userId && !auth('user')->check()) {
@@ -775,6 +783,11 @@ class ExamController extends Controller
         $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
+
+        \Log::info('save_answer_ajax authenticated', [
+            'user_id' => $user?->id,
+            'exam_id' => $exam->id
+        ]);
 
         // If still not authenticated, return error
         if (!$user) {

@@ -995,6 +995,8 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         answer.forEach(opt => formData.append('answer[]', opt));
     }
 
+    alert('جاهز نبعت الإجابة للـ URL: ' + examData.saveAnswerUrl);
+
     fetch(examData.saveAnswerUrl, {
         method: 'POST',
         headers: {
@@ -1004,13 +1006,18 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         body: formData,
         credentials: 'same-origin'
     })
-    .then(response => response.json())
+    .then(response => {
+        alert('استقبلنا رد من السيرفر - Status: ' + response.status);
+        return response.json();
+    })
     .then(data => {
+        alert('البيانات: ' + JSON.stringify(data));
         if (data.success) {
             currentState.answers[questionId].saved = true;
             showAutoSaveNotification();
+            alert('تم حفظ الإجابة بنجاح!');
         } else {
-            console.error('Failed to save answer:', data.message);
+            alert('فشل حفظ الإجابة: ' + (data.message || 'خطأ غير معروف'));
             if (data.expired) {
                 alert('{{ __("front.time_expired") }}');
                 window.location.reload();
@@ -1018,7 +1025,7 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         }
     })
     .catch(error => {
-        console.error('Error saving answer:', error);
+        alert('خطأ في الاتصال: ' + error.toString());
     })
     .finally(() => {
         currentState.isSaving = false;
