@@ -21,14 +21,14 @@
 }
 /* Reset and base font configuration */
 html {
-  font-size: 16px; /* Base size for all calculations */
+  font-size: 25px; /* Base size for all calculations */
   -webkit-text-size-adjust: 100%; /* Prevent iOS text size adjustment */
   -moz-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;
 }
 
 body {
-  font-size: 16px; /* Explicit body font size */
+  font-size: 25px; /* Explicit body font size */
   line-height: 1.6;
   font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
   -webkit-font-smoothing: antialiased;
@@ -66,15 +66,15 @@ h6 {
 
 @media (min-width: 1600px) {
   html {
-    font-size: 18px; /* Larger on big screens */
+    font-size: 25px; /* Larger on big screens */
   }
   
   body {
-    font-size: 18px;
+    font-size: 25px;
   }
   
   p, li {
-    font-size: 18px;
+    font-size: 25px;
   }
 }
 

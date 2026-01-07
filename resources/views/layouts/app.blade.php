@@ -72,11 +72,11 @@
         }
 
         html {
-            font-size: 16px !important;
+            font-size: 25px !important;
         }
 
         body {
-            font-size: 16px !important;
+            font-size: 25px !important;
             min-height: 100vh;
             margin: 0;
             direction: rtl;
@@ -159,11 +159,11 @@
         /* Responsive font sizes */
         @media (min-width: 1600px) {
             html {
-                font-size: 18px !important;
+                font-size: 25px !important;
             }
 
             body {
-                font-size: 18px !important;
+                font-size: 25px !important;
             }
         }
     </style>
