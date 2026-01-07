@@ -48,6 +48,8 @@ class ExamController extends Controller
             'found_user_id' => $userId,
             'request_method' => request()->method(),
             'request_all' => request()->all(),
+            'query_params' => request()->query(),
+            'post_params' => request()->post(),
         ]);
 
         if ($userId) {
