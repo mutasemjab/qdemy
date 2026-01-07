@@ -1017,13 +1017,19 @@ async function saveAnswerToBackend(questionId, answerType, answer) {
             credentials: 'same-origin'
         });
 
+        let contentType = '';
+        try {
+            contentType = response.headers ? response.headers.get('content-type') : '';
+        } catch(e) {
+            contentType = '';
+        }
+
         alert('📥 رد من السيرفر:\n' +
               'Status: ' + response.status + '\n' +
               'Status Text: ' + response.statusText + '\n' +
-              'Content-Type: ' + (response.headers.get('content-type') || 'Unknown'));
+              'Content-Type: ' + (contentType || 'Unknown'));
 
         // Check if response is HTML (error/redirect)
-        const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('text/html')) {
             const htmlContent = await response.text();
             alert('❌ خطأ: السيرفر أرجع HTML بدل JSON!\n\n' +
