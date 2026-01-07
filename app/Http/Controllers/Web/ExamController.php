@@ -531,44 +531,27 @@ class ExamController extends Controller
                 'status'       => 'completed',
             ]);
 
-            // Check if this is the FIRST attempt (for tracking progress only on first submission)
-            $isFirstAttempt = ContentUserProgress::where('user_id', $attempt->user_id)
-                ->where('exam_id', $exam->id)
-                ->doesntExist();
-
-            // Only track progress on FIRST attempt
-            if ($isFirstAttempt) {
-                // Track exam progress (standalone exam record)
-                // This record indicates the student attempted the exam
-                ContentUserProgress::create([
-                    'user_id' => $attempt->user_id,
-                    'exam_id' => $exam->id,
-                    'course_content_id' => null,
-                    'exam_attempt_id' => $attempt->id,
-                    'completed' => true,  // ✅ Always true on submission (not based on passing)
-                    'score' => $total_score,
-                    'percentage' => round($percentage, 2),
-                    'is_passed' => $is_passed,
-                    'viewed_at' => now(),
-                    'watch_time' => null,
-                ]);
-
-                // If exam is linked to a course content (lesson), also track course content progress
-                // ONLY if the exam is explicitly linked to a lesson (course_content_id is NOT NULL)
-                if ($exam->course_content_id) {
-                    ContentUserProgress::create([
+            // فقط إذا كان الامتحان مرتبط بدرس، نحدث progress
+            // لا نحدث progress للامتحانات العادية
+            if ($exam->course_content_id) {
+                // استخدام updateOrCreate لتجنب duplicate errors
+                // سيضيف record في أول مرة ويحدثه في المرات اللاحقة
+                ContentUserProgress::updateOrCreate(
+                    [
                         'user_id' => $attempt->user_id,
                         'course_content_id' => $exam->course_content_id,
                         'exam_id' => $exam->id,
+                    ],
+                    [
                         'exam_attempt_id' => $attempt->id,
-                        'completed' => true,  // ✅ Always true on submission (not based on passing)
+                        'completed' => true,
                         'score' => $total_score,
                         'percentage' => round($percentage, 2),
                         'is_passed' => $is_passed,
                         'viewed_at' => now(),
                         'watch_time' => null,
-                    ]);
-                }
+                    ]
+                );
             }
         } else {
             $attempt->update([
