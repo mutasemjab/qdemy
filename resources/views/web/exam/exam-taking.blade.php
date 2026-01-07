@@ -619,7 +619,6 @@
 
         function initializeAnswers() {
             if (!savedAnswers || typeof savedAnswers !== 'object') {
-                console.warn('savedAnswers is not a valid object:', savedAnswers);
                 return;
             }
 
@@ -629,12 +628,10 @@
 
                 // Defensive checks
                 if (!question) {
-                    console.warn('Question not found for ID:', questionId);
                     return;
                 }
 
                 if (!saved) {
-                    console.warn('Saved answer data is empty for question:', questionId);
                     return;
                 }
 
@@ -665,12 +662,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Exam data loaded:', {
-                totalQuestions: examData.totalQuestions,
-                remainingSeconds: examData.remainingSeconds,
-                questionCount: allQuestions.length,
-                savedAnswersCount: Object.keys(savedAnswers).length
-            });
 
             initializeAnswers();
             renderQuestion(0);
@@ -698,7 +689,6 @@
                     } else {
                         clearInterval(timerInterval);
                         // Auto submit when time is up
-                        alert('{{ __('front.time_expired') }}');
                         document.getElementById('finishForm').submit();
                     }
                 }, 1000);
@@ -758,7 +748,6 @@
 
             // Defensive check: ensure question object has required properties
             if (!question || !question.id) {
-                console.error('Invalid question object:', question);
                 return;
             }
 
@@ -791,10 +780,10 @@
 
             <div class="question-content">
                 ${photoUrl ? `
-                        <div class="question-image">
-                            <img src="${photoUrl}" alt="Question Image" />
-                        </div>
-                    ` : ''}
+                                <div class="question-image">
+                                    <img src="${photoUrl}" alt="Question Image" />
+                                </div>
+                            ` : ''}
 
                 <div class="question-text">
                     ${escapeHtml(questionText) || '{{ __('front.question_text_not_available') }}'}
@@ -846,7 +835,6 @@
                     const optionText = getLocalizedValue(option, 'option_ar', 'option_en');
 
                     if (!optionText) {
-                        console.warn('Option text not found for option:', option);
                         return;
                     }
 
@@ -984,7 +972,6 @@
         async function saveAnswerToBackend(questionId, answerType, answer) {
             try {
                 if (currentState.isSaving) {
-                    alert('⏳ جاري حفظ إجابة أخرى، انتظر قليلاً');
                     return;
                 }
 
@@ -1009,12 +996,7 @@
                     }
                 }
 
-                // التفاصيل كاملة
-                alert('📤 جاهز نبعت الإجابة:\n' +
-                    'URL: ' + examData.saveAnswerUrl + '\n' +
-                    'Question ID: ' + questionId + '\n' +
-                    'Answer Type: ' + answerType + '\n' +
-                    'Is API: ' + examData.isApi);
+
 
                 const response = await fetch(examData.saveAnswerUrl, {
                     method: 'POST',
@@ -1032,41 +1014,31 @@
                     contentType = '';
                 }
 
-                alert('📥 رد من السيرفر:\n' +
-                    'Status: ' + response.status + '\n' +
-                    'Status Text: ' + response.statusText + '\n' +
-                    'Content-Type: ' + (contentType || 'Unknown'));
+
 
                 // Check if response is HTML (error/redirect)
                 if (contentType && contentType.includes('text/html')) {
                     const htmlContent = await response.text();
-                    alert('❌ خطأ: السيرفر أرجع HTML بدل JSON!\n\n' +
-                        'أول 300 حرف:\n' + htmlContent.substring(0, 300) + '\n\n...');
+
                     return;
                 }
 
                 const data = await response.json();
 
-                alert('📋 البيانات من السيرفر:\n' + JSON.stringify(data, null, 2));
 
                 if (data.success) {
                     currentState.answers[questionId].saved = true;
                     showAutoSaveNotification();
-                    alert('✅ تم حفظ الإجابة بنجاح!');
                 } else {
-                    alert('❌ فشل حفظ الإجابة:\n' + (data.message || 'خطأ غير معروف'));
+
                     if (data.expired) {
-                        alert('⏰ انتهى الوقت المحدد للامتحان');
                         window.location.reload();
                     }
                 }
 
             } catch (error) {
-                alert('💥 خطأ في العملية:\n\n' +
-                    'Message: ' + error.message + '\n\n' +
-                    'Type: ' + error.name + '\n\n' +
-                    'Stack: ' + (error.stack ? error.stack.substring(0, 200) : 'N/A') + '\n\n' +
-                    'تفاصيل كاملة: ' + JSON.stringify(error, null, 2));
+                console.error(error);
+
             } finally {
                 currentState.isSaving = false;
             }
