@@ -40,6 +40,7 @@ class ExamController extends Controller
                 if ($user) {
                     auth('user')->login($user);
                     session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
+                    session()->save();
                 }
             }
 

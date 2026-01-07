@@ -89,7 +89,6 @@
                                     {{ __('front.students_only') }}
                                 </button>
                             @elseif($exam->isAvailable())
-                                {{-- Removed query params from URL - mobile webview now handles auth via headers --}}
                                 <a href="{{ route($apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}"
                                     class="btn btn-primary">
                                     <i class="fas fa-play"></i>
