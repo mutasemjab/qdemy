@@ -194,10 +194,10 @@ class Exam extends Model
     // true if user can add new attempt becuase he has attempts_allowed and there is no current one
     // false if user cant add new attempt becuase he hasnot attempts_allowed and there is exist current one
     // for current login student
-    public function can_add_attempt()
+    public function can_add_attempt($user_id = null)
     {
         $attempts_allowed = $this->attempts_allowed;
-        $user_id = auth_student()?->id;
+        $user_id = $user_id ?? auth('user')->id();
         $attempts = $this->attempts()->where('user_id', $user_id);
         return ($attempts->count() < $attempts_allowed && !$attempts->where('submitted_at', null)->count());
     }

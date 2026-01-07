@@ -266,17 +266,19 @@ class ExamController extends Controller
 
     public function start_exam(Exam $exam)
     {
-        $user = auth_student();
+        $user_id = auth('user')->id();
 
         // Check if user can start new attempt
-        if (!$exam->can_add_attempt($user?->id)) {
+        if (!$exam->can_add_attempt($user_id)) {
             return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
 
         // Check if there's already an active attempt (not submitted)
-        $active_attempt = $exam->current_user_attempts()
-            ->where('submitted_at', null)
+        $active_attempt = $exam->attempts()
+            ->where('user_id', $user_id)
+            ->where('status', 'in_progress')
+            ->whereNull('submitted_at')
             ->first();
 
         if ($active_attempt) {
@@ -296,7 +298,7 @@ class ExamController extends Controller
         ExamAttempt::create([
             'started_at' => now(),
             'exam_id' => $exam->id,
-            'user_id' => $user?->id,
+            'user_id' => $user_id,
             'question_order' => $question_order,
             'status' => 'in_progress'
         ]);
