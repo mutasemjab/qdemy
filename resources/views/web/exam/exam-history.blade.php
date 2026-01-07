@@ -2,7 +2,12 @@
 @extends('layouts.app')
 
 @section('content')
+<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
+@dump(auth('user')->user())
 
+{{-- DEBUG: Session Data --}}
+<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
+@dump(session()->all())
     <div class="exam-history-section">
         <div class="history-container">
             {{-- Header --}}
