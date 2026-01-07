@@ -38,10 +38,15 @@ class ExamController extends Controller
         }
 
         // جرب الحصول على user ID من parameter _user_id
-        $userId = request()->get('_user_id') ?? request()->query('_user_id') ?? request()->input('_user_id');
+        // Try all possible sources: query string, POST body, form data
+        $userId = request()->query('_user_id')  // From query string
+            ?? request()->post('_user_id')  // From POST body
+            ?? request()->input('_user_id')  // From request (both GET and POST)
+            ?? request('_user_id');  // Fallback using helper
 
         \Log::info('ensureAuthenticatedForMobile - Searching for _user_id', [
             'found_user_id' => $userId,
+            'request_method' => request()->method(),
             'request_all' => request()->all(),
         ]);
 
@@ -54,16 +59,24 @@ class ExamController extends Controller
                 'user_role' => $user ? $user->role_name : 'N/A',
             ]);
 
-            if ($user) {
+            if ($user && $user->role_name === 'student') {
                 auth('user')->login($user);
                 session(['mobile_user_id' => $user->id]);
-                \Log::info('ensureAuthenticatedForMobile - User logged in', [
+                \Log::info('ensureAuthenticatedForMobile - User logged in successfully', [
                     'user_id' => $user->id,
+                    'role' => $user->role_name,
                     'session_set' => true,
+                ]);
+            } else {
+                \Log::warning('ensureAuthenticatedForMobile - User not found or not a student', [
+                    'user_id_param' => $userId,
+                    'user_found' => $user ? true : false,
                 ]);
             }
         } else {
-            \Log::warning('ensureAuthenticatedForMobile - No _user_id found in request');
+            \Log::warning('ensureAuthenticatedForMobile - No _user_id found in request', [
+                'request_all' => request()->all(),
+            ]);
         }
     }
 
@@ -141,8 +154,10 @@ class ExamController extends Controller
             }
         }
 
-        // Handle _user_id from query/form parameters
-        $paramUserId = $request->get('_user_id') ?? $request->input('_user_id');
+        // Handle _user_id from query/form parameters (try all sources)
+        $paramUserId = $request->query('_user_id')
+            ?? $request->post('_user_id')
+            ?? $request->input('_user_id');
         if ($paramUserId && !auth('user')->check()) {
             \Log::info('Checking _user_id parameter', ['paramUserId' => $paramUserId]);
 
