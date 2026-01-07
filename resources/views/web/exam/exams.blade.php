@@ -2,10 +2,13 @@
 @extends('layouts.app')
 
 @php
+    // TODO: Temporarily disabled passing _user_id in URL for mobile webview
+    // The mobile developer will handle session/authentication differently
+    // Uncomment if needed later
     $queryParams = '';
-    if(isset($isApi) && $isApi) {
-        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
-    }
+    // if(isset($isApi) && $isApi) {
+    //     $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
+    // }
 @endphp
 
 @section('content')
@@ -90,7 +93,8 @@
                                 {{ __('front.students_only') }}
                             </button>
                         @elseif($exam->isAvailable())
-                            <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) . $queryParams }}" class="btn btn-primary">
+                            {{-- Removed query params from URL - mobile webview now handles auth via headers --}}
+                            <a href="{{ route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]) }}" class="btn btn-primary">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.start_exam') }}
                             </a>
