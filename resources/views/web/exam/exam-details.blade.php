@@ -130,7 +130,7 @@
                                 {{ __('front.continue_exam') }}
                             </a>
                             <p class="attempt-info">
-                                {{ __('front.in_progress') }} - {{ $current_attempt->created_at->diffForHumans() }}
+                                {{ __('front.in_progress') }}@if($current_attempt->created_at) - {{ $current_attempt->created_at->diffForHumans() }}@endif
                             </p>
                         @elseif($result && $exam->show_results_immediately && $result->status === 'completed')
                             {{-- View Results Button --}}
@@ -146,7 +146,7 @@
                                 {{ __('front.view_results') }}
                             </a>
                             <p class="attempt-info">
-                                {{ __('front.exam_completed') }} - {{ $result->created_at->diffForHumans() }}
+                                {{ __('front.exam_completed') }}@if($result->created_at) - {{ $result->created_at->diffForHumans() }}@endif
                             </p>
                             @if ($can_add_attempt)
                                 <form method="POST"

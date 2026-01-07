@@ -76,7 +76,7 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">{{ __('front.attempt_date') }}</div>
-                        <div class="stat-value">{{ $attempt->created_at->diffForHumans() }}</div>
+                        <div class="stat-value">@if($attempt->created_at){{ $attempt->created_at->diffForHumans() }}@else{{ __('front.unknown') }}@endif</div>
                     </div>
                 </div>
             </div>
