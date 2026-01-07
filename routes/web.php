@@ -166,7 +166,7 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
 
-    Route::get('exam/{exam}/{slug?}', [ExamController::class, 'show'])->name('exam');
+    Route::get('exam/{exam}/{slug?}/{attempt?}', [ExamController::class, 'show'])->name('exam');
 
     Route::get('exam-history', [ExamController::class, 'history'])->name('exam.history')->middleware('auth:user');
 
