@@ -26,59 +26,25 @@ class ExamController extends Controller
 
     private function ensureAuthenticatedForMobile()
     {
-        \Log::info('ensureAuthenticatedForMobile - START', [
-            'already_authenticated' => auth('user')->check(),
-            'current_user_id' => auth('user')->id(),
-        ]);
-
         // إذا كان المستخدم مسجل دخول بالفعل، لا تفعل شيء
         if (auth('user')->check()) {
-            \Log::info('ensureAuthenticatedForMobile - User already authenticated');
             return;
         }
 
         // جرب الحصول على user ID من parameter _user_id
         // Try all possible sources: query string, POST body, form data
-        $userId = request()->query('_user_id')  // From query string
-            ?? request()->post('_user_id')  // From POST body
-            ?? request()->input('_user_id')  // From request (both GET and POST)
-            ?? request('_user_id');  // Fallback using helper
-
-        \Log::info('ensureAuthenticatedForMobile - Searching for _user_id', [
-            'found_user_id' => $userId,
-            'request_method' => request()->method(),
-            'request_all' => request()->all(),
-            'query_params' => request()->query(),
-            'post_params' => request()->post(),
-        ]);
+        $userId = request()->query('_user_id')
+            ?? request()->post('_user_id')
+            ?? request()->input('_user_id')
+            ?? request('_user_id');
 
         if ($userId) {
             $user = \App\Models\User::find($userId);
 
-            \Log::info('ensureAuthenticatedForMobile - User lookup', [
-                'user_id_param' => $userId,
-                'user_found' => $user ? true : false,
-                'user_role' => $user ? $user->role_name : 'N/A',
-            ]);
-
             if ($user && $user->role_name === 'student') {
                 auth('user')->login($user);
                 session(['mobile_user_id' => $user->id]);
-                \Log::info('ensureAuthenticatedForMobile - User logged in successfully', [
-                    'user_id' => $user->id,
-                    'role' => $user->role_name,
-                    'session_set' => true,
-                ]);
-            } else {
-                \Log::warning('ensureAuthenticatedForMobile - User not found or not a student', [
-                    'user_id_param' => $userId,
-                    'user_found' => $user ? true : false,
-                ]);
             }
-        } else {
-            \Log::warning('ensureAuthenticatedForMobile - No _user_id found in request', [
-                'request_all' => request()->all(),
-            ]);
         }
     }
 
@@ -92,15 +58,6 @@ class ExamController extends Controller
         $hasMobileFlag = request()->get('_mobile') == 1;
         $isMobileSession = session('is_mobile_app');
 
-        \Log::info('checkIfApi - Checking conditions', [
-            'hasUserId' => $hasUserId,
-            'hasUserIdParam' => $hasUserIdParam ? true : false,
-            'expectsJson' => $expectsJson,
-            'isApiRoute' => $isApiRoute,
-            'hasMobileFlag' => $hasMobileFlag,
-            'isMobileSession' => $isMobileSession,
-        ]);
-
         if (
             $hasUserId ||
             $hasUserIdParam ||
@@ -112,9 +69,6 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             session(['is_mobile_app' => true]);
-            \Log::info('checkIfApi - Detected as API request');
-        } else {
-            \Log::info('checkIfApi - Regular web request');
         }
     }
 
@@ -126,24 +80,12 @@ class ExamController extends Controller
 
     public function __construct(Request $request)
     {
-        \Log::info('=== Constructor START ===', [
-            'route' => $request->route()?->getName(),
-            'method' => $request->method(),
-        ]);
-
         // IMPORTANT: Call checkIfApi FIRST
         $this->checkIfApi();
-
-        \Log::info('After checkIfApi', [
-            'isApi' => $this->isApi,
-            'authenticated' => auth('user')->check(),
-        ]);
 
         // API-specific authentication via UserId header
         if ($this->isApi && $request->hasHeader('UserId')) {
             $userId = $request->header('UserId');
-
-            \Log::info('Checking UserId header', ['userId' => $userId]);
 
             $user = \App\Models\User::where('id', $userId)
                 ->where('role_name', 'student')
@@ -152,7 +94,6 @@ class ExamController extends Controller
             if ($user) {
                 auth('user')->login($user);
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
-                \Log::info('User logged in via UserId header', ['user_id' => $user->id]);
             }
         }
 
@@ -161,13 +102,10 @@ class ExamController extends Controller
             ?? $request->post('_user_id')
             ?? $request->input('_user_id');
         if ($paramUserId && !auth('user')->check()) {
-            \Log::info('Checking _user_id parameter', ['paramUserId' => $paramUserId]);
-
             $user = \App\Models\User::find($paramUserId);
             if ($user && $user->role_name === 'student') {
                 auth('user')->login($user);
                 session(['is_mobile_app' => true, 'mobile_user_id' => $paramUserId]);
-                \Log::info('User logged in via _user_id param', ['user_id' => $user->id]);
             }
         }
 
@@ -176,12 +114,9 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
 
-            \Log::info('Mobile app session detected');
-
             // إذا لم يكن mobile_user_id محفوظ، حاول الحصول عليه من auth()
             if (!session('mobile_user_id') && auth('user')->check()) {
                 session(['mobile_user_id' => auth('user')->id()]);
-                \Log::info('Set mobile_user_id from auth', ['user_id' => auth('user')->id()]);
             }
 
             // الآن حاول تسجيل الدخول إذا كان mobile_user_id موجود
@@ -189,7 +124,6 @@ class ExamController extends Controller
                 $user = \App\Models\User::find(session('mobile_user_id'));
                 if ($user) {
                     auth('user')->login($user);
-                    \Log::info('Restored user from mobile_user_id session', ['user_id' => $user->id]);
                 }
             }
         }
@@ -200,7 +134,6 @@ class ExamController extends Controller
             if (in_array($lang, ['en', 'ar'])) {
                 app()->setLocale($lang);
                 session(['locale' => $lang]);
-                \Log::info('Set language', ['lang' => $lang]);
             }
         }
 
@@ -210,12 +143,6 @@ class ExamController extends Controller
         } else {
             $this->apiRoutePrefix = '';  // Empty string for web routes
         }
-
-        \Log::info('=== Constructor END ===', [
-            'isApi' => $this->isApi,
-            'authenticated' => auth('user')->check(),
-            'user_id' => auth('user')->id(),
-        ]);
     }
 
     public function index(Request $request)
@@ -794,29 +721,14 @@ class ExamController extends Controller
      */
     public function save_answer_ajax(Request $request, Exam $exam)
     {
-        \Log::info('=== SAVE ANSWER AJAX START ===');
-        \Log::info('Request data:', $request->all());
-        \Log::info('Request headers:', $request->headers->all());
-
         $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
-        \Log::info('After ensureAuthenticatedForMobile:', [
-            'authenticated' => auth('user')->check(),
-            'user_id' => auth('user')->id(),
-            'auth_student_user' => $user ? $user->id : 'null',
-            'session_is_mobile_app' => session('is_mobile_app'),
-            'session_mobile_user_id' => session('mobile_user_id'),
-        ]);
-
         // If still not authenticated, return error
         if (!$user) {
-            \Log::error('No authenticated user found!');
             return response()->json(['success' => false, 'message' => 'Unauthorized - no active user session'], 401);
         }
-
-        \Log::info('User authenticated:', ['user_id' => $user->id, 'exam_id' => $exam->id]);
 
         // Get current attempt for the specific user
         $current_attempt = $exam->attempts()
@@ -825,19 +737,7 @@ class ExamController extends Controller
             ->whereNull('submitted_at')
             ->first();
 
-        \Log::info('Current attempt search:', [
-            'user_id' => $user->id,
-            'exam_id' => $exam->id,
-            'attempt_found' => $current_attempt ? true : false,
-            'attempt_id' => $current_attempt ? $current_attempt->id : 'null',
-        ]);
-
         if (!$current_attempt) {
-            \Log::error('No active attempt found', [
-                'user_id' => $user->id,
-                'exam_id' => $exam->id,
-                'all_attempts' => $exam->attempts()->where('user_id', $user->id)->get()->toArray(),
-            ]);
             return response()->json(['success' => false, 'message' => 'No active attempt'], 404);
         }
 
@@ -849,18 +749,10 @@ class ExamController extends Controller
         ]);
 
         if ($validator->fails()) {
-            \Log::warning('Validation failed:', $validator->errors()->toArray());
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
         $question = Question::findOrFail($request->question_id);
-
-        \Log::info('Processing answer:', [
-            'question_id' => $question->id,
-            'question_type' => $question->type,
-            'answer_type' => $request->answer_type,
-            'answer_value' => is_array($request->answer) ? json_encode($request->answer) : $request->answer,
-        ]);
 
         // Check time limit (in seconds)
         if ($exam->duration_minutes) {
@@ -868,7 +760,6 @@ class ExamController extends Controller
             $total_seconds = $exam->duration_minutes * 60;
 
             if ($elapsed_seconds >= $total_seconds) {
-                \Log::warning('Time expired', ['elapsed' => $elapsed_seconds, 'total' => $total_seconds]);
                 $this->auto_submit_exam($current_attempt);
                 return response()->json(['success' => false, 'message' => 'Time expired', 'expired' => true], 403);
             }
@@ -886,8 +777,6 @@ class ExamController extends Controller
                 ]
             );
 
-            \Log::info('ExamAnswer created/updated:', ['answer_id' => $exam_answer->id]);
-
             // Process based on type
             if ($question->type === 'multiple_choice') {
                 $selected_options = is_array($request->answer) ? $request->answer : [$request->answer];
@@ -901,13 +790,6 @@ class ExamController extends Controller
 
                 $exam_answer->is_correct = $is_correct;
                 $exam_answer->score = $is_correct ? $question->grade : 0;
-
-                \Log::info('Multiple choice answer:', [
-                    'selected' => $selected_options,
-                    'correct' => $correct_options,
-                    'is_correct' => $is_correct,
-                    'score' => $exam_answer->score,
-                ]);
 
             } elseif ($question->type === 'true_false') {
                 $selected_answer = $request->answer === 'true' || $request->answer === true;
@@ -924,31 +806,14 @@ class ExamController extends Controller
                 $exam_answer->is_correct = $is_correct;
                 $exam_answer->score = $is_correct ? $question->grade : 0;
 
-                \Log::info('True/False answer:', [
-                    'selected' => $selected_answer,
-                    'correct' => $is_correct,
-                    'score' => $exam_answer->score,
-                ]);
-
             } elseif ($question->type === 'essay') {
                 $exam_answer->essay_answer = $request->answer;
                 $exam_answer->is_correct = null;
                 $exam_answer->score = 0;
-
-                \Log::info('Essay answer:', [
-                    'answer_length' => strlen($request->answer ?? ''),
-                ]);
             }
 
             $exam_answer->save();
             DB::commit();
-
-            \Log::info('Answer saved successfully:', [
-                'answer_id' => $exam_answer->id,
-                'attempt_id' => $current_attempt->id,
-                'question_id' => $question->id,
-            ]);
-            \Log::info('=== SAVE ANSWER AJAX END - SUCCESS ===');
 
             return response()->json([
                 'success' => true,
@@ -957,10 +822,6 @@ class ExamController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            \Log::error('Exception in save_answer_ajax:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }

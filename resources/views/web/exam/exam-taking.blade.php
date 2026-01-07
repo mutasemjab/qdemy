@@ -583,13 +583,11 @@ const examData = {
     title: "{{ $exam->title }}",
     totalQuestions: {{ $allQuestions->count() }},
     remainingSeconds: {{ $remainingSeconds }},
-    saveAnswerUrl: "{{ route(($isApi ? 'api.' : 'exam.') . 'save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
+    saveAnswerUrl: "{{ route('exam.save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
     finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}",
     csrfToken: "{{ csrf_token() }}"
 };
 
-// Alert to show the generated URL
-alert('saveAnswerUrl: ' + examData.saveAnswerUrl);
 
 // All questions with options
 const allQuestions = @json($allQuestions);
@@ -977,13 +975,12 @@ function saveAnswerToBackend(questionId, answerType, answer) {
     if (currentState.isSaving) return;
 
     currentState.isSaving = true;
-    alert('🔄 بدء حفظ الإجابة - questionId: ' + questionId + ', answerType: ' + answerType);
 
     const formData = new FormData();
-    formData.append('_token', examData.csrfToken);  // ✅ Add CSRF token to form data
+    formData.append('_token', examData.csrfToken);
     @if($isApi)
-        formData.append('_mobile', '1');  // ✅ Mark as mobile request
-        formData.append('_user_id', '{{ auth("user")->id() }}');  // ✅ Include user ID for mobile
+        formData.append('_mobile', '1');
+        formData.append('_user_id', '{{ auth("user")->id() }}');
     @endif
     formData.append('question_id', questionId);
     formData.append('answer_type', answerType);
@@ -996,14 +993,6 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         answer.forEach(opt => formData.append('answer[]', opt));
     }
 
-    alert('📤 إرسال الطلب إلى: ' + examData.saveAnswerUrl);
-
-    console.log('Fetch started for:', examData.saveAnswerUrl);
-    console.log('FormData contents:');
-    for (let [key, value] of formData.entries()) {
-        console.log(key + ': ' + value);
-    }
-
     fetch(examData.saveAnswerUrl, {
         method: 'POST',
         headers: {
@@ -1011,22 +1000,13 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         },
         body: formData
     })
-    .then(response => {
-        console.log('Response received:', response.status, response.statusText);
-        alert('📡 تم الرد من السيرفر - Status: ' + response.status);
-        return response.json().catch(err => {
-            alert('❌ خطأ في قراءة الرد: ' + err.message);
-            throw err;
-        });
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log('Response data:', data);
-        alert('✅ تم استقبال الرد: ' + JSON.stringify(data));
         if (data.success) {
             currentState.answers[questionId].saved = true;
             showAutoSaveNotification();
         } else {
-            alert('❌ فشل حفظ الإجابة: ' + data.message);
+            console.error('Failed to save answer:', data.message);
             if (data.expired) {
                 alert('{{ __("front.time_expired") }}');
                 window.location.reload();
@@ -1034,8 +1014,7 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         }
     })
     .catch(error => {
-        console.error('Fetch error:', error);
-        alert('❌ خطأ في الاتصال: ' + error.message + '\n\nStack: ' + error.stack);
+        console.error('Error saving answer:', error);
     })
     .finally(() => {
         currentState.isSaving = false;
