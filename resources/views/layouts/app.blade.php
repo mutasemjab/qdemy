@@ -1,58 +1,76 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
 
-    <!-- Google Font: Montserrat Arabic -->
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat+Arabic:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
+    <!-- Preload OTF fonts correctly -->
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Regular.otf') }}" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Bold.otf') }}" as="font" type="font/otf" crossorigin>
 
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-        integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
     <!-- Main CSS -->
-    <link rel="stylesheet"
-        href="{{ asset('assets_front/css/style.css') . '?v=' . (file_exists(public_path('assets_front/css/style.css')) ? filemtime(public_path('assets_front/css/style.css')) : time()) }}">
+    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(public_path('assets_front/css/style.css')) }}">
+    
     @if (app()->getLocale() === 'en')
-        <link rel="stylesheet"
-            href="{{ asset('assets_front/css/en.css') . '?v=' . (file_exists(public_path('assets_front/css/en.css')) ? filemtime(public_path('assets_front/css/en.css')) : time()) }}">
+        <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(public_path('assets_front/css/en.css')) }}">
     @endif
-
 
     @stack('styles')
     @yield('styles')
+
     <style>
+        /* Font-face declarations for OTF fonts */
         @font-face {
             font-family: 'Somar';
-            src: url('{{ asset('assets_front/fonts/Somar-Regular.woff2') }}') format('woff2'),
-                url('{{ asset('assets_front/fonts/Somar-Regular.woff') }}') format('woff');
+            src: url('{{ asset('assets_front/fonts/Somar-Regular.otf') }}') format('opentype');
             font-weight: 400;
             font-style: normal;
-            font-display: swap;
+            font-display: block;
         }
 
         @font-face {
             font-family: 'Somar';
-            src: url('{{ asset('assets_front/fonts/Somar-Bold.woff2') }}') format('woff2'),
-                url('{{ asset('assets_front/fonts/Somar-Bold.woff') }}') format('woff');
+            src: url('{{ asset('assets_front/fonts/Somar-Bold.otf') }}') format('opentype');
             font-weight: 700;
             font-style: normal;
-            font-display: swap;
+            font-display: block;
         }
 
-        /* تطبيق خط Somar على كل العناصر إلا Font Awesome */
-        html,
+        /* CRITICAL: Prevent font size jumping */
+        * {
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        html {
+            font-size: 16px !important;
+        }
+
         body {
-            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            font-size: 16px !important;
+            min-height: 100vh;
+            margin: 0;
+            direction: rtl;
+            line-height: 1.6;
         }
 
+        /* Force font application immediately */
+        html, body {
+            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Apply to all elements */
         body,
         button:not(.fa):not(.fas):not(.far):not(.fab):not(.fal),
         input,
@@ -64,12 +82,7 @@
         a,
         li,
         label,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
+        h1, h2, h3, h4, h5, h6,
         div,
         .form-control,
         .form-select,
@@ -79,15 +92,9 @@
             font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         }
 
-        /* حماية Font Awesome من التغيير */
-        i,
-        .fa,
-        .fas,
-        .far,
-        .fab,
-        .fal,
-        [class^="fa-"],
-        [class*=" fa-"] {
+        /* Protect Font Awesome */
+        i, .fa, .fas, .far, .fab, .fal,
+        [class^="fa-"], [class*=" fa-"] {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
             font-weight: 900 !important;
         }
@@ -95,8 +102,45 @@
         .far {
             font-weight: 400 !important;
         }
+
+        /* Prevent layout shift during font load */
+        body {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive font sizes */
+        @media (min-width: 1600px) {
+            html {
+                font-size: 18px !important;
+            }
+            body {
+                font-size: 18px !important;
+            }
+        }
     </style>
 
+    <!-- Font Loading Detection Script -->
+    <script>
+        (function() {
+            if ('fonts' in document) {
+                Promise.all([
+                    document.fonts.load('400 16px Somar'),
+                    document.fonts.load('700 16px Somar')
+                ]).then(function() {
+                    document.documentElement.classList.add('fonts-loaded');
+                }).catch(function() {
+                    document.documentElement.classList.add('fonts-loaded');
+                });
+
+                setTimeout(function() {
+                    document.documentElement.classList.add('fonts-loaded');
+                }, 3000);
+            } else {
+                document.documentElement.classList.add('fonts-loaded');
+            }
+        })();
+    </script>
 </head>
 
 <body>
