@@ -249,7 +249,7 @@ class ParentController extends Controller
                 'photo_url' => $course->photo_url,
                 'teacher_name' => $course->teacher ? $course->teacher->name : 'N/A',
                 'subject_name' => $course->subject ? $course->subject->name : 'N/A',
-                'progress' => round($progress, 2),
+                'progress' => round($progress['total_progress'], 2),
                 'enrolled_at' => $enrollment->created_at,
                 'selling_price' => $course->selling_price,
                 'total_sections' => $course->sections()->count(),
