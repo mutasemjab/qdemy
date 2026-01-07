@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title')</title>
 
-    <!-- Preload OTF fonts correctly -->
-    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Regular.otf') }}" as="font" type="font/otf" crossorigin>
-    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Bold.otf') }}" as="font" type="font/otf" crossorigin>
+    <!-- Preload ALL OTF fonts correctly -->
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Regular.otf') }}" as="font" type="font/otf"
+        crossorigin>
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Bold.otf') }}" as="font" type="font/otf"
+        crossorigin>
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Black.otf') }}" as="font" type="font/otf"
+        crossorigin>
 
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <!-- Main CSS -->
-    <link rel="stylesheet" href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(base_path('assets_front/css/style.css')) }}">
-    
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(base_path('assets_front/css/style.css')) }}">
+
     @if (app()->getLocale() === 'en')
-        <link rel="stylesheet" href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(base_path('assets_front/css/en.css')) }}">
+        <link rel="stylesheet"
+            href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(base_path('assets_front/css/en.css')) }}">
     @endif
 
     @stack('styles')
     @yield('styles')
 
     <style>
-        /* Font-face declarations for OTF fonts */
+        /* Font-face declarations for ALL OTF fonts */
         @font-face {
             font-family: 'Somar';
             src: url('{{ asset('assets_front/fonts/Somar-Regular.otf') }}') format('opentype');
@@ -39,6 +46,14 @@
             font-family: 'Somar';
             src: url('{{ asset('assets_front/fonts/Somar-Bold.otf') }}') format('opentype');
             font-weight: 700;
+            font-style: normal;
+            font-display: block;
+        }
+
+        @font-face {
+            font-family: 'Somar';
+            src: url('{{ asset('assets_front/fonts/Somar-Black.otf') }}') format('opentype');
+            font-weight: 900;
             font-style: normal;
             font-display: block;
         }
@@ -64,13 +79,16 @@
         }
 
         /* Force font application immediately */
-        html, body {
+        html,
+        body {
             font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            font-weight: 400;
+            /* Default to regular weight */
         }
 
-        /* Apply to all elements */
+        /* Apply to all elements with proper weight inheritance */
         body,
         button:not(.fa):not(.fas):not(.far):not(.fab):not(.fal),
         input,
@@ -82,7 +100,6 @@
         a,
         li,
         label,
-        h1, h2, h3, h4, h5, h6,
         div,
         .form-control,
         .form-select,
@@ -92,9 +109,34 @@
             font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
         }
 
+        /* Ensure headings use bold weights */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Somar', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+            font-weight: 700;
+            /* Use Bold variant */
+        }
+
+        /* Explicitly set bold elements */
+        strong,
+        b,
+        .bold {
+            font-weight: 700 !important;
+        }
+
         /* Protect Font Awesome */
-        i, .fa, .fas, .far, .fab, .fal,
-        [class^="fa-"], [class*=" fa-"] {
+        i,
+        .fa,
+        .fas,
+        .far,
+        .fab,
+        .fal,
+        [class^="fa-"],
+        [class*=" fa-"] {
             font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
             font-weight: 900 !important;
         }
@@ -114,6 +156,7 @@
             html {
                 font-size: 18px !important;
             }
+
             body {
                 font-size: 18px !important;
             }
@@ -126,7 +169,8 @@
             if ('fonts' in document) {
                 Promise.all([
                     document.fonts.load('400 16px Somar'),
-                    document.fonts.load('700 16px Somar')
+                    document.fonts.load('700 16px Somar'),
+                    document.fonts.load('900 16px Somar')
                 ]).then(function() {
                     document.documentElement.classList.add('fonts-loaded');
                 }).catch(function() {
