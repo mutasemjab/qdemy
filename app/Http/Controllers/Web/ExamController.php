@@ -302,13 +302,15 @@ class ExamController extends Controller
             $pgQquestions = (clone $questions)->paginate(1);
 
             if ($current_attempt->answers?->count() && !request()->get('page')) {
-                $question    =  $current_attempt->answers()->orderBy('id', 'desc')->first()?->question;
-                // ابحث عن موقع السؤال الحالي
-                $index = (clone $questions)->paginate(1000)->search(function ($q) use ($question) {
-                    return $q->id === $question?->id;
-                });
-                $question_nm = ($index + 2);
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug, 'page' => $question_nm]);
+                // Redirect to exam.take page instead of exam details
+                $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
+
+                // Add mobile query params if in mobile mode
+                if ($this->isApi) {
+                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
+                }
+
+                return redirect($redirectUrl);
             } else {
                 $question_nm = request()->get('page');
                 $question    = $pgQquestions?->first();
