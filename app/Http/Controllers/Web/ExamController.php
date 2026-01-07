@@ -275,17 +275,8 @@ class ExamController extends Controller
         ]);
     }
 
-    public function start_exam(Request $request, Exam $exam)
+    public function start_exam(Exam $exam)
     {
-        // Try to authenticate from _user_id parameter first (for mobile WebView)
-        $userId = $request->input('_user_id');
-        if ($userId && !auth('user')->check()) {
-            $user = \App\Models\User::find($userId);
-            if ($user && $user->role_name === 'student') {
-                auth('user')->login($user);
-            }
-        }
-
         $user = auth_student();
 
         // Check if user can start new attempt
@@ -313,7 +304,7 @@ class ExamController extends Controller
         }
 
         // Create new attempt
-        $attempt = ExamAttempt::create([
+        ExamAttempt::create([
             'started_at' => now(),
             'exam_id' => $exam->id,
             'user_id' => $user?->id,
@@ -325,10 +316,7 @@ class ExamController extends Controller
         return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
     }
 
-    // تصحيح سؤال
-    // وذلك حسب نوع السؤال if multiple_choice || true_false auto correct answer
-    // if essay make it null now && score = 0
-    // $answered_questions >= $total_questions سلم الامتحان
+
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
         // Get current attempt
@@ -444,11 +432,6 @@ class ExamController extends Controller
         return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id])->with($error ?? '', $message_status ?? '');
     }
 
-    // تسليم الامتحان
-    // وجعل submitted_at = now(),
-    // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
-    // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
-    // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
     public function submit_exam(ExamAttempt $attempt)
     {
 
@@ -482,11 +465,8 @@ class ExamController extends Controller
                 'status'       => 'completed',
             ]);
 
-            // فقط إذا كان الامتحان مرتبط بدرس، نحدث progress
-            // لا نحدث progress للامتحانات العادية
+
             if ($exam->course_content_id) {
-                // استخدام updateOrCreate مع الـ keys الصحيحة
-                // user_id + course_content_id هي الـ unique constraint
                 ContentUserProgress::updateOrCreate(
                     [
                         'user_id' => $attempt->user_id,
@@ -511,14 +491,11 @@ class ExamController extends Controller
         }
     }
 
-    // تسليم الامتحان اجباريا حال انتهاء الوقت
-    // وذلك بنداء فنكشن submit_exam()
-    // بعد التصحيح الالكتروني للاسئله غير المجابة وجعل نتيجتها is_correct = false
+
     public function auto_submit_exam(ExamAttempt $attempt)
     {
 
         // Mark unanswered questions as incorrect
-        $exam = $attempt->exam;
         $question_order = $attempt->question_order;
         $answered_question_ids = $attempt->answers->pluck('question_id')->toArray();
 
@@ -540,14 +517,6 @@ class ExamController extends Controller
     // تسليم الامتحان
     public function finish_exam(Request $request, Exam $exam)
     {
-        // Try to authenticate from _user_id parameter first (for mobile WebView)
-        $userId = $request->input('_user_id');
-        if ($userId && !auth('user')->check()) {
-            $user = \App\Models\User::find($userId);
-            if ($user && $user->role_name === 'student') {
-                auth('user')->login($user);
-            }
-        }
 
         $user = auth_student();
 
@@ -571,8 +540,6 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
-        $user = auth_student();
-
         if (!$exam->is_available()) {
             return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.unavailable'));
         }
@@ -641,14 +608,6 @@ class ExamController extends Controller
      */
     public function save_answer_ajax(Request $request, Exam $exam)
     {
-        // Try to authenticate from _user_id parameter first (for mobile WebView)
-        $userId = $request->input('_user_id');
-        if ($userId && !auth('user')->check()) {
-            $user = \App\Models\User::find($userId);
-            if ($user && $user->role_name === 'student') {
-                auth('user')->login($user);
-            }
-        }
 
         $user = auth_student();
 
@@ -762,12 +721,6 @@ class ExamController extends Controller
         // Check if user owns this attempt
         if ($attempt->user_id !== $user?->id) {
             abort(403);
-        }
-
-        // Ensure mobile query params are preserved
-        if ($this->isApi) {
-            $redirectUrl = route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]);
-            return redirect($redirectUrl);
         }
 
         // Get all questions in the order they were presented
