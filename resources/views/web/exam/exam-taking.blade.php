@@ -1,22 +1,7 @@
 {{-- resources/views/web/exam/exam-taking.blade.php --}}
 @extends('layouts.app')
 
-@php
-    $queryParams = '';
-    if (isset($isApi) && $isApi) {
-        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
-    }
-@endphp
-
 @section('content')
-    {{-- DEBUG: Student Info --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-    @dump(auth('user')->user())
-
-    {{-- DEBUG: Session Data --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-    @dump(session()->all())
-
     <div class="exam-taking-section" style="display: block;">
         <!-- Exam Header -->
         <div class="exam-header-bar">
@@ -95,10 +80,6 @@
                 <form id="finishForm" action="{{ route($apiRoutePrefix . 'finish.exam', [$exam->id]) }}" method="POST"
                     style="display: inline;">
                     @csrf
-                    @if ($isApi)
-                        <input type="hidden" name="_mobile" value="1">
-                        <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
-                    @endif
                     <button type="submit" class="btn-confirm"
                         onclick="disableWarningBeforeSubmit()">{{ __('front.confirm_finish') }}</button>
                 </form>
@@ -595,11 +576,9 @@
             title: "{{ $exam->title }}",
             totalQuestions: {{ $allQuestions->count() }},
             remainingSeconds: {{ $remainingSeconds }},
-            saveAnswerUrl: "{{ route($apiRoutePrefix . 'exam.save.answer.ajax', ['exam' => $exam->id]) . $queryParams }}",
-            finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) . $queryParams }}",
+            saveAnswerUrl: "{{ route($apiRoutePrefix . 'exam.save.answer.ajax', ['exam' => $exam->id]) }}",
+            finishExamUrl: "{{ route($apiRoutePrefix . 'finish.exam', ['exam' => $exam->id]) }}",
             csrfToken: "{{ csrf_token() }}",
-            isApi: {{ $isApi ? 'true' : 'false' }},
-            userId: {{ auth('user')->id() ?? 'null' }}
         };
 
 
@@ -788,10 +767,10 @@
 
             <div class="question-content">
                 ${photoUrl ? `
-                                        <div class="question-image">
-                                            <img src="${photoUrl}" alt="Question Image" />
-                                        </div>
-                                    ` : ''}
+                                                    <div class="question-image">
+                                                        <img src="${photoUrl}" alt="Question Image" />
+                                                    </div>
+                                                ` : ''}
 
                 <div class="question-text">
                     ${escapeHtml(questionText) || '{{ __('front.question_text_not_available') }}'}
@@ -987,10 +966,6 @@
 
                 const formData = new FormData();
                 formData.append('_token', examData.csrfToken);
-                @if ($isApi)
-                    formData.append('_mobile', '1');
-                    formData.append('_user_id', '{{ auth('user')->id() }}');
-                @endif
                 formData.append('question_id', questionId);
                 formData.append('answer_type', answerType);
 

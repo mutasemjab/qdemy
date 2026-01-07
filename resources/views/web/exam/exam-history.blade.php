@@ -1,22 +1,7 @@
 {{-- resources/views/web/exam/exam-history.blade.php --}}
 @extends('layouts.app')
 
-@php
-    $queryParams = '';
-    if (isset($isApi) && $isApi) {
-        $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
-    }
-@endphp
-
 @section('content')
-
-    {{-- DEBUG: Student Info --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-    @dump(auth('user')->user())
-
-    {{-- DEBUG: Session Data --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-    @dump(session()->all())
 
     <div class="exam-history-section">
         <div class="history-container">
@@ -118,16 +103,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        @php
-                                            $reviewUrl = route('exam.result', [
-                                                'exam' => $exam->id,
-                                                'attempt' => $attempt->id,
-                                            ]);
-                                            if (isset($isApi) && $isApi) {
-                                                $reviewUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                                            }
-                                        @endphp
-                                        <a href="{{ $reviewUrl }}" class="action-btn">
+                                        <a href="{{ route('exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}" class="action-btn">
                                             <i class="fas fa-eye"></i>
                                             {{ __('front.review') }}
                                         </a>
@@ -150,7 +126,7 @@
                     </div>
                     <h3>{{ __('front.no_exams_found') }}</h3>
                     <p>{{ __('front.no_exams_description') }}</p>
-                    <a href="{{ route('exams') . $queryParams }}" class="btn btn-primary">
+                    <a href="{{ route('exams') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left"></i>
                         {{ __('front.go_to_exams') }}
                     </a>

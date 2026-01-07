@@ -3,24 +3,10 @@
 
 @section('content')
 
-    {{-- DEBUG: Student Info --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-    @dump(auth('user')->user())
-
-    {{-- DEBUG: Session Data --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-    @dump(session()->all())
-
     <div class="exam-result-section">
         <div class="result-container">
             {{-- Back Button --}}
-            @php
-                $backUrl = route('exams');
-                if (isset($isApi) && $isApi) {
-                    $backUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                }
-            @endphp
-            <a href="{{ $backUrl }}" class="back-btn">
+            <a href="{{ route('exams') }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 {{ __('front.back') }}
             </a>
@@ -111,16 +97,7 @@
                                     </div>
                                 </div>
                                 @if ($attemptItem->id !== $attempt->id)
-                                    @php
-                                        $viewUrl = route($apiRoutePrefix . 'exam.result', [
-                                            'exam' => $exam->id,
-                                            'attempt' => $attemptItem->id,
-                                        ]);
-                                        if (isset($isApi) && $isApi) {
-                                            $viewUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                                        }
-                                    @endphp
-                                    <a href="{{ $viewUrl }}" class="view-attempt-btn">
+                                    <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]) }}" class="view-attempt-btn">
                                         {{ __('front.view_details') }}
                                     </a>
                                 @endif
@@ -221,14 +198,14 @@
                             <div class="feedback success-feedback">
                                 <i class="fas fa-check-circle"></i>
                                 <p>
-                                    <strong>{{ $question->correct_feedback ?? 'عاش يا بطل!' }}</strong> ✓
+                                    <strong>{{ $question->correct_feedback ?? '' }}</strong> ✓
                                 </p>
                             </div>
                         @elseif($isCorrect === false)
                             <div class="feedback error-feedback">
                                 <i class="fas fa-times-circle"></i>
                                 <p>
-                                    <strong>{{ $question->incorrect_feedback ?? 'ليش هيك يا حمار؟' }}</strong>
+                                    <strong>{{ $question->incorrect_feedback ?? '' }}</strong>
                                     @if ($question->type !== 'essay' && $question->explanation)
                                         <br><small>{{ $question->explanation }}</small>
                                     @elseif($question->type === 'multiple_choice')
@@ -252,24 +229,12 @@
 
             {{-- Actions --}}
             <div class="result-actions">
-                @php
-                    $actionBackUrl = route('exams');
-                    if (isset($isApi) && $isApi) {
-                        $actionBackUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                    }
-                @endphp
-                <a href="{{ $actionBackUrl }}" class="btn btn-secondary">
+                <a href="{{ route('exams') }}" class="btn btn-secondary">
                     <i class="fas fa-list"></i>
                     {{ __('front.back') }}
                 </a>
                 @if ($canRetake)
-                    @php
-                        $retakeUrl = route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]);
-                        if (isset($isApi) && $isApi) {
-                            $retakeUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                        }
-                    @endphp
-                    <a href="{{ $retakeUrl }}" class="btn btn-primary">
+                    <a href="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}" class="btn btn-primary">
                         <i class="fas fa-redo"></i>
                         {{ __('front.محاولة جديدة') }}
                     </a>

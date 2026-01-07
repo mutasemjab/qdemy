@@ -1,38 +1,13 @@
 {{-- resources/views/web/exam/exam-details.blade.php --}}
 @extends('layouts.app')
 
-@php
-    // TODO: Temporarily disabled passing _user_id in URL for mobile webview
-    // The mobile developer will handle session/authentication differently
-    // Uncomment if needed later
-    $queryParams = '';
-    // if(isset($isApi) && $isApi) {
-    //     $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();
-    // }
-@endphp
-
 @section('content')
-
-    {{-- DEBUG: Student Info --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-    @dump(auth('user')->user())
-
-    {{-- DEBUG: Session Data --}}
-    <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-    @dump(session()->all())
 
     <div class="exam-details-section">
         <div class="exam-details-container">
             {{-- Header --}}
             <div class="exam-details-header">
-                @php
-                    $backUrl = route('exams');
-                    // TODO: Removed _user_id from URL param
-                    // if(isset($isApi) && $isApi) {
-                    //     $backUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                    // }
-                @endphp
-                <a href="{{ $backUrl }}" class="back-btn">
+                <a href="{{ route('exams') }}" class="back-btn">
                     <i class="fas fa-arrow-right"></i>
                     {{ __('front.back') }}
                 </a>
@@ -118,14 +93,7 @@
 
                         @if ($current_attempt && !$current_attempt->submitted_at)
                             {{-- Continue Button --}}
-                            @php
-                                $takeUrl = route('exam.take', ['exam' => $exam->id]);
-                                // TODO: Removed _user_id from URL param
-                                // if(isset($isApi) && $isApi) {
-                                //     $takeUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                                // }
-                            @endphp
-                            <a href="{{ $takeUrl }}" class="btn btn-primary btn-large">
+                            <a href="{{ route('exam.take', ['exam' => $exam->id]) }}" class="btn btn-primary btn-large">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.continue_exam') }}
                             </a>
@@ -134,14 +102,7 @@
                             </p>
                         @elseif($result && $exam->show_results_immediately && $result->status === 'completed')
                             {{-- View Results Button --}}
-                            @php
-                                $resultUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]);
-                                // TODO: Removed _user_id from URL param
-                                // if(isset($isApi) && $isApi) {
-                                //     $resultUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                                // }
-                            @endphp
-                            <a href="{{ $resultUrl }}" class="btn btn-info btn-large">
+                            <a href="{{ route('exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="btn btn-info btn-large">
                                 <i class="fas fa-chart-bar"></i>
                                 {{ __('front.view_results') }}
                             </a>
@@ -155,12 +116,6 @@
                                     @if (!$isApi)
                                         @csrf
                                     @endif
-                                    {{-- TODO: Removed hidden _mobile and _user_id inputs for mobile webview
-                                    @if ($isApi)
-                                        <input type="hidden" name="_mobile" value="1">
-                                        <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
-                                    @endif
-                                    --}}
                                     <button type="submit" class="btn btn-success btn-large">
                                         <i class="fas fa-redo"></i>
                                         {{ __('front.محاولة جديدة') }}
@@ -183,12 +138,6 @@
                                 @if (!$isApi)
                                     @csrf
                                 @endif
-                                {{-- TODO: Removed hidden _mobile and _user_id inputs for mobile webview
-                                @if ($isApi)
-                                    <input type="hidden" name="_mobile" value="1">
-                                    <input type="hidden" name="_user_id" value="{{ auth('user')->id() }}">
-                                @endif
-                                --}}
                                 <button type="submit" class="btn btn-success btn-large">
                                     <i class="fas fa-play-circle"></i>
                                     {{ __('front.start_exam') }}

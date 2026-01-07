@@ -3,7 +3,6 @@
 namespace  App\Http\Controllers\Web;
 
 use App\Models\Exam;
-use App\Models\Course;
 use App\Models\Subject;
 use App\Models\Category;
 use App\Models\Question;
@@ -22,24 +21,20 @@ class ExamController extends Controller
     use Responses;
 
     public $isApi          = false;
-    public $apiRoutePrefix = '';  // Will be set in constructor
+    public $apiRoutePrefix = '';
 
     protected function checkIfApi()
     {
         // Check if this is coming from mobile webview
         $hasUserId = request()->hasHeader("UserId");
-        $hasUserIdParam = request()->get('_user_id');
         $expectsJson = request()->expectsJson();
         $isApiRoute = request()->is('api/*');
-        $hasMobileFlag = request()->get('_mobile') == 1;
         $isMobileSession = session('is_mobile_app');
 
         if (
             $hasUserId ||
-            $hasUserIdParam ||
             $expectsJson ||
             $isApiRoute ||
-            $hasMobileFlag ||
             $isMobileSession
         ) {
             $this->isApi = true;
@@ -47,7 +42,6 @@ class ExamController extends Controller
             session(['is_mobile_app' => true]);
         }
     }
-
 
 
     public function __construct(Request $request)
@@ -283,14 +277,7 @@ class ExamController extends Controller
 
             if ($current_attempt->answers?->count() && !request()->get('page')) {
                 // Redirect to exam.take page instead of exam details
-                $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
-
-                // Add mobile query params if in mobile mode
-                if ($this->isApi) {
-                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                }
-
-                return redirect($redirectUrl);
+                return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
             } else {
                 $question_nm = request()->get('page');
                 $question    = $pgQquestions?->first();
@@ -359,14 +346,7 @@ class ExamController extends Controller
         ]);
 
         // Redirect to exam taking page
-        $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
-
-        // Add mobile query params if in mobile mode
-        if ($this->isApi) {
-            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-        }
-
-        return redirect($redirectUrl);
+        return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
     }
 
     // تصحيح سؤال
@@ -378,11 +358,7 @@ class ExamController extends Controller
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
         if (!$current_attempt) {
-            $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
-            if ($this->isApi) {
-                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-            }
-            return redirect($redirectUrl)->with('error', translate_lang('لا توجد محاولة جارية'));
+            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('لا توجد محاولة جارية'));
         }
 
         // Check time limit
@@ -390,11 +366,7 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
-                if ($this->isApi) {
-                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                }
-                return redirect($redirectUrl)->with('error', translate_lang('تم انتهاء الوقت المحدد'));
+                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('تم انتهاء الوقت المحدد'));
             }
         }
 
@@ -478,11 +450,7 @@ class ExamController extends Controller
                 // Auto-submit exam if all questions are answered
                 $this->submit_exam($current_attempt);
                 DB::commit();
-                $redirectUrl = route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
-                if ($this->isApi) {
-                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                }
-                return redirect($redirectUrl)->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
+                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
             } else {
                 DB::commit();
             }
@@ -497,14 +465,7 @@ class ExamController extends Controller
             $next_page = $request->get('page', 1) + 1;
         }
 
-        if ($this->isApi) {
-            // Force API URL with query parameter to maintain API mode
-            $redirectUrl = route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]) . "?page={$next_page}&_mobile=1&_user_id=" . auth('user')->id();
-        } else {
-            $redirectUrl = route('exam.take', ['exam' => $exam->id]) . "?page={$next_page}";
-        }
-
-        return redirect($redirectUrl)->with($error ?? '', $message_status ?? '');
+        return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id])->with($error ?? '', $message_status ?? '');
     }
 
     // تسليم الامتحان
@@ -626,14 +587,7 @@ class ExamController extends Controller
 
         $this->submit_exam($current_attempt);
 
-        $redirectUrl = route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
-
-        // Add mobile query params if in mobile mode
-        if ($this->isApi) {
-            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-        }
-
-        return redirect($redirectUrl)->with('success', 'تم تسليم الامتحان بنجاح');
+        return redirect()->route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
     /**
@@ -644,22 +598,14 @@ class ExamController extends Controller
         $user = auth_student();
 
         if (!$exam->is_available()) {
-            $redirectUrl = route('exams');
-            if ($this->isApi) {
-                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-            }
-            return redirect($redirectUrl)->with('error', __('front.unavailable'));
+            return redirect()->route('exams')->with('error', __('front.unavailable'));
         }
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
 
         if (!$current_attempt) {
-            $redirectUrl = route('exam', ['exam' => $exam->id, 'slug' => $exam->slug]);
-            if ($this->isApi) {
-                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-            }
-            return redirect($redirectUrl)->with('error', __('front.no_ongoing_attempt'));
+            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
         }
 
         // Check time limit
@@ -667,11 +613,7 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                $redirectUrl = route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
-                if ($this->isApi) {
-                    $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-                }
-                return redirect($redirectUrl);
+                return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
             }
         }
 
@@ -680,11 +622,7 @@ class ExamController extends Controller
 
         // Ensure question_order is a valid array
         if (!is_array($question_order) || empty($question_order)) {
-            $redirectUrl = route('exams');
-            if ($this->isApi) {
-                $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
-            }
-            return redirect($redirectUrl)->with('error', __('front.exam_data_invalid'));
+            return redirect()->route('exams')->with('error', __('front.exam_data_invalid'));
         }
 
         $allQuestions = Question::whereIn('id', $question_order)
@@ -851,9 +789,8 @@ class ExamController extends Controller
         }
 
         // Ensure mobile query params are preserved
-        if ($this->isApi && !request()->has('_user_id')) {
+        if ($this->isApi) {
             $redirectUrl = route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]);
-            $redirectUrl .= '?_mobile=1&_user_id=' . auth('user')->id();
             return redirect($redirectUrl);
         }
 
