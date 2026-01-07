@@ -32,13 +32,14 @@ class ExamController extends Controller
         }
 
         // جرب الحصول على user ID من parameter _user_id
-        $userId = request()->get('_user_id') ?? request()->query('_user_id');
+        $userId = request()->get('_user_id') ?? request()->query('_user_id') ?? request()->input('_user_id');
 
         if ($userId) {
             $user = \App\Models\User::find($userId);
 
             if ($user) {
                 auth('user')->login($user);
+                session(['mobile_user_id' => $user->id]);
             }
         }
     }
@@ -82,6 +83,16 @@ class ExamController extends Controller
             if ($user) {
                 auth('user')->login($user);
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
+            }
+        }
+
+        // Handle _user_id from query/form parameters
+        $paramUserId = $request->get('_user_id') ?? $request->input('_user_id');
+        if ($paramUserId && !auth('user')->check()) {
+            $user = \App\Models\User::find($paramUserId);
+            if ($user && $user->role_name === 'student') {
+                auth('user')->login($user);
+                session(['is_mobile_app' => true, 'mobile_user_id' => $paramUserId]);
             }
         }
 
@@ -701,8 +712,17 @@ class ExamController extends Controller
 
         $user = auth_student();
 
-        // Get current attempt
-        $current_attempt = $exam->current_user_attempt();
+        // If still not authenticated, return error
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized - no active user session'], 401);
+        }
+
+        // Get current attempt for the specific user
+        $current_attempt = $exam->attempts()
+            ->where('user_id', $user->id)
+            ->where('status', 'in_progress')
+            ->whereNull('submitted_at')
+            ->first();
 
         if (!$current_attempt) {
             return response()->json(['success' => false, 'message' => 'No active attempt'], 404);

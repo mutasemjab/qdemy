@@ -976,6 +976,11 @@ function saveAnswerToBackend(questionId, answerType, answer) {
     currentState.isSaving = true;
 
     const formData = new FormData();
+    formData.append('_token', examData.csrfToken);  // ✅ Add CSRF token to form data
+    @if($isApi)
+        formData.append('_mobile', '1');  // ✅ Mark as mobile request
+        formData.append('_user_id', '{{ auth("user")->id() }}');  // ✅ Include user ID for mobile
+    @endif
     formData.append('question_id', questionId);
     formData.append('answer_type', answerType);
 
