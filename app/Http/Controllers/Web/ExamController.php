@@ -534,15 +534,15 @@ class ExamController extends Controller
             // فقط إذا كان الامتحان مرتبط بدرس، نحدث progress
             // لا نحدث progress للامتحانات العادية
             if ($exam->course_content_id) {
-                // استخدام updateOrCreate لتجنب duplicate errors
-                // سيضيف record في أول مرة ويحدثه في المرات اللاحقة
+                // استخدام updateOrCreate مع الـ keys الصحيحة
+                // user_id + course_content_id هي الـ unique constraint
                 ContentUserProgress::updateOrCreate(
                     [
                         'user_id' => $attempt->user_id,
                         'course_content_id' => $exam->course_content_id,
-                        'exam_id' => $exam->id,
                     ],
                     [
+                        'exam_id' => $exam->id,
                         'exam_attempt_id' => $attempt->id,
                         'completed' => true,
                         'score' => $total_score,
