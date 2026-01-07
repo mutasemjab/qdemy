@@ -8,11 +8,11 @@
     <title>@yield('title')</title>
 
     <!-- Preload ALL OTF fonts correctly -->
-    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Regular.otf') }}" as="font" type="font/otf"
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Medium.otf') }}" as="font" type="font/otf"
         crossorigin>
     <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Bold.otf') }}" as="font" type="font/otf"
         crossorigin>
-    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-Black.otf') }}" as="font" type="font/otf"
+    <link rel="preload" href="{{ asset('assets_front/fonts/Somar-ExtraBold.otf') }}" as="font" type="font/otf"
         crossorigin>
 
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
@@ -43,7 +43,7 @@
         /* Force exact font matching */
         @font-face {
             font-family: 'Somar';
-            src: url('/assets_front/fonts/Somar-Regular.otf') format('opentype');
+            src: url('/assets_front/fonts/Somar-Medium.otf') format('opentype');
             font-weight: 400;
             font-style: normal;
             font-display: block;
@@ -63,7 +63,7 @@
 
         @font-face {
             font-family: 'Somar';
-            src: url('/assets_front/fonts/Somar-Black.otf') format('opentype');
+            src: url('/assets_front/fonts/Somar-ExtraBold.otf') format('opentype');
             font-weight: 900;
             font-style: normal;
             font-display: block;
