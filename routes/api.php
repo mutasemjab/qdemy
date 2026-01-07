@@ -313,6 +313,7 @@ Route::group(['prefix' => 'v1/parent'], function () {
 
 // exam routes starts
 Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exam.index');
+Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exams');
 Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam');
 
 Route::prefix('v1/exam')
