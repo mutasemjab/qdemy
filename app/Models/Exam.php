@@ -218,6 +218,29 @@ class Exam extends Model
     }
 
     /**
+     * Check if the current user (teacher) can manage this exam
+     */
+    public function isOwnedByTeacher($userId = null)
+    {
+        $userId = $userId ?? auth()->id();
+
+        // If teacher created the exam directly
+        if ($this->created_by === $userId) {
+            return true;
+        }
+
+        // If the exam is linked to a course and the teacher owns that course
+        if ($this->course_id) {
+            $course = $this->course;
+            if ($course && $course->teacher_id === $userId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get formatted duration
      */
     public function getFormattedDurationAttribute()

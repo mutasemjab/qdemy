@@ -697,8 +697,8 @@ class TeacherController extends Controller
      */
     public function showExamMethod(Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -711,8 +711,8 @@ class TeacherController extends Controller
      */
     public function editExamMethod(Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -733,8 +733,8 @@ class TeacherController extends Controller
      */
     public function updateExamMethod(Request $request, Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -758,8 +758,8 @@ class TeacherController extends Controller
      */
     public function destroyExamMethod(Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -785,8 +785,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsIndex(Request $request, Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -818,8 +818,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsCreate(Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -831,8 +831,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsStore(Request $request, Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -913,8 +913,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsShow(Exam $exam, Question $question)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -936,8 +936,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsEdit(Exam $exam, Question $question)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -956,8 +956,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsUpdate(Request $request, Exam $exam, Question $question)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -997,8 +997,8 @@ class TeacherController extends Controller
      */
     public function examQuestionsDestroy(Exam $exam, Question $question)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -1065,8 +1065,8 @@ class TeacherController extends Controller
      */
     public function examResults(Exam $exam)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
@@ -1092,8 +1092,8 @@ class TeacherController extends Controller
      */
     public function viewExamAttempt(Exam $exam, ExamAttempt $attempt)
     {
-        // Check if teacher owns this exam
-        if ($exam->created_by !== Auth::id()) {
+        // Check if teacher owns this exam or the course it belongs to
+        if (!$exam->isOwnedByTeacher()) {
             abort(403, __('messages.unauthorized_access'));
         }
 
