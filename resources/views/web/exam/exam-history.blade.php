@@ -103,7 +103,8 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}" class="action-btn">
+                                        <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attempt->id]) }}"
+                                            class="action-btn">
                                             <i class="fas fa-eye"></i>
                                             {{ __('front.review') }}
                                         </a>
@@ -126,7 +127,7 @@
                     </div>
                     <h3>{{ __('front.no_exams_found') }}</h3>
                     <p>{{ __('front.no_exams_description') }}</p>
-                    <a href="{{ route('exams') }}" class="btn btn-primary">
+                    <a href="{{ route($apiRoutePrefix . 'exams') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left"></i>
                         {{ __('front.go_to_exams') }}
                     </a>

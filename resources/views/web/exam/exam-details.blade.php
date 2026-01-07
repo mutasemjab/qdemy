@@ -7,7 +7,7 @@
         <div class="exam-details-container">
             {{-- Header --}}
             <div class="exam-details-header">
-                <a href="{{ route('exams') }}" class="back-btn">
+                <a href="{{ route($apiRoutePrefix .'exams') }}" class="back-btn">
                     <i class="fas fa-arrow-right"></i>
                     {{ __('front.back') }}
                 </a>
