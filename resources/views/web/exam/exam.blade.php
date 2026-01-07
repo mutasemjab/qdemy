@@ -1,11 +1,4 @@
 @php
-    if ($isApi == true) {
-        $hideFooter = true;
-        $hideHeader = true;
-    }
-@endphp
-
-@php
     $queryParams = '';
     if (isset($isApi) && $isApi) {
         $queryParams = '?_mobile=1&_user_id=' . auth('user')->id();

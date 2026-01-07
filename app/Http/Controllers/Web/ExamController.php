@@ -72,11 +72,7 @@ class ExamController extends Controller
         }
     }
 
-    // ملحوظة هامة تخص تسليم وتصحيح الامتحان
-    // يتم السماح بالتسليم سواء اجاب الطالب كل الاسئلة ام لا وعندها تصير submitted_at = now(),
-    // if exam_attempts.show_results_immediately == true يتم التصحيح الاليكتروني و جعل ال status = completed - وعرض النتيجة فورا
-    // if exam_attempts.show_results_immediately == false يتم التصحيح الاليكتروني للاسئله غير المقالية وال status = in_progress ولا يتم عرض النتيجة
-    // ماذا ان كان if exam_attempts.show_results_immediately == true وف نفس الوقت توجد اسئلة مقالية ؟ هذه ايعني ان واضع الامتحان حمار وهو المسؤول عن ظهور النتيجة خاطئة لان الاسئلة المقالية لا يجري تصيحيها اليكترونيا
+
 
     public function __construct(Request $request)
     {
@@ -96,6 +92,14 @@ class ExamController extends Controller
                 session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
             }
         }
+
+        // share isApi and api route prefix in all views 
+        view()->share([
+            'isApi' =>  $this->isApi,
+            "apiRoutePrefix" => $this->apiRoutePrefix,
+            'hideHeader' => $this->isApi,
+            'hideFooter' => $this->isApi
+        ]);
 
         // Handle _user_id from query/form parameters (try all sources)
         $paramUserId = $request->query('_user_id')
@@ -238,16 +242,13 @@ class ExamController extends Controller
             'programms' => $programms,
             'grades' => $grades,
             'subjects' => $subjects,
-            'isApi' => $this->isApi,
             'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
         ]);
     }
 
-   public function show(Exam $exam, $slug = null, ExamAttempt $attempt = null)
+    public function show(Exam $exam, $slug = null, ?ExamAttempt $attempt)
     {
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -257,14 +258,14 @@ class ExamController extends Controller
         }
 
         $attempts         = $exam->user_attempts();
-        
+
         // FIXED: Get the LATEST completed attempt from collection
         $result           = $exam->user_attempts()
             ->where('submitted_at', '!=', null)
             ->where('status', 'completed')
             ->sortByDesc('created_at')
             ->first();
-            
+
         $current_attempts = $exam->current_user_attempts();
 
         $last_attempts    = $attempts->where('status', '!=', 'abandoned');
@@ -329,10 +330,6 @@ class ExamController extends Controller
             'can_add_attempt' => $can_add_attempt,
             'question_nm'     => $question_nm,
             '_questions'      => $_questions,
-            'isApi'           => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -347,7 +344,7 @@ class ExamController extends Controller
             }
         }
 
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -401,7 +398,7 @@ class ExamController extends Controller
     // $answered_questions >= $total_questions سلم الامتحان
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
@@ -640,7 +637,7 @@ class ExamController extends Controller
             }
         }
 
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -671,7 +668,7 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -728,7 +725,7 @@ class ExamController extends Controller
         $savedAnswers = $current_attempt->answers()
             ->get()
             ->keyBy('question_id')
-            ->map(function($answer) {
+            ->map(function ($answer) {
                 return [
                     'selected_options' => $answer->selected_options ?? [],
                     'essay_answer' => $answer->essay_answer,
@@ -751,10 +748,6 @@ class ExamController extends Controller
             'savedAnswers' => $savedAnswers,
             'current_attempt' => $current_attempt,
             'remainingSeconds' => $remainingSeconds,
-            'isApi' => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
         ]);
     }
 
@@ -772,7 +765,7 @@ class ExamController extends Controller
             }
         }
 
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -832,7 +825,9 @@ class ExamController extends Controller
             if ($question->type === 'multiple_choice') {
                 $selected_options = is_array($request->answer) ? $request->answer : [$request->answer];
                 // Cast to integers to ensure consistency when retrieving
-                $selected_options = array_map(function($opt) { return (int)$opt; }, $selected_options);
+                $selected_options = array_map(function ($opt) {
+                    return (int)$opt;
+                }, $selected_options);
                 $exam_answer->selected_options = $selected_options;
 
                 $correct_options = $question->options()->where('is_correct', true)->pluck('id')->toArray();
@@ -841,7 +836,6 @@ class ExamController extends Controller
 
                 $exam_answer->is_correct = $is_correct;
                 $exam_answer->score = $is_correct ? $question->grade : 0;
-
             } elseif ($question->type === 'true_false') {
                 $selected_answer = $request->answer === 'true' || $request->answer === true;
                 $exam_answer->selected_options = [$selected_answer];
@@ -856,7 +850,6 @@ class ExamController extends Controller
 
                 $exam_answer->is_correct = $is_correct;
                 $exam_answer->score = $is_correct ? $question->grade : 0;
-
             } elseif ($question->type === 'essay') {
                 $exam_answer->essay_answer = $request->answer;
                 $exam_answer->is_correct = null;
@@ -870,7 +863,6 @@ class ExamController extends Controller
                 'success' => true,
                 'message' => 'Answer saved'
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -882,7 +874,7 @@ class ExamController extends Controller
      */
     public function result(Exam $exam, ExamAttempt $attempt)
     {
-//        $this->ensureAuthenticatedForMobile();
+        //        $this->ensureAuthenticatedForMobile();
 
         $user = auth_student();
 
@@ -953,10 +945,7 @@ class ExamController extends Controller
             'passed' => $passed,
             'canRetake' => $canRetake,
             'allAttempts' => $allAttempts,
-            'isApi' => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
+
         ]);
     }
 
@@ -989,10 +978,7 @@ class ExamController extends Controller
             'passedExams' => $passedExams,
             'failedExams' => $failedExams,
             'overallPercentage' => $overallPercentage,
-            'isApi' => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
+
         ]);
     }
 
@@ -1013,10 +999,6 @@ class ExamController extends Controller
             'exam'    => $exam,
             'attempt' => $attempt,
             'answers' => $answers,
-            'isApi'   => $this->isApi,
-            'apiRoutePrefix' => $this->apiRoutePrefix,
-            'hideHeader' => $this->isApi,
-            'hideFooter' => $this->isApi,
         ]);
     }
 }

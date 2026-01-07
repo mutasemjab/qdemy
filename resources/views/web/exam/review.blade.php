@@ -1,9 +1,3 @@
-@php
-    if ($isApi == true) {
-        $hideFooter = true;
-        $hideHeader = true;
-    }
-@endphp
 @extends('layouts.app')
 
 @section('title', translate_lang('مراجعة الامتحان') . ' - ' . $exam->title)
@@ -183,7 +177,8 @@
 
                                             @if ($is_correct_option)
                                                 <span style="color: #4CAF50; font-weight: bold;"> ✓
-                                                    ({{ translate_lang('صحيح') }})</span>
+                                                    ({{ translate_lang('صحيح') }})
+                                                </span>
                                             @endif
 
                                             @if ($was_selected && !$is_correct_option)

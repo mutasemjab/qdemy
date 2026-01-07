@@ -1,10 +1,3 @@
-@php
-    if ($isApi == true) {
-        $hideFooter = true;
-        $hideHeader = true;
-    }
-@endphp
-
 @extends('layouts.app')
 
 @section('title', 'E-Exam')

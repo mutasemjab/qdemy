@@ -1,9 +1,3 @@
-@php
-    if ($isApi == true) {
-        $hideFooter = true;
-        $hideHeader = true;
-    }
-@endphp
 {{-- resources/views/web/exam/exam-details.blade.php --}}
 @extends('layouts.app')
 
