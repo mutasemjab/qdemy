@@ -12,11 +12,11 @@
 
 {{-- DEBUG: Student Info --}}
 <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-@dd(auth('user')->user())
+@dump(auth('user')->user())
 
 {{-- DEBUG: Session Data --}}
 <h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-@dd(session()->all())
+@dump(session()->all())
 
     <div class="exam-taking-section" style="display: block;">
         <!-- Exam Header -->
