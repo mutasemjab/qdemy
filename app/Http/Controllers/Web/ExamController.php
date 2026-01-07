@@ -25,7 +25,7 @@ class ExamController extends Controller
     public $apiRoutePrefix = '';
 
 
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->middleware(function ($request, $next) {
             // 1- check if request is from mobile
@@ -92,6 +92,11 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             session(['is_mobile_app' => true]);
+
+            if ($hasUserId) {
+                session(["mobile_user_id" => request()->header("UserId")]);
+            }
+            session()->save();
         }
     }
 
