@@ -588,6 +588,9 @@ const examData = {
     csrfToken: "{{ csrf_token() }}"
 };
 
+// Alert to show the generated URL
+alert('saveAnswerUrl: ' + examData.saveAnswerUrl);
+
 // All questions with options
 const allQuestions = @json($allQuestions);
 
@@ -974,6 +977,7 @@ function saveAnswerToBackend(questionId, answerType, answer) {
     if (currentState.isSaving) return;
 
     currentState.isSaving = true;
+    alert('🔄 بدء حفظ الإجابة - questionId: ' + questionId + ', answerType: ' + answerType);
 
     const formData = new FormData();
     formData.append('_token', examData.csrfToken);  // ✅ Add CSRF token to form data
@@ -992,6 +996,8 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         answer.forEach(opt => formData.append('answer[]', opt));
     }
 
+    alert('📤 إرسال الطلب إلى: ' + examData.saveAnswerUrl);
+
     fetch(examData.saveAnswerUrl, {
         method: 'POST',
         headers: {
@@ -999,13 +1005,17 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        alert('📡 تم الرد من السيرفر - Status: ' + response.status);
+        return response.json();
+    })
     .then(data => {
+        alert('✅ تم استقبال الرد: ' + JSON.stringify(data));
         if (data.success) {
             currentState.answers[questionId].saved = true;
             showAutoSaveNotification();
         } else {
-            console.error('Failed to save answer:', data.message);
+            alert('❌ فشل حفظ الإجابة: ' + data.message);
             if (data.expired) {
                 alert('{{ __("front.time_expired") }}');
                 window.location.reload();
@@ -1013,7 +1023,7 @@ function saveAnswerToBackend(questionId, answerType, answer) {
         }
     })
     .catch(error => {
-        console.error('Error saving answer:', error);
+        alert('❌ خطأ في الاتصال: ' + error.message);
     })
     .finally(() => {
         currentState.isSaving = false;
