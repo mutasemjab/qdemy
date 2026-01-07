@@ -6,7 +6,7 @@
     <div class="exam-result-section">
         <div class="result-container">
             {{-- Back Button --}}
-            <a href="{{ route('exams') }}" class="back-btn">
+            <a href="{{ route($apiRoutePrefix . 'exams') }}" class="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 {{ __('front.back') }}
             </a>
@@ -229,7 +229,7 @@
 
             {{-- Actions --}}
             <div class="result-actions">
-                <a href="{{ route('exams') }}" class="btn btn-secondary">
+                <a href="{{ route($apiRoutePrefix . 'exams') }}" class="btn btn-secondary">
                     <i class="fas fa-list"></i>
                     {{ __('front.back') }}
                 </a>

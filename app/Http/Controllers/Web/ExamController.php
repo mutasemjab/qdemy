@@ -3,17 +3,18 @@
 namespace  App\Http\Controllers\Web;
 
 use App\Models\Exam;
+use App\Models\User;
 use App\Models\Subject;
 use App\Models\Category;
 use App\Models\Question;
+use App\Traits\Responses;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-use App\Traits\Responses;
 use Illuminate\Support\Facades\DB;
-use App\Http\Controllers\Controller;
 use App\Models\ContentUserProgress;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class ExamController extends Controller
 {
@@ -22,6 +23,56 @@ class ExamController extends Controller
 
     public $isApi          = false;
     public $apiRoutePrefix = '';
+
+
+    public function __construct(Request $request)
+    {
+        $this->middleware(function ($request, $next) {
+            // 1- check if request is from mobile
+            $this->checkIfApi();
+            // 2- check if api request and there is UserId header for get and login user
+            if ($this->isApi && $request->hasHeader('UserId')) {
+                $userId = $request->header('UserId');
+                $user = User::where('id', $userId)
+                    ->where('role_name', 'student')
+                    ->first();
+
+                if ($user) {
+                    auth('user')->login($user);
+                    session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
+                }
+            }
+
+            // 3- check if not form api request and there is a session
+            if (session('is_mobile_app') && !auth('user')->check()) {
+                if ($userId = session('mobile_user_id')) {
+                    $user = User::find($userId);
+                    if ($user) {
+                        auth('user')->login($user);
+                    }
+                }
+            }
+
+            // 4- configure lang
+            if ($request->hasHeader('Lang') || $request->hasHeader('Language')) {
+                $lang = $request->header('Lang') ?? $request->header('Language');
+                if (in_array($lang, ['en', 'ar'])) {
+                    app()->setLocale($lang);
+                    session(['locale' => $lang]);
+                }
+            }
+
+            // share isApi and api route prefix in all views 
+            view()->share([
+                'isApi' =>  $this->isApi,
+                "apiRoutePrefix" => $this->apiRoutePrefix,
+                'hideHeader' => $this->isApi,
+                'hideFooter' => $this->isApi
+            ]);
+
+            return $next($request);
+        });
+    }
 
     protected function checkIfApi()
     {
@@ -40,87 +91,6 @@ class ExamController extends Controller
             $this->isApi = true;
             $this->apiRoutePrefix = API_ROUTE_PREFIX;
             session(['is_mobile_app' => true]);
-        }
-    }
-
-
-    public function __construct(Request $request)
-    {
-        $this->middleware(function ($request, $next) {
-
-            $this->checkIfApi();
-
-            // share isApi and api route prefix in all views 
-            view()->share([
-                'isApi' =>  $this->isApi,
-                "apiRoutePrefix" => $this->apiRoutePrefix,
-                'hideHeader' => $this->isApi,
-                'hideFooter' => $this->isApi
-            ]);
-
-            return $next($request);
-        });
-        $this->checkIfApi();
-
-        // API-specific authentication via UserId header
-        if ($this->isApi && $request->hasHeader('UserId')) {
-            $userId = $request->header('UserId');
-
-            $user = \App\Models\User::where('id', $userId)
-                ->where('role_name', 'student')
-                ->first();
-
-            if ($user) {
-                auth('user')->login($user);
-                session(['is_mobile_app' => true, 'mobile_user_id' => $userId]);
-            }
-        }
-
-        // Handle _user_id from query/form parameters (try all sources)
-        $paramUserId = $request->query('_user_id')
-            ?? $request->post('_user_id')
-            ?? $request->input('_user_id');
-        if ($paramUserId && !auth('user')->check()) {
-            $user = \App\Models\User::find($paramUserId);
-            if ($user && $user->role_name === 'student') {
-                auth('user')->login($user);
-                session(['is_mobile_app' => true, 'mobile_user_id' => $paramUserId]);
-            }
-        }
-
-        // Persist authentication across requests using session
-        if (session('is_mobile_app')) {
-            $this->isApi = true;
-            $this->apiRoutePrefix = API_ROUTE_PREFIX;
-
-            // إذا لم يكن mobile_user_id محفوظ، حاول الحصول عليه من auth()
-            if (!session('mobile_user_id') && auth('user')->check()) {
-                session(['mobile_user_id' => auth('user')->id()]);
-            }
-
-            // الآن حاول تسجيل الدخول إذا كان mobile_user_id موجود
-            if (!auth('user')->check() && session('mobile_user_id')) {
-                $user = \App\Models\User::find(session('mobile_user_id'));
-                if ($user) {
-                    auth('user')->login($user);
-                }
-            }
-        }
-
-        // Set language
-        if ($request->hasHeader('Lang') || $request->hasHeader('Language')) {
-            $lang = $request->header('Lang') ?? $request->header('Language');
-            if (in_array($lang, ['en', 'ar'])) {
-                app()->setLocale($lang);
-                session(['locale' => $lang]);
-            }
-        }
-
-        // Set apiRoutePrefix based on isApi flag
-        if ($this->isApi) {
-            $this->apiRoutePrefix = API_ROUTE_PREFIX;  // 'api.'
-        } else {
-            $this->apiRoutePrefix = '';  // Empty string for web routes
         }
     }
 
@@ -598,14 +568,14 @@ class ExamController extends Controller
         $user = auth_student();
 
         if (!$exam->is_available()) {
-            return redirect()->route('exams')->with('error', __('front.unavailable'));
+            return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.unavailable'));
         }
 
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
 
         if (!$current_attempt) {
-            return redirect()->route('exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
+            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
         }
 
         // Check time limit
@@ -613,7 +583,7 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route('exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+                return redirect()->route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
             }
         }
 
@@ -622,7 +592,7 @@ class ExamController extends Controller
 
         // Ensure question_order is a valid array
         if (!is_array($question_order) || empty($question_order)) {
-            return redirect()->route('exams')->with('error', __('front.exam_data_invalid'));
+            return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.exam_data_invalid'));
         }
 
         $allQuestions = Question::whereIn('id', $question_order)
