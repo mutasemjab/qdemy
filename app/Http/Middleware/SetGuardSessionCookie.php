@@ -12,19 +12,17 @@ class SetGuardSessionCookie
      * Handle an incoming request.
      *
      * Detects which guard is being used based on route/request
-     * and sets the appropriate session cookie name
+     * and sets the appropriate session cookie name BEFORE session starts
      */
     public function handle(Request $request, Closure $next)
     {
-        $guard = $this->detectGuard($request);
-        $guardCookies = config('session.guard_cookies', []);
+        // هذا الـ middleware يجب أن يعمل قبل StartSession
+        // لكن يتم استدعاؤه في global، لذا نحتاج نهجاً مختلفاً
 
-        if ($guard && isset($guardCookies[$guard])) {
-            // Set the session cookie name for this guard
-            config([
-                'session.cookie' => $guardCookies[$guard],
-            ]);
-        }
+        // بدلاً من تغيير config هنا، سنخزن معلومة الـ guard في request
+        // ثم يتم استخدامها في StartSession middleware
+        $guard = $this->detectGuard($request);
+        $request->attributes->set('auth_guard', $guard);
 
         return $next($request);
     }
