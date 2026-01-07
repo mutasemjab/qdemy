@@ -719,7 +719,7 @@ button,
 .btn {
   padding: 6px 12px;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 20px;
   text-decoration: none;
 }
 
@@ -870,7 +870,7 @@ button.btn.btn-primary {
 }
 
 .footer-desc {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.8;
   color: var(--footer-fg-dim);
   max-width: 400px;
@@ -1239,7 +1239,7 @@ html[dir="rtl"] .footer-contact {
   width: 140px;
   height: 140px;
   color: #fff;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: bold;
   text-align: center;
   text-decoration: none;
@@ -1833,7 +1833,7 @@ a.blob-btn span {
 }
 
 .x3c-cap span {
-  font-size: 14px;
+  font-size: 20px;
   opacity: .9
 }
 
@@ -2116,14 +2116,14 @@ p.welcome-text {
 }
 
 .faq-card h3 {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
   color: #3a3a3a;
 }
 
 .faq-card p {
-  font-size: 14px;
+  font-size: 20px;
   color: #3a3a3a;
   line-height: 1.5;
 }
@@ -2225,13 +2225,13 @@ p.welcome-text {
 }
 
 .review-info p {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.5;
   margin-bottom: 15px;
 }
 
 .review-info .author {
-  font-size: 14px;
+  font-size: 20px;
   display: block;
   margin-bottom: 5px;
 }
@@ -2333,7 +2333,7 @@ p.welcome-text {
   .hero-card {
     width: 45%;
     height: 94px;
-    font-size: 14px;
+    font-size: 20px;
   }
 
   a.blob-btn.blob-btn-1 {
@@ -2622,7 +2622,7 @@ a.ud-item.nav-link:hover {
   }
 
   .tawjihi-text p {
-    font-size: 14px;
+    font-size: 20px;
   }
 }
 
@@ -3113,7 +3113,7 @@ a.text-dark {
   padding: 5px 12px;
   border-radius: 8px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 20px;
   transition: background 0.3s ease;
 }
 
@@ -3366,7 +3366,7 @@ a.text-dark {
 }
 
 .arabic-courses-date {
-  font-size: 14px;
+  font-size: 20px;
   color: #777;
   margin-bottom: 10px;
   text-align: right;
@@ -3424,7 +3424,7 @@ a.text-dark {
   padding: 5px 10px;
   border-radius: 20px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .arabic-courses-join:hover {
@@ -3464,7 +3464,7 @@ a.text-dark {
 }
 
 .lesson-content .lesson-desc {
-  font-size: 14px;
+  font-size: 20px;
   color: #444;
   text-align: center;
   margin-bottom: 30px;
@@ -3689,7 +3689,7 @@ a.text-dark {
 }
 
 .lesson-teacher p {
-  font-size: 14px;
+  font-size: 20px;
   color: #777;
   border: solid #e4e4e4;
   border-radius: 50px;
@@ -3710,7 +3710,7 @@ a.text-dark {
 }
 
 .lesson-card-activation p {
-  font-size: 14px;
+  font-size: 20px;
   margin-bottom: 10px;
 }
 
@@ -3811,7 +3811,7 @@ a.text-dark {
 
 .accordion-header::after {
   content: "▼";
-  font-size: 14px;
+  font-size: 20px;
   transition: transform 0.3s ease;
 }
 
@@ -3905,7 +3905,7 @@ a.text-dark {
 
 .checkout-course-info p {
   margin: 0;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .checkout-total-box {
@@ -3935,7 +3935,7 @@ a.text-dark {
   padding: 8px 20px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   background: #fff;
   color: var(--main-color);
   transition: 0.3s;
@@ -3955,7 +3955,7 @@ a.text-dark {
 }
 
 .payment-field label {
-  font-size: 14px;
+  font-size: 20px;
   margin-bottom: 5px;
   display: block;
 }
@@ -3965,7 +3965,7 @@ a.text-dark {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .payment-double {
@@ -4055,7 +4055,7 @@ a.text-dark {
   border-radius: 8px;
   background: #f0f0f0;
   border: none;
-  font-size: 14px;
+  font-size: 20px;
   cursor: pointer;
   transition: 0.3s ease;
 }
@@ -4071,7 +4071,7 @@ a.text-dark {
 
 .teacher-content .tab-content.active {
   display: block;
-  font-size: 14px;
+  font-size: 20px;
   color: #333;
 }
 
@@ -4230,7 +4230,7 @@ a.text-dark {
 
 .login-link {
   text-align: center;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 @media (max-width: 768px) {
@@ -5156,7 +5156,7 @@ subject-plus-dropdown-examx {
   border: 1px solid #BFBFBF;
   border-radius: 8px;
   padding: 0 12px;
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .cmty-comments {
@@ -5306,7 +5306,7 @@ time {
 }
 
 .bq-btn i {
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .bq-btn:hover {
@@ -7387,7 +7387,7 @@ a.dl-store0 img {
 }
 
 .rvx-card-text {
-  font-size: 14px;
+  font-size: 20px;
   line-height: 1.7;
   margin: 0 0 14px
 }
@@ -8048,7 +8048,7 @@ header.tj2009__head {
   border-radius: 12px;
   background: #f8fafc;
   color: #1b2130;
-  font-size: 14px;
+  font-size: 20px;
   transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
@@ -8170,7 +8170,7 @@ header.tj2009__head {
   border-radius: 12px;
   padding: 12px 18px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 20px;
   background: #0055D2;
   color: #fff;
   cursor: pointer;
