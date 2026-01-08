@@ -156,49 +156,6 @@
   </div>
 </section>
 
-<div class="modal fade custom-modal" id="deleteSectionModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-animate">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ __('panel.confirm_delete') }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>{{ __('panel.delete_section_warning') }}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn m-btn-secondary" data-bs-dismiss="modal">{{ __('panel.cancel') }}</button>
-        <form id="deleteSectionForm" method="POST" style="display:inline">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="btn m-btn-danger">{{ __('panel.delete') }}</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade custom-modal" id="deleteContentModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-animate">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">{{ __('panel.confirm_delete') }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <p>{{ __('panel.delete_content_warning') }}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn m-btn-secondary" data-bs-dismiss="modal">{{ __('panel.cancel') }}</button>
-        <form id="deleteContentForm" method="POST" style="display:inline">
-          @csrf
-          @method('DELETE')
-          <button type="submit" class="btn m-btn-danger">{{ __('panel.delete') }}</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
 @endsection
 
 @section('styles')
@@ -268,17 +225,6 @@
   .contents-list .ci-actions{margin-inline-start:0!important}
 }
 
-.modal{display:none!important;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:rgba(17,24,39,.55)!important}
-.modal.open{display:flex!important}
-.modal-dialog{width:min(520px,92vw)!important;margin:0!important;transform:scale(.96);opacity:.96;transition:transform .18s ease,opacity .18s ease}
-.modal.open .modal-dialog{transform:scale(1);opacity:1}
-.modal-content{background:#fff!important;border-radius:16px!important;border:0!important;box-shadow:0 20px 60px rgba(0,0,0,.25)!important;overflow:hidden}
-.modal-header,.modal-footer{border:0!important}
-.modal-header{padding:16px 18px!important}
-.modal-body{padding:14px 18px!important}
-.btn-close{background:none;border:0;font-size:20px;line-height:1;opacity:.6}
-.btn-close:hover{opacity:1}
-
 .child-section-group{margin:14px 12px 12px;border:1px solid #eef0f3;border-radius:12px;overflow:hidden;background:#fbfcfe}
 .child-section-header{background:#f3f6fb;padding:12px 14px;border-bottom:1px solid #e8eef9;display:flex;justify-content:space-between;align-items:center}
 .child-section-header h4{margin:0;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px}
@@ -289,17 +235,6 @@
 .empty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
 .btn.btn-sm{padding:8px 12px;border-radius:10px;font-size:12px}
-
-.custom-modal .modal-dialog{transform:translateY(16px);transition:transform .2s ease,opacity .2s ease}
-.custom-modal.show .modal-dialog{transform:none}
-.custom-modal .modal-content{border:1px solid #eef0f3;border-radius:16px;overflow:hidden;box-shadow:0 24px 60px rgba(15,23,42,.22)}
-.custom-modal .modal-header{background:#f8fafc;border-bottom:1px solid #eef0f3}
-.custom-modal .modal-title{font-weight:900;color:#0f172a}
-.custom-modal .modal-body p{margin:0;color:#334155}
-.m-btn-secondary{background:#111827;color:#fff;border:1px solid #0b1220;border-radius:12px;padding:10px 14px;font-weight:900}
-.m-btn-secondary:hover{box-shadow:0 10px 22px rgba(17,24,39,.22)}
-.m-btn-danger{background:#ef4444;color:#fff;border:1px solid #dc2626;border-radius:12px;padding:10px 14px;font-weight:900}
-.m-btn-danger:hover{box-shadow:0 10px 22px rgba(239,68,68,.22)}
 
 @media (max-width:992px){
   .ud-wrap{grid-template-columns:1fr}
@@ -319,76 +254,55 @@
 <script>
 (function(){
   const courseId='{{ $course->id }}';
-  let handlersAttached=false;
-
-  function getModal(id){
-    const el=document.getElementById(id);
-    if(!el||!window.bootstrap) return null;
-    return bootstrap.Modal.getOrCreateInstance(el,{backdrop:'static',keyboard:true});
-  }
-
-  function handleDelete(form,modal,loadingText,defaultText){
-    const btn=form.querySelector('button[type="submit"]');
-    const originalHTML=btn.innerHTML;
-    btn.disabled=true;
-    btn.innerHTML=`<i class="fas fa-spinner fa-spin"></i> ${loadingText}...`;
-    fetch(form.action,{
-      method:'POST',
-      headers:{
-        'X-CSRF-TOKEN':document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify({_method:'DELETE'})
-    })
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.success){
-        modal&&modal.hide();
-        location.reload();
-      }else{
-        alert(d.message||'{{ __("panel.error_occurred") }}');
-        btn.disabled=false;
-        btn.innerHTML=defaultText;
-      }
-    })
-    .catch(()=>{
-      alert('{{ __("panel.error_occurred") }}');
-      btn.disabled=false;
-      btn.innerHTML=originalHTML;
-    });
-  }
-
-  function attachHandlersOnce(){
-    if(handlersAttached) return;
-    const secForm=document.getElementById('deleteSectionForm');
-    const conForm=document.getElementById('deleteContentForm');
-    secForm&&secForm.addEventListener('submit',function(e){
-      e.preventDefault();
-      handleDelete(secForm,getModal('deleteSectionModal'),'{{ __("panel.deleting") }}','{{ __("panel.delete") }}');
-    });
-    conForm&&conForm.addEventListener('submit',function(e){
-      e.preventDefault();
-      handleDelete(conForm,getModal('deleteContentModal'),'{{ __("panel.deleting") }}','{{ __("panel.delete") }}');
-    });
-    handlersAttached=true;
-  }
 
   window.deleteSection=function(sectionId){
-    attachHandlersOnce();
-    const form=document.getElementById('deleteSectionForm');
-    const modal=getModal('deleteSectionModal');
-    if(!form||!modal) return;
-    form.action=`/teacher/courses/${courseId}/sections/${sectionId}`;
-    modal.show();
+    if(!confirm('{{ __("panel.delete_section_warning") }}')){
+      return;
+    }
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=`{{ route('teacher.courses.sections.destroy', ['course' => $course->id, 'section' => '__SECTION_ID__']) }}`.replace('__SECTION_ID__', sectionId);
+
+    const csrfToken=document.createElement('input');
+    csrfToken.type='hidden';
+    csrfToken.name='_token';
+    csrfToken.value=document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const methodField=document.createElement('input');
+    methodField.type='hidden';
+    methodField.name='_method';
+    methodField.value='DELETE';
+
+    form.appendChild(csrfToken);
+    form.appendChild(methodField);
+    document.body.appendChild(form);
+    form.submit();
   };
 
   window.deleteContent=function(contentId){
-    attachHandlersOnce();
-    const form=document.getElementById('deleteContentForm');
-    const modal=getModal('deleteContentModal');
-    if(!form||!modal) return;
-    form.action=`/teacher/courses/${courseId}/contents/${contentId}`;
-    modal.show();
+    if(!confirm('{{ __("panel.delete_content_warning") }}')){
+      return;
+    }
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=`{{ route('teacher.courses.contents.destroy', ['course' => $course->id, 'content' => '__CONTENT_ID__']) }}`.replace('__CONTENT_ID__', contentId);
+
+    const csrfToken=document.createElement('input');
+    csrfToken.type='hidden';
+    csrfToken.name='_token';
+    csrfToken.value=document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const methodField=document.createElement('input');
+    methodField.type='hidden';
+    methodField.name='_method';
+    methodField.value='DELETE';
+
+    form.appendChild(csrfToken);
+    form.appendChild(methodField);
+    document.body.appendChild(form);
+    form.submit();
   };
 })();
 </script>
