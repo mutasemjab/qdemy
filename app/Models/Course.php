@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Course extends Model
 {
@@ -12,12 +12,13 @@ class Course extends Model
 
     protected $guarded = [];
 
-     protected $casts = [
+    protected $casts = [
         'selling_price' => 'decimal:2',
         'is_sequential' => 'boolean',
         'status' => 'string',
     ];
-       /**
+
+    /**
      * Get content title based on current locale
      */
     public function getTitleAttribute()
@@ -68,16 +69,18 @@ class Course extends Model
     public function course_user()
     {
         $user_id = auth_student()?->id;
-        if(!$user_id) return null;
-        return $this->hasOne(CourseUser::class)->where('user_id',$user_id);
-    }
+        if (! $user_id) {
+            return null;
+        }
 
+        return $this->hasOne(CourseUser::class)->where('user_id', $user_id);
+    }
 
     public function enrollments()
     {
         return $this->hasMany(CourseUser::class, 'course_id');
     }
-    
+
     // Get user progress for this course
     // Formula:
     // - For each lesson with exam linked: lesson_progress = (video_completed ? 50 : 0) + (exam_completed ? 50 : 0)
@@ -87,7 +90,7 @@ class Course extends Model
     {
         $user_id = $userId ? $userId : auth_student()?->id;
 
-        if (!$user_id) {
+        if (! $user_id) {
             return [
                 'total_progress' => 0,
                 'video_progress' => 0,
@@ -115,17 +118,31 @@ class Course extends Model
             // Check if this video/lesson has an exam linked to it
             $linkedExam = $video->exams()->where('is_active', 1)->first();
 
-            // Get video progress
-            $videoProgress = ContentUserProgress::where('user_id', $user_id)
+            // Get content progress for this lesson
+            $contentProgress = ContentUserProgress::where('user_id', $user_id)
                 ->where('course_content_id', $video->id)
-                ->whereNull('exam_id')
                 ->first();
 
-            $isVideoCompleted = $videoProgress && $videoProgress->completed;
+            // Video is completed if:
+            // 1. watch_time reached 90% of video duration, OR
+            // 2. completed flag is true AND watch_time > 0 (meaning it was marked via video watching)
+            $isVideoCompleted = false;
+            if ($contentProgress) {
+                if ($video->video_duration && $contentProgress->watch_time) {
+                    // Video content: check if 90% watched
+                    $isVideoCompleted = $contentProgress->watch_time >= $video->video_duration * 0.9;
+                } elseif ($contentProgress->completed && $contentProgress->watch_time > 0) {
+                    // Video was watched and marked completed
+                    $isVideoCompleted = true;
+                } elseif ($contentProgress->completed && ! $video->video_duration) {
+                    // Non-video content (PDF, etc.) marked as completed
+                    $isVideoCompleted = true;
+                }
+            }
 
             if ($isVideoCompleted) {
                 $completedVideos++;
-            } elseif ($videoProgress && $videoProgress->watch_time > 0 && !$videoProgress->completed) {
+            } elseif ($contentProgress && $contentProgress->watch_time > 0 && ! $isVideoCompleted) {
                 $watchingVideos++;
             }
 
@@ -140,12 +157,11 @@ class Course extends Model
                 }
 
                 // Add 50% if exam is completed
-                $examProgress = ContentUserProgress::where('user_id', $user_id)
-                    ->where('exam_id', $linkedExam->id)
-                    ->where('completed', true)
-                    ->first();
+                // Check if exam was taken by looking for exam_id in progress record
+                // We check the content progress record which now contains exam_id after exam submission
+                $isExamCompleted = $contentProgress && $contentProgress->exam_id == $linkedExam->id;
 
-                if ($examProgress) {
+                if ($isExamCompleted) {
                     $lessonProgress += 50;
                 }
 
@@ -175,12 +191,13 @@ class Course extends Model
         // Get completed exams
         $completedExams = 0;
         if ($totalExams > 0) {
+            // Count progress records that have exam_id set (meaning exam was taken)
             $completedExams = ContentUserProgress::where('user_id', $user_id)
                 ->whereIn('exam_id', Exam::where('course_id', $this->id)
                     ->where('is_active', 1)
                     ->whereNotNull('course_content_id')
                     ->pluck('id'))
-                ->where('completed', true)
+                ->whereNotNull('exam_id')
                 ->count();
         }
 
@@ -208,7 +225,7 @@ class Course extends Model
 
     public function getPhotoUrlAttribute()
     {
-        return $this->photo ? asset('assets/admin/uploads/' . $this->photo) : asset('assets_front/images/course-image.jpg');
+        return $this->photo ? asset('assets/admin/uploads/'.$this->photo) : asset('assets_front/images/course-image.jpg');
     }
 
     public function getSlugAttribute()
@@ -218,12 +235,13 @@ class Course extends Model
 
     public function getIsActiveAttribute()
     {
-       return $this->subject ? $this->subject?->is_active : true;
+        return $this->subject ? $this->subject?->is_active : true;
     }
 
     public function getIsEnrolledAttribute()
     {
         $user = auth_student();
+
         return CourseUser::where('user_id', $user?->id)
             ->where('course_id', $this->id)
             ->exists();
@@ -231,16 +249,15 @@ class Course extends Model
 
     public function scopeActive($query)
     {
-        return $query->whereDoesntHave('subject',function ($query) {
-            $query->where('is_active',0);
+        return $query->whereDoesntHave('subject', function ($query) {
+            $query->where('is_active', 0);
         });
     }
 
     public function scopeNotActive($query)
     {
-        return $query->whereDoesntHave('subject',function ($query) {
-            $query->where('is_active',1);
+        return $query->whereDoesntHave('subject', function ($query) {
+            $query->where('is_active', 1);
         });
     }
-
 }

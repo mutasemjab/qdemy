@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContentUserProgress;
 use App\Models\Course;
 use App\Models\CourseContent;
-use App\Models\ContentUserProgress;
 use App\Models\Exam;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
@@ -22,19 +22,19 @@ class ProgressController extends Controller
     {
         try {
             $user = $request->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return $this->error_response('Unauthorized', null, 401);
             }
 
             $course = Course::findOrFail($courseId);
-            
+
             // Check if user is enrolled
             $isEnrolled = $course->enrollments()
                 ->where('user_id', $user->id)
                 ->exists();
-            
-            if (!$isEnrolled) {
+
+            if (! $isEnrolled) {
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
@@ -43,7 +43,7 @@ class ProgressController extends Controller
             return $this->success_response('Course progress retrieved successfully', $progress);
 
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve course progress: ' . $e->getMessage(), null);
+            return $this->error_response('Failed to retrieve course progress: '.$e->getMessage(), null);
         }
     }
 
@@ -54,8 +54,8 @@ class ProgressController extends Controller
     {
         try {
             $user = $request->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return $this->error_response('Unauthorized', null, 401);
             }
 
@@ -75,36 +75,68 @@ class ProgressController extends Controller
             if ($courseContent->video_duration && $request->watch_time > $courseContent->video_duration) {
                 return $this->error_response('Watch time cannot exceed video duration', null, 422);
             }
-            
+
             // Check if user is enrolled in the course
             $isEnrolled = $courseContent->course->enrollments()
                 ->where('user_id', $user->id)
                 ->exists();
-            
-            if (!$isEnrolled) {
+
+            if (! $isEnrolled) {
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
             // Determine if completed based on watch time (90% threshold)
-            $completed = $request->has('completed') 
-                ? $request->completed 
+            $videoCompleted = $request->has('completed')
+                ? $request->completed
                 : ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9);
 
-            $progress = ContentUserProgress::updateOrCreate(
+            // Get or create progress record (single record per user+content)
+            $progress = ContentUserProgress::firstOrCreate(
                 [
                     'user_id' => $user->id,
                     'course_content_id' => $request->course_content_id,
-                    'exam_id' => null, // Ensure this is video progress
                 ],
                 [
-                    'watch_time' => $request->watch_time,
-                    'completed' => $completed,
-                    'viewed_at' => now(),
-                    'score' => null,
-                    'percentage' => null,
-                    'is_passed' => false,
+                    'exam_id' => null,
+                    'watch_time' => 0,
+                    'completed' => false,
                 ]
             );
+
+            // Update only video-related fields (preserve exam data if present)
+            $progress->watch_time = $request->watch_time;
+            $progress->viewed_at = now();
+            $progress->save();
+
+            // Check if this lesson has a linked exam
+            $linkedExam = $courseContent->exams()->where('is_active', 1)->first();
+
+            // Check if exam is completed (exam_id is set in the progress record)
+            $isExamCompleted = $linkedExam && $progress->exam_id == $linkedExam->id;
+
+            // Calculate lesson completion status
+            // If lesson has exam: lesson is complete only when BOTH video AND exam are completed
+            // If no exam: lesson is complete when video is completed
+            $lessonCompleted = $videoCompleted; // Default: video completion = lesson completion
+            $lessonProgress = $videoCompleted ? 100 : 0;
+
+            if ($linkedExam) {
+                // Lesson is complete only if both video AND exam are done
+                $lessonCompleted = $videoCompleted && $isExamCompleted;
+
+                // Calculate lesson progress: 50% video + 50% exam
+                $lessonProgress = 0;
+                if ($videoCompleted) {
+                    $lessonProgress += 50;
+                }
+                if ($isExamCompleted) {
+                    $lessonProgress += 50;
+                }
+            }
+
+            // Update the completed flag on the record based on full lesson completion
+            $progress->completed = $lessonCompleted;
+            $progress->save();
 
             // Get updated course progress
             $courseProgress = $courseContent->course->calculateCourseProgress($user->id);
@@ -117,11 +149,17 @@ class ProgressController extends Controller
                     'completed' => $progress->completed,
                     'viewed_at' => $progress->viewed_at,
                 ],
+                'video_completed' => $videoCompleted,
+                'exam_completed' => $isExamCompleted,
+                'lesson_completed' => $lessonCompleted,
+                'lesson_progress' => $lessonProgress,
+                'has_exam' => $linkedExam !== null,
+                'exam_id' => $linkedExam?->id,
                 'course_progress' => $courseProgress,
             ]);
 
         } catch (\Exception $e) {
-            return $this->error_response('Failed to update video progress: ' . $e->getMessage(), null);
+            return $this->error_response('Failed to update video progress: '.$e->getMessage(), null);
         }
     }
 
@@ -132,8 +170,8 @@ class ProgressController extends Controller
     {
         try {
             $user = $request->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return $this->error_response('Unauthorized', null, 401);
             }
 
@@ -146,27 +184,64 @@ class ProgressController extends Controller
             }
 
             $courseContent = CourseContent::findOrFail($request->course_content_id);
-            
+
             // Check if user is enrolled
             $isEnrolled = $courseContent->course->enrollments()
                 ->where('user_id', $user->id)
                 ->exists();
-            
-            if (!$isEnrolled) {
+
+            if (! $isEnrolled) {
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
-            $progress = ContentUserProgress::updateOrCreate(
+            // Get or create progress record (single record per user+content)
+            $progress = ContentUserProgress::firstOrCreate(
                 [
                     'user_id' => $user->id,
                     'course_content_id' => $request->course_content_id,
-                    'exam_id' => null,
                 ],
                 [
-                    'completed' => true,
-                    'viewed_at' => now(),
+                    'exam_id' => null,
+                    'watch_time' => 0,
+                    'completed' => false,
                 ]
             );
+
+            // Mark content as viewed
+            $progress->viewed_at = now();
+            // For non-video content, set a flag to indicate it was read/viewed
+            // Using watch_time = 1 as indicator that content was consumed
+            if (! $progress->watch_time) {
+                $progress->watch_time = 1;
+            }
+
+            // Check if this lesson has a linked exam
+            $linkedExam = $courseContent->exams()->where('is_active', 1)->first();
+
+            // Check if exam is completed (exam_id is set in the progress record)
+            $isExamCompleted = $linkedExam && $progress->exam_id == $linkedExam->id;
+
+            // Calculate lesson completion status
+            // If lesson has exam: lesson is complete only when BOTH content AND exam are completed
+            // If no exam: lesson is complete when content is completed
+            $contentCompleted = true; // Content is now marked as completed
+            $lessonCompleted = true;
+            $lessonProgress = 100;
+
+            if ($linkedExam) {
+                // Lesson is complete only if both content AND exam are done
+                $lessonCompleted = $isExamCompleted;
+
+                // Calculate lesson progress: 50% content + 50% exam
+                $lessonProgress = 50; // Content is done (50%)
+                if ($isExamCompleted) {
+                    $lessonProgress += 50;
+                }
+            }
+
+            // Update the completed flag based on full lesson completion
+            $progress->completed = $lessonCompleted;
+            $progress->save();
 
             // Get updated course progress
             $courseProgress = $courseContent->course->calculateCourseProgress($user->id);
@@ -178,11 +253,17 @@ class ProgressController extends Controller
                     'completed' => $progress->completed,
                     'viewed_at' => $progress->viewed_at,
                 ],
+                'content_completed' => $contentCompleted,
+                'exam_completed' => $isExamCompleted,
+                'lesson_completed' => $lessonCompleted,
+                'lesson_progress' => $lessonProgress,
+                'has_exam' => $linkedExam !== null,
+                'exam_id' => $linkedExam?->id,
                 'course_progress' => $courseProgress,
             ]);
 
         } catch (\Exception $e) {
-            return $this->error_response('Failed to mark content as completed: ' . $e->getMessage(), null);
+            return $this->error_response('Failed to mark content as completed: '.$e->getMessage(), null);
         }
     }
 
@@ -193,33 +274,33 @@ class ProgressController extends Controller
     {
         try {
             $user = $request->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return $this->error_response('Unauthorized', null, 401);
             }
 
             $course = Course::with(['contents', 'exams'])->findOrFail($courseId);
-            
+
             // Check if user is enrolled
             $isEnrolled = $course->enrollments()
                 ->where('user_id', $user->id)
                 ->exists();
-            
-            if (!$isEnrolled) {
+
+            if (! $isEnrolled) {
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
             // Get all progress records for this course
             $allProgress = ContentUserProgress::where('user_id', $user->id)
-                ->where(function($query) use ($course) {
+                ->where(function ($query) use ($course) {
                     // Video progress
                     $query->whereIn('course_content_id', $course->contents->pluck('id'))
-                          ->whereNull('exam_id');
+                        ->whereNull('exam_id');
                 })
-                ->orWhere(function($query) use ($course) {
+                ->orWhere(function ($query) use ($course) {
                     // Exam progress
                     $query->whereIn('exam_id', $course->exams->pluck('id'))
-                          ->whereNull('course_content_id');
+                        ->whereNull('course_content_id');
                 })
                 ->get();
 
@@ -257,7 +338,7 @@ class ProgressController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve detailed progress: ' . $e->getMessage(), null);
+            return $this->error_response('Failed to retrieve detailed progress: '.$e->getMessage(), null);
         }
     }
 
@@ -268,8 +349,8 @@ class ProgressController extends Controller
     {
         try {
             $user = $request->user();
-            
-            if (!$user) {
+
+            if (! $user) {
                 return $this->error_response('Unauthorized', null, 401);
             }
 
@@ -279,7 +360,7 @@ class ProgressController extends Controller
                 ->map(function ($enrollment) use ($user) {
                     $course = $enrollment->course;
                     $progress = $course->calculateCourseProgress($user->id);
-                    
+
                     return [
                         'course_id' => $course->id,
                         'course_title_ar' => $course->title_ar,
@@ -295,7 +376,7 @@ class ProgressController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve all courses progress: ' . $e->getMessage(), null);
+            return $this->error_response('Failed to retrieve all courses progress: '.$e->getMessage(), null);
         }
     }
 }

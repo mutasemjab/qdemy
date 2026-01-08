@@ -1,29 +1,28 @@
 <?php
 
-namespace  App\Http\Controllers\Web;
+namespace App\Http\Controllers\Web;
 
-use App\Models\Exam;
-use App\Models\User;
-use App\Models\Subject;
+use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Question;
-use App\Traits\Responses;
+use App\Models\ContentUserProgress;
+use App\Models\Exam;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
+use App\Models\Question;
+use App\Models\Subject;
+use App\Models\User;
+use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\ContentUserProgress;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 
 class ExamController extends Controller
 {
-
     use Responses;
 
-    public $isApi          = false;
-    public $apiRoutePrefix = '';
+    public $isApi = false;
 
+    public $apiRoutePrefix = '';
 
     public function __construct()
     {
@@ -45,7 +44,7 @@ class ExamController extends Controller
             }
 
             // 3- check if not form api request and there is a session
-            if (session('is_mobile_app') && !auth('user')->check()) {
+            if (session('is_mobile_app') && ! auth('user')->check()) {
                 if ($userId = session('mobile_user_id')) {
                     $user = User::find($userId);
                     if ($user) {
@@ -63,12 +62,12 @@ class ExamController extends Controller
                 }
             }
 
-            // share isApi and api route prefix in all views 
+            // share isApi and api route prefix in all views
             view()->share([
-                'isApi' =>  $this->isApi,
-                "apiRoutePrefix" => $this->apiRoutePrefix,
+                'isApi' => $this->isApi,
+                'apiRoutePrefix' => $this->apiRoutePrefix,
                 'hideHeader' => $this->isApi,
-                'hideFooter' => $this->isApi
+                'hideFooter' => $this->isApi,
             ]);
 
             return $next($request);
@@ -78,7 +77,7 @@ class ExamController extends Controller
     protected function checkIfApi()
     {
         // Check if this is coming from mobile webview
-        $hasUserId = request()->hasHeader("UserId");
+        $hasUserId = request()->hasHeader('UserId');
         $expectsJson = request()->expectsJson();
         $isApiRoute = request()->is('api/*');
         $isMobileSession = session('is_mobile_app');
@@ -94,7 +93,7 @@ class ExamController extends Controller
             session(['is_mobile_app' => true]);
 
             if ($hasUserId) {
-                session(["mobile_user_id" => request()->header("UserId")]);
+                session(['mobile_user_id' => request()->header('UserId')]);
             }
             session()->save();
         }
@@ -104,8 +103,8 @@ class ExamController extends Controller
     {
         // Get filter data
         $programms = CategoryRepository()->getMajors();
-        $grades    = collect();
-        $subjects  = collect();
+        $grades = collect();
+        $subjects = collect();
 
         // Build main query
         $query = Exam::query()
@@ -203,14 +202,14 @@ class ExamController extends Controller
         $user_id = auth('user')->id();
 
         // Check if exam is active and within date range
-        if (!$exam->is_available()) {
-            return redirect()->route($this->apiRoutePrefix . 'exam.index')->with('error', 'الامتحان غير متاح حاليا');
+        if (! $exam->is_available()) {
+            return redirect()->route($this->apiRoutePrefix.'exam.index')->with('error', 'الامتحان غير متاح حاليا');
         }
 
-        $attempts         = $exam->user_attempts();
+        $attempts = $exam->user_attempts();
 
         // FIXED: Get the LATEST completed attempt from collection
-        $result           = $exam->user_attempts()
+        $result = $exam->user_attempts()
             ->where('submitted_at', '!=', null)
             ->where('status', 'completed')
             ->sortByDesc('created_at')
@@ -218,8 +217,8 @@ class ExamController extends Controller
 
         $current_attempts = $exam->current_user_attempts();
 
-        $last_attempts    = $attempts->where('status', '!=', 'abandoned');
-        $can_add_attempt  = $exam->can_add_attempt($user?->id);
+        $last_attempts = $attempts->where('status', '!=', 'abandoned');
+        $can_add_attempt = $exam->can_add_attempt($user?->id);
 
         // Get current attempt using auth('user') directly
         $current_attempt = $attempt ?? $exam->attempts()
@@ -233,34 +232,35 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                     ->with('error', 'تم انتهاء الوقت المحدد وتم تسليم الامتحان تلقائيا');
             }
         }
 
-        $_questions   = $exam->questions();
+        $_questions = $exam->questions();
         $pgQquestions = null;
-        $questions    = null;
-        $question     = null;
-        $question_nm  = 1;
+        $questions = null;
+        $question = null;
+        $question_nm = 1;
 
         if ($current_attempt) {
             // Redirect to exam.take page directly if there's an active attempt
-            return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
+            return redirect()->route($this->apiRoutePrefix.'exam.take', ['exam' => $exam->id]);
         }
 
         return view('web.exam.exam-details', [
-            'exam'            => $exam,
-            'questions'       => $pgQquestions,
-            'question'        => $question,
-            'attempts'        => $attempts,
-            'result'          => $result,
+            'exam' => $exam,
+            'questions' => $pgQquestions,
+            'question' => $question,
+            'attempts' => $attempts,
+            'result' => $result,
             'current_attempts' => $current_attempts,
             'current_attempt' => $current_attempt,
-            'last_attempts'   => $last_attempts,
+            'last_attempts' => $last_attempts,
             'can_add_attempt' => $can_add_attempt,
-            'question_nm'     => $question_nm,
-            '_questions'      => $_questions,
+            'question_nm' => $question_nm,
+            '_questions' => $_questions,
         ]);
     }
 
@@ -269,8 +269,8 @@ class ExamController extends Controller
         $user_id = auth('user')->id();
 
         // Check if user can start new attempt
-        if (!$exam->can_add_attempt($user_id)) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+        if (! $exam->can_add_attempt($user_id)) {
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لقد استنفدت عدد المحاولات المسموحة'));
         }
 
@@ -282,7 +282,7 @@ class ExamController extends Controller
             ->first();
 
         if ($active_attempt) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', translate_lang('لديك محاولة جارية بالفعل'));
         }
 
@@ -300,20 +300,19 @@ class ExamController extends Controller
             'exam_id' => $exam->id,
             'user_id' => $user_id,
             'question_order' => $question_order,
-            'status' => 'in_progress'
+            'status' => 'in_progress',
         ]);
 
         // Redirect to exam taking page
-        return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id]);
+        return redirect()->route($this->apiRoutePrefix.'exam.take', ['exam' => $exam->id]);
     }
-
 
     public function answer_question(Request $request, Exam $exam, Question $question)
     {
         // Get current attempt
         $current_attempt = $exam->current_user_attempt();
-        if (!$current_attempt) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('لا توجد محاولة جارية'));
+        if (! $current_attempt) {
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('لا توجد محاولة جارية'));
         }
 
         // Check time limit
@@ -321,7 +320,8 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('تم انتهاء الوقت المحدد'));
+
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', translate_lang('تم انتهاء الوقت المحدد'));
             }
         }
 
@@ -337,14 +337,13 @@ class ExamController extends Controller
         }
 
         if ($this->isApi) {
-            $validator = Validator::make($request->all(),  $rules);
+            $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return $this->error_response('Validation failed', $validator->errors());
             }
         } else {
             $request->validate($rules);
         }
-
 
         // Find or create exam answer
         DB::beginTransaction();
@@ -353,10 +352,10 @@ class ExamController extends Controller
             $exam_answer = ExamAnswer::updateOrCreate(
                 [
                     'exam_attempt_id' => $current_attempt->id,
-                    'question_id' => $question->id
+                    'question_id' => $question->id,
                 ],
                 [
-                    'answered_at' => now()
+                    'answered_at' => now(),
                 ]
             );
 
@@ -405,22 +404,23 @@ class ExamController extends Controller
                 // Auto-submit exam if all questions are answered
                 $this->submit_exam($current_attempt);
                 DB::commit();
-                return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
+
+                return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('success', translate_lang('تم تسليم الامتحان بنجاح'));
             } else {
                 DB::commit();
             }
         } catch (\Exception $e) {
             DB::rollback();
-            $error          = $e->getMessage();
+            $error = $e->getMessage();
             $message_status = 'error';
         }
         // Redirect to next question
         $next_page = $request->get('next_page');
-        if (!$next_page) {
+        if (! $next_page) {
             $next_page = $request->get('page', 1) + 1;
         }
 
-        return redirect()->route($this->apiRoutePrefix . 'exam.take', ['exam' => $exam->id])->with($error ?? '', $message_status ?? '');
+        return redirect()->route($this->apiRoutePrefix.'exam.take', ['exam' => $exam->id])->with($error ?? '', $message_status ?? '');
     }
 
     public function submit_exam(ExamAttempt $attempt)
@@ -430,50 +430,74 @@ class ExamController extends Controller
             return abort(403, 'unavailable exam');
         }
 
-        $exam    = $attempt->exam;
+        $exam = $attempt->exam;
         $answers = $attempt->answers;
 
         // Calculate total score
-        $total_score = (float)$answers->sum('score');
+        $total_score = (float) $answers->sum('score');
 
         // Get total possible score: use exam->total_grade, or calculate from questions if not set
-        $total_possible = (float)$exam->total_grade;
+        $total_possible = (float) $exam->total_grade;
         if ($total_possible <= 0) {
             // Fallback: calculate from actual questions in exam
-            $total_possible = (float)$exam->questions()->sum('exam_questions.grade');
+            $total_possible = (float) $exam->questions()->sum('exam_questions.grade');
         }
 
-        $percentage     = $total_possible > 0 ? (($total_score / $total_possible) * 100) : 0;
-        $is_passed      = $percentage >= $exam->passing_grade;
+        $percentage = $total_possible > 0 ? (($total_score / $total_possible) * 100) : 0;
+        $is_passed = $percentage >= $exam->passing_grade;
 
         // Update attempt
         if ($exam->show_results_immediately == true) {
             $attempt->update([
                 'submitted_at' => now(),
-                'score'        => $total_score,
-                'percentage'   => round($percentage, 2),
-                'is_passed'    => $is_passed,
-                'status'       => 'completed',
+                'score' => $total_score,
+                'percentage' => round($percentage, 2),
+                'is_passed' => $is_passed,
+                'status' => 'completed',
             ]);
 
-
             if ($exam->course_content_id) {
-                ContentUserProgress::updateOrCreate(
-                    [
-                        'user_id' => $attempt->user_id,
-                        'course_content_id' => $exam->course_content_id,
-                    ],
-                    [
-                        'exam_id' => $exam->id,
-                        'exam_attempt_id' => $attempt->id,
-                        'completed' => true,
-                        'score' => $total_score,
-                        'percentage' => round($percentage, 2),
-                        'is_passed' => $is_passed,
-                        'viewed_at' => now(),
-                        'watch_time' => null,
-                    ]
-                );
+                // Check if this is the first completed attempt for this exam by this user
+                $hasCompletedAttemptBefore = ExamAttempt::where('exam_id', $exam->id)
+                    ->where('user_id', $attempt->user_id)
+                    ->where('status', 'completed')
+                    ->where('id', '!=', $attempt->id)
+                    ->exists();
+
+                // Only update progress on first completed attempt
+                if (! $hasCompletedAttemptBefore) {
+                    // Check if progress record already exists (from video watching)
+                    $existingProgress = ContentUserProgress::where('user_id', $attempt->user_id)
+                        ->where('course_content_id', $exam->course_content_id)
+                        ->first();
+
+                    if ($existingProgress) {
+                        // Update existing record - preserve watch_time from video progress
+                        $existingProgress->update([
+                            'exam_id' => $exam->id,
+                            'exam_attempt_id' => $attempt->id,
+                            'score' => $total_score,
+                            'percentage' => round($percentage, 2),
+                            'is_passed' => $is_passed,
+                            'viewed_at' => now(),
+                            // Don't overwrite watch_time - it contains video progress
+                        ]);
+                    } else {
+                        // Create new record (student took exam without watching video first)
+                        ContentUserProgress::create([
+                            'user_id' => $attempt->user_id,
+                            'course_content_id' => $exam->course_content_id,
+                            'exam_id' => $exam->id,
+                            'exam_attempt_id' => $attempt->id,
+                            'completed' => false, // Lesson not complete - video not watched
+                            'score' => $total_score,
+                            'percentage' => round($percentage, 2),
+                            'is_passed' => $is_passed,
+                            'viewed_at' => now(),
+                            'watch_time' => null,
+                        ]);
+                    }
+                }
             }
         } else {
             $attempt->update([
@@ -481,7 +505,6 @@ class ExamController extends Controller
             ]);
         }
     }
-
 
     public function auto_submit_exam(ExamAttempt $attempt)
     {
@@ -491,7 +514,7 @@ class ExamController extends Controller
         $answered_question_ids = $attempt->answers->pluck('question_id')->toArray();
 
         foreach ($question_order as $question_id) {
-            if (!in_array($question_id, $answered_question_ids)) {
+            if (! in_array($question_id, $answered_question_ids)) {
                 ExamAnswer::create([
                     'exam_attempt_id' => $attempt->id,
                     'question_id' => $question_id,
@@ -516,14 +539,14 @@ class ExamController extends Controller
             ->where('submitted_at', null)
             ->first();
 
-        if (!$current_attempt) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
+        if (! $current_attempt) {
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])
                 ->with('error', 'لا توجد محاولة جارية');
         }
 
         $this->submit_exam($current_attempt);
 
-        return redirect()->route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])->with('success', 'تم تسليم الامتحان بنجاح');
+        return redirect()->route($this->apiRoutePrefix.'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id])->with('success', 'تم تسليم الامتحان بنجاح');
     }
 
     /**
@@ -531,8 +554,8 @@ class ExamController extends Controller
      */
     public function take(Exam $exam)
     {
-        if (!$exam->is_available()) {
-            return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.unavailable'));
+        if (! $exam->is_available()) {
+            return redirect()->route($this->apiRoutePrefix.'exams')->with('error', __('front.unavailable'));
         }
 
         // Get current attempt using auth('user') directly
@@ -543,8 +566,8 @@ class ExamController extends Controller
             ->whereNull('submitted_at')
             ->first();
 
-        if (!$current_attempt) {
-            return redirect()->route($this->apiRoutePrefix . 'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
+        if (! $current_attempt) {
+            return redirect()->route($this->apiRoutePrefix.'exam', ['exam' => $exam->id, 'slug' => $exam->slug])->with('error', __('front.no_ongoing_attempt'));
         }
 
         // Check time limit
@@ -552,7 +575,8 @@ class ExamController extends Controller
             $elapsed_minutes = $current_attempt->started_at->diffInMinutes(now());
             if ($elapsed_minutes >= $exam->duration_minutes) {
                 $this->auto_submit_exam($current_attempt);
-                return redirect()->route($this->apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
+
+                return redirect()->route($this->apiRoutePrefix.'exam.result', ['exam' => $exam->id, 'attempt' => $current_attempt->id]);
             }
         }
 
@@ -560,13 +584,13 @@ class ExamController extends Controller
         $question_order = $current_attempt->question_order;
 
         // Ensure question_order is a valid array
-        if (!is_array($question_order) || empty($question_order)) {
-            return redirect()->route($this->apiRoutePrefix . 'exams')->with('error', __('front.exam_data_invalid'));
+        if (! is_array($question_order) || empty($question_order)) {
+            return redirect()->route($this->apiRoutePrefix.'exams')->with('error', __('front.exam_data_invalid'));
         }
 
         $allQuestions = Question::whereIn('id', $question_order)
             ->with('options')
-            ->orderByRaw('FIELD(id, ' . implode(',', $question_order) . ')')
+            ->orderByRaw('FIELD(id, '.implode(',', $question_order).')')
             ->get();
 
         // Get saved answers in JSON format
@@ -578,7 +602,7 @@ class ExamController extends Controller
                     'selected_options' => $answer->selected_options ?? [],
                     'essay_answer' => $answer->essay_answer,
                     'is_correct' => $answer->is_correct,
-                    'answered_at' => $answer->answered_at
+                    'answered_at' => $answer->answered_at,
                 ];
             });
 
@@ -608,7 +632,7 @@ class ExamController extends Controller
         $user = auth_student();
 
         // If still not authenticated, return error
-        if (!$user) {
+        if (! $user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized - no active user session'], 401);
         }
 
@@ -619,7 +643,7 @@ class ExamController extends Controller
             ->whereNull('submitted_at')
             ->first();
 
-        if (!$current_attempt) {
+        if (! $current_attempt) {
             return response()->json(['success' => false, 'message' => 'No active attempt'], 404);
         }
 
@@ -627,7 +651,7 @@ class ExamController extends Controller
         $validator = Validator::make($request->all(), [
             'question_id' => 'required|exists:questions,id',
             'answer_type' => 'required|in:multiple_choice,true_false,essay',
-            'answer' => 'nullable'
+            'answer' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -643,6 +667,7 @@ class ExamController extends Controller
 
             if ($elapsed_seconds >= $total_seconds) {
                 $this->auto_submit_exam($current_attempt);
+
                 return response()->json(['success' => false, 'message' => 'Time expired', 'expired' => true], 403);
             }
         }
@@ -652,10 +677,10 @@ class ExamController extends Controller
             $exam_answer = ExamAnswer::updateOrCreate(
                 [
                     'exam_attempt_id' => $current_attempt->id,
-                    'question_id' => $question->id
+                    'question_id' => $question->id,
                 ],
                 [
-                    'answered_at' => now()
+                    'answered_at' => now(),
                 ]
             );
 
@@ -664,7 +689,7 @@ class ExamController extends Controller
                 $selected_options = is_array($request->answer) ? $request->answer : [$request->answer];
                 // Cast to integers to ensure consistency when retrieving
                 $selected_options = array_map(function ($opt) {
-                    return (int)$opt;
+                    return (int) $opt;
                 }, $selected_options);
                 $exam_answer->selected_options = $selected_options;
 
@@ -699,10 +724,11 @@ class ExamController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Answer saved'
+                'message' => 'Answer saved',
             ]);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
@@ -736,7 +762,7 @@ class ExamController extends Controller
             if (isset($allQuestions[$question_id])) {
                 $answer = $answersMap[$question_id] ?? null;
 
-                if (!$answer) {
+                if (! $answer) {
                     // Create a dummy answer object for unanswered questions
                     $answer = new ExamAnswer([
                         'question_id' => $question_id,
@@ -825,7 +851,7 @@ class ExamController extends Controller
         $answers = $attempt->answers()->with(['question', 'question.options'])->get();
 
         return view('web.exam.review', [
-            'exam'    => $exam,
+            'exam' => $exam,
             'attempt' => $attempt,
             'answers' => $answers,
         ]);
