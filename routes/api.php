@@ -314,8 +314,8 @@ Route::group(['prefix' => 'v1/parent'], function () {
 // exam routes starts
 Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exam.index')->middleware(['web']);
 Route::get('v1/exam/', [ExamController::class, 'index'])->name(API_ROUTE_PREFIX . 'exams')->middleware(['web']);
-Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam')->middleware(['web']);
 
+// Specific routes MUST come before the catch-all {slug?} route
 Route::prefix('v1/exam')
     ->middleware(['web'])
     ->name(API_ROUTE_PREFIX)  // Base prefix: 'api.'
@@ -328,6 +328,9 @@ Route::prefix('v1/exam')
         Route::get('/{exam}/result/{attempt}', [ExamController::class, 'result'])->name('exam.result');
         Route::get('/{exam}/attempt/{attempt}/review', [ExamController::class, 'review_attempt'])->name('review.attempt');
     });
+
+// Catch-all route MUST come last
+Route::get('v1/exam/{exam}/{slug?}', [ExamController::class, 'show'])->name(API_ROUTE_PREFIX . 'exam')->middleware(['web']);
 
 
 Route::post('/bunny/sign-upload', [BunnyUploadController::class, 'sign']);
