@@ -93,27 +93,123 @@
     </section>
 
 
-    <section class="services">
+    <style>
+        .services-section {
+            text-align: center;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .services-section img {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 32px;
+        }
+
+        .services-grid {
+            background-color: #E7E7E780;
+            border-radius: 20px;
+            padding: 50px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .service-link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            color: #fff;
+            font-weight: bold;
+            font-size: 18px;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.3s ease;
+            height: 140px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 20px;
+        }
+
+        .service-link.light {
+            color: #3c98ff;
+        }
+
+        .service-link:hover {
+            transform: translateY(-4px);
+        }
+
+        .service-link small {
+            display: block;
+            font-weight: normal;
+            font-size: 24px;
+            margin-top: 4px;
+        }
+
+        /* Tablet - 992px and below */
+        @media (max-width: 992px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 30px 20px;
+            }
+
+            .service-link {
+                padding: 40px 20px;
+                font-size: 18px;
+            }
+        }
+
+        /* Mobile - 576px and below */
+        @media (max-width: 576px) {
+            .services-section {
+                padding: 0 10px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                padding: 20px 10px;
+                gap: 15px;
+            }
+
+            .service-link {
+                padding: 30px 15px;
+                font-size: 16px;
+                height: auto;
+                min-height: 140px;
+                flex-direction: column;
+                line-height: 1.4;
+            }
+
+            .service-link small {
+                font-size: 14px;
+                margin-top: 5px;
+            }
+        }
+    </style>
+
+    <section class="services-section">
         <img src="{{ app()->getLocale() == 'ar'
             ? asset('assets_front/images/our_service.png')
             : asset('assets_front/images/en/our_service.png') }}"
-            loading="lazy" width="400px;" height="auto">
+            loading="lazy" alt="Our Services">
 
-        <div class="services-box">
-            <a href="{{ route('community') }}" data-aos="zoom-in" data-aos-delay="200"
-                class="service-btn dark  anim animate-glow"
+        <div class="services-grid">
+            <a href="{{ route('community') }}" class="service-link anim animate-glow"
                 style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.QDEMY Community') }}</a>
-            <a href="{{ route('exam.index') }}" data-aos="zoom-in" data-aos-delay="400" class="service-btn light"
+            <a href="{{ route('exam.index') }}" class="service-link light"
                 style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Electronic Exams') }}</a>
-            <a href="{{ route('packages-offers') }}" data-aos="zoom-in" data-aos-delay="600"
-                class="service-btn dark anim animate-glow"
+            <a href="{{ route('packages-offers') }}" class="service-link anim animate-glow"
                 style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.packages_offers') }}</a>
-            <a href="{{ route('doseyat') }}" data-aos="zoom-in" data-aos-delay="600" class="service-btn light "
+            <a href="{{ route('doseyat') }}" class="service-link light"
                 style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Doseyat') }}</a>
-            <a href="{{ route('ministerialQuestions.index') }}" data-aos="zoom-in" data-aos-delay="400"
-                class="service-btn dark anim animate-glow"
+            <a href="{{ route('ministerialQuestions.index') }}" class="service-link anim animate-glow"
                 style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.Ministry Years Questions') }}</a>
-            <a href="{{ route('bankQuestions.index') }}" data-aos="zoom-in" data-aos-delay="200" class="service-btn light "
+            <a href="{{ route('bankQuestions.index') }}" class="service-link light"
                 style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Question Bank') }}
                 <small>({{ __('front.Papers and Summaries') }})</small></a>
         </div>

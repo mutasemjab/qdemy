@@ -1415,9 +1415,17 @@ a.hero-card {
 }
 
 @media (max-width: 992px) {
+  .services {
+    padding: 0 20px;
+  }
+
+  .services img {
+    max-width: 100%;
+  }
+
   .services-box {
     grid-template-columns: repeat(2, 1fr);
-    max-width: calc(100% - 40px);
+    max-width: 100%;
   }
 }
 
@@ -1426,6 +1434,8 @@ a.hero-card {
     grid-template-columns: 1fr;
     max-width: 100%;
     width: 100%;
+    padding: 20px 10px;
+    margin: 0;
   }
 }
 
@@ -2456,6 +2466,7 @@ a.ud-item.nav-link:hover {
   .services-box {
     padding: 30px 20px;
     margin: 0 auto;
+    max-width: 100%;
   }
 
   .service-btn {
@@ -2469,9 +2480,22 @@ a.ud-item.nav-link:hover {
 }
 
 @media (max-width: 576px) {
+  .services {
+    margin: 30px 0;
+    padding: 0 10px;
+  }
+
+  .services img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+  }
+
   .services-box {
-    padding: 20px 15px;
-    margin: 0 auto;
+    padding: 20px 10px;
+    margin: 0;
+    max-width: 100%;
+    width: 100%;
   }
 
   .service-btn {
