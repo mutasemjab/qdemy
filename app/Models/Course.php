@@ -145,26 +145,25 @@ class Course extends Model
             ]);
 
             // Video is completed if:
-            // 1. watch_time reached 90% of video duration, OR
-            // 2. completed flag is true AND watch_time > 0 (meaning it was marked via video watching)
+            // 1. completed flag is true (PRIMARY indicator - works for YouTube and Bunny videos), OR
+            // 2. watch_time reached 90% of video duration (SECONDARY indicator - for Bunny videos with tracking)
             $isVideoCompleted = false;
             if ($contentProgress) {
-                if ($video->video_duration && $contentProgress->watch_time) {
-                    // Video content: check if 90% watched
+                // Primary indicator: completed flag
+                if ($contentProgress->completed) {
+                    $isVideoCompleted = true;
+                    \Log::info('Video/content marked as completed (completed flag is true)', [
+                        'watch_time' => $contentProgress->watch_time,
+                        'video_duration' => $video->video_duration,
+                    ]);
+                } elseif ($video->video_duration && $contentProgress->watch_time) {
+                    // Secondary: check if 90% watched (for Bunny videos with watch_time tracking)
                     $isVideoCompleted = $contentProgress->watch_time >= $video->video_duration * 0.9;
                     \Log::info('Video completion check (90% rule)', [
                         'watch_time' => $contentProgress->watch_time,
                         'threshold' => $video->video_duration * 0.9,
                         'isVideoCompleted' => $isVideoCompleted,
                     ]);
-                } elseif ($contentProgress->completed && $contentProgress->watch_time > 0) {
-                    // Video was watched and marked completed
-                    $isVideoCompleted = true;
-                    \Log::info('Video marked as completed');
-                } elseif ($contentProgress->completed && ! $video->video_duration) {
-                    // Non-video content (PDF, etc.) marked as completed
-                    $isVideoCompleted = true;
-                    \Log::info('Non-video content marked as completed');
                 }
             }
 

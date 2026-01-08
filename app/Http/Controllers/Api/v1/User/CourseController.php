@@ -272,8 +272,9 @@ class CourseController extends Controller
             return false;
         }
 
-        // If content is free, it's not locked
-        if ($content->is_free) {
+        // If content is free (is_free == 1), it's not locked
+        // is_free values: 1 = مجاني (free), 2 = مدفوع (paid)
+        if ($content->is_free == 1) {
             \Log::info('Content is free - unlocked');
 
             return false;
