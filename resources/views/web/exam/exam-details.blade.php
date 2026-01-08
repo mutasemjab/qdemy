@@ -119,9 +119,7 @@
                                 <form method="POST"
                                     action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}"
                                     style="margin-top: 12px;">
-                                    @if (!$isApi)
-                                        @csrf
-                                    @endif
+                                    @csrf
                                     <button type="submit" class="btn btn-success btn-large">
                                         <i class="fas fa-redo"></i>
                                         {{ __('front.محاولة جديدة') }}
@@ -141,9 +139,7 @@
                             {{-- Start Button --}}
                             <form method="POST"
                                 action="{{ route($apiRoutePrefix . 'exam.start', ['exam' => $exam->id]) }}">
-                                @if (!$isApi)
-                                    @csrf
-                                @endif
+                                @csrf
                                 <button type="submit" class="btn btn-success btn-large">
                                     <i class="fas fa-play-circle"></i>
                                     {{ __('front.start_exam') }}
