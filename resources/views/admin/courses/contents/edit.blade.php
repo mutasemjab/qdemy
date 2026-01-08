@@ -138,8 +138,7 @@
                                            id="order"
                                            name="order"
                                            value="{{ old('order', $content->order) }}"
-                                           min="0"
-                                           placeholder="1">
+                                           min="1">
                                     @error('order')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror

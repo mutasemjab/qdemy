@@ -88,7 +88,7 @@
             </div>
             <div class="form-group">
               <label for="order">{{ __('panel.order') }}</label>
-              <input type="number" id="order" name="order" value="{{ old('order', 1) }}" min="1">
+              <input type="number" id="order" name="order" value="{{ old('order', $maxOrder + 1) }}" min="{{ $maxOrder + 1 }}">
             </div>
           </div>
         </div>

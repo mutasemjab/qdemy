@@ -242,6 +242,17 @@ trait CourseManagementTrait
 
             $contentData['course_id'] = $course->id;
 
+            // Auto-calculate order if not provided (default to max order + 1)
+            if (!$request->filled('order') || $request->order === null) {
+                $maxOrder = CourseContent::where('course_id', $course->id)->max('order') ?? 0;
+                $contentData['order'] = $maxOrder + 1;
+                \Log::info('Auto-calculated order for new content', [
+                    'course_id' => $course->id,
+                    'max_order' => $maxOrder,
+                    'assigned_order' => $contentData['order'],
+                ]);
+            }
+
             // Handle file uploads based on content type
             $uploadResult = $this->handleContentFileUpload($request, $course);
 
@@ -679,7 +690,7 @@ trait CourseManagementTrait
             'content_type' => 'required|in:video,pdf,quiz,assignment',
             'is_free'      => 'required|in:1,2',
             'is_main_video' => 'required|in:1,2',
-            'order'        => 'required|integer|min:0',
+            'order'        => 'nullable|integer|min:1', // Optional - will auto-calculate if not provided. Min 1 to ensure valid sequence.
             'section_id'   => 'nullable|exists:course_sections,id'
         ];
 

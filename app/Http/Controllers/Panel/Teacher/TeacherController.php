@@ -359,8 +359,10 @@ class TeacherController extends Controller
 
         $sections = $course->sections;
         $selectedSectionId = $request->get('section_id');
-        
-        return view('panel.teacher.courses.contents.create', compact('course', 'sections', 'selectedSectionId'));
+        // Calculate max order for this course to help users set proper order values
+        $maxOrder = CourseContent::where('course_id', $course->id)->max('order') ?? 0;
+
+        return view('panel.teacher.courses.contents.create', compact('course', 'sections', 'selectedSectionId', 'maxOrder'));
     }
 
     /**
@@ -391,7 +393,10 @@ class TeacherController extends Controller
         }
 
         $sections = $course->sections;
-        return view('panel.teacher.courses.contents.edit', compact('course', 'content', 'sections'));
+        // Calculate max order for this course to help users set proper order values
+        $maxOrder = CourseContent::where('course_id', $course->id)->max('order') ?? 0;
+
+        return view('panel.teacher.courses.contents.edit', compact('course', 'content', 'sections', 'maxOrder'));
     }
 
     /**

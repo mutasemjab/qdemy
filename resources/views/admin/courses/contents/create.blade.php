@@ -124,8 +124,7 @@
                                             {{ __('messages.order') }} <span class="text-danger">*</span>
                                         </label>
                                         <input type="number" class="form-control @error('order') is-invalid @enderror"
-                                            id="order" name="order" value="{{ old('order', 1) }}" min="0"
-                                            placeholder="1">
+                                            id="order" name="order" value="{{ old('order', $maxOrder + 1) }}" min="{{ $maxOrder + 1 }}">
                                         @error('order')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
