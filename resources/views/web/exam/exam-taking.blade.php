@@ -526,7 +526,6 @@
             color: white;
             padding: 15px 20px;
             border-radius: 6px;
-            display: flex;
             align-items: center;
             gap: 10px;
             font-weight: bold;

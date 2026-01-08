@@ -1175,7 +1175,7 @@ html[dir="rtl"] .footer-contact {
 }
 
 .hero-card {
-  width: 307px !important;
+  width: 307px;
   height: 285px;
   background-size: cover;
   background-position: center;
@@ -1197,9 +1197,19 @@ html[dir="rtl"] .footer-contact {
 }
 
 @media (max-width: 768px) {
+  .hero-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin: 15px auto !important;
+    padding: 0 15px !important;
+  }
+
   .hero-card {
-    width: 45%;
-    height: 120px;
+    width: 100% !important;
+    height: 70px !important;
+    font-size: 9px !important;
+    padding: 5px !important;
   }
 
   .footer-social {
@@ -1261,11 +1271,18 @@ html[dir="rtl"] .footer-contact {
 @media (max-width: 768px) {
   .hero-buttons-wrapper {
     align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 
   .right-column {
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .center-column {
+    align-items: center;
   }
 }
 
@@ -1991,18 +2008,10 @@ a.blob-btn span {
 }
 
 @media (max-width: 768px) {
-  .stats-overlay {
-    gap: 15px;
-  }
-
-  .divider {
-    width: 40px;
-    height: 1px;
-  }
-
   .stats-section {
-    background: url(../images/stats-bg.png) no-repeat center / contain;
+    background: url(../images/stats-bg.png) no-repeat center / cover;
     width: 95%;
+    margin: 20px auto;
   }
 
   .rvx-controls {
@@ -2325,15 +2334,26 @@ p.welcome-text {
   }
 
   .hero-cards {
-    gap: 15px;
-    margin-bottom: -109px;
-    margin-top: -15px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 15px !important;
+    margin-top: 15px !important;
+    padding: 0 15px !important;
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .hero-card {
-    width: 45%;
-    height: 94px;
-    font-size: 20px;
+    width: 100% !important;
+    max-width: none !important;
+    height: 70px !important;
+    font-size: 9px !important;
+    border-radius: 10px !important;
+    background-size: cover !important;
+    background-position: center !important;
+    padding: 5px !important;
   }
 
   a.blob-btn.blob-btn-1 {
@@ -2400,7 +2420,14 @@ a.ud-item.nav-link:hover {
   }
 
   .hero-cards {
-    margin-top: 0px;
+    margin-top: 10px !important;
+    gap: 6px !important;
+    padding: 0 10px !important;
+  }
+
+  .hero-card {
+    height: 60px !important;
+    font-size: 8px !important;
   }
 
   .features h2 {
@@ -2413,12 +2440,12 @@ a.ud-item.nav-link:hover {
 
   .service-btn.dark {
     background-size: contain;
-    font-size: 26px;
+    font-size: 18px;
   }
 
   .service-btn.light {
     background-size: contain;
-    font-size: 26px;
+    font-size: 18px;
   }
 }
 
@@ -2441,7 +2468,21 @@ a.ud-item.nav-link:hover {
 @media (max-width: 576px) {
   .service-btn {
     font-size: 16px;
-    padding: 30px 20px;
+    padding: 30px 15px;
+    height: auto;
+    min-height: 140px;
+    flex-direction: column;
+    line-height: 1.4;
+  }
+
+  .service-btn.dark,
+  .service-btn.light {
+    font-size: 16px;
+  }
+
+  .service-btn small {
+    font-size: 14px;
+    margin-top: 5px;
   }
 }
 
@@ -2466,19 +2507,39 @@ a.ud-item.nav-link:hover {
 
 @media (max-width: 768px) {
   .stats-section {
-    height: auto;
-    padding: 20px 0;
+    height: auto !important;
+    padding: 20px 15px !important;
+    background-size: cover !important;
   }
 
   .stats-overlay {
-    gap: 10px;
-    width: 80%;
-    font-size: 9px;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px 15px !important;
+    width: 100% !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    padding: 15px !important;
+  }
+
+  .stat-item {
+    text-align: center !important;
+  }
+
+  .stat-item p {
+    font-size: 11px !important;
+    margin: 0 !important;
+  }
+
+  .stat-number {
+    font-size: 12px !important;
+    display: block !important;
+    text-align: center !important;
+    margin-bottom: 3px !important;
   }
 
   .divider {
-    width: 40px;
-    height: 1px;
+    display: none !important;
   }
 }
 
@@ -8200,5 +8261,47 @@ header.tj2009__head {
 
   .cmty-create-post .cmty-textarea {
     min-height: 120px;
+  }
+}
+
+/* Mobile responsive styles for section heading images */
+@media (max-width: 768px) {
+  .services > img,
+  .x3c-instructors h2 img,
+  .fm3d-videos-title img,
+  .faq-section h2 img,
+  .rvx-title img,
+  .blog-slider__title img,
+  section h2 img {
+    max-width: 280px !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .services,
+  .x3c-instructors,
+  .faq-section,
+  .fm3d-videos-block,
+  .blog-slider,
+  .rvx {
+    text-align: center;
+  }
+
+  .services > img {
+    margin: 0 auto 20px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .services > img,
+  .x3c-instructors h2 img,
+  .fm3d-videos-title img,
+  .faq-section h2 img,
+  .rvx-title img,
+  .blog-slider__title img,
+  section h2 img {
+    max-width: 240px !important;
   }
 }
