@@ -32,38 +32,49 @@
                         <img data-src="{{ asset('assets_front/images/qmark.png') }}" class="ud-q" alt="Question Mark">
                     </div>
                     <p>{{ $post->content }}</p>
-                    <div class="ud-post-actions">
-                        <button class="like-btn {{ $post->isLikedBy(auth()->id()) ? 'liked' : '' }}" data-post-id="{{ $post->id }}">
-                            <i class="fa-{{ $post->isLikedBy(auth()->id()) ? 'solid' : 'regular' }} fa-heart"></i>
-                            <span class="likes-count">{{ $post->likesCount() }}</span>
+                    <div class="ud-post-actions" style="display: flex; gap: 12px; margin-top: 15px;">
+                        <button class="like-btn {{ $post->isLikedBy(auth()->id()) ? 'liked' : '' }}" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
+                            <i class="fa-{{ $post->isLikedBy(auth()->id()) ? 'solid' : 'regular' }} fa-heart" style="color: {{ $post->isLikedBy(auth()->id()) ? '#ff4757' : '#999' }}; transition: color 0.3s ease;"></i>
+                            <span class="likes-count" style="font-weight: 500;">{{ $post->likesCount() }}</span>
                         </button>
-                        <button class="comment-toggle" data-post-id="{{ $post->id }}">
-                            <i class="far fa-comment"></i>
-                            <span>{{ $post->commentsCount() }}</span>
+                        <button class="comment-toggle" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
+                            <i class="far fa-comment" style="color: #999; transition: color 0.3s ease;"></i>
+                            <span style="font-weight: 500;">{{ $post->commentsCount() }}</span>
                         </button>
                     </div>
 
                     <!-- Comments Section -->
-                    <div class="ud-comments" id="comments-{{ $post->id }}" style="display: none;">
-                        @foreach($post->comments as $comment)
-                            <div class="ud-comment">
-                                <img data-src="{{ $comment->user->photo_url }}" alt="Comment Avatar">
-                                <div class="ud-comment-content">
-                                    <b>{{ $comment->user->name }}</b>
-                                    <p>{{ $comment->content }}</p>
-                                    <small>{{ $comment->created_at->format('h:i A · M d, Y') }}</small>
-                                </div>
+                    <div class="ud-comments-wrapper" id="comments-{{ $post->id }}" style="display: none;">
+                        <div style="padding: 15px 0; border-top: 2px solid #f0f0f0; margin-top: 15px;">
+                            <!-- Comments List -->
+                            <div class="ud-comments-list">
+                                @forelse($post->comments as $comment)
+                                    <div class="ud-comment-item">
+                                        <img data-src="{{ $comment->user->photo_url }}" alt="Comment Avatar" class="ud-comment-avatar">
+                                        <div class="ud-comment-body">
+                                            <div class="ud-comment-header">
+                                                <b class="ud-comment-author">{{ $comment->user->name }}</b>
+                                                <small class="ud-comment-time">{{ $comment->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p class="ud-comment-text">{{ $comment->content }}</p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="ud-no-comments">
+                                        <p>{{ __('panel.no_comments_yet') }}</p>
+                                    </div>
+                                @endforelse
                             </div>
-                        @endforeach
 
-                        <!-- Add Comment Form -->
-                        <div class="ud-add-comment">
-                            <form class="add-comment-form" data-post-id="{{ $post->id }}">
-                                @csrf
-                                <input type="hidden" name="post_id" value="{{ $post->id }}">
-                                <textarea name="content" placeholder="{{ __('panel.write_comment') }}" required maxlength="500"></textarea>
-                                <button type="submit" class="ud-primary">{{ __('panel.comment') }}</button>
-                            </form>
+                            <!-- Add Comment Form -->
+                            <div class="ud-add-comment" style="padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #e0e0e0; margin-top: 15px;">
+                                <form class="add-comment-form" data-post-id="{{ $post->id }}">
+                                    @csrf
+                                    <input type="hidden" name="post_id" value="{{ $post->id }}">
+                                    <textarea name="content" placeholder="{{ __('panel.write_comment') }}" required maxlength="500" class="ud-comment-textarea"></textarea>
+                                    <button type="submit" class="ud-comment-submit">{{ __('panel.comment') }}</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -76,7 +87,219 @@
     </div>
 </div>
 
+<style>
+/* Animation for Comments */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        max-height: 2000px;
+        transform: translateY(0);
+    }
+}
 
+@keyframes slideUp {
+    from {
+        opacity: 1;
+        max-height: 2000px;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Like and Comment Button Styles */
+.ud-post-actions .like-btn:hover,
+.ud-post-actions .comment-toggle:hover {
+    border-color: #d0d0d0;
+    background: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.ud-post-actions .like-btn.liked {
+    border-color: #ff4757;
+    background: #fff5f6;
+    color: #ff4757;
+}
+
+.ud-post-actions .like-btn.liked:hover {
+    border-color: #ff4757;
+    background: #fff0f2;
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.15);
+}
+
+.ud-post-actions .like-btn.liked i {
+    color: #ff4757 !important;
+}
+
+.ud-post-actions .comment-toggle:hover {
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.ud-post-actions .comment-toggle:hover i {
+    color: #007bff !important;
+}
+
+/* Comments Section Styles */
+.ud-comments-wrapper {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+}
+
+.ud-comments-wrapper.show {
+    animation: slideDown 0.4s ease-out forwards;
+}
+
+.ud-comments-wrapper.closing {
+    animation: slideUp 0.4s ease-out forwards;
+}
+
+/* Comments List */
+.ud-comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.ud-comment-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    animation: fadeIn 0.3s ease;
+    transition: background 0.2s ease;
+}
+
+.ud-comment-item:hover {
+    background: #f5f5f5;
+}
+
+.ud-comment-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e0e0e0;
+}
+
+.ud-comment-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.ud-comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.ud-comment-author {
+    display: block;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.ud-comment-time {
+    color: #999;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.ud-comment-text {
+    margin: 0;
+    color: #555;
+    font-size: 14px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.ud-no-comments {
+    padding: 20px 15px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+}
+
+/* Comment Form */
+.ud-comment-textarea {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 70px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ud-comment-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.ud-comment-submit {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ud-comment-submit:hover {
+    background: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.ud-comment-submit:active {
+    transform: scale(0.98);
+}
+
+.ud-add-comment button:hover {
+    background: #0056b3 !important;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+}
+
+.ud-add-comment button:active {
+    transform: scale(0.98);
+}
+
+.ud-add-comment textarea:focus {
+    outline: none;
+    border-color: #007bff !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -153,16 +376,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Toggle Comments
+    // Toggle Comments with Animation
     document.querySelectorAll('.comment-toggle').forEach(btn => {
         btn.addEventListener('click', function() {
             const postId = this.getAttribute('data-post-id');
             const commentsDiv = document.getElementById('comments-' + postId);
-            
-            if (commentsDiv.style.display === 'none') {
+
+            if (commentsDiv.style.display === 'none' || !commentsDiv.classList.contains('show')) {
+                // Show with animation
                 commentsDiv.style.display = 'block';
+                commentsDiv.classList.remove('closing');
+                commentsDiv.offsetHeight; // Trigger reflow
+                commentsDiv.classList.add('show');
             } else {
-                commentsDiv.style.display = 'none';
+                // Hide with animation
+                commentsDiv.classList.remove('show');
+                commentsDiv.classList.add('closing');
+                setTimeout(() => {
+                    commentsDiv.style.display = 'none';
+                    commentsDiv.classList.remove('closing');
+                }, 400);
             }
         });
     });
