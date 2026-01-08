@@ -145,10 +145,10 @@
             @if($course->subject) <small> {{ $course->subject->localized_name }} </small> @endif
             @if($course->subject?->semester) <small> - {{ $course->subject?->semester->localized_name }} </small> @endif
            </div>
-           @if($course->calculateCourseProgress())
-           <div class="ud-bar-track"><span style="width:{{ $course->calculateCourseProgress() }}%"></span></div>
-           <div class="ud-bar-foot">100%<b>{{ number_format($course->calculateCourseProgress(), 1, '.', '') }}% 
-               <!-- {{ $course->calculateCourseProgress() }}% -->
+           @php $courseProgress = $course->calculateCourseProgress()['total_progress'] ?? 0; @endphp
+           @if($courseProgress)
+           <div class="ud-bar-track"><span style="width:{{ $courseProgress }}%"></span></div>
+           <div class="ud-bar-foot">100%<b>{{ number_format($courseProgress, 1, '.', '') }}%
            </b></div>
            @else
            <div class="ud-bar-track"><span style="width:0%"></span></div>

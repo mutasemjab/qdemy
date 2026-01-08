@@ -97,7 +97,9 @@ class DashboardParentController extends Controller
             // Calculate average progress across all courses
             $enrolledCourses = CourseUser::whereIn('user_id', $childrenIds)->with('course')->get();
             $totalProgress = $enrolledCourses->sum(function($enrollment) {
-                return $enrollment->course ? $enrollment->course->calculateCourseProgress($enrollment->user_id) : 0;
+                if (!$enrollment->course) return 0;
+                $progress = $enrollment->course->calculateCourseProgress($enrollment->user_id);
+                return $progress['total_progress'] ?? 0;
             });
             $averageProgress = $enrolledCourses->count() > 0 ? $totalProgress / $enrolledCourses->count() : 0;
 
@@ -114,7 +116,8 @@ class DashboardParentController extends Controller
                 $recentProgress = 0;
                 $recentCourseName = 'No courses enrolled';
                 if ($recentCourse && $recentCourse->course) {
-                    $recentProgress = $recentCourse->course->calculateCourseProgress($child->id);
+                    $progressData = $recentCourse->course->calculateCourseProgress($child->id);
+                    $recentProgress = $progressData['total_progress'] ?? 0;
                     $recentCourseName = $recentCourse->course->title;
                 }
 
@@ -241,7 +244,9 @@ class DashboardParentController extends Controller
                 ->groupBy('course.subject.name')
                 ->map(function ($courses, $subjectName) {
                     $totalProgress = $courses->sum(function($courseUser) {
-                        return $courseUser->course ? $courseUser->course->calculateCourseProgress($courseUser->user_id) : 0;
+                        if (!$courseUser->course) return 0;
+                        $progress = $courseUser->course->calculateCourseProgress($courseUser->user_id);
+                        return $progress['total_progress'] ?? 0;
                     });
                     
                     return [

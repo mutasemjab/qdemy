@@ -60,7 +60,7 @@ class ParentChildAcademicController extends Controller
                     'photo_url' => $course->photo_url,
                     'teacher_name' => $course->teacher ? $course->teacher->name : 'N/A',
                     'subject_name' => $course->subject ? $course->subject->name : 'N/A',
-                    'progress_percentage' => round($progress, 2),
+                    'progress_percentage' => round($progress['total_progress'] ?? 0, 2),
                     'enrolled_at' => $enrollment->created_at,
                     'selling_price' => $course->selling_price
                 ];
@@ -216,11 +216,11 @@ class ParentChildAcademicController extends Controller
                 if (!$course) return null;
 
                 $progress = $course->calculateCourseProgress($childId);
-                
+
                 return [
                     'course_id' => $course->id,
                     'title' => $course->title,
-                    'progress_percentage' => round($progress, 2),
+                    'progress_percentage' => round($progress['total_progress'] ?? 0, 2),
                     'teacher_name' => $course->teacher ? $course->teacher->name : 'N/A',
                     'subject_name' => $course->subject ? $course->subject->name : 'N/A'
                 ];
@@ -322,7 +322,9 @@ class ParentChildAcademicController extends Controller
                 $averageProgress = 0;
                 if ($totalCourses > 0) {
                     $totalProgress = $enrolledCourses->sum(function($enrollment) use ($child) {
-                        return $enrollment->course ? $enrollment->course->calculateCourseProgress($child->id) : 0;
+                        if (!$enrollment->course) return 0;
+                        $progress = $enrollment->course->calculateCourseProgress($child->id);
+                        return $progress['total_progress'] ?? 0;
                     });
                     $averageProgress = $totalProgress / $totalCourses;
                 }

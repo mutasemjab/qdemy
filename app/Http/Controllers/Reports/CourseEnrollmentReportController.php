@@ -302,7 +302,8 @@ class CourseEnrollmentReportController extends Controller
         
         $totalProgress = 0;
         foreach ($enrollments as $enrollment) {
-            $totalProgress += $course->calculateCourseProgress($enrollment->user_id);
+            $progress = $course->calculateCourseProgress($enrollment->user_id);
+            $totalProgress += $progress['total_progress'] ?? 0;
         }
         
         return round($totalProgress / $enrollments->count(), 2);

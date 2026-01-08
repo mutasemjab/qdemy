@@ -576,26 +576,13 @@ class EnrollmentController extends Controller
     private function getCourseProgressData($userId, $courseId)
     {
         $course = Course::find($courseId);
-        $progressPercentage = $course->calculateCourseProgress($userId);
-        
-        $totalVideos = CourseContent::where('course_id', $courseId)
-            ->where('content_type', 'video')
-            ->count();
-        
-        $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
-            ->where('content_user_progress.user_id', $userId)
-            ->where('course_contents.course_id', $courseId)
-            ->where('course_contents.content_type', 'video')
-            ->where('content_user_progress.completed', true)
-            ->count();
-        
-        $watchingVideos = 0;
-        
+        $progressData = $course->calculateCourseProgress($userId);
+
         return [
-            'course_progress' => $progressPercentage,
-            'completed_videos' => $completedVideos,
-            'watching_videos' => $watchingVideos,
-            'total_videos' => $totalVideos
+            'course_progress' => $progressData['total_progress'] ?? 0,
+            'completed_videos' => $progressData['completed_videos'] ?? 0,
+            'watching_videos' => $progressData['watching_videos'] ?? 0,
+            'total_videos' => $progressData['total_videos'] ?? 0
         ];
     }
 
