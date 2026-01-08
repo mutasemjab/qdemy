@@ -2,18 +2,11 @@
 @extends('layouts.app')
 
 @section('content')
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الطالب المسجل</h2>
-@dump(auth('user')->user())
-
-{{-- DEBUG: Session Data --}}
-<h2 style="color: #d9534f; padding: 15px; background: #f5f5f5; margin: 10px 0;">بيانات الجلسة الحالية</h2>
-@dump(session()->all())
-
     <div class="exam-details-section">
         <div class="exam-details-container">
             {{-- Header --}}
             <div class="exam-details-header">
-                <a href="{{ route($apiRoutePrefix .'exams') }}" class="back-btn">
+                <a href="{{ route($apiRoutePrefix . 'exams') }}" class="back-btn">
                     <i class="fas fa-arrow-right"></i>
                     {{ __('front.back') }}
                 </a>
@@ -99,21 +92,27 @@
 
                         @if ($current_attempt && !$current_attempt->submitted_at)
                             {{-- Continue Button --}}
-                            <a href="{{ route($apiRoutePrefix . 'exam.take', ['exam' => $exam->id]) }}" class="btn btn-primary btn-large">
+                            <a href="{{ route($apiRoutePrefix . 'exam.take', ['exam' => $exam->id]) }}"
+                                class="btn btn-primary btn-large">
                                 <i class="fas fa-play"></i>
                                 {{ __('front.continue_exam') }}
                             </a>
                             <p class="attempt-info">
-                                {{ __('front.in_progress') }}@if($current_attempt->created_at) - {{ $current_attempt->created_at->diffForHumans() }}@endif
+                                {{ __('front.in_progress') }}@if ($current_attempt->created_at)
+                                    - {{ $current_attempt->created_at->diffForHumans() }}
+                                @endif
                             </p>
                         @elseif($result && $exam->show_results_immediately && $result->status === 'completed')
                             {{-- View Results Button --}}
-                            <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}" class="btn btn-info btn-large">
+                            <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $result->id]) }}"
+                                class="btn btn-info btn-large">
                                 <i class="fas fa-chart-bar"></i>
                                 {{ __('front.view_results') }}
                             </a>
                             <p class="attempt-info">
-                                {{ __('front.exam_completed') }}@if($result->created_at) - {{ $result->created_at->diffForHumans() }}@endif
+                                {{ __('front.exam_completed') }}@if ($result->created_at)
+                                    - {{ $result->created_at->diffForHumans() }}
+                                @endif
                             </p>
                             @if ($can_add_attempt)
                                 <form method="POST"
