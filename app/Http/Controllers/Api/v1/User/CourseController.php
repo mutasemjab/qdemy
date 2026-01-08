@@ -255,18 +255,34 @@ class CourseController extends Controller
      */
     private function isContentLocked($course, $content, $userId)
     {
+        \Log::info('isContentLocked CHECK', [
+            'course_id' => $course->id,
+            'content_id' => $content->id,
+            'content_title_ar' => $content->title_ar,
+            'user_id' => $userId,
+            'is_sequential' => $course->is_sequential,
+            'is_free' => $content->is_free,
+            'order' => $content->order,
+        ]);
+
         // If course is not sequential, all content is unlocked
-        if (!$course->is_sequential) {
+        if (! $course->is_sequential) {
+            \Log::info('Course is NOT sequential - unlocked');
+
             return false;
         }
 
         // If content is free, it's not locked
         if ($content->is_free) {
+            \Log::info('Content is free - unlocked');
+
             return false;
         }
 
         // First content in order is always unlocked
         if ($content->order <= 1) {
+            \Log::info('First content - unlocked');
+
             return false;
         }
 
@@ -278,21 +294,37 @@ class CourseController extends Controller
             ->first();
 
         // If no previous content, current content is unlocked
-        if (!$previousContent) {
+        if (! $previousContent) {
+            \Log::info('No previous content - unlocked');
+
             return false;
         }
+
+        \Log::info('Previous content found', [
+            'previous_content_id' => $previousContent->id,
+            'previous_content_title_ar' => $previousContent->title_ar,
+        ]);
 
         // Check if user has completed the previous content
         $previousProgress = ContentUserProgress::where('user_id', $userId)
             ->where('course_content_id', $previousContent->id)
             ->first();
 
+        \Log::info('Previous content progress', [
+            'has_progress' => $previousProgress !== null,
+            'completed' => $previousProgress?->completed,
+        ]);
+
         // If no progress record or not completed, content is locked
-        if (!$previousProgress || !$previousProgress->completed) {
+        if (! $previousProgress || ! $previousProgress->completed) {
+            \Log::info('Previous content NOT completed - LOCKED');
+
             return true;
         }
 
         // Previous content is completed, so current content is unlocked
+        \Log::info('Previous content IS completed - UNLOCKED');
+
         return false;
     }
 

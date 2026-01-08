@@ -473,17 +473,46 @@ class ExamController extends Controller
 
                     if ($existingProgress) {
                         // Update existing record - preserve watch_time from video progress
+                        $isVideoCompleted = false;
+                        if ($existingProgress->watch_time && $existingProgress->courseContent?->video_duration) {
+                            $isVideoCompleted = $existingProgress->watch_time >= $existingProgress->courseContent->video_duration * 0.9;
+                        } elseif ($existingProgress->watch_time > 0) {
+                            // Non-video content or marked as completed
+                            $isVideoCompleted = true;
+                        }
+
+                        // Lesson is complete when both video AND exam are done
+                        $lessonCompleted = $isVideoCompleted && true; // exam is now completed
+
+                        \Log::info('Exam submission - updating existing progress', [
+                            'user_id' => $attempt->user_id,
+                            'exam_id' => $exam->id,
+                            'course_content_id' => $exam->course_content_id,
+                            'video_completed' => $isVideoCompleted,
+                            'exam_completed' => true,
+                            'lesson_completed' => $lessonCompleted,
+                        ]);
+
                         $existingProgress->update([
                             'exam_id' => $exam->id,
                             'exam_attempt_id' => $attempt->id,
                             'score' => $total_score,
                             'percentage' => round($percentage, 2),
                             'is_passed' => $is_passed,
+                            'completed' => $lessonCompleted,
                             'viewed_at' => now(),
                             // Don't overwrite watch_time - it contains video progress
                         ]);
                     } else {
                         // Create new record (student took exam without watching video first)
+                        // Lesson not complete because video wasn't watched
+                        \Log::info('Exam submission - creating new progress record', [
+                            'user_id' => $attempt->user_id,
+                            'exam_id' => $exam->id,
+                            'course_content_id' => $exam->course_content_id,
+                            'reason' => 'Video not watched before exam',
+                        ]);
+
                         ContentUserProgress::create([
                             'user_id' => $attempt->user_id,
                             'course_content_id' => $exam->course_content_id,
@@ -497,6 +526,11 @@ class ExamController extends Controller
                             'watch_time' => null,
                         ]);
                     }
+                } else {
+                    \Log::info('Exam already completed before by this user', [
+                        'user_id' => $attempt->user_id,
+                        'exam_id' => $exam->id,
+                    ]);
                 }
             }
         } else {
