@@ -78,13 +78,11 @@ class ExamController extends Controller
     {
         // Check if this is coming from mobile webview
         $hasUserId = request()->hasHeader('UserId');
-        $expectsJson = request()->expectsJson();
         $isApiRoute = request()->is('api/*');
         $isMobileSession = session('is_mobile_app');
 
         if (
             $hasUserId ||
-            $expectsJson ||
             $isApiRoute ||
             $isMobileSession
         ) {
