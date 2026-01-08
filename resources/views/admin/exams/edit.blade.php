@@ -400,6 +400,8 @@
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+const currentLocale = '{{ app()->getLocale() }}';
+
 // Function to load courses when subject is selected
 function loadSubjectCourses(subjectId) {
     const courseSelect = document.getElementById('course_id');
@@ -429,7 +431,8 @@ function loadSubjectCourses(subjectId) {
         .then(response => response.json())
         .then(courses => {
             courses.forEach(course => {
-                const option = new Option(course.title_en || course.title_ar, course.id);
+                const title = currentLocale === 'ar' ? (course.title_ar || course.title_en) : (course.title_en || course.title_ar);
+                const option = new Option(title, course.id);
                 courseSelect.add(option);
             });
             
@@ -512,7 +515,7 @@ function loadSectionContents(sectionId) {
     .then(response => response.json())
     .then(contents => {
         contents.forEach(content => {
-            const title = content.title_en || content.title_ar;
+            const title = currentLocale === 'ar' ? (content.title_ar || content.title_en) : (content.title_en || content.title_ar);
             const option = new Option(title, content.id);
             contentSelect.add(option);
         });
