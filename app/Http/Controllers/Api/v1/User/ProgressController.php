@@ -90,13 +90,7 @@ class ProgressController extends Controller
                 ? $request->completed
                 : ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9);
 
-            \Log::info('updateVideoProgress START', [
-                'user_id' => $user->id,
-                'course_content_id' => $request->course_content_id,
-                'watch_time' => $request->watch_time,
-                'video_duration' => $courseContent->video_duration,
-                'videoCompleted' => $videoCompleted,
-            ]);
+           
 
             // Get or create progress record (single record per user+content)
             $progress = ContentUserProgress::firstOrCreate(
@@ -111,11 +105,7 @@ class ProgressController extends Controller
                 ]
             );
 
-            \Log::info('Progress record created/found', [
-                'progress_id' => $progress->id,
-                'before_watch_time' => $progress->watch_time,
-                'before_completed' => $progress->completed,
-            ]);
+            
 
             // Update only video-related fields (preserve exam data if present)
             $progress->watch_time = $request->watch_time;
@@ -128,12 +118,7 @@ class ProgressController extends Controller
             // Check if exam is completed (exam_id is set in the progress record)
             $isExamCompleted = $linkedExam && $progress->exam_id == $linkedExam->id;
 
-            \Log::info('Exam check', [
-                'has_linked_exam' => $linkedExam !== null,
-                'exam_id' => $linkedExam?->id,
-                'progress_exam_id' => $progress->exam_id,
-                'isExamCompleted' => $isExamCompleted,
-            ]);
+            
 
             // Calculate lesson completion status
             // If lesson has exam: lesson is complete only when BOTH video AND exam are completed
@@ -159,18 +144,12 @@ class ProgressController extends Controller
             $progress->completed = $lessonCompleted;
             $progress->save();
 
-            \Log::info('Progress updated', [
-                'lessonCompleted' => $lessonCompleted,
-                'lessonProgress' => $lessonProgress,
-                'has_exam' => $linkedExam !== null,
-            ]);
+           
 
             // Get updated course progress
             $courseProgress = $courseContent->course->calculateCourseProgress($user->id);
 
-            \Log::info('updateVideoProgress END', [
-                'course_progress' => $courseProgress,
-            ]);
+          
 
             return $this->success_response('Video progress updated successfully', [
                 'progress' => [

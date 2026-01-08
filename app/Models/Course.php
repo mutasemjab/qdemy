@@ -90,11 +90,6 @@ class Course extends Model
     {
         $user_id = $userId ? $userId : auth_student()?->id;
 
-        \Log::info('calculateCourseProgress START', [
-            'course_id' => $this->id,
-            'user_id' => $user_id,
-        ]);
-
         if (! $user_id) {
             return [
                 'total_progress' => 0,
@@ -119,15 +114,7 @@ class Course extends Model
         $watchingVideos = 0;
         $lessonsProgress = [];
 
-        \Log::info('Total videos found', [
-            'total_videos' => $totalVideos,
-        ]);
-
         foreach ($allVideos as $video) {
-            \Log::info('Processing video', [
-                'video_id' => $video->id,
-                'video_title_ar' => $video->title_ar,
-            ]);
 
             // Check if this video/lesson has an exam linked to it
             $linkedExam = $video->exams()->where('is_active', 1)->first();
@@ -137,13 +124,6 @@ class Course extends Model
                 ->where('course_content_id', $video->id)
                 ->first();
 
-            \Log::info('Content progress data', [
-                'has_progress_record' => $contentProgress !== null,
-                'watch_time' => $contentProgress?->watch_time,
-                'completed' => $contentProgress?->completed,
-                'video_duration' => $video->video_duration,
-            ]);
-
             // Video is completed if:
             // 1. completed flag is true (PRIMARY indicator - works for YouTube and Bunny videos), OR
             // 2. watch_time reached 90% of video duration (SECONDARY indicator - for Bunny videos with tracking)
@@ -152,18 +132,9 @@ class Course extends Model
                 // Primary indicator: completed flag
                 if ($contentProgress->completed) {
                     $isVideoCompleted = true;
-                    \Log::info('Video/content marked as completed (completed flag is true)', [
-                        'watch_time' => $contentProgress->watch_time,
-                        'video_duration' => $video->video_duration,
-                    ]);
                 } elseif ($video->video_duration && $contentProgress->watch_time) {
                     // Secondary: check if 90% watched (for Bunny videos with watch_time tracking)
                     $isVideoCompleted = $contentProgress->watch_time >= $video->video_duration * 0.9;
-                    \Log::info('Video completion check (90% rule)', [
-                        'watch_time' => $contentProgress->watch_time,
-                        'threshold' => $video->video_duration * 0.9,
-                        'isVideoCompleted' => $isVideoCompleted,
-                    ]);
                 }
             }
 
@@ -192,27 +163,12 @@ class Course extends Model
                     $lessonProgress += 50;
                 }
 
-                \Log::info('Lesson with exam progress', [
-                    'exam_id' => $linkedExam->id,
-                    'isVideoCompleted' => $isVideoCompleted,
-                    'isExamCompleted' => $isExamCompleted,
-                    'lessonProgress' => $lessonProgress,
-                ]);
-
                 $lessonsProgress[] = $lessonProgress;
             } else {
                 // Lesson has NO exam: 100% video
                 if ($isVideoCompleted) {
-                    \Log::info('Lesson without exam - COMPLETED', [
-                        'video_id' => $video->id,
-                        'lessonProgress' => 100,
-                    ]);
                     $lessonsProgress[] = 100;
                 } else {
-                    \Log::info('Lesson without exam - NOT COMPLETED', [
-                        'video_id' => $video->id,
-                        'lessonProgress' => 0,
-                    ]);
                     $lessonsProgress[] = 0;
                 }
             }
@@ -255,14 +211,6 @@ class Course extends Model
             'completed_exams' => $completedExams,
             'total_exams' => $totalExams,
         ];
-
-        \Log::info('calculateCourseProgress END', [
-            'lessons_progress' => $lessonsProgress,
-            'total_progress' => round($totalProgress, 2),
-            'video_progress' => round($videoProgress, 2),
-            'completed_videos' => $completedVideos,
-            'total_videos' => $totalVideos,
-        ]);
 
         return $result;
     }

@@ -123,30 +123,6 @@ class CourseController extends Controller
             $calculateCourseProgress = $course->calculateCourseProgress($user->id);
         }
 
-        // LOGS للتحقق من البيانات
-        \Log::info('Course Debug Info', [
-            'course_id' => $course->id,
-            'user_id' => $user?->id,
-            'is_enrolled' => $is_enrolled,
-            'is_sequential' => $course->is_sequential,
-            'total_contents' => $contents->count(),
-            'free_contents_count' => $contents->where('is_free', 1)->count(),
-            'locked_contents' => $lockedContents,
-        ]);
-
-        // Log each content's details
-        foreach($contents as $content) {
-            \Log::info('Content Details', [
-                'content_id' => $content->id,
-                'title' => $content->title,
-                'is_free' => $content->is_free,
-                'is_free_type' => gettype($content->is_free),
-                'is_free_strict' => $content->is_free === 1,
-                'is_free_loose' => $content->is_free == 1,
-                'has_video' => !empty($content->video_url),
-                'has_file' => !empty($content->file_path),
-            ]);
-        }
 
         return view('web.course', [
             'user'         => $user,

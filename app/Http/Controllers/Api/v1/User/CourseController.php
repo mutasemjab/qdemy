@@ -26,11 +26,11 @@ class CourseController extends Controller
     /**
      * Get course details with user progress
      */
-   public function show(Request $request, Course $course, $slug = null)
+    public function show(Request $request, Course $course, $slug = null)
     {
         try {
             $user = $request->user(); // authenticated user from token
-            
+
             // Get course contents and sections
             $contents = $course->contents;
             $mainSections = $course->sections?->where('parent_id', null);
@@ -91,7 +91,7 @@ class CourseController extends Controller
 
             // Build structured sections with nested contents and exams
             $courseData['sections'] = [];
-            
+
             if ($mainSections) {
                 foreach ($mainSections as $section) {
                     $sectionData = [
@@ -243,7 +243,6 @@ class CourseController extends Controller
             }
 
             return $this->success_response('Course details retrieved successfully', $courseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve course details: ' . $e->getMessage(), null);
         }
@@ -255,19 +254,11 @@ class CourseController extends Controller
      */
     private function isContentLocked($course, $content, $userId)
     {
-        \Log::info('isContentLocked CHECK', [
-            'course_id' => $course->id,
-            'content_id' => $content->id,
-            'content_title_ar' => $content->title_ar,
-            'user_id' => $userId,
-            'is_sequential' => $course->is_sequential,
-            'is_free' => $content->is_free,
-            'order' => $content->order,
-        ]);
+
 
         // If course is not sequential, all content is unlocked
         if (! $course->is_sequential) {
-            \Log::info('Course is NOT sequential - unlocked');
+
 
             return false;
         }
@@ -275,14 +266,14 @@ class CourseController extends Controller
         // If content is free (is_free == 1), it's not locked
         // is_free values: 1 = مجاني (free), 2 = مدفوع (paid)
         if ($content->is_free == 1) {
-            \Log::info('Content is free - unlocked');
+           
 
             return false;
         }
 
         // First content in order is always unlocked
         if ($content->order <= 1) {
-            \Log::info('First content - unlocked');
+          
 
             return false;
         }
@@ -296,35 +287,24 @@ class CourseController extends Controller
 
         // If no previous content, current content is unlocked
         if (! $previousContent) {
-            \Log::info('No previous content - unlocked');
 
             return false;
         }
 
-        \Log::info('Previous content found', [
-            'previous_content_id' => $previousContent->id,
-            'previous_content_title_ar' => $previousContent->title_ar,
-        ]);
-
+        
         // Check if user has completed the previous content
         $previousProgress = ContentUserProgress::where('user_id', $userId)
             ->where('course_content_id', $previousContent->id)
             ->first();
 
-        \Log::info('Previous content progress', [
-            'has_progress' => $previousProgress !== null,
-            'completed' => $previousProgress?->completed,
-        ]);
+        
 
         // If no progress record or not completed, content is locked
         if (! $previousProgress || ! $previousProgress->completed) {
-            \Log::info('Previous content NOT completed - LOCKED');
 
             return true;
         }
 
-        // Previous content is completed, so current content is unlocked
-        \Log::info('Previous content IS completed - UNLOCKED');
 
         return false;
     }
@@ -385,7 +365,7 @@ class CourseController extends Controller
             $perPage = $request->get('per_page', 10);
             $page = $request->get('page', 1);
 
-            $courses = Course::where('status','accepted')->where('subject_id', $subject->id)
+            $courses = Course::where('status', 'accepted')->where('subject_id', $subject->id)
                 ->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program'])
                 ->latest()
                 ->paginate($perPage);
@@ -455,7 +435,6 @@ class CourseController extends Controller
             ];
 
             return $this->success_response('Subject courses retrieved successfully', $responseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve subject courses: ' . $e->getMessage(), null);
         }
@@ -471,7 +450,7 @@ class CourseController extends Controller
 
             // Get international program subjects, then get courses for those subjects
             $internationalProgram = \App\Models\Category::where('ctg_key', 'international-program')->first();
-            
+
             if (!$internationalProgram) {
                 return $this->error_response('International program not found', null);
             }
@@ -480,7 +459,7 @@ class CourseController extends Controller
                 ->where('is_active', true)
                 ->pluck('id');
 
-            $courses = Course::where('status','accepted')->whereIn('subject_id', $subjects)
+            $courses = Course::where('status', 'accepted')->whereIn('subject_id', $subjects)
                 ->with(['teacher', 'subject'])
                 ->latest()
                 ->paginate($perPage);
@@ -532,7 +511,6 @@ class CourseController extends Controller
             ];
 
             return $this->success_response('International program courses retrieved successfully', $responseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve international program courses: ' . $e->getMessage(), null);
         }
@@ -548,7 +526,7 @@ class CourseController extends Controller
 
             // Get universities program subjects, then get courses for those subjects
             $universitiesProgram = \App\Models\Category::where('ctg_key', 'universities-and-colleges-program')->first();
-            
+
             if (!$universitiesProgram) {
                 return $this->error_response('Universities program not found', null);
             }
@@ -557,7 +535,7 @@ class CourseController extends Controller
                 ->where('is_active', true)
                 ->pluck('id');
 
-            $courses = Course::where('status','accepted')->whereIn('subject_id', $subjects)
+            $courses = Course::where('status', 'accepted')->whereIn('subject_id', $subjects)
                 ->with(['teacher', 'subject'])
                 ->latest()
                 ->paginate($perPage);
@@ -608,7 +586,6 @@ class CourseController extends Controller
             ];
 
             return $this->success_response('Universities program courses retrieved successfully', $responseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve universities program courses: ' . $e->getMessage(), null);
         }
@@ -626,7 +603,7 @@ class CourseController extends Controller
             $search = $request->get('search');
             $sortBy = $request->get('sort_by', 'latest'); // latest, price_low, price_high, name
 
-            $query = Course::where('status','accepted')->with(['teacher', 'subject']);
+            $query = Course::where('status', 'accepted')->with(['teacher', 'subject']);
 
             // Apply filters
             if ($subjectId) {
@@ -640,9 +617,9 @@ class CourseController extends Controller
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title_ar', 'like', "%{$search}%")
-                      ->orWhere('title_en', 'like', "%{$search}%")
-                      ->orWhere('description_ar', 'like', "%{$search}%")
-                      ->orWhere('description_en', 'like', "%{$search}%");
+                        ->orWhere('title_en', 'like', "%{$search}%")
+                        ->orWhere('description_ar', 'like', "%{$search}%")
+                        ->orWhere('description_en', 'like', "%{$search}%");
                 });
             }
 
@@ -709,7 +686,6 @@ class CourseController extends Controller
             ];
 
             return $this->success_response('Courses retrieved successfully', $responseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve courses: ' . $e->getMessage(), null);
         }
