@@ -1417,12 +1417,15 @@ a.hero-card {
 @media (max-width: 992px) {
   .services-box {
     grid-template-columns: repeat(2, 1fr);
+    max-width: calc(100% - 40px);
   }
 }
 
 @media (max-width: 576px) {
   .services-box {
     grid-template-columns: 1fr;
+    max-width: 100%;
+    width: 100%;
   }
 }
 
@@ -2452,7 +2455,7 @@ a.ud-item.nav-link:hover {
 @media (max-width: 992px) {
   .services-box {
     padding: 30px 20px;
-    margin: 5px;
+    margin: 0 auto;
   }
 
   .service-btn {
@@ -2466,6 +2469,11 @@ a.ud-item.nav-link:hover {
 }
 
 @media (max-width: 576px) {
+  .services-box {
+    padding: 20px 15px;
+    margin: 0 auto;
+  }
+
   .service-btn {
     font-size: 16px;
     padding: 30px 15px;
