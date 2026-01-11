@@ -15,7 +15,7 @@
             <div class="examx-dropdown">
                 <button class="examx-pill">
                     <i class="fas fa-caret-down"></i>
-                    <span>
+                    <span style="font-size: large">
                         @if(request('subject') && $subjects->find(request('subject')))
                             {{ app()->getLocale() == 'ar' ? $subjects->find(request('subject'))->name_ar : $subjects->find(request('subject'))->name_en }}
                         @else

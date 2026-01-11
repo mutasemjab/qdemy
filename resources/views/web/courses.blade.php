@@ -235,7 +235,7 @@
             color: #fff;
             padding: 8px 44px;
             transform: rotate(45deg);
-            font-size: 13px;
+            font-size: 18px;
             font-weight: 700;
             letter-spacing: .3px;
         }
@@ -276,7 +276,7 @@
             color: #fff;
             border-radius: 999px;
             padding: 2px 8px;
-            font-size: 12px;
+            font-size: 17px;
         }
 
         .course-card__body {
@@ -295,7 +295,7 @@
             color: #6b4f00;
             border-radius: 10px;
             padding: 6px 12px;
-            font-size: 13px;
+            font-size: 18px;
             font-weight: 700;
             margin-top: -10px;
         }
@@ -304,7 +304,7 @@
             display: block;
             color: #0f172a;
             font-weight: 800;
-            font-size: 17px;
+            font-size: 22px;
             margin: 14px 0 10px;
             text-decoration: none;
             transition: color 0.2s ease;
@@ -323,7 +323,7 @@
 
         .course-card__text {
             color: #6b7280;
-            font-size: 14px;
+            font-size: 19px;
             line-height: 1.9;
             margin-top: 12px;
         }
@@ -348,7 +348,7 @@
             padding: 0 18px;
             border-radius: 10px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 19px;
             text-decoration: none;
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
@@ -389,7 +389,7 @@
             display: flex;
             gap: 18px;
             color: #6b7280;
-            font-size: 13px;
+            font-size: 18px;
             margin-top: 6px;
         }
 

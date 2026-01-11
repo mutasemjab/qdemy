@@ -130,10 +130,10 @@
     </div>
 
     <div class="footer-bottom">
-        <p class="copy">
+        <p style="font-size: 18px;">
             © {{ date('Y') }} {{ config('app.name') }} — {{ __('front.all_rights_reserved') }}
         </p>
-        <p class="made-by">
+        <p style="font-size: 18px;">
             {{ __('front.made_with_love') }}
         </p>
     </div>

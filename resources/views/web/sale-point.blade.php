@@ -18,10 +18,10 @@
     <form method="GET" action="{{ route('sale-point') }}" id="salePointForm">
         <div class="examx-row">
             <div class="examx-dropdown">
-                <select class="examx-pill" name="country" id="country_filter" onchange="document.getElementById('salePointForm').submit()">
-                    <option value="">{{ __('front.All Countries') }}</option>
+                <select  style="font-size: large" class="examx-pill" name="country" id="country_filter" onchange="document.getElementById('salePointForm').submit()">
+                    <option value="" style="font-size: large">{{ __('front.All Countries') }}</option>
                     @foreach($posGrouped->keys() as $country)
-                        <option value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
+                        <option style="font-size: large" value="{{ $country }}" {{ request('country') == $country ? 'selected' : '' }}>
                             {{ $country }}
                         </option>
                     @endforeach
@@ -45,7 +45,7 @@
                 <div class="sp2-group {{ $loop->first ? 'is-open' : '' }}">
                     <button class="sp2-group-head">
                         <i class="fas {{ $loop->first ? 'fa-minus' : 'fa-plus' }}"></i>
-                        <span>{{ $countryName }}</span>
+                        <span style="font-size: x-large">{{ $countryName }}</span>
                     </button>
                     <div class="sp2-panel">
                         <table class="sp2-table">

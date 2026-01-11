@@ -73,12 +73,12 @@
                                      style="background-image:url('{{ asset('assets_front/images/subject-bg2.png') }}')">
                                     @if($ministrySubject->has_optional_subject)
                                         <a class="tawjihi2009__subject-link text-decoration-none" href="javascript:void(0)">
-                                            <span>{{$ministrySubject->localized_name}}</span>
+                                            <span style="font-size:20px">{{$ministrySubject->localized_name}}</span>
                                         </a>
                                     @else
                                         <a class="tawjihi2009__subject-link text-decoration-none"
                                            href="{{route('subject',['subject'=>$ministrySubject->id,'slug'=>$ministrySubject->slug])}}">
-                                            <span>{{$ministrySubject->localized_name}}</span>
+                                            <span style="font-size:20px">{{$ministrySubject->localized_name}}</span>
                                         </a>
                                     @endif
                                 </div>
@@ -95,7 +95,7 @@
                                                 @foreach($subjects as $optiona_subject)
                                                     <li>
                                                         <a href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
-                                                            {{$optiona_subject->localized_name}}
+                                                           <span style="font-size:20px"> {{$optiona_subject->localized_name}}</span>
                                                         </a>
                                                     </li>
                                                 @endforeach
@@ -123,12 +123,12 @@
                                      style="background-image:url('{{ asset('assets_front/images/subject-bg2.png') }}')">
                                     @if($schoolSubject->has_optional_subject)
                                         <a class="tawjihi2009__subject-link text-decoration-none" href="javascript:void(0)">
-                                            <span>{{$schoolSubject->localized_name}}</span>
+                                            <span style="font-size:20px">{{$schoolSubject->localized_name}}</span>
                                         </a>
                                     @else
                                         <a class="tawjihi2009__subject-link text-decoration-none"
                                            href="{{route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])}}">
-                                            <span>{{$schoolSubject->localized_name}}</span>
+                                            <span style="font-size:20px">{{$schoolSubject->localized_name}}</span>
                                         </a>
                                     @endif
                                 </div>
@@ -144,7 +144,7 @@
                                                 @foreach($subjects as $optiona_subject)
                                                     <li>
                                                         <a href="{{route('subject',['subject'=>$optiona_subject->id,'slug'=>$optiona_subject->slug])}}">
-                                                            {{$optiona_subject->localized_name}}
+                                                          <span style="font-size:20px">   {{$optiona_subject->localized_name}} </span>
                                                         </a>
                                                     </li>
                                                 @endforeach

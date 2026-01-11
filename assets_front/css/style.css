@@ -703,7 +703,7 @@ button,
   text-decoration: none;
   color: #000;
   font-weight: 700;
-  font-size: 19px;
+  font-size: 25px;
 }
 
 .nav ul li a.active {
@@ -2010,7 +2010,7 @@ a.blob-btn span {
 .stat-number {
   display: block;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 25px;
   margin-bottom: 5px;
 }
 
@@ -2912,7 +2912,6 @@ a.ud-item.nav-link:hover {
 
 .grades-header h2 {
   color: #fff;
-  font-size: 26px;
   font-weight: bold;
   margin: 0;
 }
@@ -3097,7 +3096,7 @@ a.ud-item.nav-link:hover {
 
 .universities-header h2 {
   color: #fff;
-  font-size: 37px;
+  font-size: 45px;
   margin: 0;
 }
 
@@ -3244,7 +3243,7 @@ a.text-dark {
   border-radius: 20px;
   text-decoration: none;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 22px;
   transition: transform 0.3s ease;
   text-align: center;
   background-color: var(--main-color);
@@ -3348,7 +3347,7 @@ a.text-dark {
   box-sizing: border-box;
   color: #fff;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 25px;
   text-decoration: none;
   transition: transform 0.3s ease;
 }
@@ -4503,7 +4502,7 @@ a.text-dark {
 
 .examx-pill i {
   color: #2F66D5;
-  font-size: 18px
+  font-size: large;
 }
 
 .examx-search {
@@ -4512,6 +4511,7 @@ a.text-dark {
 }
 
 .examx-search input {
+  font-size: large;
   text-align: center;
   width: -webkit-fill-available;
   height: 64px;
@@ -4661,6 +4661,7 @@ a.text-dark {
 }
 
 .examx-pill {
+  font-size: large;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -4713,6 +4714,7 @@ subject-plus-dropdown-examx {
   border-radius: 10px;
   color: #111827;
   transition: background .15s ease;
+  font-size: large;
 }
 
 .examx-menu a:hover {
@@ -5204,7 +5206,7 @@ subject-plus-dropdown-examx {
 
 .cmty-user h4 {
   margin: 0 0 2px 0;
-  font-size: 18px;
+  font-size: 25px;
 }
 
 .cmty-user time {
@@ -5213,7 +5215,7 @@ subject-plus-dropdown-examx {
 }
 
 .cmty-text {
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.8;
   margin: 6px 0 14px;
   color: #1d1d1d;
@@ -5280,14 +5282,22 @@ subject-plus-dropdown-examx {
 
 .cmty-comment b {
   display: block;
-  font-size: 13px;
+  font-size: 25px;
   margin-bottom: 2px;
+}
+.comment-time {
+  font-size: 15px;
+  font-weight: normal;
+ color: #bfbfbf;
 }
 
 .cmty-comment p {
   margin: 0;
-  font-size: 13px;
+  font-size: 20px;
   color: #333;
+}
+.like-text {
+  font-size: large;
 }
 
 .cmty-more {
@@ -5297,6 +5307,7 @@ subject-plus-dropdown-examx {
   color: #000000;
   font-weight: 700;
   cursor: pointer;
+  font-size: large;
 }
 
 @media(max-width:768px) {
@@ -5311,14 +5322,17 @@ subject-plus-dropdown-examx {
 
 time {
   color: #bfbfbf;
+  font-size: medium;
 }
 
 .cmty-like i {
   margin-left: 6px;
+  font-size: large;
 }
 
 .cmty-more-sec {
   text-align: center;
+    font-size: large;
 }
 
 .bq-container {
@@ -5360,13 +5374,13 @@ time {
 }
 
 .bq-title {
-  font-size: 15px;
+  font-size: 23px;
   font-weight: 700;
   margin: 0;
 }
 
 .bq-sub {
-  font-size: 13px;
+  font-size: 20px;
   color: #555;
 }
 
@@ -5465,13 +5479,13 @@ a.bq-btn.bq-download {
 .sp2-brand {
   color: #0B66FF;
   font-weight: 900;
-  font-size: 26px;
+  font-size: 30px;
   line-height: 1
 }
 
 .sp2-sub {
   color: #1f1f1f;
-  font-size: 20px;
+  font-size: 25px;
   font-weight: 900
 }
 
@@ -5554,7 +5568,7 @@ a.bq-btn.bq-download {
 .sp2-table thead th {
   background: var(--main-color);
   color: #fff;
-  font-weight: 900;
+  font-weight: 700;
   padding: 12px;
   border-left: 1px solid rgba(255, 255, 255, .25);
   text-align: right;
@@ -5699,7 +5713,7 @@ a.bq-btn.bq-download {
 
 .co-action-title {
   font-weight: 900;
-  font-size: 18px
+  font-size: 25px
 }
 
 .co-btn {
@@ -6950,7 +6964,7 @@ a.dl-store0 img {
   margin: 0 0 22px;
   color: #305;
   opacity: .8;
-  font-size: 18px
+  font-size: 22px
 }
 
 .ct-form {
@@ -6966,7 +6980,7 @@ a.dl-store0 img {
   border-radius: 14px;
   padding: 0 18px;
   background: #fff;
-  font-size: 16px
+  font-size: 22px
 }
 
 .ct-phone {
@@ -6980,7 +6994,7 @@ a.dl-store0 img {
   height: 49px;
   padding: 0 12px;
   background: #fff;
-  font-size: 15px
+  font-size: 21px
 }
 
 .ct-number {
@@ -6992,7 +7006,7 @@ a.dl-store0 img {
   border: 1px solid #001E61;
   border-radius: 14px;
   padding: 14px 18px;
-  font-size: 16px;
+  font-size: 22px;
   resize: vertical;
   min-height: 140px
 }
@@ -7005,7 +7019,7 @@ a.dl-store0 img {
   background: var(--main-color);
   color: #fff;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 22px;
   cursor: pointer
 }
 
@@ -7021,7 +7035,6 @@ a.dl-store0 img {
 }
 
 .ct-desc {
-  font-size: 20px;
   color: #212121;
   opacity: .75;
   margin: 0 0 24px
@@ -7035,7 +7048,6 @@ a.dl-store0 img {
 }
 
 .ct-note {
-  font-size: 18px;
   color: #1d1d1d;
   opacity: .9;
   margin: 0 0 8px;
@@ -7237,7 +7249,7 @@ a.dl-store0 img {
 }
 
 .blog-card__title {
-  font-size: 15px;
+  font-size: 25px;
   line-height: 1.5;
   margin: 14px 8px 6px;
   color: #0e1b3d;
@@ -7245,7 +7257,7 @@ a.dl-store0 img {
 }
 
 .blog-card__excerpt {
-  font-size: 12px;
+  font-size: 20px;
   line-height: 1.6;
   margin: 0 8px 6px;
   color: #4b5162;
@@ -7386,7 +7398,7 @@ a.dl-store0 img {
 }
 
 .rvx-panel-title {
-  font-size: 38px;
+  font-size: 40px;
   line-height: 1.2;
   margin: 0 0 18px
 }

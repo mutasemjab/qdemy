@@ -125,7 +125,7 @@
             padding: 40px 20px;
             color: #fff;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 28px;
             text-decoration: none;
             text-align: center;
             transition: transform 0.3s ease;

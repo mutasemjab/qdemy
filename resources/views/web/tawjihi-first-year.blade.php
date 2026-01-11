@@ -35,7 +35,7 @@
                                      style="background-image:url('{{ asset('assets_front/images/subject-bg2.png') }}')">
                                     <a href="{{route('subject',['subject'=>$ministrySubject->id,'slug'=>$ministrySubject->slug])}}"
                                        class="tawjihi2009__subject-link text-decoration-none">
-                                        <span>{{$ministrySubject->localized_name}}</span>
+                                        <span style="font-size: x-large">{{$ministrySubject->localized_name}}</span>
                                     </a>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                                      style="background-image:url('{{ asset('assets_front/images/subject-bg2.png') }}')">
                                     <a href="{{route('subject',['subject'=>$schoolSubject->id,'slug'=>$schoolSubject->slug])}}"
                                        class="tawjihi2009__subject-link text-decoration-none">
-                                        <span>{{$schoolSubject->localized_name}}</span>
+                                        <span style="font-size: x-large">{{$schoolSubject->localized_name}}</span>
                                     </a>
                                 </div>
                             </div>

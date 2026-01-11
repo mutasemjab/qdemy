@@ -1188,13 +1188,13 @@
                     }
 
                     .crs2-hero-sub {
-                        font-size: 16px;
+                        font-size: 21px;
                         margin: 0 0 18px
                     }
 
                     .crs2-hero-text p {
                         margin: 0 0 4px;
-                        font-size: 14px;
+                        font-size: 19px;
                         line-height: 1.9
                     }
 
@@ -1212,7 +1212,7 @@
                         justify-content: center;
                         border-radius: 999px;
                         padding: 6px 16px;
-                        font-size: 12px
+                        font-size: 17px
                     }
 
                     .crs2-chip--outline {
@@ -1265,7 +1265,7 @@
                         border-radius: 6px;
                         padding: 9px 10px;
                         text-align: center;
-                        font-size: 14px;
+                        font-size: 19px;
                         margin-bottom: 14px
                     }
 
@@ -1280,7 +1280,7 @@
                         background: #ffd54a;
                         border-radius: 999px;
                         padding: 4px 12px;
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #5b3b00
                     }
 
@@ -1291,7 +1291,7 @@
                     }
 
                     .crs2-side-price-number {
-                        font-size: 20px;
+                        font-size: 25px;
                         font-weight: 800;
                         color: #0055d2
                     }
@@ -1303,7 +1303,7 @@
                         color: #fff;
                         border: none;
                         padding: 11px 0;
-                        font-size: 15px;
+                        font-size: 20px;
                         font-weight: 700;
                         cursor: pointer
                     }
@@ -1341,14 +1341,14 @@
 
                     .crs2-summary-sub {
                         margin: 0 0 14px;
-                        font-size: 14px;
+                        font-size: 19px;
                         color: #6b7280;
                         text-align: right
                     }
 
                     .crs2-summary-text p {
                         margin: 0 0 4px;
-                        font-size: 14px;
+                        font-size: 19px;
                         color: #4b5563;
                         line-height: 1.9;
                         text-align: right
@@ -1406,19 +1406,19 @@
 
                     .crs2-section-title {
                         margin: 0 0 2px;
-                        font-size: 18px;
+                        font-size: 22px;
                         font-weight: 800;
                         color: #111827
                     }
 
                     .crs2-section-sub {
                         margin: 0;
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #6b7280
                     }
 
                     .crs2-section-icon {
-                        font-size: 18px;
+                        font-size: 21px;
                         color: #ff4b5c
                     }
 
@@ -1480,7 +1480,7 @@
                         background: #fffbea;
                         border: none;
                         cursor: pointer;
-                        font-size: 14px
+                        font-size: 19px
                     }
 
                     .crs2-sub-title {
@@ -1489,7 +1489,7 @@
                     }
 
                     .crs2-sub-toggle {
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #4b5563
                     }
 
@@ -1533,11 +1533,11 @@
                         justify-content: center;
                         background: #e5f0ff;
                         color: #0055d2;
-                        font-size: 14px
+                        font-size: 19px
                     }
 
                     .crs2-resource-title {
-                        font-size: 14px;
+                        font-size: 19px;
                         color: #111827
                     }
 
@@ -1550,7 +1550,7 @@
                     .crs2-resource-meta {
                         display: flex;
                         gap: 6px;
-                        font-size: 12px;
+                        font-size: 17px;
                         color: #6b7280
                     }
 
@@ -1566,7 +1566,7 @@
                         justify-content: center;
                         border-radius: 999px;
                         padding: 6px 14px;
-                        font-size: 13px;
+                        font-size: 18px;
                         font-weight: 700;
                         border: none;
                         text-decoration: none;
@@ -1652,7 +1652,7 @@
                         color: #fff;
                         border: none;
                         padding: 11px 0;
-                        font-size: 15px;
+                        font-size: 19px;
                         font-weight: 700;
                         cursor: not-allowed;
                         opacity: 0.7;
@@ -1665,7 +1665,7 @@
                         color: #fff;
                         border: none;
                         padding: 11px 0;
-                        font-size: 15px;
+                        font-size: 19px;
                         font-weight: 700;
                         cursor: pointer;
                         margin-top: 10px;
@@ -1689,14 +1689,14 @@
 
                     .crs2-teacher-info h4 {
                         margin: 0 0 4px;
-                        font-size: 15px;
+                        font-size: 19px;
                         font-weight: 700;
                         color: #111827;
                     }
 
                     .crs2-teacher-info p {
                         margin: 0;
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #6b7280;
                     }
 
@@ -1704,7 +1704,7 @@
                         display: block;
                         text-align: center;
                         padding: 8px 0;
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #ef4444;
                         text-decoration: none;
                         margin-top: 12px;
@@ -1738,7 +1738,7 @@
                         top: 50%;
                         left: 50%;
                         transform: translate(-50%, -50%);
-                        font-size: 12px;
+                        font-size: 17px;
                         font-weight: bold;
                         color: #333;
                     }
@@ -1746,7 +1746,7 @@
                     .crs2-progress-stats {
                         display: flex;
                         justify-content: space-between;
-                        font-size: 13px;
+                        font-size: 18px;
                         color: #666;
                     }
 
@@ -1760,14 +1760,14 @@
 
                     .crs2-card-activation h3 {
                         margin: 0 0 8px;
-                        font-size: 18px;
+                        font-size: 22px;
                         font-weight: 700;
                         color: #111827;
                     }
 
                     .crs2-card-activation p {
                         margin: 0 0 16px;
-                        font-size: 14px;
+                        font-size: 19px;
                         color: #6b7280;
                     }
 
@@ -1776,7 +1776,7 @@
                         padding: 12px;
                         border: 1px solid #d1d5db;
                         border-radius: 8px;
-                        font-size: 14px;
+                        font-size: 19px;
                         margin-bottom: 12px;
                     }
 
@@ -1787,7 +1787,7 @@
                         color: #fff;
                         border: none;
                         border-radius: 8px;
-                        font-size: 15px;
+                        font-size: 20px;
                         font-weight: 700;
                         cursor: pointer;
                     }
@@ -1814,7 +1814,7 @@
                         color: #fff;
                         padding: 2px 8px;
                         border-radius: 4px;
-                        font-size: 11px;
+                        font-size: 17px;
                         font-weight: 700;
                         margin-left: 8px;
                         text-transform: uppercase;
@@ -1837,7 +1837,7 @@
                     }
 
                     .crs2-resource-locked-message {
-                        font-size: 12px;
+                        font-size: 18px;
                         color: #ef4444;
                         font-weight: 600;
                     }
@@ -1854,7 +1854,7 @@
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        font-size: 12px;
+                        font-size: 17px;
                     }
 
                     .progress-badge {
@@ -1865,7 +1865,7 @@
                         color: #333;
                         border-radius: 10px;
                         padding: 2px 6px;
-                        font-size: 10px;
+                        font-size: 15px;
                         font-weight: bold;
                     }
 
@@ -1979,7 +1979,7 @@
                         padding: 12px;
                         border: none;
                         border-radius: 8px;
-                        font-size: 15px;
+                        font-size: 25px;
                         font-weight: 700;
                         cursor: pointer;
                     }
@@ -2035,7 +2035,7 @@
                     }
 
                     .crs2-resource-app-message {
-                        font-size: 12px;
+                        font-size: 18px;
                         color: #2563eb;
                         font-weight: 600;
                     }

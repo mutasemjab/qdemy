@@ -35,7 +35,7 @@
                     <div class="ud-post-actions" style="display: flex; gap: 12px; margin-top: 15px;">
                         <button class="like-btn {{ $post->isLikedBy(auth()->id()) ? 'liked' : '' }}" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
                             <i class="fa-{{ $post->isLikedBy(auth()->id()) ? 'solid' : 'regular' }} fa-heart" style="color: {{ $post->isLikedBy(auth()->id()) ? '#ff4757' : '#999' }}; transition: color 0.3s ease;"></i>
-                            <span class="likes-count" style="font-weight: 500;">{{ $post->likesCount() }}</span>
+                            <span class="likes-count" style="font-size: large;">{{ $post->likesCount() }}</span>
                         </button>
                         <button class="comment-toggle" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
                             <i class="far fa-comment" style="color: #999; transition: color 0.3s ease;"></i>
