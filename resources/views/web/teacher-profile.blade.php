@@ -71,22 +71,6 @@
             {{ app()->getLocale() == 'ar' ? $teacher->description_ar : $teacher->description_en }}
           </div>
         </div>
-        <div class="t-card">
-          <h3 class="t-h3">{{ __('front.specializations') }}</h3>
-          <ul class="t-tags">
-            @foreach($teacher->courses->pluck('subject.name')->unique() as $subject)
-            <li>{{ $subject }}</li>
-            @endforeach
-          </ul>
-          <div class="t-stats">
-            <div class="t-stat">
-              <span class="t-stat__num">{{ $teacher->user->created_at->diffInYears(now()) }}+</span>
-              <span class="t-stat__lbl">{{ __('front.years_experience') }}</span>
-            </div>
-           
-         
-          </div>
-        </div>
       </div>
     </div>
 
@@ -157,7 +141,7 @@
 .t-socials a{text-decoration: none;width:40px;height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;background:#f5f7f9;color:#fff;border:1px solid transparent;background-image:linear-gradient(#1d72e8, #0054d2);box-shadow:0 6px 20px rgba(1,173,94,.2)}
 .t-panels{margin-top:24px}
 .t-tabs{display:flex;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:6px;flex-wrap:wrap}
-.t-tab{appearance:none;background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-weight:800;color:var(--coal);cursor:pointer}
+.t-tab{appearance:none;background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-weight:800;font-size:large;color:var(--coal);cursor:pointer}
 .t-tab.is-active{background:var(--brand);border-color:var(--brand);color:#fff}
 .t-panel{display:none;background:#fff;border:1px solid var(--line);border-radius:14px;margin-top:14px;padding:18px}
 .t-panel.is-active{display:block}
