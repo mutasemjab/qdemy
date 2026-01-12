@@ -482,7 +482,7 @@
         }
 
         .ud-search-results .sub {
-            font-size: 12px;
+            font-size: 19px;
             color: #6b7280;
             font-weight: 700
         }
@@ -548,7 +548,7 @@
             display: flex;
             align-items: center;
             margin: 0;
-            font-size: 18px;
+            font-size: 24px;
             font-weight: 800;
             line-height: 1.2
         }
@@ -556,7 +556,7 @@
         .ud-kid-head .g-sub1 {
             display: inline-block;
             margin-top: 6px;
-            font-size: 13px;
+            font-size: 20px;
             color: #6b7280;
             font-weight: 600
         }
@@ -607,7 +607,7 @@
         }
 
         .ud-stat-label {
-            font-size: 12px;
+            font-size: 19px;
             color: #6b7280;
             font-weight: 700;
             margin-top: 4px;
@@ -638,7 +638,7 @@
 
         .ud-bar-head b {
             font-weight: 800;
-            font-size: 14px;
+            font-size: 22px;
             color: #0f172a
         }
 
@@ -670,7 +670,7 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 8px;
-            font-size: 12px;
+            font-size: 19px;
             color: #64748b
         }
 
@@ -680,7 +680,7 @@
 
         .ud-recent-exams h4 {
             margin: 0 0 10px;
-            font-size: 15px;
+            font-size: 23px;
             font-weight: 900;
             color: #0f172a
         }
@@ -705,11 +705,11 @@
         .ud-exam-title {
             font-weight: 800;
             color: #111827;
-            font-size: 14px
+            font-size: 22px
         }
 
         .ud-exam-date {
-            font-size: 12px;
+            font-size: 19px;
             color: #6b7280
         }
 
@@ -718,7 +718,7 @@
             font-weight: 900;
             padding: 6px 10px;
             border-radius: 10px;
-            font-size: 13px
+            font-size: 21px
         }
 
         .ud-exam-score.passed {
@@ -763,7 +763,7 @@
 
         .ud-no-children h3 {
             margin: 6px 0 8px;
-            font-size: 18px;
+            font-size: 25px;
             font-weight: 900;
             color: #0f172a
         }
@@ -808,7 +808,7 @@
             }
 
             .ud-stat-number {
-                font-size: 18px
+                font-size: 25px
             }
 
             .ud-child-stats {
@@ -864,7 +864,7 @@
         }
 
         .ud-stat-label {
-            font-size: 0.8rem;
+            font-size: 20px;
             color: #6c757d;
             margin-top: 5px;
         }
@@ -877,7 +877,7 @@
 
         .ud-recent-exams h4 {
             margin-bottom: 10px;
-            font-size: 1rem;
+            font-size: 22px;
             color: #495057;
         }
 
@@ -896,7 +896,7 @@
 
         .ud-exam-title {
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 22px;
         }
 
         .ud-exam-date {
@@ -908,7 +908,7 @@
             font-weight: bold;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.9rem;
+            font-size: 22px;
         }
 
         .ud-exam-score.passed {
@@ -982,7 +982,7 @@
         }
 
         button.ud-btn-outline .icon {
-            font-size: 1.05em;
+            font-size: 23px;
             line-height: 0
         }
 
@@ -1023,13 +1023,13 @@
         }
 
         .ud-metric-value {
-            font-size: 1.25rem;
+            font-size: 24px;
             font-weight: bold;
             color: #007bff;
         }
 
         .ud-metric-label {
-            font-size: 0.8rem;
+            font-size: 20px;
             color: #6c757d;
             margin-top: 5px;
         }
@@ -1066,7 +1066,7 @@
             color: white;
             padding: 2px 8px;
             border-radius: 12px;
-            font-size: 0.7rem;
+            font-size: 20px;
             margin-left: 10px;
         }
 

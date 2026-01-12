@@ -371,7 +371,7 @@
 
         .stat-info p {
             color: #666;
-            font-size: 0.9em;
+            font-size: 20px;
             margin: 0;
         }
 
@@ -423,23 +423,23 @@
         .student-details h4 {
             margin: 0 0 3px 0;
             color: #333;
-            font-size: 1em;
+            font-size: 20px;
         }
 
         .student-details p {
             margin: 0 0 3px 0;
             color: #666;
-            font-size: 0.9em;
+            font-size: 20px;
         }
 
         .student-details small {
             color: #888;
-            font-size: 0.8em;
+            font-size: 19px;
         }
 
         .enrollment-date {
             color: #007bff;
-            font-size: 0.9em;
+            font-size: 20px;
             font-weight: 500;
         }
 
@@ -476,7 +476,7 @@
         .course-info h4 {
             margin: 0 0 5px 0;
             color: #333;
-            font-size: 1.1em;
+            font-size: 24px;
         }
 
         .students-count {
@@ -484,14 +484,14 @@
             color: white;
             padding: 3px 8px;
             border-radius: 12px;
-            font-size: 0.8em;
+            font-size: 20px;
         }
 
         .toggle-students {
             background: none;
             border: none;
             color: #666;
-            font-size: 16px;
+            font-size: 24px;
             cursor: pointer;
             transition: transform 0.3s ease;
         }
@@ -539,12 +539,12 @@
         .student-card .student-info p {
             margin: 0 0 3px 0;
             color: #666;
-            font-size: 0.85em;
+            font-size: 23px;
         }
 
         .student-card .student-info small {
             color: #888;
-            font-size: 0.75em;
+            font-size: 20px;
         }
 
         .no-students,

@@ -123,7 +123,7 @@
         }
 
         .question-progress {
-            font-size: 14px;
+            font-size: 20px;
             color: #666;
             margin-bottom: 10px;
         }
@@ -202,7 +202,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 16px;
+            font-size: 24px;
             font-weight: bold;
             color: #007bff;
         }
@@ -226,7 +226,7 @@
         }
 
         .question-text {
-            font-size: 16px;
+            font-size: 24px;
             line-height: 1.8;
             color: #333;
             margin-bottom: 30px;
@@ -287,13 +287,13 @@
 
         .option-indicator {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px;
             color: #007bff;
             min-width: 25px;
         }
 
         .option-text {
-            font-size: 15px;
+            font-size: 23px;
             line-height: 1.5;
             color: #333;
         }
@@ -323,7 +323,7 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 14px;
+            font-size: 24px;
             resize: vertical;
             transition: border-color 0.3s;
         }
@@ -388,7 +388,7 @@
         .question-navigator h4 {
             margin: 0 0 15px 0;
             color: #333;
-            font-size: 14px;
+            font-size: 23px;
         }
 
         .questions-grid {
@@ -405,7 +405,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 20px;
             transition: all 0.3s;
         }
 

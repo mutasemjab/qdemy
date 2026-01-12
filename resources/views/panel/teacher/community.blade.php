@@ -33,11 +33,11 @@
                     </div>
                     <p>{{ $post->content }}</p>
                     <div class="ud-post-actions" style="display: flex; gap: 12px; margin-top: 15px;">
-                        <button class="like-btn {{ $post->isLikedBy(auth()->id()) ? 'liked' : '' }}" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
+                        <button class="like-btn {{ $post->isLikedBy(auth()->id()) ? 'liked' : '' }}" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 20px; color: #666;">
                             <i class="fa-{{ $post->isLikedBy(auth()->id()) ? 'solid' : 'regular' }} fa-heart" style="color: {{ $post->isLikedBy(auth()->id()) ? '#ff4757' : '#999' }}; transition: color 0.3s ease;"></i>
                             <span class="likes-count" style="font-size: large;">{{ $post->likesCount() }}</span>
                         </button>
-                        <button class="comment-toggle" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 14px; color: #666;">
+                        <button class="comment-toggle" data-post-id="{{ $post->id }}" style="display: flex; align-items: center; gap: 8px; padding: 8px 16px; border: 1px solid #e0e0e0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-size: 20px; color: #666;">
                             <i class="far fa-comment" style="color: #999; transition: color 0.3s ease;"></i>
                             <span style="font-weight: 500;">{{ $post->commentsCount() }}</span>
                         </button>
@@ -219,20 +219,20 @@
 .ud-comment-author {
     display: block;
     color: #333;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 600;
 }
 
 .ud-comment-time {
     color: #999;
-    font-size: 12px;
+    font-size: 19px;
     white-space: nowrap;
 }
 
 .ud-comment-text {
     margin: 0;
     color: #555;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 1.4;
     word-break: break-word;
 }
@@ -241,7 +241,7 @@
     padding: 20px 15px;
     text-align: center;
     color: #999;
-    font-size: 14px;
+    font-size: 20px;
 }
 
 /* Comment Form */
@@ -250,7 +250,7 @@
     border: 1px solid #e0e0e0;
     border-radius: 6px;
     padding: 10px 12px;
-    font-size: 14px;
+    font-size: 20px;
     font-family: inherit;
     resize: vertical;
     min-height: 70px;
@@ -271,7 +271,7 @@
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 500;
     transition: background 0.3s ease, box-shadow 0.3s ease;
 }

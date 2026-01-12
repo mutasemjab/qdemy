@@ -265,7 +265,7 @@
         }
 
         .description-section h3 {
-            font-size: 16px;
+            font-size: 24px;
             font-weight: bold;
             margin: 0 0 12px 0;
             color: #333;
@@ -316,7 +316,7 @@
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 20px;
             color: #999;
             margin-bottom: 4px;
         }
@@ -335,7 +335,7 @@
         }
 
         .attempts-info h3 {
-            font-size: 16px;
+            font-size: 24px;
             font-weight: bold;
             margin: 0 0 16px 0;
             color: #333;
@@ -358,7 +358,7 @@
         .attempts-label,
         .best-label {
             color: #666;
-            font-size: 14px;
+            font-size: 22px;
         }
 
         .attempts-value,
@@ -383,7 +383,7 @@
         }
 
         .action-title {
-            font-size: 18px;
+            font-size: 24x;
             font-weight: bold;
             margin: 0 0 20px 0;
             color: #333;
@@ -407,7 +407,7 @@
         .btn-large {
             width: 100%;
             padding: 16px 20px;
-            font-size: 15px;
+            font-size: 24px;
             margin-bottom: 12px;
         }
 
@@ -447,7 +447,7 @@
         .attempt-info {
             text-align: center;
             color: #666;
-            font-size: 13px;
+            font-size: 24px;
             margin: 8px 0;
         }
 
@@ -463,7 +463,7 @@
             justify-content: space-between;
             padding: 10px 0;
             border-bottom: 1px solid #e0e0e0;
-            font-size: 13px;
+            font-size: 20px;
         }
 
         .info-item:last-child {
@@ -487,7 +487,7 @@
         }
 
         .previous-attempts h3 {
-            font-size: 16px;
+            font-size: 24px;
             font-weight: bold;
             margin: 0 0 16px 0;
             color: #333;
@@ -506,7 +506,7 @@
             padding: 12px;
             background: #f8f9fa;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 20px;
         }
 
         .attempt-number {
@@ -525,7 +525,7 @@
             display: inline-block;
             padding: 4px 8px;
             border-radius: 4px;
-            font-size: 12px;
+            font-size: 20px;
             font-weight: bold;
             width: fit-content;
         }
@@ -542,7 +542,7 @@
 
         .attempt-date {
             color: #999;
-            font-size: 12px;
+            font-size: 20px;
         }
     </style>
 @endsection

@@ -162,7 +162,7 @@
         .history-header p {
             margin: 0;
             color: #666;
-            font-size: 16px;
+            font-size: 20px;
         }
 
         .statistics {
@@ -217,7 +217,7 @@
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 20px;
             color: #999;
             margin-bottom: 4px;
         }
@@ -251,7 +251,7 @@
             text-align: left;
             font-weight: bold;
             color: #333;
-            font-size: 14px;
+            font-size: 20px;
         }
 
         .exams-table tbody tr {
@@ -292,7 +292,7 @@
             color: #007bff;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 20px;
         }
 
         .progress-mini {
@@ -312,7 +312,7 @@
         }
 
         .percentage-text {
-            font-size: 13px;
+            font-size: 20px;
             font-weight: bold;
             color: #333;
         }
@@ -323,7 +323,7 @@
             gap: 6px;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 18px;
             font-weight: bold;
             white-space: nowrap;
         }
@@ -347,7 +347,7 @@
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 20px;
             font-weight: bold;
             transition: all 0.3s;
         }
@@ -395,7 +395,7 @@
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;
@@ -417,7 +417,7 @@
             }
 
             .exams-table {
-                font-size: 13px;
+                font-size: 19px;
             }
 
             .exams-table th,

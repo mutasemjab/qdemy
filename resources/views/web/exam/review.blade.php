@@ -64,13 +64,13 @@
                                 <h4>
                                     {{ translate_lang('السؤال') }} {{ $index + 1 }}: {{ $question->title }}
                                     @if ($is_correct === true)
-                                        <span style="color: #4CAF50; font-size: 14px;">({{ translate_lang('صحيح') }} -
+                                        <span style="color: #4CAF50; font-size: 22px;">({{ translate_lang('صحيح') }} -
                                             {{ $answer->score }}/{{ $question->grade }})</span>
                                     @elseif($is_correct === false)
-                                        <span style="color: #f44336; font-size: 14px;">({{ translate_lang('خطأ') }} -
+                                        <span style="color: #f44336; font-size: 22px;">({{ translate_lang('خطأ') }} -
                                             {{ $answer->score }}/{{ $question->grade }})</span>
                                     @else
-                                        <span style="color: #ff9800; font-size: 14px;">({{ translate_lang('قيد التصحيح') }}
+                                        <span style="color: #ff9800; font-size: 22px;">({{ translate_lang('قيد التصحيح') }}
                                             - {{ $answer->score }}/{{ $question->grade }})</span>
                                     @endif
                                 </h4>
@@ -196,7 +196,7 @@
                         color: white;
                         padding: 5px 10px;
                         border-radius: 15px;
-                        font-size: 12px;
+                        font-size: 19px;
                         font-weight: bold;
                     ">
                             {{ $answer->score }}/{{ $question->grade }}

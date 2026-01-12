@@ -295,7 +295,7 @@
         .result-date {
             margin: 0;
             color: #666;
-            font-size: 14px;
+            font-size: 20px;
         }
 
         .score-card {
@@ -387,7 +387,7 @@
         }
 
         .stat-label {
-            font-size: 13px;
+            font-size: 20px;
             color: #999;
             margin-bottom: 8px;
         }
@@ -449,12 +449,12 @@
         .attempt-number {
             font-weight: bold;
             color: #333;
-            font-size: 16px;
+            font-size: 20px;
         }
 
         .attempt-date {
             color: #666;
-            font-size: 14px;
+            font-size: 20px;
         }
 
         .current-badge {
@@ -462,7 +462,7 @@
             color: white;
             padding: 4px 12px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 20px;
             font-weight: bold;
         }
 
@@ -474,7 +474,7 @@
 
         .attempt-score {
             font-weight: bold;
-            font-size: 16px;
+            font-size: 20px;
         }
 
         .attempt-score.passed {
@@ -492,7 +492,7 @@
             color: white;
             text-decoration: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 20px;
             transition: all 0.3s;
         }
 
@@ -545,7 +545,7 @@
         }
 
         .question-text {
-            font-size: 16px;
+            font-size: 24px;
             margin: 0;
             color: #333;
             flex: 1;
@@ -558,7 +558,7 @@
             gap: 6px;
             padding: 6px 12px;
             border-radius: 6px;
-            font-size: 13px;
+            font-size: 20px;
             font-weight: bold;
             white-space: nowrap;
         }
@@ -655,7 +655,7 @@
             padding: 12px;
             border-radius: 6px;
             margin-top: 12px;
-            font-size: 13px;
+            font-size: 22px;
         }
 
         .feedback i {
@@ -696,7 +696,7 @@
             padding: 12px 24px;
             border: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             text-decoration: none;

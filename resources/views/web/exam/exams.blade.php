@@ -129,7 +129,7 @@
         }
 
         .section-subtitle {
-            font-size: 18px;
+            font-size: 20px;
             color: #666;
         }
 
@@ -220,7 +220,7 @@
             color: #333;
             padding: 6px 12px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 18px;
             font-weight: bold;
         }
 
@@ -233,7 +233,7 @@
         }
 
         .exam-title {
-            font-size: 18px;
+            font-size: 22px;
             font-weight: bold;
             margin: 0;
             color: #333;
@@ -246,7 +246,7 @@
             gap: 6px;
             padding: 6px 12px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 18px;
             font-weight: bold;
             white-space: nowrap;
         }
@@ -263,7 +263,7 @@
 
         .exam-description {
             color: #666;
-            font-size: 14px;
+            font-size: 22px;
             margin-bottom: 16px;
             line-height: 1.5;
         }
@@ -293,12 +293,12 @@
             flex-wrap: wrap;
         }
 
-        .btn {
+        .exam-actions .btn {
             flex: 1;
             padding: 10px 16px;
             border: none;
             border-radius: 6px;
-            font-size: 14px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
             display: flex;
