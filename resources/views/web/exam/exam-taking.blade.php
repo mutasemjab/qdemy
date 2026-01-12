@@ -354,6 +354,7 @@
             background: white;
             color: #007bff;
             border-radius: 6px;
+            font-size: x-large;
             font-weight: bold;
             cursor: pointer;
             display: flex;

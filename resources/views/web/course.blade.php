@@ -1182,7 +1182,7 @@
                     }
 
                     .crs2-hero-title {
-                        font-size: 34px;
+                        font-size: 84px;
                         font-weight: 800;
                         margin: 0 0 10px
                     }

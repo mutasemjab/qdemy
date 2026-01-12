@@ -233,7 +233,7 @@
         }
 
         .exam-title {
-            font-size: 22px;
+            font-size: 26px;
             font-weight: bold;
             margin: 0;
             color: #333;
