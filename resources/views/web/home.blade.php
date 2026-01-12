@@ -67,22 +67,22 @@
             <a href="{{ route('tawjihi-programm') }}" class="hero-card"
                 style="background-image: url('{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/card1.png')
-                    : asset('assets_front/images/en/card1.png') }}');">
+                    : asset('assets_front/images/en/card1.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
             </a>
             <a href="{{ route('grades_basic-programm') }}" class="hero-card"
                 style="background-image: url('{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/card2.png')
-                    : asset('assets_front/images/en/card2.png') }}');">
+                    : asset('assets_front/images/en/card2.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
             </a>
             <a href="{{ route('universities-programm') }}" class="hero-card"
                 style="background-image: url('{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/card3.png')
-                    : asset('assets_front/images/en/card3.png') }}');">
+                    : asset('assets_front/images/en/card3.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
             </a>
             <a href="{{ route('international-programms') }}" class="hero-card"
                 style="background-image: url('{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/card4.png')
-                    : asset('assets_front/images/en/card4.png') }}');">
+                    : asset('assets_front/images/en/card4.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
             </a>
         </div>
 
@@ -178,7 +178,7 @@
 
             .service-link {
                 padding: 30px 15px;
-                font-size: 16px;
+                font-size: 24px;
                 height: auto;
                 min-height: 140px;
                 flex-direction: column;
@@ -186,7 +186,7 @@
             }
 
             .service-link small {
-                font-size: 14px;
+                font-size: 20px;
                 margin-top: 5px;
             }
         }

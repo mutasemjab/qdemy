@@ -1177,8 +1177,9 @@ html[dir="rtl"] .footer-contact {
 .hero-card {
   width: 307px;
   height: 285px;
-  background-size: cover;
+  background-size: contain;
   background-position: center;
+  background-repeat: no-repeat;
   border-radius: 15px;
   display: flex;
   align-items: center;
@@ -1207,9 +1208,9 @@ html[dir="rtl"] .footer-contact {
 
   .hero-card {
     width: 100% !important;
-    height: 70px !important;
-    font-size: 9px !important;
-    padding: 5px !important;
+    height: 85px !important;
+    font-size: 11px !important;
+    padding: 10px !important;
   }
 
   .footer-social {
@@ -2361,12 +2362,12 @@ p.welcome-text {
   .hero-card {
     width: 100% !important;
     max-width: none !important;
-    height: 70px !important;
-    font-size: 9px !important;
+    height: 85px !important;
+    font-size: 11px !important;
     border-radius: 10px !important;
     background-size: cover !important;
     background-position: center !important;
-    padding: 5px !important;
+    padding: 10px !important;
   }
 
   a.blob-btn.blob-btn-1 {
@@ -2439,8 +2440,8 @@ a.ud-item.nav-link:hover {
   }
 
   .hero-card {
-    height: 60px !important;
-    font-size: 8px !important;
+    height: 75px !important;
+    font-size: 10px !important;
   }
 
   .features h2 {
