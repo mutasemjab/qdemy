@@ -64,14 +64,12 @@
     </div>
 
     <div class="t-panel is-active" id="overview">
-      <div class="t-grid">
         <div class="t-card">
           <h3 class="t-h3">{{ __('front.about_teacher') }}</h3>
           <div class="t-text">
             {{ app()->getLocale() == 'ar' ? $teacher->description_ar : $teacher->description_en }}
           </div>
         </div>
-      </div>
     </div>
 
     <div class="t-panel" id="courses">
