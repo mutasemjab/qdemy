@@ -365,12 +365,13 @@
         }
 
         .score-total {
-            font-size: 18px;
+            font-size: 40px;
+            font-weight: bold;
             opacity: 0.8;
         }
 
         .score-percentage {
-            font-size: 18px;
+            font-size: 30px;
             font-weight: bold;
             opacity: 0.9;
         }
