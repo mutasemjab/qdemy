@@ -575,6 +575,7 @@ return [
     'no_children_added' => 'لم تتم إضافة أطفال بعد',
     'no_class_assigned' => 'لم يتم تعيين صف',
     'no_posts_yet' => 'لا توجد منشورات بعد',
+    'no_comments_yet' => 'لا توجد تعليقات بعد',
     'no_questions_desc' => 'لم تتم إضافة أسئلة بعد',
     'no_questions_found' => 'لم يتم العثور على أسئلة',
     'no_reports_available' => 'لا توجد تقارير متاحة',

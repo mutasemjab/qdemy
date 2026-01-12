@@ -1,6 +1,11 @@
 @extends('layouts.app')
 @section('title', __('panel.my_account'))
 @section('content')
+<style>
+    input , button, select, textarea , .ud-item{
+        font-size: 20px
+    }
+</style>
     <section class="ud-wrap">
 
         <aside class="ud-menu">
@@ -8,8 +13,8 @@
                 <img data-src="{{ $user->photo_url }}"
                     alt="">
                 <div>
-                    <h3>{{ $user->name }}</h3>
-                    <span>{{ $user->email }}</span>
+                    <h3 style="font-size: 26px">{{ $user->name }}</h3>
+                    <span style="font-size: 20px">{{ $user->email }}</span>
                 </div>
             </div>
 

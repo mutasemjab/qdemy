@@ -4,6 +4,11 @@
 @section('title', __('front.login'))
 
 @section('content')
+<style>
+    input {
+        font-size: 20px;
+    }
+</style>
 <section class="auth-page">
     <div class="auth-overlay"></div>
 
@@ -37,7 +42,7 @@
 
                 <p class="forgot-password-link"><a href="{{ route('user.forgot-password.forget') }}">{{ __('front.forgot_password') }}?</a></p>
 
-                <button class="submit-btn" type="submit">{{ __('front.login') }}</button>
+                <button style="font-size: 20px" class="submit-btn" type="submit">{{ __('front.login') }}</button>
             </form>
 
             <p class="login-link">{{ __('front.no_account') }} <a href="{{route('user.register')}}">{{ __('front.create_account') }}</a></p>

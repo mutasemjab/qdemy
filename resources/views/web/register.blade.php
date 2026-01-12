@@ -127,7 +127,7 @@
         }
 
         .help-text {
-            font-size: 14px;
+            font-size: 22px;
             color: #6c757d;
             margin-bottom: 15px;
         }
@@ -192,7 +192,7 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 20px;
         }
 
         .add-child-btn:hover {
@@ -231,7 +231,7 @@
             border-radius: 3px;
             padding: 3px 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 20px;
         }
 
         .remove-child:hover {
@@ -243,6 +243,9 @@
             color: #6c757d;
             padding: 20px;
             font-style: italic;
+        }
+        input, select,button {
+            font-size: 20px
         }
     </style>
 

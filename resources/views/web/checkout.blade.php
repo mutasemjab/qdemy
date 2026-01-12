@@ -227,7 +227,7 @@
         }
 
         .trash-btn i {
-            font-size: 14px
+            font-size: 20px
         }
 
         .disabled-row {
@@ -391,6 +391,10 @@
                 padding-inline-start: 0px;
                 border-inline-start: none;
             }
+        }
+
+        input , button {
+            font-size: 20px;
         }
     </style>
 @endpush

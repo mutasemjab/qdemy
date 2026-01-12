@@ -576,6 +576,7 @@ return [
     'no_children_added' => 'No children added yet',
     'no_class_assigned' => 'No class assigned',
     'no_posts_yet' => 'No posts yet',
+    'no_comments_yet' => 'No comments yet',
     'no_questions_desc' => 'No questions have been added yet',
     'no_questions_found' => 'No questions found',
     'no_reports_available' => 'No reports available',

@@ -17,7 +17,7 @@
                         <!-- Existing Chats List -->
                         @if(!empty($chats))
                             <div class="existing-chats">
-                                <h6>Recent Conversations</h6>
+                                <h6 style="font-size: 24px">Recent Conversations</h6>
                                 <div class="chat-threads">
                                     @foreach($chats as $chat)
                                         @php
@@ -40,11 +40,11 @@
                                                 @endif
                                             </div>
                                             <div class="thread-content">
-                                                <div class="thread-name">{{ $otherParticipant['name'] }}</div>
+                                                <div style="font-size: 24px" class="thread-name">{{ $otherParticipant['name'] }}</div>
                                                 @if($chat['lastMessage'])
-                                                    <div class="thread-last-message">{{ Str::limit($chat['lastMessage'], 35) }}</div>
+                                                    <div style="font-size: 20px" class="thread-last-message">{{ Str::limit($chat['lastMessage'], 35) }}</div>
                                                 @else
-                                                    <div class="thread-last-message text-muted">No messages yet</div>
+                                                    <div style="font-size: 20px" class="thread-last-message text-muted">No messages yet</div>
                                                 @endif
                                             </div>
                                             <div class="thread-time">
@@ -78,8 +78,8 @@
                                     <div class="welcome-icon">
                                         <i class="fas fa-comment-dots"></i>
                                     </div>
-                                    <h5>Welcome to Messages</h5>
-                                    <p>Select a conversation or start a new chat with a teacher</p>
+                                    <h5 style="font-size: 24px">Welcome to Messages</h5>
+                                    <p style="font-size: 20px">Select a conversation or start a new chat with a teacher</p>
                                 </div>
                             </div>
                             
@@ -103,9 +103,9 @@
                         @if(in_array($user->role_name, ['student', 'parent']))
                             <div class="teachers-header">
                                 @if($user->role_name === 'student')
-                                    <h6>Available Teachers</h6>
+                                    <h6 style="font-size: 24px">Available Teachers</h6>
                                 @else
-                                    <h6>Your Children's Teachers</h6>
+                                    <h6 style="font-size: 24px">Your Children's Teachers</h6>
                                 @endif
                             </div>
                             
@@ -115,11 +115,11 @@
                                          @if($user->role_name === 'parent') data-student-id="{{ $teacher['student_id'] }}" @endif>
                                         <div class="teacher-avatar-container">
                                             <img src="{{ $teacher['avatar'] ?? asset('assets_front/images/Profile-picture.jpg') }}" 
-                                                 alt="{{ $teacher['name'] }}" class="teacher-avatar">
+                                                 alt="{{ $teacher['name'] }}" class="teacher-avatar" >
                                         </div>
                                         <div class="teacher-details">
-                                            <div class="teacher-name">{{ $teacher['name'] }}</div>
-                                            <div class="teacher-subject">{{ $teacher['subject'] }}</div>
+                                            <div style="font-size: 24px" class="teacher-name">{{ $teacher['name'] }}</div>
+                                            <div style="font-size: 20px" class="teacher-subject">{{ $teacher['subject'] }}</div>
                                             @if($user->role_name === 'parent')
                                                 <div class="student-context">For: {{ $teacher['student_context']['name'] ?? 'Unknown' }}</div>
                                             @endif
@@ -200,8 +200,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="welcome-icon">
                         <i class="fas fa-comment-dots"></i>
                     </div>
-                    <h5>Start the conversation</h5>
-                    <p>No messages yet. Send the first message to get started!</p>
+                    <h5 style="font-size: 24px">Start the conversation</h5>
+                    <p style="font-size: 20px">No messages yet. Send the first message to get started!</p>
                 </div>
             `;
             return;
@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="welcome-icon">
                                 <i class="fas fa-exclamation-triangle"></i>
                             </div>
-                            <h5>Error loading messages</h5>
-                            <p>Please try again or refresh the page</p>
+                            <h5 style="font-size: 24px">Error loading messages</h5>
+                            <p style="font-size: 20px">Please try again or refresh the page</p>
                         </div>
                     `;
                 });

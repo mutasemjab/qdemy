@@ -4,6 +4,11 @@
 @section('title', __('front.reset_password'))
 
 @section('content')
+<style>
+    input , button {
+        font-size: 20px
+    }
+</style>
 <section class="auth-page">
     <div class="auth-overlay"></div>
 
