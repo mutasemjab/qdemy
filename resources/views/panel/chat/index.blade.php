@@ -3,6 +3,19 @@
 @section('title', __('panel.messages'))
 
 @section('content')
+<style>
+    h6 {
+        font-size: 24px;
+    }
+    small, .message-time {
+        font-size: 20px !important;
+    }
+
+    input {
+        font-size: 25px !important;
+    }
+
+</style>
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -66,7 +79,7 @@
                                 <div class="chat-participant-info">
                                     <img id="chatAvatar" src="" alt="" class="participant-avatar">
                                     <div class="participant-details">
-                                        <h6 id="chatParticipantName" class="participant-name"></h6>
+                                        <h6 id="chatParticipantName" style="font-size: 24px !important;" class="participant-name"></h6>
                                         <small id="chatStatus" class="participant-status">Online</small>
                                     </div>
                                 </div>
@@ -320,51 +333,69 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.closest('.chat-thread')) {
             const chatThread = e.target.closest('.chat-thread');
             const chatId = chatThread.dataset.chatId;
-            
+
+            console.log('Chat thread clicked, chatId:', chatId);
+
             // Remove active from all threads
             document.querySelectorAll('.chat-thread').forEach(thread => {
                 thread.classList.remove('active');
             });
-            
+
             // Add active to clicked thread
             chatThread.classList.add('active');
-            
+
             // Set current chat
             currentChatId = chatId;
             document.getElementById('currentChatId').value = chatId;
-            
-            // Show chat interface
+
+            // Show chat interface - ALWAYS show these regardless of any errors
             document.getElementById('chatHeader').style.display = 'block';
             document.getElementById('chatBox').style.display = 'block';
-            
-            // Update header info
-            const threadName = chatThread.querySelector('.thread-name').textContent;
-            const threadAvatar = chatThread.querySelector('.thread-avatar').src;
-            
+
+            // Update header info with fallback values
+            const threadNameEl = chatThread.querySelector('.thread-name');
+            const threadAvatarEl = chatThread.querySelector('.thread-avatar');
+
+            const threadName = threadNameEl ? threadNameEl.textContent : 'Chat';
+            const threadAvatar = threadAvatarEl ? threadAvatarEl.src : '{{ asset("assets_front/images/Profile-picture.jpg") }}';
+
             document.getElementById('chatParticipantName').textContent = threadName;
             document.getElementById('chatAvatar').src = threadAvatar;
-            
+
             // Load messages
             const chatContainer = document.getElementById('udChat');
             chatContainer.innerHTML = '<div class="text-center p-4"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading messages...</p></div>';
-            
-            fetch(`{{ url('/panel/chat') }}/${chatId}/messages`)
-                .then(response => response.json())
-                .then(messages => {
-                    displayMessages(messages);
-                })
-                .catch(error => {
-                    console.error('Error loading messages:', error);
-                    chatContainer.innerHTML = `
-                        <div class="welcome-message">
-                            <div class="welcome-icon">
-                                <i class="fas fa-exclamation-triangle"></i>
+
+            if (chatId) {
+                fetch(`{{ url('/panel/chat') }}/${chatId}/messages`)
+                    .then(response => response.json())
+                    .then(messages => {
+                        displayMessages(messages);
+                    })
+                    .catch(error => {
+                        console.error('Error loading messages:', error);
+                        chatContainer.innerHTML = `
+                            <div class="welcome-message">
+                                <div class="welcome-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <h5 style="font-size: 24px">Error loading messages</h5>
+                                <p style="font-size: 20px">Please try again or refresh the page</p>
                             </div>
-                            <h5 style="font-size: 24px">Error loading messages</h5>
-                            <p style="font-size: 20px">Please try again or refresh the page</p>
+                        `;
+                    });
+            } else {
+                console.error('No chatId found for this thread');
+                chatContainer.innerHTML = `
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
-                    `;
-                });
+                        <h5 style="font-size: 24px">Invalid chat</h5>
+                        <p style="font-size: 20px">This chat has no valid ID</p>
+                    </div>
+                `;
+            }
         }
     });
 
@@ -457,6 +488,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     }, 5000);
+
+    // Auto-load first chat if available
+    const firstActiveChat = document.querySelector('.chat-thread.active');
+    if (firstActiveChat) {
+        console.log('Auto-loading first active chat');
+        firstActiveChat.click();
+    }
 
     console.log('Modern chat system initialized successfully');
 });

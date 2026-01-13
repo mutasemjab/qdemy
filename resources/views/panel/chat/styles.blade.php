@@ -22,14 +22,14 @@
 .thread-last-message{font-size:12px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .thread-time{font-size:11px;opacity:.7}
 
-.active-chat{flex:1;display:flex;flex-direction:column}
-.active-chat-header{background:#fff;border-bottom:1px solid #edf1f7;padding:12px 16px}
+.active-chat{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.active-chat-header{background:#fff;border-bottom:1px solid #edf1f7;padding:12px 16px;flex-shrink:0}
 .chat-participant-info{display:flex;align-items:center;gap:12px}
 .participant-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #edf1f7}
 .participant-name{margin:0;font-size:16px;font-weight:900;color:#0f172a}
 .participant-status{color:#16a34a;font-size:12px;font-weight:800}
 
-.chat-messages{flex:1;padding:18px;overflow-y:auto;background:linear-gradient(180deg,#f7f9fe 0%,#edf2ff 100%)}
+.chat-messages{flex:1;padding:18px;overflow-y:auto;background:linear-gradient(180deg,#f7f9fe 0%,#edf2ff 100%);min-height:0}
 .welcome-message{text-align:center;padding:40px 10px;color:#64748b}
 .welcome-icon{font-size:44px;margin-bottom:10px;opacity:.35}
 .welcome-message h5{margin:0 0 6px;color:#0f172a;font-weight:900}
@@ -44,7 +44,7 @@
 .message.from-other .message-bubble{background:#fff;color:#0f172a;border-color:#e6e9f2;box-shadow:0 8px 18px rgba(17,24,39,.06)}
 .message-time{font-size:11px;margin-top:4px;opacity:.65}
 
-.message-input-area{background:#fff;border-top:1px solid #edf1f7;padding:12px 16px}
+.message-input-area{background:#fff;border-top:1px solid #edf1f7;padding:12px 16px;flex-shrink:0}
 .input-container{display:flex;align-items:center;background:#f2f5fb;border-radius:999px;padding:6px;border:1.5px solid #e6e9f2;transition:border-color .12s ease, box-shadow .12s ease}
 .input-container:focus-within{border-color:#bcd3ff;box-shadow:0 0 0 3px rgba(46,108,240,.15)}
 .message-input{flex:1;border:0;background:transparent;padding:8px 12px;font-size:14px;outline:0}

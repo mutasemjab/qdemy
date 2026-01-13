@@ -29,7 +29,12 @@ class ExamTeacherController extends Controller
             }
 
             $query = Exam::with(['course:id,title_en,title_ar', 'subject:id,name_ar,name_en'])
-                ->where('created_by', $user->id);
+                ->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereHas('course', function($courseQ) use ($user) {
+                          $courseQ->where('teacher_id', $user->id);
+                      });
+                });
 
             // Filter by course
             if ($request->filled('course_id')) {
