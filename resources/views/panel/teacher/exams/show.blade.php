@@ -4,6 +4,9 @@
 
 @section('styles')
 <style>
+    h6 {
+        font-size: 25px;
+    }
 body{background:#f5f7fa}
 .ud-scope{width:100%;background:#f5f7fa}
 .ud-content{max-width:1300px;margin:0 auto;padding:30px}
@@ -30,7 +33,7 @@ body{background:#f5f7fa}
 .info-box{display:flex;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;background:#fff}
 .info-box-icon{width:70px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px}
 .info-box-content{padding:10px 12px;flex:1}
-.info-box-text{display:block;color:#6b7280;font-size:12px;font-weight:700}
+.info-box-text{display:block;color:#6b7280;font-size:19px;font-weight:700}
 .info-box-number{display:block;color:#0f172a;font-size:20px;font-weight:900;line-height:1.1}
 .bg-success{background:#10b981}
 .bg-secondary{background:#6b7280}
@@ -44,20 +47,20 @@ body{background:#f5f7fa}
 .btn-info{background:#3b82f6;color:#fff}
 .btn-secondary{background:#6b7280;color:#fff}
 .btn-outline-danger{border:1px solid #fca5a5;color:#dc2626;background:#fff}
-.btn-sm{padding:6px 12px;font-size:12px}
+.btn-sm{padding:6px 12px;font-size:19px}
 .card{border:1px solid #e5e7eb;border-radius:12px;background:#fff;margin-bottom:16px}
 .card-body{padding:20px}
 .card-header{padding:15px 20px;border-bottom:1px solid #e5e7eb;background:#f9fafb}
-.card-title{margin:0 0 10px 0;font-size:18px;font-weight:700;color:#0f172a}
+.card-title{margin:0 0 10px 0;font-size:26px;font-weight:700;color:#0f172a}
 .table{width:100%;border-collapse:collapse}
 .table th{background:#f9fafb;padding:12px;text-align:left;font-weight:700;color:#6b7280;border-bottom:1px solid #e5e7eb}
 .table td{padding:12px;border-bottom:1px solid #e5e7eb}
-.badge{display:inline-block;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:700}
+.badge{display:inline-block;padding:6px 12px;border-radius:6px;font-size:19px;font-weight:700}
 .badge-success{background:#dcfce7;color:#15803d}
 .badge-danger{background:#fee2e2;color:#dc2626}
 .badge-warning{background:#fef3c7;color:#b45309}
 h2{margin:0 0 8px 0;font-size:24px;font-weight:900;color:#0f172a}
-h5{margin:0 0 12px 0;font-size:16px;font-weight:700;color:#0f172a}
+h5{margin:0 0 12px 0;font-size:24px;font-weight:700;color:#0f172a}
 p{margin:0}
 </style>
 @endsection

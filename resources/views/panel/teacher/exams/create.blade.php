@@ -9,7 +9,7 @@
             <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
-                <span>{{ auth()->user()->email }}</span>
+                <span style="font-size: 20px">{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.index') }}" class="ud-item">
@@ -208,8 +208,8 @@
 .ud-menu{margin:10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:19px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
@@ -218,13 +218,13 @@
 
 .exam-form{max-width:900px}
 .form-section{margin-bottom:24px}
-.section-title{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
+.section-title{font-size:20px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-row.three-cols{grid-template-columns:1fr 1fr 1fr}
 .form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
-.form-group label{font-weight:800;color:#0f172a;font-size:14px}
-.form-group .form-text{color:#6b7280;font-size:12px}
-.form-group input,.form-group select,.form-group textarea{border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;font-size:14px;background:#fff;transition:border-color .16s,box-shadow .16s;font-family:inherit}
+.form-group label{font-weight:800;color:#0f172a;font-size:20px}
+.form-group .form-text{color:#6b7280;font-size:19px}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;font-size:20px;background:#fff;transition:border-color .16s,box-shadow .16s;font-family:inherit}
 .form-group textarea{min-height:80px;resize:vertical}
 .form-group input:disabled,.form-group select:disabled{background:#f8fafc;color:#9aa3af}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
@@ -236,12 +236,12 @@
 .checkbox-group{margin-bottom:12px;padding:12px;background:#f9fafb;border-radius:8px}
 .checkbox-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;color:#0f172a;margin:0}
 .checkbox-label input[type="checkbox"]{margin:0;cursor:pointer;width:18px;height:18px}
-.checkbox-label span{margin:0;font-size:14px}
+.checkbox-label span{margin:0;font-size:20px}
 
 .ud-errors{margin:0;padding-left:20px}
 
 .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid #eef0f3}
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;border:1px solid transparent}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:20px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s;border:1px solid transparent}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:#0055D2;color:#fff;border:1px solid #0048b3}
 .btn-primary:hover{box-shadow:0 10px 22px rgba(0,85,210,.22)}
@@ -261,6 +261,12 @@
   .form-row.three-cols{grid-template-columns:1fr}
   .form-actions{flex-direction:column}
   .exam-form{max-width:100%}
+}
+.ud-title {
+  font-size: 28px !important;
+}
+.section-title {
+  font-size: 25px !important;
 }
 </style>
 @endsection

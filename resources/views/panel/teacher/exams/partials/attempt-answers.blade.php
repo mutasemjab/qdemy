@@ -13,7 +13,7 @@
                     <h6 style="margin:0;font-weight:700;">
                         {{ app()->getLocale() == 'ar' ? $question->question_ar : $question->question_en }}
                     </h6>
-                    <span class="badge badge-{{ $statusClass }}" style="padding:6px 10px;border-radius:999px;font-size:12px;">
+                    <span class="badge badge-{{ $statusClass }}" style="padding:6px 10px;border-radius:999px;font-size:19px;">
                         @if($status === 'pending')
                             <i class="fas fa-hourglass-half"></i> {{ __('panel.pending') }}
                         @elseif($status === 'correct')

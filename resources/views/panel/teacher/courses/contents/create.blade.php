@@ -174,8 +174,8 @@
 .ud-menu{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:20px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
@@ -183,16 +183,16 @@
 
 .content-header{margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #f1f5f9}
 .content-header h1{font-size:22px;font-weight:900;color:#0f172a;margin:0 0 6px 0}
-.course-name{color:#6b7280;margin:0;font-size:15px}
+.course-name{color:#6b7280;margin:0;font-size:23px}
 
 .content-form{max-width:880px}
 .form-section{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:20px;margin-bottom:20px}
-.form-section h3{margin:0 0 14px 0;color:#0f172a;font-size:16px;border-bottom:1px solid #eef0f3;padding-bottom:10px}
+.form-section h3{margin:0 0 14px 0;color:#0f172a;font-size:24px;border-bottom:1px solid #eef0f3;padding-bottom:10px}
 
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-group{margin-bottom:14px}
 .form-group label{display:block;margin-bottom:6px;font-weight:800;color:#0f172a}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px;transition:border-color .18s,box-shadow .18s}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px;font-size:22px;transition:border-color .18s,box-shadow .18s}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:0;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
 
 .file-upload-wrapper{position:relative}
@@ -200,11 +200,11 @@
 .pdf-info{display:flex;align-items:center;gap:10px}
 .pdf-info i{font-size:22px;color:#ef4444}
 .file-name{font-weight:800;color:#0f172a}
-.file-size{color:#6b7280;font-size:12px}
-.form-text{color:#6b7280;font-size:12px;margin-top:6px;display:block}
+.file-size{color:#6b7280;font-size:20px}
+.form-text{color:#6b7280;font-size:20px;margin-top:6px;display:block}
 
 .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:22px;padding-top:16px;border-top:1px solid #eef0f3}
-.btn{padding:10px 16px;border:0;border-radius:12px;font-size:14px;font-weight:900;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .16s,box-shadow .16s}
+.btn{padding:10px 16px;border:0;border-radius:12px;font-size:22px;font-weight:900;text-decoration:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform .16s,box-shadow .16s}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:#0055D2;color:#fff;border:1px solid #0048b3}
 .btn-primary:hover{box-shadow:0 12px 24px rgba(0,85,210,.22)}

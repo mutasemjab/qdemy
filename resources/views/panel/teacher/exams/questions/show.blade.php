@@ -14,7 +14,7 @@
         </div>
         <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="ud-item">
             <i class="fas fa-arrow-left"></i>
-            <span>{{ __('panel.back_to_questions') }}</span>
+            <span style="font-size: 22px">{{ __('panel.back_to_questions') }}</span>
         </a>
     </aside>
 
@@ -101,17 +101,17 @@
                     <div style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 10px; background: #f9fafb; {{ $option->is_correct ? 'border-color: #22c55e; background: #dcfce7;' : '' }}">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
                             <div>
-                                <span style="display: inline-block; background: #0055D2; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px;">
+                                <span style="display: inline-block; background: #0055D2; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 20px;">
                                     {{ chr(65 + $loop->index) }}
                                 </span>
                                 @if($option->is_correct)
-                                <span style="display: inline-block; margin-left: 8px; background: #22c55e; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 12px;">
+                                <span style="display: inline-block; margin-left: 8px; background: #22c55e; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 20px;">
                                     ✓ {{ __('panel.correct') }}
                                 </span>
                                 @endif
                             </div>
                             @if($option->is_correct)
-                            <i class="fas fa-check-circle" style="color: #22c55e; font-size: 18px;"></i>
+                            <i class="fas fa-check-circle" style="color: #22c55e; font-size: 26px;"></i>
                             @endif
                         </div>
                         <div style="margin-bottom: 8px;">
@@ -137,12 +137,12 @@
                     @if($correctAnswer === 'true')
                         <div style="display: inline-block; padding: 16px 32px; background: #dcfce7; border-radius: 10px; border: 2px solid #22c55e;">
                             <i class="fas fa-circle-check" style="color: #22c55e; font-size: 32px; display: block; margin-bottom: 8px;"></i>
-                            <span style="font-size: 18px; font-weight: 700; color: #22c55e;">{{ __('panel.true') }}</span>
+                            <span style="font-size:26px; font-weight: 700; color: #22c55e;">{{ __('panel.true') }}</span>
                         </div>
                     @else
                         <div style="display: inline-block; padding: 16px 32px; background: #fee2e2; border-radius: 10px; border: 2px solid #dc2626;">
                             <i class="fas fa-circle-xmark" style="color: #dc2626; font-size: 32px; display: block; margin-bottom: 8px;"></i>
-                            <span style="font-size: 18px; font-weight: 700; color: #dc2626;">{{ __('panel.false') }}</span>
+                            <span style="font-size:26px; font-weight: 700; color: #dc2626;">{{ __('panel.false') }}</span>
                         </div>
                     @endif
                 </div>
@@ -223,30 +223,30 @@
 .ud-menu{margin:10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:20px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
 .ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
-.ud-title{font-size:20px;font-weight:900;margin-bottom:8px;color:#0f172a}
-.ud-subtitle{font-size:13px;color:#6b7280;margin:0 0 20px 0}
+.ud-title{font-size:28px;font-weight:900;margin-bottom:8px;color:#0f172a}
+.ud-subtitle{font-size:21px;color:#6b7280;margin:0 0 20px 0}
 
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:22px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
 .btn-primary{background:#0055D2;color:#fff}
 .btn-primary:hover{background:#0047b3;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,85,210,.18)}
 .btn-danger{background:#dc2626;color:#fff}
 .btn-danger:hover{background:#b91c1c;transform:translateY(-1px)}
 
 .info-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px}
-.info-label{font-size:12px;color:#6b7280;font-weight:700;margin-bottom:4px}
-.info-value{font-size:16px;font-weight:800;color:#0f172a}
+.info-label{font-size:20px;color:#6b7280;font-weight:700;margin-bottom:4px}
+.info-value{font-size:24px;font-weight:800;color:#0f172a}
 
 .form-section{margin-bottom:24px}
-.section-title{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
+.section-title{font-size:26px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .form-group{display:flex;flex-direction:column;gap:8px}
-.form-group label{font-weight:800;color:#0f172a;font-size:14px}
+.form-group label{font-weight:800;color:#0f172a;font-size:22px}
 .display-box{padding:12px 14px;background:#f9fafb;border:1px solid #d1d5db;border-radius:10px;color:#0f172a;line-height:1.5}
 
 @media (max-width:992px){

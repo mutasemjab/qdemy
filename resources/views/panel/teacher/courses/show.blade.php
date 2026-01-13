@@ -17,7 +17,7 @@
 
         <a href="{{ route('teacher.courses.index') }}" class="ud-item">
             <i class="fas fa-arrow-left"></i>
-            <span>{{ __('panel.back_to_courses') }}</span>
+            <span style="font-size: 22px !important">{{ __('panel.back_to_courses') }}</span>
         </a>
     </aside>
 
@@ -248,8 +248,8 @@
 .ud-menu{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:19px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
@@ -260,13 +260,13 @@
 .course-main-image{width:100%;height:100%;max-height:240px;object-fit:cover;display:block}
 .course-info{min-width:0}
 .course-title{margin:0 0 4px 0;font-size:28px;font-weight:800;line-height:1.2;color:#0f172a}
-.course-title-en{margin:0 0 14px 0;font-size:18px;font-weight:600;color:#64748b}
+.course-title-en{margin:0 0 14px 0;font-size:26px;font-weight:600;color:#64748b}
 .course-meta{display:flex;flex-wrap:wrap;gap:12px 18px;margin-bottom:16px}
-.meta-item{display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#475569;background:#f8fafc;border:1px solid #eef2f7;border-radius:10px;padding:8px 12px}
+.meta-item{display:inline-flex;align-items:center;gap:8px;font-size:21px;color:#475569;background:#f8fafc;border:1px solid #eef2f7;border-radius:10px;padding:8px 12px}
 .meta-item i{color:#0055D2}
 .course-actions{display:flex;flex-wrap:wrap;gap:10px}
 
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;font-weight:800;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 14px;font-weight:800;font-size:21px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:#0055D2;color:#fff}
 .btn-primary:hover{box-shadow:0 10px 22px rgba(0,85,210,.25)}
@@ -278,31 +278,31 @@
 .stat-card:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(2,6,23,.06)}
 .stat-icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#4f8efc 0%,#0055D2 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
 .stat-info h3{margin:0;font-size:22px;font-weight:900;color:#0f172a}
-.stat-info p{margin:2px 0 0 0;font-size:12px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.stat-info p{margin:2px 0 0 0;font-size:19px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
 
 .course-descriptions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
 .description-section{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px}
-.description-section h3{margin:0 0 12px 0;font-size:16px;font-weight:900;color:#0f172a;border-bottom:2px solid #0055D2;padding-bottom:8px}
-.description-content{font-size:14px;line-height:1.8;color:#334155;white-space:pre-line}
+.description-section h3{margin:0 0 12px 0;font-size:24px;font-weight:900;color:#0f172a;border-bottom:2px solid #0055D2;padding-bottom:8px}
+.description-content{font-size:21px;line-height:1.8;color:#334155;white-space:pre-line}
 
 .course-structure-overview{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px}
-.course-structure-overview h3{margin:0 0 14px 0;font-size:18px;font-weight:900;color:#0f172a;border-bottom:2px solid #0055D2;padding-bottom:8px}
+.course-structure-overview h3{margin:0 0 14px 0;font-size:26px;font-weight:900;color:#0f172a;border-bottom:2px solid #0055D2;padding-bottom:8px}
 .structure-list{display:flex;flex-direction:column;gap:12px}
 .structure-item{border:1px solid #e8ecf3;border-radius:12px;overflow:hidden;background:#fcfdff}
 .structure-header{background:#f5f7fb;padding:12px 14px;border-bottom:1px solid #ecf0f6}
 .structure-info{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.structure-info h4{margin:0;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:900;color:#0f172a}
-.structure-count{background:#0055D2;color:#fff;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.structure-info h4{margin:0;display:flex;align-items:center;gap:10px;font-size:23px;font-weight:900;color:#0f172a}
+.structure-count{background:#0055D2;color:#fff;padding:6px 10px;border-radius:999px;font-size:19px;font-weight:800}
 .structure-child{margin:0;border-top:1px solid #ecf0f6;background:#f8fafc}
 .structure-child-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#eef2f7}
-.structure-child-header h5{margin:0;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:900;color:#111827}
+.structure-child-header h5{margin:0;display:flex;align-items:center;gap:8px;font-size:21px;font-weight:900;color:#111827}
 .structure-contents{padding:8px 14px}
 .structure-content-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f1f4f9}
 .structure-content-item:last-child{border-bottom:0}
 .content-left{display:flex;align-items:center;gap:10px;color:#0f172a;font-weight:700}
 .structure-content-item i{color:#0055D2}
 .content-badges{display:flex;align-items:center;gap:6px}
-.badge{padding:6px 10px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.2px}
+.badge{padding:6px 10px;border-radius:999px;font-size:18px;font-weight:900;letter-spacing:.2px}
 .badge-primary{background:#0055D2;color:#fff}
 .badge-secondary{background:#6b7280;color:#fff}
 .badge-success{background:#10b981;color:#fff}
@@ -325,7 +325,7 @@
   .course-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .course-descriptions{grid-template-columns:1fr}
   .structure-content-item{flex-direction:column;align-items:flex-start}
-  .structure-count{font-size:11px}
+  .structure-count{font-size:18px}
   .course-title{font-size:24px}
 }
 @media (max-width:480px){

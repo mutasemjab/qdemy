@@ -6,7 +6,7 @@
   <div class="ud-content">
     <div class="ud-panel show" id="courses">
       <div class="ud-title-actions">
-        <h1 class="ud-title">{{ __('panel.my_courses') }}</h1>
+        <h1 class="ud-title" style="font-size: 28px !important">{{ __('panel.my_courses') }}</h1>
         <a href="{{ route('teacher.courses.create') }}" class="ud-btn-primary">
           <i class="fas fa-plus"></i> {{ __('panel.add_course') }}
         </a>
@@ -32,13 +32,13 @@
             </form>
           </div>
           <div class="ud-filters">
-            <select id="statusFilter" name="status" onchange="applyFilters()">
+            <select id="statusFilter" style="font-size: 22px" name="status" onchange="applyFilters()">
               <option value="all" {{ request('status', 'all') === 'all' ? 'selected' : '' }}>{{ __('panel.all_status') }}</option>
               <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>{{ __('messages.status_pending') }}</option>
               <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>{{ __('messages.status_accepted') }}</option>
               <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>{{ __('messages.status_rejected') }}</option>
             </select>
-            <select id="subjectFilter" name="subject_id" onchange="applyFilters()">
+            <select id="subjectFilter" style="font-size: 22px" name="subject_id" onchange="applyFilters()">
               <option value="all" {{ request('subject_id', 'all') === 'all' ? 'selected' : '' }}>{{ __('panel.all_subjects') }}</option>
               @foreach($subjects as $sid => $sname)
                 <option value="{{ $sid }}" {{ request('subject_id') == $sid ? 'selected' : '' }}>{{ $sname }}</option>
@@ -159,18 +159,18 @@
 .ud-scope .btn-action{cursor: pointer;text-decoration: none;width:34px!important;height:34px!important;border-radius:50%!important;border:1px solid #e5e7eb!important;background:#fff!important;display:grid!important;place-items:center!important;color:#111827!important}
 .ud-scope .btn-action:hover{border-color:#0055D2!important;color:#0055D2!important}
 .ud-scope .btn-action.btn-danger:hover{border-color:#dc2626!important;color:#dc2626!important}
-.ud-scope .course-badge{position:absolute!important;left:10px!important;top:10px!important;background:#0ea5e9!important;color:#fff!important;border-radius:999px!important;padding:6px 10px!important;font-size:12px!important;font-weight:700!important}
-.ud-scope .course-status-badge{position:absolute!important;right:10px!important;bottom:10px!important;border-radius:6px!important;padding:6px 10px!important;font-size:11px!important;font-weight:700!important;display:inline-flex!important;align-items:center!important;gap:4px!important}
+.ud-scope .course-badge{position:absolute!important;left:10px!important;top:10px!important;background:#0ea5e9!important;color:#fff!important;border-radius:999px!important;padding:6px 10px!important;font-size:19px!important;font-weight:700!important}
+.ud-scope .course-status-badge{position:absolute!important;right:10px!important;bottom:10px!important;border-radius:6px!important;padding:6px 10px!important;font-size:18px!important;font-weight:700!important;display:inline-flex!important;align-items:center!important;gap:4px!important}
 .ud-scope .course-status-badge.status-pending{background:#fef3c7!important;color:#92400e!important}
 .ud-scope .course-status-badge.status-accepted{background:#d1fae5!important;color:#065f46!important}
 .ud-scope .course-status-badge.status-rejected{background:#fee2e2!important;color:#991b1b!important}
 
 .ud-scope .course-content{padding:16px 16px 18px!important}
 .ud-scope .course-title{margin:0 0 6px!important;font-size:18px!important;font-weight:800!important;color:#0f172a!important}
-.ud-scope .course-description{margin:0 0 14px!important;color:#475569!important;font-size:14px!important;line-height:1.5!important}
+.ud-scope .course-description{margin:0 0 14px!important;color:#475569!important;font-size:21px!important;line-height:1.5!important}
 .ud-scope .course-meta{display:flex!important;justify-content:space-between!important;align-items:center!important;margin-bottom:14px!important;padding-bottom:12px!important;border-bottom:1px dashed #e5e7eb!important}
-.ud-scope .price{font-size:16px!important;font-weight:800!important;color:#059669!important}
-.ud-scope .course-date{display:inline-flex!important;align-items:center!important;gap:8px!important;color:#6b7280!important;font-size:13px!important}
+.ud-scope .price{font-size:24px!important;font-weight:800!important;color:#059669!important}
+.ud-scope .course-date{display:inline-flex!important;align-items:center!important;gap:8px!important;color:#6b7280!important;font-size:20px!important}
 .ud-scope .course-buttons{display:flex!important;gap:10px!important}
 .ud-scope .btn-primary,.ud-scope .btn-secondary{flex:1!important;text-align:center!important;text-decoration:none!important;border-radius:10px!important;font-weight:800!important;padding:10px 12px!important;transition:transform .15s ease,box-shadow .15s ease!important}
 .ud-scope .btn-primary{background:#0055D2!important;color:#fff!important}
@@ -259,8 +259,8 @@
   .ud-scope .ud-title-actions{flex-direction:column!important;align-items:stretch!important}
   .ud-scope .ud-btn-primary{justify-content:center!important}
   .ud-scope .course-image{height:170px!important}
-  .ud-scope .course-title{font-size:16px!important}
-  .ud-scope .course-description{font-size:13px!important}
+  .ud-scope .course-title{font-size:24px!important}
+  .ud-scope .course-description{font-size:20px!important}
 }
 
 #deleteModal .modal-body{
@@ -301,7 +301,7 @@
   border-radius:10px !important;
   padding:10px 14px !important;
   font-weight:700 !important;
-  font-size:14px !important;
+  font-size:21px !important;
   transition:transform .16s ease, box-shadow .16s ease, background .16s ease, color .16s ease !important;
   cursor: pointer;
 }
@@ -336,7 +336,7 @@
 }
 
 #deleteModal .modal-header .modal-title{
-  font-size:16px !important;
+  font-size:24px !important;
   font-weight:800 !important;
   color:#111827 !important;
 }

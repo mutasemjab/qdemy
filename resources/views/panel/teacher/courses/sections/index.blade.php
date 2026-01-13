@@ -13,7 +13,7 @@
     </div>
     <a href="{{ route('teacher.courses.index') }}" class="ud-item">
       <i class="fas fa-arrow-left"></i>
-      <span>{{ __('panel.back_to_courses') }}</span>
+      <span style="font-size: 22px !important">{{ __('panel.back_to_courses') }}</span>
     </a>
   </aside>
 
@@ -164,8 +164,8 @@
 .ud-menu{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:20px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
@@ -176,7 +176,7 @@
 .course-subject{margin:0;color:#6b7280}
 .course-actions{display:flex;gap:10px;flex-wrap:wrap}
 
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;font-weight:900;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:10px 14px;font-weight:900;font-size:22px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:#0055D2;color:#fff;border:1px solid #0048b3}
 .btn-primary:hover{box-shadow:0 10px 22px rgba(0,85,210,.22)}
@@ -190,9 +190,9 @@
 .course-structure{display:flex;flex-direction:column;gap:18px}
 .content-group,.section-group{background:#fff;border:1px solid #eef0f3;border-radius:14px;overflow:hidden}
 .group-header,.section-header{background:#f8fafc;padding:14px 16px;border-bottom:1px solid #eef0f3;display:flex;justify-content:space-between;align-items:center}
-.group-header h3,.section-header h3{margin:0;font-size:16px;color:#0f172a;display:flex;align-items:center;gap:10px}
+.group-header h3,.section-header h3{margin:0;font-size:24px;color:#0f172a;display:flex;align-items:center;gap:10px}
 .section-info{display:flex;align-items:center;gap:14px}
-.content-count{background:#0055D2;color:#fff;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.content-count{background:#0055D2;color:#fff;padding:2px 10px;border-radius:999px;font-size:20px;font-weight:800}
 .section-actions{display:flex;gap:8px}
 .btn-action{width:34px;height:34px;border-radius:10px;background:#fff;border:1px solid #e5e7eb;display:flex;align-items:center;justify-content:center;color:#0f172a;text-decoration:none;transition:all .16s}
 .btn-action:hover{border-color:#0055D2;box-shadow:0 8px 18px rgba(0,85,210,.14);color:#0055D2}
@@ -202,11 +202,11 @@
 .contents-list{display:flex!important;flex-direction:column!important;gap:10px!important;padding:12px 14px!important;background:#fff!important}
 .contents-list .content-item{display:flex!important;align-items:center!important;gap:12px!important;padding:12px 14px!important;border:1px solid #e5e7eb!important;border-radius:12px!important;background:#ffffff!important;transition:box-shadow .16s ease,transform .16s ease,border-color .16s ease!important}
 .contents-list .content-item:hover{border-color:#0055D2!important;box-shadow:0 8px 18px rgba(0,85,210,.12)!important;transform:translateY(-1px)!important}
-.contents-list .content-item i{font-size:16px!important;color:#0055D2!important;flex-shrink:0!important}
+.contents-list .content-item i{font-size:24px!important;color:#0055D2!important;flex-shrink:0!important}
 .contents-list .ci-left{display:flex!important;align-items:center!important;gap:10px!important;flex:1 1 auto!important;min-width:0!important}
-.contents-list .ci-title,.contents-list .content-title{font-weight:800!important;font-size:14px!important;color:#0f172a!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.contents-list .ci-title,.contents-list .content-title{font-weight:800!important;font-size:22px!important;color:#0f172a!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .contents-list .content-badges{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
-.contents-list .badge{padding:4px 8px!important;border-radius:999px!important;font-size:11px!important;font-weight:800!important;line-height:1!important}
+.contents-list .badge{padding:4px 8px!important;border-radius:999px!important;font-size:19px!important;font-weight:800!important;line-height:1!important}
 .contents-list .badge-primary{background:#0055D2!important;color:#fff!important}
 .contents-list .badge-secondary{background:#6b7280!important;color:#fff!important}
 .contents-list .badge-success{background:#10b981!important;color:#fff!important}
@@ -227,14 +227,14 @@
 
 .child-section-group{margin:14px 12px 12px;border:1px solid #eef0f3;border-radius:12px;overflow:hidden;background:#fbfcfe}
 .child-section-header{background:#f3f6fb;padding:12px 14px;border-bottom:1px solid #e8eef9;display:flex;justify-content:space-between;align-items:center}
-.child-section-header h4{margin:0;font-size:15px;color:#0f172a;display:flex;align-items:center;gap:8px}
+.child-section-header h4{margin:0;font-size:23px;color:#0f172a;display:flex;align-items:center;gap:8px}
 
 .empty-section,.empty-course{padding:32px 18px;text-align:center;color:#6b7280}
 .empty-course{padding:56px 18px}
 .empty-course .empty-icon{font-size:44px;color:#e5e7eb;margin-bottom:14px}
 .empty-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
-.btn.btn-sm{padding:8px 12px;border-radius:10px;font-size:12px}
+.btn.btn-sm{padding:8px 12px;border-radius:10px;font-size:20px}
 
 @media (max-width:992px){
   .ud-wrap{grid-template-columns:1fr}

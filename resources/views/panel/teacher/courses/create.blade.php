@@ -13,7 +13,7 @@
         </div>
         <a href="{{ route('teacher.courses.index') }}" class="ud-item">
             <i class="fas fa-arrow-left"></i>
-            <span>{{ __('panel.back_to_courses') }}</span>
+            <span style="font-size: 22px !important">{{ __('panel.back_to_courses') }}</span>
         </a>
     </aside>
 
@@ -127,21 +127,21 @@
 .ud-menu{margin: 10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:19px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
 .ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
-.ud-title{font-size:20px;font-weight:900;margin-bottom:16px;color:#0f172a}
+.ud-title{font-size:28px;font-weight:900;margin-bottom:16px;color:#0f172a}
 
 .course-form{max-width:900px}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
 .form-group label{font-weight:800;color:#0f172a}
-.form-group .form-text{color:#6b7280;font-size:12px}
+.form-group .form-text{color:#6b7280;font-size:19px}
 .file-input{padding:10px 12px;border-radius:10px;border:1px solid #e5e7eb;background:#fff}
-.form-group input,.form-group select,.form-group textarea{border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;font-size:14px;background:#fff;transition:border-color .16s,box-shadow .16s}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #e5e7eb;border-radius:10px;padding:12px 14px;font-size:21px;background:#fff;transition:border-color .16s,box-shadow .16s}
 .form-group textarea{min-height:120px;resize:vertical}
 .form-group select:disabled,.form-group input:disabled{background:#f8fafc;color:#9aa3af}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
@@ -161,7 +161,7 @@
 .checkbox-label span{margin:0}
 
 .form-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:10px;padding-top:16px;border-top:1px solid #eef0f3}
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:14px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:12px;padding:12px 16px;font-weight:900;font-size:21px;text-decoration:none;cursor:pointer;transition:transform .16s,box-shadow .16s,border-color .16s}
 .btn:hover{transform:translateY(-1px)}
 .btn-primary{background:#0055D2;color:#fff;border:1px solid #0048b3}
 .btn-primary:hover{box-shadow:0 10px 22px rgba(0,85,210,.22)}

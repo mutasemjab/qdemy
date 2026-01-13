@@ -9,12 +9,12 @@
             <img data-src="{{ auth()->user()->photo_url }}" alt="">
             <div>
                 <h3>{{ auth()->user()->name }}</h3>
-                <span>{{ auth()->user()->email }}</span>
+                <span style="font-size: 22px">{{ auth()->user()->email }}</span>
             </div>
         </div>
         <a href="{{ route('teacher.exams.show', $exam) }}" class="ud-item">
             <i class="fas fa-arrow-left"></i>
-            <span>{{ __('panel.back_to_exam') }}</span>
+            <span style="font-size: 22px">{{ __('panel.back_to_exam') }}</span>
         </a>
     </aside>
 
@@ -186,24 +186,24 @@
 .ud-menu{margin:10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:25px;margin:0 0 2px 0}
+.ud-user span{font-size:20px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
 .ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
-.ud-title{font-size:20px;font-weight:900;margin-bottom:8px;color:#0f172a}
-.ud-subtitle{font-size:13px;color:#6b7280;margin:0 0 20px 0}
+.ud-title{font-size:28px;font-weight:900;margin-bottom:8px;color:#0f172a}
+.ud-subtitle{font-size:21px;color:#6b7280;margin:0 0 20px 0}
 
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
 .stat-card{display:flex;align-items:center;gap:12px;padding:12px;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb}
-.stat-icon{width:40px;height:40px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;color:#0369a1;font-size:18px}
+.stat-icon{width:40px;height:40px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;color:#0369a1;font-size:26px}
 .stat-content{flex:1}
-.stat-number{font-size:18px;font-weight:800;color:#0f172a}
-.stat-label{font-size:12px;color:#6b7280}
+.stat-number{font-size:26px;font-weight:800;color:#0f172a}
+.stat-label{font-size:20px;color:#6b7280}
 
 .action-bar{display:flex;gap:12px;margin-bottom:24px}
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:22px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
 .btn-primary{background:#0055D2;color:#fff}
 .btn-primary:hover{background:#0047b3;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,85,210,.18)}
 .btn-outline-secondary{border:1px solid #d1d5db;color:#374151;background:#fff}
@@ -212,8 +212,8 @@
 .filter-section{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:24px}
 .filter-row{display:grid;grid-template-columns:200px 1fr 120px;gap:12px}
 .filter-group{display:flex;flex-direction:column;gap:6px}
-.filter-group label{font-weight:700;font-size:13px;color:#374151}
-.form-select,.form-control{border:1px solid #d1d5db;border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit}
+.filter-group label{font-weight:700;font-size:21px;color:#374151}
+.form-select,.form-control{border:1px solid #d1d5db;border-radius:8px;padding:10px 12px;font-size:21px;font-family:inherit}
 .form-select:focus,.form-control:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
 
 .questions-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px}
@@ -222,21 +222,21 @@
 
 .card-header{display:flex;justify-content:space-between;align-items:flex-start;padding:12px;border-bottom:1px solid #e5e7eb;background:#f9fafb}
 .badges{display:flex;gap:6px;flex-wrap:wrap}
-.badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px;background:#dbeafe;color:#0369a1}
+.badge{font-size:19px;font-weight:700;padding:4px 10px;border-radius:6px;background:#dbeafe;color:#0369a1}
 .badge-success{background:#dcfce7;color:#15803d}
 .badge-info{background:#cffafe;color:#0891b2}
 .badge-warning{background:#fef3c7;color:#b45309}
 
 .card-actions{display:flex;gap:6px;opacity:0;transition:opacity .2s ease}
 .question-card:hover .card-actions{opacity:1}
-.btn-action{cursor:pointer;text-decoration:none;width:36px;height:36px;border-radius:50%;border:1px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center;color:#374151;transition:all .2s;font-size:14px}
+.btn-action{cursor:pointer;text-decoration:none;width:36px;height:36px;border-radius:50%;border:1px solid #e5e7eb;background:#fff;display:flex;align-items:center;justify-content:center;color:#374151;transition:all .2s;font-size:22px}
 .btn-action:hover{border-color:#0055D2;color:#0055D2;box-shadow:0 6px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
 .btn-action.btn-danger:hover{border-color:#dc2626;color:#dc2626}
 
 .card-body{padding:12px}
-.question-title{font-size:15px;font-weight:700;color:#0f172a;margin:0 0 8px 0}
-.question-preview{font-size:13px;color:#6b7280;margin:0 0 12px 0}
-.question-meta{display:flex;gap:16px;font-size:12px;color:#6b7280}
+.question-title{font-size:24px;font-weight:700;color:#0f172a;margin:0 0 8px 0}
+.question-preview{font-size:21px;color:#6b7280;margin:0 0 12px 0}
+.question-meta{display:flex;gap:16px;font-size:20px;color:#6b7280}
 .meta-item{display:flex;align-items:center;gap:4px}
 
 .empty-state{text-align:center;padding:48px 20px;background:#f9fafb;border-radius:12px;border:1px dashed #d1d5db}

@@ -14,7 +14,7 @@
         </div>
         <a href="{{ route('teacher.exams.exam_questions.index', $exam) }}" class="ud-item">
             <i class="fas fa-arrow-left"></i>
-            <span>{{ __('panel.back_to_questions') }}</span>
+            <span style="font-size: 22px">{{ __('panel.back_to_questions') }}</span>
         </a>
     </aside>
 
@@ -173,37 +173,37 @@
 .ud-menu{margin:10px;background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:16px;position:sticky;top:88px;height:max-content}
 .ud-user{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .ud-user img{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid #f1f5f9}
-.ud-user h3{font-size:16px;margin:0 0 2px 0}
-.ud-user span{font-size:12px;color:#6b7280}
+.ud-user h3{font-size:24px;margin:0 0 2px 0}
+.ud-user span{font-size:20px;color:#6b7280}
 .ud-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;text-decoration:none;color:#0f172a;transition:all .18s}
 .ud-item:hover{border-color:#0055D2;box-shadow:0 6px 18px rgba(0,85,210,.12);transform:translateY(-2px)}
 .ud-content{min-width:0}
 .ud-panel{background:#fff;border:1px solid #eef0f3;border-radius:14px;padding:18px}
-.ud-title{font-size:20px;font-weight:900;margin-bottom:8px;color:#0f172a}
-.ud-subtitle{font-size:13px;color:#6b7280;margin:0 0 20px 0}
+.ud-title{font-size:28px;font-weight:900;margin-bottom:8px;color:#0f172a}
+.ud-subtitle{font-size:21px;color:#6b7280;margin:0 0 20px 0}
 
 .form-section{margin-bottom:24px}
-.section-title{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
+.section-title{font-size:26px;font-weight:800;color:#0f172a;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #0055D2}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
 .form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:0}
-.form-group label{font-weight:800;color:#0f172a;font-size:14px}
-.form-group .form-text{color:#6b7280;font-size:12px}
-.form-group input,.form-group select,.form-group textarea{border:1px solid #d1d5db;border-radius:10px;padding:12px 14px;font-size:14px;background:#fff;transition:border-color .16s,box-shadow .16s;font-family:inherit}
+.form-group label{font-weight:800;color:#0f172a;font-size:22px}
+.form-group .form-text{color:#6b7280;font-size:20px}
+.form-group input,.form-group select,.form-group textarea{border:1px solid #d1d5db;border-radius:10px;padding:12px 14px;font-size:22px;background:#fff;transition:border-color .16s,box-shadow .16s;font-family:inherit}
 .form-group textarea{min-height:80px;resize:vertical}
 .form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0055D2;box-shadow:0 0 0 3px rgba(0,85,210,.12)}
 
 .radio-group{display:flex;gap:20px;margin-top:12px}
 .radio-label{display:flex;align-items:center;gap:10px;cursor:pointer;font-weight:600;color:#0f172a}
 .radio-label input[type="radio"]{cursor:pointer;width:18px;height:18px;margin:0}
-.badge{font-size:12px;font-weight:700;padding:6px 12px;border-radius:6px}
+.badge{font-size:20px;font-weight:700;padding:6px 12px;border-radius:6px}
 .badge-success{background:#dcfce7;color:#15803d}
 .badge-danger{background:#fee2e2;color:#dc2626}
 .badge-info{background:#dbeafe;color:#0369a1}
 
 .option-item{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:16px;margin-bottom:16px}
 .option-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.option-header h6{font-size:14px;font-weight:700;color:#0f172a;margin:0}
-.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:14px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
+.option-header h6{font-size:22px;font-weight:700;color:#0f172a;margin:0}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:700;font-size:22px;text-decoration:none;cursor:pointer;transition:all .18s;border:none}
 .btn-primary{background:#0055D2;color:#fff}
 .btn-primary:hover{background:#0047b3;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,85,210,.18)}
 .btn-secondary{background:#111827;color:#fff}
@@ -265,7 +265,7 @@ function addOption() {
     <div class="option-item" id="option-${optionCount}">
       <div class="option-header">
         <h6>{{ __('panel.option') }} ${letter}</h6>
-        <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})" style="padding:6px 10px;font-size:12px;">
+        <button type="button" class="btn-outline-danger" onclick="removeOption(${optionCount})" style="padding:6px 10px;font-size:20px;">
           <i class="fas fa-trash"></i>
         </button>
       </div>
