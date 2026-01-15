@@ -13,6 +13,8 @@ use App\Models\CoursePaymentDetail;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\WalletTransaction;
+use App\Models\CommissionDistribution;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Validator;
 
 class EnrollmentController extends Controller
@@ -214,10 +216,10 @@ class EnrollmentController extends Controller
         try {
             $this->enrollUserInCourse($user?->id, $course);
             $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
+            $payment = $this->createPaymentRecord($user?->id, $courses, $cardNumber, 'single');
 
-            // خصم العمولة من المعلم
-            $this->deductCommissionFromTeacher($course);
+            // توزيع العمولات حسب الإعداد
+            $this->distributeCommissions($course, $cardNumber, $payment->id);
 
             CartRepository()->removeItem($courseId);
 
@@ -285,12 +287,15 @@ class EnrollmentController extends Controller
         try {
             foreach ($validCourses as $course) {
                 $this->enrollUserInCourse($user?->id, $course);
-                // خصم العمولة من كل معلم
-                $this->deductCommissionFromTeacher($course);
             }
 
             $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'courses');
+            $payment = $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'courses');
+
+            // توزيع العمولات لكل كورس
+            foreach ($validCourses as $course) {
+                $this->distributeCommissions($course, $cardNumber, $payment->id);
+            }
 
             CartRepository()->clearCart();
 
@@ -477,7 +482,12 @@ class EnrollmentController extends Controller
             }
 
             $this->markCardAsUsed($cardNumber, $user?->id);
-            $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'package', $packageCart['package_id']);
+            $payment = $this->createPaymentRecord($user?->id, $validCourses, $cardNumber, 'package', $packageCart['package_id']);
+
+            // توزيع العمولات لكل كورس في الباكدج
+            foreach ($validCourses as $course) {
+                $this->distributeCommissions($course, $cardNumber, $payment->id);
+            }
 
             CartRepository()->clearCart();
 
@@ -626,37 +636,95 @@ class EnrollmentController extends Controller
     }
 
     /**
-     * خصم العمولة من المعلم وتسجيلها في المحفظة (للكورسات العادية)
+     * توزيع العمولات بين المنصة والمعلم حسب الإعدادات
+     *
+     * المعادلة:
+     * - عمولة المنصة = course.selling_price × commission_of_admin / 100
+     * - عمولة نقطة البيع = course.selling_price × pos.percentage / 100
+     *
+     * حسب الإعداد pos_commission_distribution:
+     * - 50_50: تقسيم عمولة POS بالتساوي (المنصة: -50%, المعلم: -50%)
+     * - 100_teacher: المعلم يدفع كل عمولة POS (المنصة: 0, المعلم: -100%)
+     * - 100_platform: المنصة تدفع كل عمولة POS (المنصة: -100%, المعلم: 0)
      */
-    private function deductCommissionFromTeacher($course)
+    private function distributeCommissions($course, $cardNumber, $paymentId)
     {
+        // التحقق من وجود معلم
         if (!$course->teacher_id) {
             return;
         }
 
-        $commissionPercentage = $course->commission_of_admin ?? 0;
-        $commissionAmount = ($course->selling_price * $commissionPercentage) / 100;
-
-        if ($commissionAmount <= 0) {
-            return;
-        }
-
         $teacher = User::find($course->teacher_id);
-
         if (!$teacher) {
             return;
         }
 
-        $teacher->decrement('balance', $commissionAmount);
+        // حساب العمولات الأساسية
+        $coursePrice = $course->selling_price;
+        $platformCommissionPercentage = $course->commission_of_admin ?? 0;
+        $platformCommissionAmount = ($coursePrice * $platformCommissionPercentage) / 100;
 
+        // الحصول على عمولة نقطة البيع من الـ Card
+        $card = $cardNumber->card;
+        $pos = $card->pos;
+        $posCommissionPercentage = $pos?->percentage ?? 0;
+        $posCommissionAmount = ($coursePrice * $posCommissionPercentage) / 100;
+
+        // الحصول على إعداد توزيع العمولة
+        $setting = Setting::first();
+        $distributionType = $setting?->pos_commission_distribution ?? '50_50';
+
+        // حساب الخصومات حسب نوع التوزيع
+        $platformPosDeduction = 0;
+        $teacherPosDeduction = 0;
+
+        if ($distributionType === '50_50') {
+            // تقسيم عمولة POS بالتساوي
+            $platformPosDeduction = $posCommissionAmount / 2;
+            $teacherPosDeduction = $posCommissionAmount / 2;
+        } elseif ($distributionType === '100_teacher') {
+            // المعلم يدفع كل عمولة POS
+            $teacherPosDeduction = $posCommissionAmount;
+        } elseif ($distributionType === '100_platform') {
+            // المنصة تدفع كل عمولة POS
+            $platformPosDeduction = $posCommissionAmount;
+        }
+
+        // حساب المبالغ النهائية
+        $platformFinalAmount = $platformCommissionAmount - $platformPosDeduction;
+        $teacherFinalAmount = $coursePrice - $platformCommissionAmount - $teacherPosDeduction;
+
+        // تحديث رصيد المعلم
+        $teacher->increment('balance', $teacherFinalAmount);
+
+        // تسجيل في WalletTransaction
         WalletTransaction::create([
             'user_id' => $teacher->id,
             'admin_id' => 1,
-            'amount' => $commissionAmount,
-            'type' => 2,
-            'note' => "خصم عمولة إدارية ({$commissionPercentage}%) للكورس: {$course->title_ar}"
+            'amount' => $teacherFinalAmount,
+            'type' => 1, // إضافة رصيد
+            'note' => "رصيد من بيع الكورس: {$course->title_ar} (عمولة منصة: {$platformCommissionPercentage}%, نقطة بيع: {$posCommissionPercentage}%, توزيع: {$distributionType})"
         ]);
 
-        \Log::info("تم خصم عمولة {$commissionAmount} من المعلم {$teacher->name} للكورس {$course->title_ar}");
+        // تسجيل في CommissionDistribution
+        CommissionDistribution::create([
+            'course_payment_id' => $paymentId,
+            'course_id' => $course->id,
+            'teacher_id' => $teacher->id,
+            'pos_id' => $pos?->id,
+            'course_price' => $coursePrice,
+            'platform_commission_percentage' => $platformCommissionPercentage,
+            'platform_commission_amount' => $platformCommissionAmount,
+            'pos_commission_percentage' => $posCommissionPercentage,
+            'pos_commission_amount' => $posCommissionAmount,
+            'distribution_type' => $distributionType,
+            'platform_final_amount' => $platformFinalAmount,
+            'teacher_final_amount' => $teacherFinalAmount,
+            'platform_pos_deduction' => $platformPosDeduction,
+            'teacher_pos_deduction' => $teacherPosDeduction,
+            'notes' => "توزيع عمولات للكورس {$course->title_ar} - نسبة توزيع: {$distributionType}"
+        ]);
+
+        \Log::info("توزيع العمولات: المعلم {$teacher->name} حصل على {$teacherFinalAmount} للكورس {$course->title_ar} (توزيع: {$distributionType})");
     }
 }
