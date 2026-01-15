@@ -3678,4 +3678,12 @@ return [
 
   // Missing from views
   'select_field' => 'Select Field',
+
+  // POS Commission
+  'Commission Distribution Method' => 'Commission Distribution Method',
+  'Determines how POS commission is distributed between teacher and platform' => 'Determines how POS commission is distributed between teacher and platform',
+  'POS Commission Distribution' => 'POS Commission Distribution',
+  'Platform' => 'Platform',
+  'Select Option' => 'Select Option',
+  'bunny_video_uploaded' => 'Video uploaded successfully',
 ];

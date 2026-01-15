@@ -227,6 +227,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         // Additional Cards Routes
         Route::post('cards/{card}/regenerate-numbers', [CardController::class, 'regenerateNumbers'])->name('cards.regenerate-numbers');
         Route::get('cards/{card}/card-numbers', [CardController::class, 'showNumbers'])->name('cards.card-numbers');
+        Route::get('cards/{card}/export-csv', [CardController::class, 'exportCSV'])->name('cards.export-csv');
+        Route::get('cards/{card}/print', [CardController::class, 'printCards'])->name('cards.print');
 
         // Card Numbers Routes
          Route::prefix('card-numbers')->group(function () {

@@ -46,18 +46,32 @@
 
                         <div class="mb-3">
                             <label for="phone" class="form-label">{{ __('messages.phone') }} <span class="text-danger">*</span></label>
-                            <input type="text" 
-                                   class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" 
-                                   name="phone" 
-                                   value="{{ old('phone') }}" 
+                            <input type="text"
+                                   class="form-control @error('phone') is-invalid @enderror"
+                                   id="phone"
+                                   name="phone"
+                                   value="{{ old('phone') }}"
                                    placeholder="{{ __('messages.enter_phone') }}"
                                    required>
                             @error('phone')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                 
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+                            <input type="email"
+                                   class="form-control @error('email') is-invalid @enderror"
+                                   id="email"
+                                   name="email"
+                                   value="{{ old('email') }}"
+                                   placeholder="example@gmail.com"
+                                   required>
+                            @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <div class="mb-3">
                             <label for="phone" class="form-label">{{ __('messages.google_map_link') }} <span class="text-danger">*</span></label>
                             <input type="text" 
@@ -74,13 +88,44 @@
 
                         <div class="mb-3">
                             <label for="address" class="form-label">{{ __('messages.address') }} <span class="text-danger">*</span></label>
-                            <textarea class="form-control @error('address') is-invalid @enderror" 
-                                      id="address" 
-                                      name="address" 
-                                      rows="3" 
+                            <textarea class="form-control @error('address') is-invalid @enderror"
+                                      id="address"
+                                      name="address"
+                                      rows="3"
                                       placeholder="{{ __('messages.enter_address') }}"
                                       required>{{ old('address') }}</textarea>
                             @error('address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">{{ __('messages.Password') }} <span class="text-danger">*</span></label>
+                            <input type="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   id="password"
+                                   name="password"
+                                   placeholder="أدخل كلمة المرور"
+                                   required>
+                            @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="form-text text-muted">يجب أن تكون على الأقل 6 أحرف</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="percentage" class="form-label">النسبة المئوية (%) <span class="text-danger">*</span></label>
+                            <input type="number"
+                                   step="0.01"
+                                   min="0"
+                                   max="100"
+                                   class="form-control @error('percentage') is-invalid @enderror"
+                                   id="percentage"
+                                   name="percentage"
+                                   value="{{ old('percentage', 0) }}"
+                                   placeholder="أدخل النسبة المئوية"
+                                   required>
+                            @error('percentage')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

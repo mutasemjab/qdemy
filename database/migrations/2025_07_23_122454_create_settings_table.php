@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -35,12 +36,13 @@ return new class extends Migration
             $table->string('number_of_teacher')->nullable();
             $table->string('number_of_viewing_hour')->nullable();
             $table->string('number_of_students')->nullable();
+            $table->enum('pos_commission_distribution', ['50_50', '100_teacher', '100_platform'])->default('50_50');
             $table->timestamps();
         });
 
         DB::table('settings')->insert([
-            'logo' => 'logo.png', 
-            'text_under_logo_in_footer' => 'Lorem ipsum dolor sit amet consectetur. Porttitor molestie sapien dictum quam semper a sed auctor turpis. Quam iaculis fringilla eros erat. Purus dui aliquet eget blandit enim nunc accumsan quis. Ut suscipit sed nunc magna condimentum mollis sed. Mauris eu convallis orci posuere imperdiet elit platea id lectus. Et nibh volutpat velit velit amet.', 
+            'logo' => 'logo.png',
+            'text_under_logo_in_footer' => 'Lorem ipsum dolor sit amet consectetur. Porttitor molestie sapien dictum quam semper a sed auctor turpis. Quam iaculis fringilla eros erat. Purus dui aliquet eget blandit enim nunc accumsan quis. Ut suscipit sed nunc magna condimentum mollis sed. Mauris eu convallis orci posuere imperdiet elit platea id lectus. Et nibh volutpat velit velit amet.',
             'email' => 'info@example.com',
             'phone' => '+1234567890',
             'address' => '123 Main Street, City, Country',
@@ -54,6 +56,7 @@ return new class extends Migration
             'number_of_teacher' => '+1 Thousand',
             'number_of_viewing_hour' => '+2 Million',
             'number_of_students' => '+3 Million',
+            'pos_commission_distribution' => '50_50',
         ]);
 
     }

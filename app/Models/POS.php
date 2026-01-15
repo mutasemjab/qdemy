@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class POS extends Model
+class POS extends Authenticatable
 {
     use HasFactory;
 
     protected $table = 'p_o_s';
     protected $guarded = [];
+    protected $hidden = ['password'];
 
     public function cards()
     {

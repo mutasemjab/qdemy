@@ -11,6 +11,12 @@
                         <a href="{{ route('cards.card-numbers', $card) }}" class="btn btn-info btn-sm">
                             {{ __('messages.view_numbers') }}
                         </a>
+                        <a href="{{ route('cards.export-csv', $card) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-download"></i> Export CSV
+                        </a>
+                        <a href="{{ route('cards.print', $card) }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-print"></i> {{ __('messages.print') }}
+                        </a>
                         <a href="{{ route('cards.edit', $card) }}" class="btn btn-warning btn-sm">
                             {{ __('messages.edit') }}
                         </a>

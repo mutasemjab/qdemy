@@ -682,4 +682,7 @@ return array(
     'cart_empty' => 'Cart is empty',
     'no_package_in_cart' => 'No package in cart',
     'payment_error' => 'Error processing your request',
+
+    // Missing from views
+    'unknown' => 'Unknown',
 );

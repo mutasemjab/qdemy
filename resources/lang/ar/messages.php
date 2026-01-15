@@ -3639,4 +3639,12 @@ return [
 
   // Missing from views
   'select_field' => 'اختر الحقل',
+
+  // POS Commission
+  'Commission Distribution Method' => 'طريقة توزيع العمولة',
+  'Determines how POS commission is distributed between teacher and platform' => 'تحدد كيفية توزيع عمولة نقطة البيع بين المعلم والمنصة',
+  'POS Commission Distribution' => 'توزيع عمولة نقطة البيع',
+  'Platform' => 'المنصة',
+  'Select Option' => 'اختر خيار',
+  'bunny_video_uploaded' => 'تم رفع الفيديو بنجاح',
 ];

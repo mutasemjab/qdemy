@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\POS;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class POSController extends Controller
 {
@@ -36,15 +37,21 @@ class POSController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
+            'phone' => 'required|string|max:255|unique:p_o_s,phone',
+            'email' => 'required|string|email|max:255|unique:p_o_s,email',
             'address' => 'required|string|max:255',
             'country_name' => 'required|string|max:255',
             'google_map_link' => 'nullable|string|max:255',
+            'password' => 'required|string|min:6',
+            'percentage' => 'required|numeric|min:0|max:100',
         ]);
 
-        POS::create($request->all());
+        // Hash the password
+        $validated['password'] = Hash::make($validated['password']);
+
+        POS::create($validated);
 
         return redirect()->route('pos.index')
             ->with('success', __('messages.pos_created_successfully'));
@@ -71,15 +78,25 @@ class POSController extends Controller
      */
     public function update(Request $request, POS $po)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:255',
+            'phone' => 'required|string|max:255|unique:p_o_s,phone,' . $po->id,
+            'email' => 'required|string|email|max:255|unique:p_o_s,email,' . $po->id,
             'address' => 'required|string|max:255',
             'country_name' => 'required|string|max:255',
             'google_map_link' => 'nullable|string|max:255',
+            'password' => 'nullable|string|min:6',
+            'percentage' => 'required|numeric|min:0|max:100',
         ]);
 
-        $po->update($request->all());
+        // Only update password if provided
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $po->update($validated);
 
         return redirect()->route('pos.index')
             ->with('success', __('messages.pos_updated_successfully'));

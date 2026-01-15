@@ -16,10 +16,15 @@ return new class extends Migration
         Schema::create('p_o_s', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('phone');
+            $table->string('phone')->unique();
+            $table->string('email')->unique();
+            $table->string('password')->nullable();
             $table->string('address');
             $table->string('country_name');
             $table->text('google_map_link')->nullable();
+            $table->double('percentage')->default(0);
+            $table->string('reset_token')->nullable();
+            $table->timestamp('reset_token_expires_at')->nullable();
             $table->timestamps();
         });
     }

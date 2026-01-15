@@ -317,6 +317,37 @@
                                 </div>
                             </div>
 
+                            <!-- POS Commission Distribution -->
+                            <hr>
+                            <div class="row">
+                                <div class="col-12">
+                                    <h5 class="text-primary mb-3">{{ __('messages.POS Commission Distribution') }}</h5>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="pos_commission_distribution" class="required">{{ __('messages.Commission Distribution Method') }}</label>
+                                        <select class="form-control @error('pos_commission_distribution') is-invalid @enderror"
+                                            id="pos_commission_distribution" name="pos_commission_distribution" required>
+                                            <option value="">{{ __('messages.Select Option') }}</option>
+                                            <option value="50_50" {{ old('pos_commission_distribution', $setting->pos_commission_distribution) === '50_50' ? 'selected' : '' }}>
+                                                50% {{ __('messages.Teacher') }} - 50% {{ __('messages.Platform') }}
+                                            </option>
+                                            <option value="100_teacher" {{ old('pos_commission_distribution', $setting->pos_commission_distribution) === '100_teacher' ? 'selected' : '' }}>
+                                                100% {{ __('messages.Teacher') }}
+                                            </option>
+                                            <option value="100_platform" {{ old('pos_commission_distribution', $setting->pos_commission_distribution) === '100_platform' ? 'selected' : '' }}>
+                                                100% {{ __('messages.Platform') }}
+                                            </option>
+                                        </select>
+                                        @error('pos_commission_distribution')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-text text-muted">{{ __('messages.Determines how POS commission is distributed between teacher and platform') }}</small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Read-only Information -->
                             <hr>
                             <div class="row">

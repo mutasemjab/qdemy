@@ -74,6 +74,7 @@ class SettingController extends Controller
             'number_of_teacher' => 'nullable|string|max:255',
             'number_of_viewing_hour' => 'nullable|string|max:255',
             'number_of_students' => 'nullable|string|max:255',
+            'pos_commission_distribution' => 'required|in:50_50,100_teacher,100_platform',
         ]);
 
         $data = $request->all();
@@ -130,6 +131,7 @@ class SettingController extends Controller
             'number_of_teacher' => 'nullable|string|max:255',
             'number_of_viewing_hour' => 'nullable|string|max:255',
             'number_of_students' => 'nullable|string|max:255',
+            'pos_commission_distribution' => 'required|in:50_50,100_teacher,100_platform',
         ]);
 
         $data = $request->all();

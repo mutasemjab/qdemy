@@ -680,4 +680,7 @@ return array (
     'cart_empty' => 'السلة فارغة',
     'no_package_in_cart' => 'لا توجد باكدج في السلة',
     'payment_error' => 'حدث خطأ أثناء معالجة الطلب',
+
+    // Missing from views
+    'unknown' => 'غير معروف',
 );

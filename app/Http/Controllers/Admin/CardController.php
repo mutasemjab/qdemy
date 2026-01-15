@@ -11,6 +11,7 @@ use App\Models\POS;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 
@@ -268,5 +269,62 @@ class CardController extends Controller
         $cardNumbers = $query->latest()->paginate(20);
 
         return view('admin.cards.card-numbers', compact('card', 'cardNumbers'));
+    }
+
+    /**
+     * Export card numbers to CSV
+     */
+    public function exportCSV(Card $card)
+    {
+        $cardNumbers = $card->cardNumbers()->get();
+
+        $filename = 'card-numbers-' . $card->id . '-' . now()->format('Y-m-d-His') . '.csv';
+
+        $response = new StreamedResponse(function () use ($cardNumbers, $card) {
+            $handle = fopen('php://output', 'w');
+
+            // Add BOM for UTF-8 encoding (fixes Arabic characters in Excel)
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header row
+            fputcsv($handle, [
+                'رقم البطاقة',
+                'رقم المعرف',
+                'الحالة',
+                'الحالة النشطة',
+                'مباع',
+                'مستخدم',
+                'تاريخ الإنشاء',
+            ]);
+
+            // Data rows
+            foreach ($cardNumbers as $cardNumber) {
+                fputcsv($handle, [
+                    $cardNumber->number,
+                    $cardNumber->id,
+                    $cardNumber->status == 1 ? 'مستخدم' : 'غير مستخدم',
+                    $cardNumber->activate == 1 ? 'نشط' : 'غير نشط',
+                    $cardNumber->sell == 1 ? 'نعم' : 'لا',
+                    $cardNumber->assignedUser?->name ?? 'بدون',
+                    $cardNumber->created_at->format('Y-m-d H:i'),
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * Print all card numbers
+     */
+    public function printCards(Card $card)
+    {
+        $cardNumbers = $card->cardNumbers()->where('activate', 1)->get();
+        return view('admin.cards.print-all', compact('card', 'cardNumbers'));
     }
 }

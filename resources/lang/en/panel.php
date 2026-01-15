@@ -606,4 +606,9 @@ return [
     'view_results' => 'View Results',
     'write_comment' => 'Write a comment...',
     'write_your_question_or_post' => 'Write your question or post...',
+
+    // Video Upload
+    'please_wait' => 'Please wait',
+    'uploading_video' => 'Uploading video',
+    'video_upload_failed' => 'Video upload failed',
 ];
