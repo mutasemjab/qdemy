@@ -37,10 +37,10 @@ class CardController extends Controller
             abort(403, 'غير مصرح بالوصول إلى هذه البطاقة');
         }
 
+        // Get all card numbers (both available and sold)
         $cardNumbers = $card->cardNumbers()
             ->where('activate', 1)
             ->where('status', 2)
-            ->where('sell', 2)
             ->paginate(20);
 
         return view('pos.cards.show', compact('card', 'cardNumbers', 'pos'));

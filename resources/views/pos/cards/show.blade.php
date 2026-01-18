@@ -338,7 +338,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label">المتاحة للبيع</div>
-                        <div class="info-value" style="color: #27ae60;">{{ $cardNumbers->count() }}</div>
+                        <div class="info-value" style="color: #27ae60;">{{ $cardNumbers->where('sell', 2)->count() }}</div>
                     </div>
                 </div>
             </div>
@@ -370,15 +370,25 @@
                                     </code>
                                 </td>
                                 <td>
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check"></i> متاح
-                                    </span>
+                                    @if($cardNumber->sell == 2)
+                                        <span class="badge badge-success">
+                                            <i class="fas fa-check"></i> متاح
+                                        </span>
+                                    @else
+                                        <span class="badge badge-warning">
+                                            <i class="fas fa-times"></i> مباع
+                                        </span>
+                                    @endif
                                 </td>
                                 <td>{{ $cardNumber->created_at->format('Y-m-d H:i') }}</td>
                                 <td>
-                                    <a href="{{ route('pos.cards.print-number', $cardNumber->id) }}" class="btn" style="background: #667eea; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 5px;" target="_blank">
-                                        <i class="fas fa-print"></i> طباعة
-                                    </a>
+                                    @if($cardNumber->sell == 2)
+                                        <a href="{{ route('pos.cards.print-number', $cardNumber->id) }}" class="btn" style="background: #667eea; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center;" target="_blank">
+                                            شراء
+                                        </a>
+                                    @else
+                                        <span class="badge" style="background: #e0e0e0; color: #666;">تم البيع</span>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
@@ -397,8 +407,8 @@
                 <div class="empty-icon">
                     <i class="fas fa-inbox"></i>
                 </div>
-                <h2 class="empty-title">لا توجد بطاقات متاحة</h2>
-                <p style="color: #999;">جميع البطاقات الخاصة بهذا المنتج إما مباعة أو مستخدمة</p>
+                <h2 class="empty-title">لا توجد بطاقات</h2>
+                <p style="color: #999;">لا توجد بطاقات لهذا المنتج حالياً</p>
             </div>
         @endif
     </div>
