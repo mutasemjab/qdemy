@@ -165,7 +165,7 @@ class User extends Authenticatable
         }
 
         // Return default avatar
-        return asset('assets_front/images/avatar-big.png');
+        return asset('assets_front/images/Profile-picture.jpg');
     }
 
 

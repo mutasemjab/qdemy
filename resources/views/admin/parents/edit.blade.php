@@ -24,11 +24,14 @@
                                     <div class="form-group">
                                         <label>{{ __('messages.Current Photo') }}</label>
                                         <div>
-                                            <img src="{{ asset('assets/admin/uploads/' . $parent->user->photo) }}" 
-                                                 alt="{{ $parent->name }}" 
-                                                 class="img-thumbnail" 
-                                                 style="max-width: 200px; max-height: 200px; object-fit: cover;">
+                                            <img src="{{ $parent->user->photo 
+                                                ? asset('assets/admin/uploads/' . $parent->user->photo) 
+                                                : asset('assets_front/images/Profile-picture.jpg') }}" 
+                                                alt="{{ $parent->name }}" 
+                                                class="img-thumbnail"
+                                                style="max-width: 200px; max-height: 200px; object-fit: cover;">
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

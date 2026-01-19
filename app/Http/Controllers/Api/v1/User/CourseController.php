@@ -52,7 +52,7 @@ class CourseController extends Controller
                     'id' => $course->teacher->id,
                     'name' => $course->teacher->name,
                     'name_of_lesson' => $course->teacher->name_of_lesson,
-                    'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null,
+                    'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'description_ar' => $course->teacher->description_ar,
                     'social_media' => [
                         'facebook' => $course->teacher->facebook,
@@ -384,7 +384,7 @@ class CourseController extends Controller
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
                         'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
                     ] : null,
                     'subject' => $course->subject ? [
                         'id' => $course->subject->id,
@@ -478,7 +478,7 @@ class CourseController extends Controller
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
                         'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
                     ] : null,
                     'subject' => $course->subject ? [
                         'id' => $course->subject->id,
@@ -554,7 +554,7 @@ class CourseController extends Controller
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
                         'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
                     ] : null,
                     'subject' => $course->subject ? [
                         'id' => $course->subject->id,
@@ -654,7 +654,7 @@ class CourseController extends Controller
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
                         'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
                     ] : null,
                     'subject' => $course->subject ? [
                         'id' => $course->subject->id,

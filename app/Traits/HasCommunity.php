@@ -155,6 +155,6 @@ trait HasCommunity
         if ($user->photo) {
             return asset('assets/admin/uploads/' . $user->photo);
         }
-        return asset('assets_front/images/avatar-round.png');
+        return asset('assets_front/images/Profile-picture.jpg');
     }
 }

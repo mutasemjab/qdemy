@@ -52,7 +52,7 @@ class TeacherController extends Controller
                 'id' => $teacher->id,
                 'name' => $teacher->user->name ?? $teacher->name,
                 'name_of_lesson' => $teacher->name_of_lesson,
-                'photo' => $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : null,
+                'photo' => $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/Profile-picture.jpg'),
                 'description_ar' => $teacher->description_ar,
                 'social_media' => [
                     'facebook' => $teacher->facebook,
@@ -83,7 +83,7 @@ class TeacherController extends Controller
                         'title_ar' => $course->title_ar,
                         'title_en' => $course->title_en,
                         'selling_price' => $course->selling_price,
-                        'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                        'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     ];
                 });
 

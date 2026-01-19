@@ -122,7 +122,7 @@ class AuthParentController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'role_name' => $user->role_name,
-                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'balance' => $user->balance,
                     'referal_code' => $user->referal_code,
                     'activate' => $user->activate
@@ -179,7 +179,7 @@ class AuthParentController extends Controller
                     return [
                         'id' => $student->user->id,
                         'name' => $student->user->name,
-                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : null,
+                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'clas_id' => $student->user->clas_id,
                     ];
                 });
@@ -195,7 +195,7 @@ class AuthParentController extends Controller
                         'email' => $user->email,
                         'phone' => $user->phone,
                         'role_name' => $user->role_name,
-                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'balance' => $user->balance,
                         'referal_code' => $user->referal_code,
                         'activate' => $user->activate
@@ -237,7 +237,7 @@ class AuthParentController extends Controller
                     return [
                         'id' => $student->user->id,
                         'name' => $student->user->name,
-                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : null,
+                        'photo' => $student->user->photo ? asset('assets/admin/uploads/' . $student->user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'clas_id' => $student->user->clas_id,
                     ];
                 });
@@ -253,7 +253,7 @@ class AuthParentController extends Controller
                         'email' => $user->email,
                         'phone' => $user->phone,
                         'role_name' => $user->role_name,
-                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                        'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'balance' => $user->balance,
                         'referal_code' => $user->referal_code,
                         'activate' => $user->activate
@@ -370,7 +370,7 @@ class AuthParentController extends Controller
                         'name' => $student->name,
                         'email' => $student->email,
                         'phone' => $student->phone,
-                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'class_id' => $student->clas_id,
                         'balance' => $student->balance,
                         'activate' => $student->activate,
@@ -386,7 +386,7 @@ class AuthParentController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'role_name' => $user->role_name,
-                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'balance' => $user->balance,
                     'referal_code' => $user->referal_code,
                     'activate' => $user->activate,
@@ -431,7 +431,7 @@ class AuthParentController extends Controller
                         'name' => $student->name,
                         'email' => $student->email,
                         'phone' => $student->phone,
-                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                        'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : asset('assets_front/images/Profile-picture.jpg'),
                         'class_id' => $student->clas_id,
                         'balance' => $student->balance,
                         'activate' => $student->activate,
@@ -447,7 +447,7 @@ class AuthParentController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'role_name' => $user->role_name,
-                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'balance' => $user->balance,
                     'referal_code' => $user->referal_code,
                     'activate' => $user->activate,
@@ -548,7 +548,7 @@ class AuthParentController extends Controller
                     'email' => $user->email,
                     'phone' => $user->phone,
                     'role_name' => $user->role_name,
-                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'balance' => $user->balance,
                     'referal_code' => $user->referal_code,
                     'activate' => $user->activate,
@@ -620,7 +620,7 @@ class AuthParentController extends Controller
                 'name' => $student->name,
                 'email' => $student->email,
                 'phone' => $student->phone,
-                'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : asset('assets_front/images/Profile-picture.jpg'),
                 'class_id' => $student->clas_id,
                 'balance' => $student->balance,
                 'activate' => $student->activate
@@ -692,7 +692,7 @@ class AuthParentController extends Controller
                 'name' => $student->name,
                 'email' => $student->email,
                 'phone' => $student->phone,
-                'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : asset('assets_front/images/Profile-picture.jpg'),
                 'class_id' => $student->clas_id,
                 'balance' => $student->balance,
                 'activate' => $student->activate,
@@ -787,7 +787,7 @@ class AuthParentController extends Controller
                     'name' => $student->name,
                     'email' => $student->email,
                     'phone' => $student->phone,
-                    'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : null,
+                    'photo' => $student->photo ? asset('assets/admin/uploads/' . $student->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'class_id' => $student->clas_id,
                     'balance' => $student->balance,
                     'activate' => $student->activate,

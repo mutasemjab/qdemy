@@ -323,7 +323,7 @@ class ExamTeacherController extends Controller
                         'id' => $attempt->user->id,
                         'name' => $attempt->user->name,
                         'email' => $attempt->user->email,
-                        'photo' => $attempt->user->photo ? asset('assets/admin/uploads/' . $attempt->user->photo) : null,
+                        'photo' => $attempt->user->photo ? asset('assets/admin/uploads/' . $attempt->user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     ],
                     'score' => $attempt->score,
                     'total_score' => $attempt->total_score,

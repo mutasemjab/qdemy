@@ -139,7 +139,7 @@ class DashboardTeacherController extends Controller
                                 'id' => $attempt->user->id,
                                 'name' => $attempt->user->name,
                                 'email' => $attempt->user->email,
-                                'photo' => $attempt->user->photo ? asset('assets/admin/uploads/' . $attempt->user->photo) : null
+                                'photo' => $attempt->user->photo ? asset('assets/admin/uploads/' . $attempt->user->photo) : asset('assets_front/images/Profile-picture.jpg')
                             ],
                             'exam' => [
                                 'id' => $attempt->exam->id,
@@ -177,7 +177,7 @@ class DashboardTeacherController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : null,
+                    'photo' => $user->photo ? asset('assets/admin/uploads/' . $user->photo) : asset('assets_front/images/Profile-picture.jpg'),
                     'member_since' => $user->created_at,
                     'last_login' => $user->last_login
                 ]
