@@ -110,29 +110,22 @@ trait ExamManagementTrait
     /**
      * Store a new question
      */
-  public function storeQuestion(Request $request, $isAdmin = false)
+ public function storeQuestion(Request $request, $isAdmin = false, $useTransaction = true)
 {
     // Validate the request
     $validator = $this->validateQuestionRequest($request, $isAdmin);
 
     if ($validator->fails()) {
-        // Check if it's an AJAX request
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        
-        // For regular form submissions, redirect back with errors
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput()
-            ->with('error', __('messages.validation_error'));
+        return response()->json([
+            'success' => false,
+            'message' => __('messages.validation_error'),
+            'errors' => $validator->errors()
+        ], 422);
     }
 
-    DB::beginTransaction();
+    if ($useTransaction) {
+        DB::beginTransaction();
+    }
 
     try {
         $questionData = $this->prepareQuestionData($request, $isAdmin);
@@ -146,74 +139,55 @@ trait ExamManagementTrait
             $this->createTrueFalseOptions($question, $request->true_false_answer);
         }
 
-        DB::commit();
-
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.question_created_successfully'),
-                'data' => $question->load(['course', 'options', 'creator'])
-            ], 201);
+        if ($useTransaction) {
+            DB::commit();
         }
 
-        return redirect()->back()
-            ->with('success', __('messages.question_created_successfully'));
+        return response()->json([
+            'success' => true,
+            'message' => __('messages.question_created_successfully'),
+            'data' => $question->load(['course', 'options', 'creator'])
+        ], 201);
 
     } catch (\Exception $e) {
-        DB::rollback();
+        if ($useTransaction) {
+            DB::rollback();
+        }
 
         \Log::error('Question creation failed: ' . $e->getMessage(), [
             'trace' => $e->getTraceAsString()
         ]);
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.question_creation_failed'),
-                'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
-            ], 500);
-        }
-
-        return redirect()->back()
-            ->withInput()
-            ->with('error', __('messages.question_creation_failed'));
+        return response()->json([
+            'success' => false,
+            'message' => __('messages.question_creation_failed'),
+            'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
+        ], 500);
     }
 }
 
     /**
      * Update an existing question
      */
-    public function updateQuestion(Request $request, Question $question, $isAdmin = false)
+public function updateQuestion(Request $request, Question $question, $isAdmin = false)
 {
     // Check permissions
     if (!$this->canManageQuestion($question, $isAdmin)) {
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.unauthorized_action')
-            ], 403);
-        }
-        
-        return redirect()->back()
-            ->with('error', __('messages.unauthorized_action'));
+        return response()->json([
+            'success' => false,
+            'message' => __('messages.unauthorized_action')
+        ], 403);
     }
 
     // Validate the request
     $validator = $this->validateQuestionRequest($request, $isAdmin, $question->id);
 
     if ($validator->fails()) {
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.validation_error'),
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput()
-            ->with('error', __('messages.validation_error'));
+        return response()->json([
+            'success' => false,
+            'message' => __('messages.validation_error'),
+            'errors' => $validator->errors()
+        ], 422);
     }
 
     DB::beginTransaction();
@@ -235,16 +209,11 @@ trait ExamManagementTrait
 
         DB::commit();
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => __('messages.question_updated_successfully'),
-                'data' => $question->fresh()->load(['course', 'options', 'creator'])
-            ]);
-        }
-
-        return redirect()->back()
-            ->with('success', __('messages.question_updated_successfully'));
+        return response()->json([
+            'success' => true,
+            'message' => __('messages.question_updated_successfully'),
+            'data' => $question->fresh()->load(['course', 'options', 'creator'])
+        ]);
 
     } catch (\Exception $e) {
         DB::rollback();
@@ -254,19 +223,14 @@ trait ExamManagementTrait
             'trace' => $e->getTraceAsString()
         ]);
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success' => false,
-                'message' => __('messages.question_update_failed'),
-                'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
-            ], 500);
-        }
-
-        return redirect()->back()
-            ->withInput()
-            ->with('error', __('messages.question_update_failed'));
+        return response()->json([
+            'success' => false,
+            'message' => __('messages.question_update_failed'),
+            'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
+        ], 500);
     }
 }
+
 
     /**
      * Delete an exam

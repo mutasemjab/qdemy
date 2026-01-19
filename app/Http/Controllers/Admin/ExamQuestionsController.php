@@ -66,30 +66,40 @@ class ExamQuestionsController extends Controller
             $request->merge(['course_id' => $exam->course_id]);
         }
 
-        // Use the trait to create the question
-        $response = $this->storeQuestion($request, true); // true = isAdmin
-        
-        // Handle redirect response (validation failed)
-        if ($response instanceof \Illuminate\Http\RedirectResponse) {
-            return $response;
-        }
-        
-        // Handle JSON response
-        $data = $response->getData();
-        
-        if (!$data->success) {
-            if ($request->expectsJson()) {
-                return $response;
-            }
-            return redirect()->back()->withInput()->with('error', $data->message);
-        }
-        
-        $question = Question::find($data->data->id);
-        
-        // Add the question to the exam
+        // Start transaction for the entire operation
         DB::beginTransaction();
         
         try {
+            // Use the trait to create the question WITHOUT its own transaction
+            $response = $this->storeQuestion($request, true, false); // true = isAdmin, false = don't use transaction
+            
+            // Get JSON response data
+            $data = $response->getData();
+            
+            if (!$data->success) {
+                DB::rollback();
+                
+                if ($request->expectsJson()) {
+                    return $response;
+                }
+                
+                // For form submissions, redirect back with errors
+                $errors = isset($data->errors) ? (array)$data->errors : [];
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors($errors)
+                    ->with('error', $data->message);
+            }
+            
+            // Get the created question
+            $question = Question::find($data->data->id);
+            
+            if (!$question) {
+                DB::rollback();
+                throw new \Exception('Question was created but could not be found');
+            }
+            
+            // Add the question to the exam
             $maxOrder = $exam->questions()->max('exam_questions.order') ?? 0;
             
             $exam->questions()->attach($question->id, [
@@ -123,19 +133,22 @@ class ExamQuestionsController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             
-            // If adding to exam fails, delete the created question
-            $question->delete();
+            \Log::error('Failed to create and add question to exam:', [
+                'exam_id' => $exam->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => __('messages.question_creation_failed'),
-                    'error' => $e->getMessage()
+                    'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
                 ], 500);
             }
 
             return redirect()->back()->withInput()
-                ->with('error', __('messages.question_creation_failed'));
+                ->with('error', __('messages.question_creation_failed') . (config('app.debug') ? ': ' . $e->getMessage() : ''));
         }
     }
 
@@ -190,28 +203,29 @@ class ExamQuestionsController extends Controller
         // Use the trait to update the question
         $response = $this->updateQuestion($request, $question, true); // true = isAdmin
         
-        // Handle redirect response (validation failed)
-        if ($response instanceof \Illuminate\Http\RedirectResponse) {
-            return $response;
-        }
+        // Get JSON response data
+        $data = $response->getData();
         
-        // Handle JSON response
         if ($request->expectsJson()) {
             return $response;
         }
         
-        $data = $response->getData();
-        if ($data->success) {
-            // Update the total grade of the exam if the question grade changed
-            $exam->update([
-                'total_grade' => $exam->questions()->sum('exam_questions.grade')
-            ]);
-
-            return redirect()->route('exams.exam_questions.index', $exam)
-                ->with('success', $data->message);
+        if (!$data->success) {
+            // For form submissions, redirect back with errors
+            $errors = isset($data->errors) ? (array)$data->errors : [];
+            return redirect()->back()
+                ->withInput()
+                ->withErrors($errors)
+                ->with('error', $data->message);
         }
         
-        return redirect()->back()->withInput()->with('error', $data->message);
+        // Update the total grade of the exam if the question grade changed
+        $exam->update([
+            'total_grade' => $exam->questions()->sum('exam_questions.grade')
+        ]);
+
+        return redirect()->route('exams.exam_questions.index', $exam)
+            ->with('success', $data->message);
     }
 
     /**
