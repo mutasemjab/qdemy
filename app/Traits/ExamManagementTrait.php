@@ -110,111 +110,163 @@ trait ExamManagementTrait
     /**
      * Store a new question
      */
-    public function storeQuestion(Request $request, $isAdmin = false)
-    {
-        // Validate the request
-        $validator = $this->validateQuestionRequest($request, $isAdmin);
+  public function storeQuestion(Request $request, $isAdmin = false)
+{
+    // Validate the request
+    $validator = $this->validateQuestionRequest($request, $isAdmin);
 
-        if ($validator->fails()) {
+    if ($validator->fails()) {
+        // Check if it's an AJAX request
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.validation_error'),
                 'errors' => $validator->errors()
             ], 422);
         }
+        
+        // For regular form submissions, redirect back with errors
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('error', __('messages.validation_error'));
+    }
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            $questionData = $this->prepareQuestionData($request, $isAdmin);
+    try {
+        $questionData = $this->prepareQuestionData($request, $isAdmin);
 
-            $question = Question::create($questionData);
+        $question = Question::create($questionData);
 
-            // Handle options based on question type
-            if ($request->type === 'multiple_choice') {
-                $this->createMultipleChoiceOptions($question, $request->options);
-            } elseif ($request->type === 'true_false') {
-                $this->createTrueFalseOptions($question, $request->true_false_answer);
-            }
+        // Handle options based on question type
+        if ($request->type === 'multiple_choice') {
+            $this->createMultipleChoiceOptions($question, $request->options);
+        } elseif ($request->type === 'true_false') {
+            $this->createTrueFalseOptions($question, $request->true_false_answer);
+        }
 
-            DB::commit();
+        DB::commit();
 
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => __('messages.question_created_successfully'),
                 'data' => $question->load(['course', 'options', 'creator'])
             ], 201);
+        }
 
-        } catch (\Exception $e) {
-            DB::rollback();
+        return redirect()->back()
+            ->with('success', __('messages.question_created_successfully'));
 
+    } catch (\Exception $e) {
+        DB::rollback();
+
+        \Log::error('Question creation failed: ' . $e->getMessage(), [
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_creation_failed'),
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
             ], 500);
         }
+
+        return redirect()->back()
+            ->withInput()
+            ->with('error', __('messages.question_creation_failed'));
     }
+}
 
     /**
      * Update an existing question
      */
     public function updateQuestion(Request $request, Question $question, $isAdmin = false)
-    {
-        // Check permissions
-        if (!$this->canManageQuestion($question, $isAdmin)) {
+{
+    // Check permissions
+    if (!$this->canManageQuestion($question, $isAdmin)) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.unauthorized_action')
             ], 403);
         }
+        
+        return redirect()->back()
+            ->with('error', __('messages.unauthorized_action'));
+    }
 
-        // Validate the request
-        $validator = $this->validateQuestionRequest($request, $isAdmin, $question->id);
+    // Validate the request
+    $validator = $this->validateQuestionRequest($request, $isAdmin, $question->id);
 
-        if ($validator->fails()) {
+    if ($validator->fails()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.validation_error'),
                 'errors' => $validator->errors()
             ], 422);
         }
+        
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('error', __('messages.validation_error'));
+    }
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            $questionData = $this->prepareQuestionData($request, $isAdmin, $question);
+    try {
+        $questionData = $this->prepareQuestionData($request, $isAdmin, $question);
 
-            $question->update($questionData);
+        $question->update($questionData);
 
-            // Delete existing options and create new ones
-            $question->options()->delete();
+        // Delete existing options and create new ones
+        $question->options()->delete();
 
-            // Handle options based on question type
-            if ($request->type === 'multiple_choice') {
-                $this->createMultipleChoiceOptions($question, $request->options);
-            } elseif ($request->type === 'true_false') {
-                $this->createTrueFalseOptions($question, $request->true_false_answer);
-            }
+        // Handle options based on question type
+        if ($request->type === 'multiple_choice') {
+            $this->createMultipleChoiceOptions($question, $request->options);
+        } elseif ($request->type === 'true_false') {
+            $this->createTrueFalseOptions($question, $request->true_false_answer);
+        }
 
-            DB::commit();
+        DB::commit();
 
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => __('messages.question_updated_successfully'),
                 'data' => $question->fresh()->load(['course', 'options', 'creator'])
             ]);
+        }
 
-        } catch (\Exception $e) {
-            DB::rollback();
+        return redirect()->back()
+            ->with('success', __('messages.question_updated_successfully'));
 
+    } catch (\Exception $e) {
+        DB::rollback();
+
+        \Log::error('Question update failed: ' . $e->getMessage(), [
+            'question_id' => $question->id,
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => false,
                 'message' => __('messages.question_update_failed'),
-                'error' => $e->getMessage()
+                'error' => config('app.debug') ? $e->getMessage() : __('messages.something_went_wrong')
             ], 500);
         }
+
+        return redirect()->back()
+            ->withInput()
+            ->with('error', __('messages.question_update_failed'));
     }
+}
 
     /**
      * Delete an exam
@@ -373,38 +425,90 @@ trait ExamManagementTrait
     /**
      * Validate question request
      */
-    protected function validateQuestionRequest(Request $request, $isAdmin = false, $questionId = null)
-    {
-        $rules = [
-            'title_en' => 'required|string|max:255',
-            'title_ar' => 'required|string|max:255',
-            'question_en' => 'required|string',
-            'question_ar' => 'required|string',
-            'type' => 'required|in:multiple_choice,true_false,essay',
-            'grade' => 'required|numeric|min:0.1|max:999.99',
-            'course_id' => 'nullable|exists:courses,id',
-            'explanation_en' => 'nullable|string',
-            'explanation_ar' => 'nullable|string',
-            'correct_feedback_en' => 'nullable|string',
-            'correct_feedback_ar' => 'nullable|string',
-            'incorrect_feedback_en' => 'nullable|string',
-            'incorrect_feedback_ar' => 'nullable|string',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
-        ];
+ protected function validateQuestionRequest(Request $request, $isAdmin = false, $questionId = null)
+{
+    $rules = [
+        'title_en' => 'required|string|max:255',
+        'title_ar' => 'required|string|max:255',
+        'question_en' => 'required|string',
+        'question_ar' => 'required|string',
+        'type' => 'required|in:multiple_choice,true_false,essay',
+        'grade' => 'required|numeric|min:0.1|max:999.99',
+        'course_id' => 'nullable|exists:courses,id',
+        'explanation_en' => 'nullable|string',
+        'explanation_ar' => 'nullable|string',
+        'correct_feedback_en' => 'nullable|string',
+        'correct_feedback_ar' => 'nullable|string',
+        'incorrect_feedback_en' => 'nullable|string',
+        'incorrect_feedback_ar' => 'nullable|string',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ];
 
-        // Type-specific validation
-        if ($request->type === 'multiple_choice') {
-            $rules['options'] = 'required|array|min:2|max:6';
-            $rules['options.*.option_en'] = 'required|string';
-            $rules['options.*.option_ar'] = 'required|string';
-            $rules['options.*.is_correct'] = 'sometimes|boolean';
-        } elseif ($request->type === 'true_false') {
-            $rules['true_false_answer'] = 'required|boolean';
-        }
+    // Custom messages for better error display
+    $messages = [
+        'title_en.required' => __('messages.title_en_required'),
+        'title_ar.required' => __('messages.title_ar_required'),
+        'question_en.required' => __('messages.question_en_required'),
+        'question_ar.required' => __('messages.question_ar_required'),
+        'type.required' => __('messages.question_type_required'),
+        'type.in' => __('messages.question_type_invalid'),
+        'grade.required' => __('messages.grade_required'),
+        'grade.numeric' => __('messages.grade_must_be_numeric'),
+        'grade.min' => __('messages.grade_min_value'),
+        'grade.max' => __('messages.grade_max_value'),
+        'course_id.exists' => __('messages.course_not_found'),
+        'photo.image' => __('messages.photo_must_be_image'),
+        'photo.mimes' => __('messages.photo_invalid_format'),
+        'photo.max' => __('messages.photo_too_large'),
+    ];
 
-        return Validator::make($request->all(), $rules);
+    // Type-specific validation
+    if ($request->type === 'multiple_choice') {
+        $rules['options'] = 'required|array|min:2|max:6';
+        $rules['options.*.option_en'] = 'required|string';
+        $rules['options.*.option_ar'] = 'required|string';
+        $rules['options.*.is_correct'] = 'sometimes|boolean';
+        
+        $messages['options.required'] = __('messages.options_required');
+        $messages['options.min'] = __('messages.options_min_two');
+        $messages['options.max'] = __('messages.options_max_six');
+        $messages['options.*.option_en.required'] = __('messages.option_en_required');
+        $messages['options.*.option_ar.required'] = __('messages.option_ar_required');
+    } elseif ($request->type === 'true_false') {
+        $rules['true_false_answer'] = 'required|boolean';
+        $messages['true_false_answer.required'] = __('messages.true_false_answer_required');
     }
 
+    $validator = Validator::make($request->all(), $rules, $messages);
+
+    // Additional custom validation
+    $validator->after(function ($validator) use ($request) {
+        // Validate that at least one option is marked as correct for multiple choice
+        if ($request->type === 'multiple_choice' && $request->has('options')) {
+            $hasCorrectAnswer = false;
+            foreach ($request->options as $option) {
+                if (isset($option['is_correct']) && $option['is_correct']) {
+                    $hasCorrectAnswer = true;
+                    break;
+                }
+            }
+            
+            if (!$hasCorrectAnswer) {
+                $validator->errors()->add('options', __('messages.at_least_one_correct_option'));
+            }
+        }
+    });
+
+    // Log validation errors for debugging
+    if ($validator->fails()) {
+        \Log::warning('Question validation failed:', [
+            'errors' => $validator->errors()->toArray(),
+            'request_data' => $request->except(['photo'])
+        ]);
+    }
+
+    return $validator;
+}
     /**
      * Prepare exam data for storage
      */
