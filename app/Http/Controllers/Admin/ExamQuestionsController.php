@@ -69,6 +69,12 @@ class ExamQuestionsController extends Controller
         // Use the trait to create the question
         $response = $this->storeQuestion($request, true); // true = isAdmin
         
+        // Handle redirect response (validation failed)
+        if ($response instanceof \Illuminate\Http\RedirectResponse) {
+            return $response;
+        }
+        
+        // Handle JSON response
         $data = $response->getData();
         
         if (!$data->success) {
@@ -184,6 +190,12 @@ class ExamQuestionsController extends Controller
         // Use the trait to update the question
         $response = $this->updateQuestion($request, $question, true); // true = isAdmin
         
+        // Handle redirect response (validation failed)
+        if ($response instanceof \Illuminate\Http\RedirectResponse) {
+            return $response;
+        }
+        
+        // Handle JSON response
         if ($request->expectsJson()) {
             return $response;
         }
