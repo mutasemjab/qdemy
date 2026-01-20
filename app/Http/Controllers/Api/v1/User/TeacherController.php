@@ -52,7 +52,7 @@ class TeacherController extends Controller
                 'id' => $teacher->id,
                 'name' => $teacher->user->name ?? $teacher->name,
                 'name_of_lesson' => $teacher->name_of_lesson,
-                'photo' => $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/Profile-picture.jpg'),
+                'photo' => $teacher->photo,
                 'description_ar' => $teacher->description_ar,
                 'social_media' => [
                     'facebook' => $teacher->facebook,
