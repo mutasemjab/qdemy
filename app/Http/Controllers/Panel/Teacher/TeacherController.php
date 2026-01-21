@@ -23,17 +23,17 @@ use Illuminate\Support\Facades\DB;
 
 class TeacherController extends Controller
 {
-    use HasNotifications, HasCommunity, CourseManagementTrait, SubjectCategoryTrait,ExamManagementTrait;
+    use HasNotifications, HasCommunity, CourseManagementTrait, SubjectCategoryTrait, ExamManagementTrait;
 
 
     public function dashboard()
     {
         $user = Auth::user();
         $notifications = $this->getUserNotifications();
-        
+
         // Get teacher's courses count
         $coursesCount = Course::where('teacher_id', $user->id)->count();
-        
+
         // Get recent courses with student count
         $recentCourses = Course::where('teacher_id', $user->id)
             ->with(['subject:id,name_ar,name_en'])
@@ -49,11 +49,11 @@ class TeacherController extends Controller
             ->sum('students_count');
 
         // Get recent enrollments (last 10)
-        $recentEnrollments = CourseUser::whereIn('course_id', function($query) use ($user) {
-                $query->select('id')
-                    ->from('courses')
-                    ->where('teacher_id', $user->id);
-            })
+        $recentEnrollments = CourseUser::whereIn('course_id', function ($query) use ($user) {
+            $query->select('id')
+                ->from('courses')
+                ->where('teacher_id', $user->id);
+        })
             ->with(['course:id,title_ar,title_en', 'user:id,name,email,photo'])
             ->latest()
             ->take(10)
@@ -71,10 +71,10 @@ class TeacherController extends Controller
         $posts = $this->getCommunityPosts(20);
 
         return view('panel.teacher.dashboard', compact(
-            'user', 
-            'notifications', 
-            'posts', 
-            'coursesCount', 
+            'user',
+            'notifications',
+            'posts',
+            'coursesCount',
             'recentCourses',
             'totalStudents',
             'recentEnrollments',
@@ -105,11 +105,11 @@ class TeacherController extends Controller
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title_ar', 'like', "%{$search}%")
-                  ->orWhere('title_en', 'like', "%{$search}%")
-                  ->orWhere('description_ar', 'like', "%{$search}%")
-                  ->orWhere('description_en', 'like', "%{$search}%");
+                    ->orWhere('title_en', 'like', "%{$search}%")
+                    ->orWhere('description_ar', 'like', "%{$search}%")
+                    ->orWhere('description_en', 'like', "%{$search}%");
             });
         }
 
@@ -192,10 +192,10 @@ class TeacherController extends Controller
 
         $course->load([
             'subject:id,name_ar,name_en',
-            'sections' => function($query) {
+            'sections' => function ($query) {
                 $query->whereNull('parent_id')->orderBy('created_at');
             },
-            'sections.contents' => function($query) {
+            'sections.contents' => function ($query) {
                 $query->orderBy('order');
             }
         ]);
@@ -248,14 +248,14 @@ class TeacherController extends Controller
 
         // Load course with nested relationships - EXACTLY like admin
         $course->load([
-            'sections' => function($query) {
+            'sections' => function ($query) {
                 $query->whereNull('parent_id')->orderBy('created_at');
             },
-            'sections.contents' => function($query) {
+            'sections.contents' => function ($query) {
                 $query->orderBy('order', 'asc')->orderBy('created_at');
             },
             'sections.children', // Load child sections
-            'sections.children.contents' => function($query) {
+            'sections.children.contents' => function ($query) {
                 $query->orderBy('order', 'asc')->orderBy('created_at');
             }
         ]);
@@ -434,7 +434,7 @@ class TeacherController extends Controller
     /**
      * Get child categories (AJAX)
      */
-     public function getChildCategories($parentId)
+    public function getChildCategories($parentId)
     {
         try {
             $categories = Category::where('parent_id', $parentId)
@@ -455,7 +455,7 @@ class TeacherController extends Controller
     public function getSubjectsByCategory(Request $request)
     {
         $categoryId = $request->get('category_id');
-        
+
         if (!$categoryId) {
             return response()->json([]);
         }
@@ -463,9 +463,9 @@ class TeacherController extends Controller
         try {
             // Use the trait method that returns formatted data for API
             $subjects = $this->getSubjectsByCategoryForApi($categoryId);
-            
+
             // Transform data to match expected format in JavaScript
-            $formattedSubjects = $subjects->map(function($subject) {
+            $formattedSubjects = $subjects->map(function ($subject) {
                 return [
                     'id' => $subject['id'],
                     'name' => $subject['name_ar'], // Use Arabic name as primary
@@ -473,123 +473,117 @@ class TeacherController extends Controller
                     'name_en' => $subject['name_en'] ?? '',
                 ];
             });
-            
+
             return response()->json($formattedSubjects->toArray());
-            
         } catch (\Exception $e) {
             \Log::error('Error in getSubjectsByCategory: ' . $e->getMessage());
             \Log::error('Category ID: ' . $categoryId);
             \Log::error('Stack trace: ' . $e->getTraceAsString());
-            
+
             return response()->json([]);
         }
     }
-    
+
     public function markAsRead($id)
     {
         return $this->markNotificationAsRead($id);
     }
 
-   public function updateAccount(Request $request)
-{
-    try {
-        $user = Auth::guard('user')->user();
+    public function updateAccount(Request $request)
+    {
+        try {
+            $user = Auth::guard('user')->user();
 
-        $request->validate([
-            'name'           => 'required|string|max:255',
-            'email'          => 'required|email|unique:users,email,'.$user->id,
-            'phone'          => 'nullable|string|max:20|unique:users,phone,'.$user->id,
-            'photo'          => 'nullable|image|mimes:jpg,jpeg,png',
-            'name_of_lesson' => 'nullable|string|max:255',
-            'description_en' => 'nullable|string',
-            'description_ar' => 'nullable|string',
-            'facebook'       => 'nullable|url',
-            'instagram'      => 'nullable|url',
-            'youtube'        => 'nullable|url',
-            'whatsapp'       => 'nullable|string|max:20',
-        ], [
-            'name.required' => 'الاسم مطلوب',
-            'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
-            'email.required' => 'البريد الإلكتروني مطلوب',
-            'email.email' => 'البريد الإلكتروني غير صحيح',
-            'email.unique' => 'البريد الإلكتروني مستخدم من قبل',
-            'phone.unique' => 'رقم الهاتف مستخدم من قبل',
-            'phone.max' => 'رقم الهاتف يجب أن لا يتجاوز 20 رقم',
-            'photo.image' => 'الملف يجب أن يكون صورة',
-            'photo.mimes' => 'الصورة يجب أن تكون من نوع: jpg, jpeg, png',
-            'facebook.url' => 'رابط فيسبوك غير صحيح',
-            'instagram.url' => 'رابط انستقرام غير صحيح',
-            'youtube.url' => 'رابط يوتيوب غير صحيح',
-        ]);
-
-        // Update user basic info
-        $user->name  = $request->name;
-        $user->email = $request->email;
-        $user->phone = $request->phone;
-
-        // Handle photo upload
-        $photoUpdated = false;
-        if ($request->hasFile('photo')) {
-            // Delete old photo if exists
-            if ($user->photo && file_exists(base_path('assets/admin/uploads/' . $user->photo))) {
-                unlink(base_path('assets/admin/uploads/' . $user->photo));
-            }
-            
-            $filename = uploadImage('assets/admin/uploads', $request->photo);
-            $user->photo = $filename;
-            $photoUpdated = true;
-        }
-
-        $user->save();
-
-        // Update teacher table
-        $teacher = $user->teacher;
-        
-        if ($teacher) {
-            // Update existing teacher
-            $teacher->name = $request->name;
-            $teacher->name_of_lesson = $request->name_of_lesson;
-            $teacher->description_en = $request->description_en;
-            $teacher->description_ar = $request->description_ar;
-            $teacher->facebook = $request->facebook;
-            $teacher->instagram = $request->instagram;
-            $teacher->youtube = $request->youtube;
-            $teacher->whataspp = $request->whatsapp;
-            
-            // Update photo if it was changed
-            if ($photoUpdated) {
-                $teacher->photo = $user->photo;
-            }
-            
-            $teacher->save();
-        } else {
-            // Create new teacher record
-            $user->teacher()->create([
-                'name'           => $request->name,
-                'name_of_lesson' => $request->name_of_lesson,
-                'description_en' => $request->description_en,
-                'description_ar' => $request->description_ar,
-                'facebook'       => $request->facebook,
-                'instagram'      => $request->instagram,
-                'youtube'        => $request->youtube,
-                'whataspp'       => $request->whatsapp,
-                'photo'          => $user->photo,
-                'user_id'        => $user->id,
+            $request->validate([
+                'name'           => 'required|string|max:255',
+                'email'          => 'required|email|unique:users,email,' . $user->id,
+                'phone'          => 'nullable|string|max:20|unique:users,phone,' . $user->id,
+                'photo'          => 'nullable|image|mimes:jpg,jpeg,png',
+                'name_of_lesson' => 'nullable|string|max:255',
+                'description_en' => 'nullable|string',
+                'description_ar' => 'nullable|string',
+                'facebook'       => 'nullable|url',
+                'instagram'      => 'nullable|url',
+                'youtube'        => 'nullable|url',
+                'whatsapp'       => 'nullable|string|max:20',
+            ], [
+                'name.required' => 'الاسم مطلوب',
+                'name.max' => 'الاسم يجب أن لا يتجاوز 255 حرف',
+                'email.required' => 'البريد الإلكتروني مطلوب',
+                'email.email' => 'البريد الإلكتروني غير صحيح',
+                'email.unique' => 'البريد الإلكتروني مستخدم من قبل',
+                'phone.unique' => 'رقم الهاتف مستخدم من قبل',
+                'phone.max' => 'رقم الهاتف يجب أن لا يتجاوز 20 رقم',
+                'photo.image' => 'الملف يجب أن يكون صورة',
+                'photo.mimes' => 'الصورة يجب أن تكون من نوع: jpg, jpeg, png',
+                'facebook.url' => 'رابط فيسبوك غير صحيح',
+                'instagram.url' => 'رابط انستقرام غير صحيح',
+                'youtube.url' => 'رابط يوتيوب غير صحيح',
             ]);
-        }
 
-        return back()->with('success', 'تم تحديث الحساب بنجاح');
-        
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return back()->withErrors($e->validator)->withInput();
-    } catch (\Exception $e) {
-        return back()->with('error', 'حدث خطأ أثناء تحديث الحساب: ' . $e->getMessage())->withInput();
+            // Update user basic info
+            $user->name  = $request->name;
+            $user->email = $request->email;
+            $user->phone = $request->phone;
+
+            // Handle photo upload
+            if ($request->hasFile('photo')) {
+                // Delete old photo if exists
+                if ($user->photo && file_exists(base_path('assets/admin/uploads/' . $user->photo))) {
+                    unlink(base_path('assets/admin/uploads/' . $user->photo));
+                }
+
+                $filename = uploadImage('assets/admin/uploads', $request->photo);
+                $user->photo = $filename;
+            }
+
+            $user->save();
+
+            // Update teacher table
+            $teacher = $user->teacher;
+
+            if ($teacher) {
+                // Update existing teacher
+                $teacher->name = $request->name;
+                $teacher->name_of_lesson = $request->name_of_lesson;
+                $teacher->description_en = $request->description_en;
+                $teacher->description_ar = $request->description_ar;
+                $teacher->facebook = $request->facebook;
+                $teacher->instagram = $request->instagram;
+                $teacher->youtube = $request->youtube;
+                $teacher->whataspp = $request->whatsapp;
+
+                // ALWAYS sync the photo from user table (whether updated or not)
+                $teacher->photo = $user->photo;
+
+                $teacher->save();
+            } else {
+                // Create new teacher record
+                $user->teacher()->create([
+                    'name'           => $request->name,
+                    'name_of_lesson' => $request->name_of_lesson,
+                    'description_en' => $request->description_en,
+                    'description_ar' => $request->description_ar,
+                    'facebook'       => $request->facebook,
+                    'instagram'      => $request->instagram,
+                    'youtube'        => $request->youtube,
+                    'whataspp'       => $request->whatsapp,
+                    'photo'          => $user->photo,
+                    'user_id'        => $user->id,
+                ]);
+            }
+
+            return back()->with('success', 'تم تحديث الحساب بنجاح');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'حدث خطأ أثناء تحديث الحساب: ' . $e->getMessage())->withInput();
+        }
     }
-}
-        
-   
-      // Community methods
-     public function createPost(Request $request)
+
+
+    // Community methods
+    public function createPost(Request $request)
     {
         return $this->handleCreatePost($request);
     }
@@ -615,12 +609,12 @@ class TeacherController extends Controller
         $user = Auth::user();
 
         $query = Exam::with(['course', 'subject', 'section'])
-                     ->where(function($q) use ($user) {
-                         $q->where('created_by', $user->id)
-                           ->orWhereHas('course', function($courseQ) use ($user) {
-                               $courseQ->where('teacher_id', $user->id);
-                           });
-                     });
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', $user->id)
+                    ->orWhereHas('course', function ($courseQ) use ($user) {
+                        $courseQ->where('teacher_id', $user->id);
+                    });
+            });
 
         // Filter by course
         if ($request->filled('course_id')) {
@@ -644,14 +638,14 @@ class TeacherController extends Controller
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title_en', 'like', "%{$search}%")
-                  ->orWhere('title_ar', 'like', "%{$search}%");
+                    ->orWhere('title_ar', 'like', "%{$search}%");
             });
         }
 
         $exams = $query->paginate(15);
-        
+
         // Get teacher's courses and subjects
         $courses = Course::where('teacher_id', $user->id)->with('subject')->get();
         $subjects = Subject::active()->ordered()->get();
@@ -667,8 +661,8 @@ class TeacherController extends Controller
         $user = Auth::user();
 
         $courses = Course::where('teacher_id', $user->id)
-                        ->with(['subject', 'sections'])
-                        ->get();
+            ->with(['subject', 'sections'])
+            ->get();
         $subjects = Subject::active()
             ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
             ->ordered()
@@ -685,37 +679,36 @@ class TeacherController extends Controller
         // Add debugging
         \Log::info('storeExamMethod called');
         \Log::info('Request data:', $request->all());
-        
+
         try {
             $response = $this->storeExam($request, false);
-            
+
             // Fix the logging - convert stdClass to array
             $responseData = $response->getData();
             \Log::info('Trait response:', json_decode(json_encode($responseData), true));
-            
+
             if ($request->expectsJson()) {
                 return $response;
             }
-            
+
             if ($responseData->success) {
-               return redirect()->route('teacher.exams.exam_questions.index', $responseData->data->id)
-                        ->with('success', $responseData->message);
+                return redirect()->route('teacher.exams.exam_questions.index', $responseData->data->id)
+                    ->with('success', $responseData->message);
             }
-            
+
             \Log::error('Exam creation failed:', [
                 'success' => $responseData->success,
                 'message' => $responseData->message ?? 'No message',
                 'errors' => isset($responseData->errors) ? json_decode(json_encode($responseData->errors), true) : []
             ]);
-            
+
             return redirect()->back()->withInput()->with('error', $responseData->message ?? 'Unknown error');
-            
         } catch (\Exception $e) {
             \Log::error('Exception in storeExamMethod:', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return redirect()->back()->withInput()->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
@@ -746,14 +739,14 @@ class TeacherController extends Controller
 
         $user = Auth::user();
         $courses = Course::where('teacher_id', $user->id)
-                        ->with(['subject', 'sections'])
-                        ->get();
+            ->with(['subject', 'sections'])
+            ->get();
         $subjects = Subject::active()
             ->with('grade:id,name_ar,name_en', 'semester:id,name_ar,name_en')
             ->ordered()
             ->get();
         $sections = CourseSection::get();
-        return view('panel.teacher.exams.edit', compact('exam', 'courses', 'subjects','sections'));
+        return view('panel.teacher.exams.edit', compact('exam', 'courses', 'subjects', 'sections'));
     }
 
     /**
@@ -767,17 +760,17 @@ class TeacherController extends Controller
         }
 
         $response = $this->updateExam($request, $exam, false); // false = isTeacher
-        
+
         if ($request->expectsJson()) {
             return $response;
         }
-        
+
         $data = $response->getData();
         if ($data->success) {
             return redirect()->route('teacher.exams.index')
                 ->with('success', $data->message);
         }
-        
+
         return redirect()->back()->withInput()->with('error', $data->message);
     }
 
@@ -792,17 +785,17 @@ class TeacherController extends Controller
         }
 
         $response = $this->deleteExam($exam, false); // false = isTeacher
-        
+
         if (request()->expectsJson()) {
             return $response;
         }
-        
+
         $data = $response->getData();
         if ($data->success) {
             return redirect()->route('teacher.exams.index')
                 ->with('success', $data->message);
         }
-        
+
         return redirect()->back()->with('error', $data->message);
     }
 
@@ -827,11 +820,11 @@ class TeacherController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title_en', 'like', "%{$search}%")
-                ->orWhere('title_ar', 'like', "%{$search}%")
-                ->orWhere('question_en', 'like', "%{$search}%")
-                ->orWhere('question_ar', 'like', "%{$search}%");
+                    ->orWhere('title_ar', 'like', "%{$search}%")
+                    ->orWhere('question_en', 'like', "%{$search}%")
+                    ->orWhere('question_ar', 'like', "%{$search}%");
             });
         }
 
@@ -871,24 +864,24 @@ class TeacherController extends Controller
 
         // Use the trait to create the question
         $response = $this->storeQuestion($request, false); // false = isTeacher
-        
+
         $data = $response->getData();
-        
+
         if (!$data->success) {
             if ($request->expectsJson()) {
                 return $response;
             }
             return redirect()->back()->withInput()->with('error', $data->message);
         }
-        
+
         $question = Question::find($data->data->id);
-        
+
         // Add the question to the exam
         DB::beginTransaction();
-        
+
         try {
             $maxOrder = $exam->questions()->max('exam_questions.order') ?? 0;
-            
+
             $exam->questions()->attach($question->id, [
                 'order' => $maxOrder + 1,
                 'grade' => $question->grade,
@@ -916,13 +909,12 @@ class TeacherController extends Controller
 
             return redirect()->route('teacher.exams.exam_questions.index', $exam)
                 ->with('success', __('messages.question_created_and_added_to_exam'));
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             // If adding to exam fails, delete the created question
             $question->delete();
-            
+
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -952,10 +944,10 @@ class TeacherController extends Controller
         }
 
         $question->load(['course', 'options']);
-        
+
         // Get the question's details in this exam (order, grade)
         $examQuestion = $exam->questions()->where('questions.id', $question->id)->first();
-        
+
         return view('panel.teacher.exams.questions.show', compact('exam', 'question', 'examQuestion'));
     }
 
@@ -975,7 +967,7 @@ class TeacherController extends Controller
         }
 
         $question->load('options');
-        
+
         return view('panel.teacher.exams.questions.edit', compact('exam', 'question'));
     }
 
@@ -1001,11 +993,11 @@ class TeacherController extends Controller
 
         // Use the trait to update the question
         $response = $this->updateQuestion($request, $question, false); // false = isTeacher
-        
+
         if ($request->expectsJson()) {
             return $response;
         }
-        
+
         $data = $response->getData();
         if ($data->success) {
             // Update the total grade of the exam if the question grade changed
@@ -1016,7 +1008,7 @@ class TeacherController extends Controller
             return redirect()->route('teacher.exams.exam_questions.index', $exam)
                 ->with('success', $data->message);
         }
-        
+
         return redirect()->back()->withInput()->with('error', $data->message);
     }
 
@@ -1036,14 +1028,14 @@ class TeacherController extends Controller
         }
 
         DB::beginTransaction();
-        
+
         try {
             // First detach from exam
             $exam->questions()->detach($question->id);
-            
+
             // Check if this question is used in other exams
             $otherExams = $question->exams()->where('exams.id', '!=', $exam->id)->count();
-            
+
             // If not used in other exams, delete the question completely
             if ($otherExams === 0) {
                 $question->delete();
@@ -1065,13 +1057,12 @@ class TeacherController extends Controller
                     'message' => $message
                 ]);
             }
-            
+
             return redirect()->route('teacher.exams.exam_questions.index', $exam)
                 ->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             if (request()->expectsJson()) {
                 return response()->json([
                     'success' => false,
@@ -1079,14 +1070,14 @@ class TeacherController extends Controller
                     'error' => $e->getMessage()
                 ], 500);
             }
-            
+
             return redirect()->back()->with('error', __('messages.question_deletion_failed'));
         }
     }
 
- 
 
-  
+
+
 
     /**
      * View exam results
@@ -1139,12 +1130,12 @@ class TeacherController extends Controller
     public function getSubjectCoursesForExam(Subject $subject)
     {
         $user = Auth::user();
-        
+
         $courses = Course::where('subject_id', $subject->id)
             ->where('teacher_id', $user->id)
             ->select('id', 'title_en', 'title_ar')
             ->get();
-            
+
         return response()->json($courses);
     }
 
@@ -1236,5 +1227,4 @@ class TeacherController extends Controller
             'success' => true
         ]);
     }
-
 }
