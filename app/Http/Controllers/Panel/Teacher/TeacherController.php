@@ -12,6 +12,7 @@ use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
 use App\Models\Subject;
+use App\Models\Teacher;
 use App\Traits\CourseManagementTrait;
 use App\Traits\ExamManagementTrait;
 use App\Traits\HasCommunity;
