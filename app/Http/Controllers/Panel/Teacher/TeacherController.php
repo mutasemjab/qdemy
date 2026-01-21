@@ -530,8 +530,8 @@ class TeacherController extends Controller
         // Handle photo upload
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
-            if ($user->photo && file_exists(public_path('assets/admin/uploads/' . $user->photo))) {
-                unlink(public_path('assets/admin/uploads/' . $user->photo));
+            if ($user->photo && file_exists(base_path('assets/admin/uploads/' . $user->photo))) {
+                unlink(base_path('assets/admin/uploads/' . $user->photo));
             }
             
             $filename = uploadImage('assets/admin/uploads', $request->photo);
