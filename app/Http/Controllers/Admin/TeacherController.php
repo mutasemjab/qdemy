@@ -21,7 +21,7 @@ class TeacherController extends Controller
         $this->middleware('permission:teacher-edit', ['only' => ['edit', 'update']]);
         $this->middleware('permission:teacher-delete', ['only' => ['destroy']]);
     }
-   
+
 
     /**
      * Display a listing of the resource.
@@ -35,13 +35,13 @@ class TeacherController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('name_of_lesson', 'like', "%{$search}%")
-                  ->orWhere('description_en', 'like', "%{$search}%")
-                  ->orWhere('description_ar', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($userQuery) use ($search) {
-                      $userQuery->where('email', 'like', "%{$search}%")
-                               ->orWhere('phone', 'like', "%{$search}%");
-                  });
+                    ->orWhere('name_of_lesson', 'like', "%{$search}%")
+                    ->orWhere('description_en', 'like', "%{$search}%")
+                    ->orWhere('description_ar', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -87,7 +87,7 @@ class TeacherController extends Controller
             'youtube' => 'nullable|url',
             'whataspp' => 'nullable|url',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            
+
             // User creation fields
             'create_user_account' => 'boolean',
             'email' => 'required_if:create_user_account,1|nullable|email|unique:users,email',
@@ -96,11 +96,17 @@ class TeacherController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $teacherData = $request->only([
-                'name', 'name_of_lesson', 'description_en', 'description_ar',
-                'facebook', 'instagram', 'youtube','whataspp'
+                'name',
+                'name_of_lesson',
+                'description_en',
+                'description_ar',
+                'facebook',
+                'instagram',
+                'youtube',
+                'whataspp'
             ]);
 
             // Handle photo upload
@@ -136,15 +142,14 @@ class TeacherController extends Controller
 
             DB::commit();
 
-            $message = $userId 
+            $message = $userId
                 ? __('messages.Teacher and user account created successfully')
                 : __('messages.Teacher created successfully');
 
             return redirect()->route('teachers.index')->with('success', $message);
-
         } catch (\Exception $e) {
             DB::rollback();
-            
+
             // Clean up uploaded photo if transaction failed
             if (isset($teacherData['photo'])) {
                 $filePath = base_path('assets/admin/uploads/' . $teacherData['photo']);
@@ -190,7 +195,7 @@ class TeacherController extends Controller
             'youtube' => 'nullable|url',
             'whataspp' => 'nullable|url',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            
+
             // User update fields
             'update_user_info' => 'boolean',
             'email' => 'nullable|email|unique:users,email,' . ($teacher->user_id ?? 'NULL'),
@@ -200,20 +205,27 @@ class TeacherController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $teacherData = $request->only([
-                'name', 'name_of_lesson', 'description_en', 'description_ar',
-                'facebook', 'instagram', 'youtube','whataspp'
+                'name',
+                'name_of_lesson',
+                'description_en',
+                'description_ar',
+                'facebook',
+                'instagram',
+                'youtube',
+                'whataspp'
             ]);
 
             // Handle photo upload
             if ($request->hasFile('photo')) {
-               if ($teacher->photo) {
-                $filePath = base_path('assets/admin/uploads/' . $teacher->photo);
-                if (file_exists($filePath)) {
-                    unlink($filePath);
-                }
+                // Delete old teacher photo
+                if ($teacher->photo) {
+                    $filePath = base_path('assets/admin/uploads/' . $teacher->photo);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
                 }
                 $teacherData['photo'] = uploadImage('assets/admin/uploads', $request->photo);
             }
@@ -231,7 +243,7 @@ class TeacherController extends Controller
                 if ($request->filled('phone')) {
                     $userUpdateData['phone'] = $request->phone;
                 }
-               
+
                 if ($request->filled('activate')) {
                     $userUpdateData['activate'] = $request->activate;
                 }
@@ -240,15 +252,13 @@ class TeacherController extends Controller
                     $userUpdateData['password'] = Hash::make($request->password);
                 }
 
-              
-
                 // Update user photo if teacher photo was updated
                 if (isset($teacherData['photo'])) {
-                    // Delete old user photo if different from teacher photo
-                    if ($teacher->user->photo && $teacher->user->photo !== $teacher->photo) {
-                        $filePath = base_path('assets/admin/uploads/' . $teacher->photo);
-                        if (file_exists($filePath)) {
-                            unlink($filePath);
+                    // Delete old user photo (if it exists and is different from the new photo)
+                    if ($teacher->user->photo && $teacher->user->photo !== $teacherData['photo']) {
+                        $userPhotoPath = base_path('assets/admin/uploads/' . $teacher->user->photo);
+                        if (file_exists($userPhotoPath)) {
+                            unlink($userPhotoPath);
                         }
                     }
                     $userUpdateData['photo'] = $teacherData['photo'];
@@ -263,12 +273,9 @@ class TeacherController extends Controller
 
             return redirect()->route('teachers.index')
                 ->with('success', __('messages.Teacher updated successfully'));
-
         } catch (\Exception $e) {
             DB::rollback();
             return back()->withInput()->with('error', __('messages.An error occurred while updating the teacher'));
         }
     }
-
- 
 }
