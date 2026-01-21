@@ -296,7 +296,7 @@
             </div>
         </div>
     </section>
-
+{{-- 
     <section data-aos="zoom-in-up" class="stats-section">
         <div class="stats-overlay">
             <div class="stat-item">
@@ -319,7 +319,7 @@
                 <p>{{ __('front.Student') }}</p>
             </div>
         </div>
-    </section>
+    </section> --}}
 
     <section class="faq-section">
         <h2 data-aos="zoom-in-up"> <img
