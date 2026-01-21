@@ -528,6 +528,7 @@ class TeacherController extends Controller
         $user->phone = $request->phone;
 
         // Handle photo upload
+        $photoUpdated = false;
         if ($request->hasFile('photo')) {
             // Delete old photo if exists
             if ($user->photo && file_exists(base_path('assets/admin/uploads/' . $user->photo))) {
@@ -536,29 +537,46 @@ class TeacherController extends Controller
             
             $filename = uploadImage('assets/admin/uploads', $request->photo);
             $user->photo = $filename;
+            $photoUpdated = true;
         }
 
         $user->save();
 
-        // Update or create teacher record
-        $teacherData = [
-            'name'           => $request->name,
-            'name_of_lesson' => $request->name_of_lesson,
-            'description_en' => $request->description_en,
-            'description_ar' => $request->description_ar,
-            'facebook'       => $request->facebook,
-            'instagram'      => $request->instagram,
-            'youtube'        => $request->youtube,
-            'whataspp'       => $request->whatsapp,
-            'photo'          => $user->photo, // This ensures both tables have the same photo
-            'user_id'        => $user->id,
-        ];
-
-        // Update or create teacher record
-        $user->teacher()->updateOrCreate(
-            ['user_id' => $user->id],
-            $teacherData
-        );
+        // Update teacher table
+        $teacher = $user->teacher;
+        
+        if ($teacher) {
+            // Update existing teacher
+            $teacher->name = $request->name;
+            $teacher->name_of_lesson = $request->name_of_lesson;
+            $teacher->description_en = $request->description_en;
+            $teacher->description_ar = $request->description_ar;
+            $teacher->facebook = $request->facebook;
+            $teacher->instagram = $request->instagram;
+            $teacher->youtube = $request->youtube;
+            $teacher->whataspp = $request->whatsapp;
+            
+            // Update photo if it was changed
+            if ($photoUpdated) {
+                $teacher->photo = $user->photo;
+            }
+            
+            $teacher->save();
+        } else {
+            // Create new teacher record
+            $user->teacher()->create([
+                'name'           => $request->name,
+                'name_of_lesson' => $request->name_of_lesson,
+                'description_en' => $request->description_en,
+                'description_ar' => $request->description_ar,
+                'facebook'       => $request->facebook,
+                'instagram'      => $request->instagram,
+                'youtube'        => $request->youtube,
+                'whataspp'       => $request->whatsapp,
+                'photo'          => $user->photo,
+                'user_id'        => $user->id,
+            ]);
+        }
 
         return back()->with('success', 'تم تحديث الحساب بنجاح');
         
