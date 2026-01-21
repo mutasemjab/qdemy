@@ -3,7 +3,6 @@
 
 @section('content')
 <section class="f08-page">
-    <div data-aos="fade-up" data-aos-duration="1000" class="f08-head">{{$tawjihiLastYear->localized_name}}</div>
 
     @if($tawjihiLastYearFields && $tawjihiLastYearFields->count())
     @foreach($tawjihiLastYearFields as $index => $tawjihiLastYearField)
