@@ -40,6 +40,15 @@ class CourseController extends Controller
             $user_enrollment_courses = $this->courseRepository->getUserCoursesIds($user?->id);
             $is_enrolled = $user ? in_array($course->id, $user_enrollment_courses) : false;
 
+            // Get user's content progress for this course (keyed by content_id)
+            $userContentProgress = collect(); // Empty collection by default
+            if ($is_enrolled && $user) {
+                $userContentProgress = ContentUserProgress::where('user_id', $user->id)
+                    ->whereIn('course_content_id', $contents->pluck('id'))
+                    ->get()
+                    ->keyBy('course_content_id');
+            }
+
             $courseData = [
                 'id' => $course->id,
                 'title_en' => $course->title_en,
@@ -52,7 +61,7 @@ class CourseController extends Controller
                     'id' => $course->teacher->id,
                     'name' => $course->teacher->name,
                     'name_of_lesson' => $course->teacher->name_of_lesson,
-                    'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg'),
+                    'photo' => $course->teacher->photo,
                     'description_ar' => $course->teacher->description_ar,
                     'social_media' => [
                         'facebook' => $course->teacher->facebook,
@@ -117,8 +126,12 @@ class CourseController extends Controller
                             if ($sectionContents) {
                                 foreach ($sectionContents as $content) {
                                     $locked = false;
+                                    $isCompleted = false;
                                     if ($is_enrolled && $user) {
                                         $locked = $this->isContentLocked($course, $content, $user->id);
+                                        // Check if content is completed
+                                        $progress = $userContentProgress->get($content->id);
+                                        $isCompleted = $progress ? (bool) $progress->completed : false;
                                     }
 
                                     $childData['contents'][] = [
@@ -134,7 +147,8 @@ class CourseController extends Controller
                                         'video_url' => $content->video_url,
                                         'file_path' => $content->file_path,
                                         'pdf_type' => $content->pdf_type,
-                                        'locked' => $locked
+                                        'locked' => $locked,
+                                        'is_completed' => $isCompleted
                                     ];
                                 }
                             }
@@ -170,8 +184,12 @@ class CourseController extends Controller
                         $sectionData['contents'] = [];
                         foreach ($directContents as $content) {
                             $locked = false;
+                            $isCompleted = false;
                             if ($is_enrolled && $user) {
                                 $locked = $this->isContentLocked($course, $content, $user->id);
+                                // Check if content is completed
+                                $progress = $userContentProgress->get($content->id);
+                                $isCompleted = $progress ? (bool) $progress->completed : false;
                             }
 
                             $sectionData['contents'][] = [
@@ -187,7 +205,8 @@ class CourseController extends Controller
                                 'video_url' => $content->video_url,
                                 'file_path' => $content->file_path,
                                 'pdf_type' => $content->pdf_type,
-                                'locked' => $locked
+                                'locked' => $locked,
+                                'is_completed' => $isCompleted
                             ];
                         }
                     }

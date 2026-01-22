@@ -300,37 +300,51 @@ class ProgressController extends Controller
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
-            // Get all progress records for this course
+            // Get all progress records for this course's contents
+            // Note: A single record can have both course_content_id AND exam_id
+            // when user completes both video and linked exam
             $allProgress = ContentUserProgress::where('user_id', $user->id)
-                ->where(function ($query) use ($course) {
-                    // Video progress
-                    $query->whereIn('course_content_id', $course->contents->pluck('id'))
-                        ->whereNull('exam_id');
-                })
-                ->orWhere(function ($query) use ($course) {
-                    // Exam progress
-                    $query->whereIn('exam_id', $course->exams->pluck('id'))
-                        ->whereNull('course_content_id');
-                })
+                ->whereIn('course_content_id', $course->contents->pluck('id'))
                 ->get();
 
-            // Separate video and exam progress
-            $videoProgress = $allProgress->where('course_content_id', '!=', null)->map(function ($progress) {
+            // Build video progress from all records that have course_content_id
+            $videoProgress = $allProgress->map(function ($progress) {
+                $content = CourseContent::find($progress->course_content_id);
+                $videoDuration = $content?->video_duration;
+
+                // Video is completed if:
+                // 1. completed flag is true AND no linked exam, OR
+                // 2. watch_time reached 90% of video duration
+                $isVideoCompleted = false;
+                if ($videoDuration && $progress->watch_time) {
+                    $isVideoCompleted = $progress->watch_time >= $videoDuration * 0.9;
+                } elseif ($progress->watch_time > 0 && !$videoDuration) {
+                    // Non-video content (PDF, etc.)
+                    $isVideoCompleted = true;
+                }
+                // Also check if marked completed and no exam (pure video completion)
+                if ($progress->completed && !$progress->exam_id) {
+                    $isVideoCompleted = true;
+                }
+
                 return [
                     'id' => $progress->id,
                     'content_id' => $progress->course_content_id,
                     'watch_time' => $progress->watch_time,
-                    'completed' => $progress->completed,
+                    'video_completed' => $isVideoCompleted,
+                    'lesson_completed' => $progress->completed,
                     'viewed_at' => $progress->viewed_at,
                 ];
             })->values();
 
-            $examProgress = $allProgress->where('exam_id', '!=', null)->map(function ($progress) {
+            // Build exam progress from records that have exam_id
+            $examProgress = $allProgress->whereNotNull('exam_id')->map(function ($progress) {
                 return [
                     'id' => $progress->id,
+                    'content_id' => $progress->course_content_id,
                     'exam_id' => $progress->exam_id,
                     'exam_attempt_id' => $progress->exam_attempt_id,
-                    'completed' => $progress->completed,
+                    'exam_completed' => true, // If exam_id is set, exam was completed
                     'score' => $progress->score,
                     'percentage' => $progress->percentage,
                     'is_passed' => $progress->is_passed,

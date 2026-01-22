@@ -164,7 +164,7 @@ class HomeController extends Controller
                         'name_of_lesson' => $teacher->name_of_lesson,
                         'description_ar' => $teacher->description_ar,
                         'description_en' => $teacher->description_en,
-                        'photo' => $teacher->photo ? asset('assets/admin/uploads/' . $teacher->photo) : asset('assets_front/images/Profile-picture.jpg'),
+                        'photo' => $teacher->photo,
                         'social_media' => [
                             'facebook' => $teacher->facebook,
                             'instagram' => $teacher->instagram,

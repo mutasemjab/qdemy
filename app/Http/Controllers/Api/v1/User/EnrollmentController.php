@@ -563,7 +563,7 @@ class EnrollmentController extends Controller
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
                         'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : null,
+                        'photo' => $course->teacher->photo,
                     ] : null,
                     'subject' => $course->subject ? [
                         'id' => $course->subject->id,
