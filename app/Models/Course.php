@@ -125,15 +125,15 @@ class Course extends Model
                 ->first();
 
             // Video is completed if:
-            // 1. completed flag is true (PRIMARY indicator - works for YouTube and Bunny videos), OR
-            // 2. watch_time reached 90% of video duration (SECONDARY indicator - for Bunny videos with tracking)
+            // 1. video_completed flag is true (NEW - most reliable), OR
+            // 2. watch_time reached 90% of video duration (FALLBACK - for backward compatibility)
             $isVideoCompleted = false;
             if ($contentProgress) {
-                // Primary indicator: completed flag
-                if ($contentProgress->completed) {
+                // Primary indicator: use the dedicated video_completed flag
+                if ($contentProgress->video_completed) {
                     $isVideoCompleted = true;
                 } elseif ($video->video_duration && $contentProgress->watch_time) {
-                    // Secondary: check if 90% watched (for Bunny videos with watch_time tracking)
+                    // Fallback: check if 90% watched (for Bunny videos with watch_time tracking)
                     $isVideoCompleted = $contentProgress->watch_time >= $video->video_duration * 0.9;
                 }
             }

@@ -13,6 +13,7 @@ class ContentUserProgress extends Model
     
     protected $casts = [
         'completed' => 'boolean',
+        'video_completed' => 'boolean',
         'is_passed' => 'boolean',
         'viewed_at' => 'datetime',
         'watch_time' => 'integer',

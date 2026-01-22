@@ -63,6 +63,7 @@ class ProgressController extends Controller
                 'course_content_id' => 'required|exists:course_contents,id',
                 'watch_time' => 'required|integer|min:0',
                 'completed' => 'boolean',
+                'video_completed' => 'boolean',
             ]);
 
             if ($validator->fails()) {
@@ -85,10 +86,15 @@ class ProgressController extends Controller
                 return $this->error_response('You are not enrolled in this course', null, 403);
             }
 
-            // Determine if completed based on watch time (90% threshold)
-            $videoCompleted = $request->has('completed')
-                ? $request->completed
-                : ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9);
+            // Determine if video is completed
+            // Priority: 1) explicit video_completed flag from request (most reliable)
+            //           2) completed flag from request (backward compatibility)
+            //           3) watch_time threshold (for Bunny videos)
+            $videoCompleted = $request->has('video_completed')
+                ? $request->video_completed
+                : ($request->has('completed') 
+                    ? $request->completed 
+                    : ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9));
 
            
 
@@ -102,13 +108,15 @@ class ProgressController extends Controller
                     'exam_id' => null,
                     'watch_time' => 0,
                     'completed' => false,
+                    'video_completed' => false,
                 ]
             );
 
             
 
-            // Update only video-related fields (preserve exam data if present)
+            // Update video-related fields (preserve exam data if present)
             $progress->watch_time = $request->watch_time;
+            $progress->video_completed = $videoCompleted; // NEW: track video completion separately
             $progress->viewed_at = now();
             $progress->save();
 
@@ -214,6 +222,7 @@ class ProgressController extends Controller
                     'exam_id' => null,
                     'watch_time' => 0,
                     'completed' => false,
+                    'video_completed' => false,
                 ]
             );
 
@@ -224,6 +233,9 @@ class ProgressController extends Controller
             if (! $progress->watch_time) {
                 $progress->watch_time = 1;
             }
+            
+            // Mark video as completed
+            $progress->video_completed = true;
 
             // Check if this lesson has a linked exam
             $linkedExam = $courseContent->exams()->where('is_active', 1)->first();
@@ -313,17 +325,18 @@ class ProgressController extends Controller
                 $videoDuration = $content?->video_duration;
 
                 // Video is completed if:
-                // 1. completed flag is true AND no linked exam, OR
-                // 2. watch_time reached 90% of video duration
+                // 1. video_completed flag is true (NEW - most reliable), OR
+                // 2. watch_time reached 90% of video duration (FALLBACK)
                 $isVideoCompleted = false;
-                if ($videoDuration && $progress->watch_time) {
+                
+                // Primary: use video_completed flag
+                if ($progress->video_completed) {
+                    $isVideoCompleted = true;
+                } elseif ($videoDuration && $progress->watch_time) {
+                    // Fallback: check if 90% watched
                     $isVideoCompleted = $progress->watch_time >= $videoDuration * 0.9;
                 } elseif ($progress->watch_time > 0 && !$videoDuration) {
-                    // Non-video content (PDF, etc.)
-                    $isVideoCompleted = true;
-                }
-                // Also check if marked completed and no exam (pure video completion)
-                if ($progress->completed && !$progress->exam_id) {
+                    // Non-video content (PDF, etc.) or YouTube without duration
                     $isVideoCompleted = true;
                 }
 
