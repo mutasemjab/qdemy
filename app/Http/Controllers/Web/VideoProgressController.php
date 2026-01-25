@@ -1,13 +1,11 @@
 <?php
 
-namespace  App\Http\Controllers\Web;
+namespace App\Http\Controllers\Web;
 
-use App\Models\Course;
-use Illuminate\Http\Request;
-use App\Models\CourseContent;
-use Illuminate\Support\Facades\DB;
-use App\Models\ContentUserProgress;
 use App\Http\Controllers\Controller;
+use App\Models\ContentUserProgress;
+use App\Models\CourseContent;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class VideoProgressController extends Controller
@@ -45,13 +43,28 @@ class VideoProgressController extends Controller
         // لان الفيديو قد يسجل كمكتمل قبل انتهاء مدته حسب ال .env.COMPLETED_WATCHING_COURSES
         $watchTime  = ($completed && $content->video_duration > $request->watch_time) ? $content->video_duration : $request->watch_time;
 
-        // اذا
-        // $$completed = ($completed && $content->video_duration > $request->watch_time) ? $content->video_duration : $request->watch_time;
-
         // Check if user is enrolled in the course
         $isEnrolled = $this->checkUserEnrollment($user->id, $content->course_id);
         if (!$isEnrolled && $content->is_free != 1) {
             return response()->json(['success' => false, 'message' => 'Not enrolled']);
+        }
+
+        // Check if this lesson has an exam linked to it
+        $hasLinkedExam = $content->exams()->where('is_active', 1)->exists();
+
+        // Get existing progress to check exam completion
+        $existingProgress = ContentUserProgress::where('user_id', $user->id)
+            ->where('course_content_id', $contentId)
+            ->first();
+
+        // Determine if lesson is complete:
+        // - If lesson has exam: complete only if BOTH video AND exam are done
+        // - If lesson has no exam: complete when video is done
+        $lessonCompleted = $completed;
+        if ($hasLinkedExam && $completed) {
+            // Check if exam was already completed
+            $isExamCompleted = $existingProgress && $existingProgress->exam_id !== null;
+            $lessonCompleted = $isExamCompleted; // Only complete if exam is also done
         }
 
         // Update or create progress record
@@ -62,7 +75,8 @@ class VideoProgressController extends Controller
             ],
             [
                 'watch_time' => $watchTime,
-                'completed' => $completed,
+                'video_completed' => $completed, // Track video completion separately
+                'completed' => $lessonCompleted, // Lesson completion (considers exam if linked)
                 'viewed_at' => now()
             ]
         );
@@ -110,6 +124,24 @@ class VideoProgressController extends Controller
             return response()->json(['success' => false, 'message' => 'Not enrolled']);
         }
 
+        // Check if this lesson has an exam linked to it
+        $hasLinkedExam = $content->exams()->where('is_active', 1)->exists();
+
+        // Get existing progress to check exam completion
+        $existingProgress = ContentUserProgress::where('user_id', $user->id)
+            ->where('course_content_id', $contentId)
+            ->first();
+
+        // Determine if lesson is complete:
+        // - If lesson has exam: complete only if BOTH video AND exam are done
+        // - If lesson has no exam: complete when video is done
+        $lessonCompleted = true;
+        if ($hasLinkedExam) {
+            // Check if exam was already completed
+            $isExamCompleted = $existingProgress && $existingProgress->exam_id !== null;
+            $lessonCompleted = $isExamCompleted; // Only complete if exam is also done
+        }
+
         // Mark as complete
         $progress = ContentUserProgress::updateOrCreate(
             [
@@ -118,7 +150,8 @@ class VideoProgressController extends Controller
             ],
             [
                 'watch_time' => $content->video_duration ?: 0,
-                'completed' => true,
+                'video_completed' => true, // Track video completion separately
+                'completed' => $lessonCompleted, // Lesson completion (considers exam if linked)
                 'viewed_at' => now()
             ]
         );

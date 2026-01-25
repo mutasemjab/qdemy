@@ -471,17 +471,23 @@ class ExamController extends Controller
 
                     if ($existingProgress) {
                         // Update existing record - preserve watch_time from video progress
+                        // Check video completion using the dedicated video_completed flag (primary)
+                        // or fallback to watch_time threshold check
                         $isVideoCompleted = false;
-                        if ($existingProgress->watch_time && $existingProgress->courseContent?->video_duration) {
+
+                        // Primary check: use video_completed flag
+                        if ($existingProgress->video_completed) {
+                            $isVideoCompleted = true;
+                        } elseif ($existingProgress->watch_time && $existingProgress->courseContent?->video_duration) {
+                            // Fallback: check if 90% watched
                             $isVideoCompleted = $existingProgress->watch_time >= $existingProgress->courseContent->video_duration * 0.9;
-                        } elseif ($existingProgress->watch_time > 0) {
-                            // Non-video content or marked as completed
+                        } elseif ($existingProgress->watch_time > 0 && !$existingProgress->courseContent?->video_duration) {
+                            // For YouTube videos without tracked duration, consider watched if any watch_time exists
                             $isVideoCompleted = true;
                         }
 
                         // Lesson is complete when both video AND exam are done
-                        $lessonCompleted = $isVideoCompleted && true; // exam is now completed
-
+                        $lessonCompleted = $isVideoCompleted; // exam is now completed, so check only video
 
                         $existingProgress->update([
                             'exam_id' => $exam->id,
@@ -491,7 +497,7 @@ class ExamController extends Controller
                             'is_passed' => $is_passed,
                             'completed' => $lessonCompleted,
                             'viewed_at' => now(),
-                            // Don't overwrite watch_time - it contains video progress
+                            // Don't overwrite watch_time or video_completed - they contain video progress
                         ]);
                     } else {
                         // Create new record (student took exam without watching video first)
