@@ -2,9 +2,8 @@
 namespace App\Repositories;
 
 use App\Models\Course;
-use App\Models\Category;
+use App\Models\CourseContent;
 use App\Models\CourseUser;
-use App\Models\Package;
 
 class CourseRepository
 {
@@ -48,6 +47,22 @@ class CourseRepository
     {
         if(!$userId) return [];
         return $this->userCourses($userId)?->pluck('id')->toArray() ?? [];
+    }
+
+    // Get total video duration for a course
+    public function getTotalVideoHours($courseId)
+    {
+        $totalSeconds = CourseContent::where('course_id', $courseId)
+            ->where('content_type', 'video')
+            ->sum('video_duration');
+
+        // Convert seconds to formatted time (H:i:s)
+        $formattedDuration = gmdate('H:i:s', (int)$totalSeconds);
+
+        return [
+            'total_seconds' => (int)$totalSeconds,
+            'formatted_duration' => $formattedDuration
+        ];
     }
 
 }

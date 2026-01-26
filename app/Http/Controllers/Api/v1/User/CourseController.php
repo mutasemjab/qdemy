@@ -268,6 +268,24 @@ class CourseController extends Controller
     }
 
     /**
+     * Get total video hours for a course
+     */
+    public function hours(Course $course)
+    {
+        try {
+            $hoursData = $this->courseRepository->getTotalVideoHours($course->id);
+
+            return $this->success_response('Course total hours retrieved successfully', [
+                'course_id' => $course->id,
+                'total_seconds' => $hoursData['total_seconds'],
+                'formatted_duration' => $hoursData['formatted_duration']
+            ]);
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve course hours: ' . $e->getMessage(), null);
+        }
+    }
+
+    /**
      * Check if content is locked for user
      * Returns true if locked, false if unlocked
      */

@@ -132,7 +132,11 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::delete('posts/{post}/unlike', [LikeController::class, 'unlike']);
         Route::get('posts/{post}/likes', [LikeController::class, 'index']);
 
-        Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
+        Route::get('course/{course}/hours', [CourseController::class, 'hours']);
+
+        Route::prefix('courses')->group(function () {
+            Route::get('{course}/{slug?}', [CourseController::class, 'show']);
+        });
 
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
 
