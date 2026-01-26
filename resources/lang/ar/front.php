@@ -216,6 +216,7 @@ return array (
   'report_this_course' => 'الإبلاغ عن هذا الكورس',
   'session_all_count' => 'عدد الجلسات الكلي',
   'video_all_count' => 'عدد الفيديوهات الكلي',
+  'course_duration' => 'مدة الكورس',
   'course_content' => 'محتوى الكورس',
   'please login first .' => 'يرجى تسجيل الدخول أولاً.',
   'completed' => 'مكتمل',

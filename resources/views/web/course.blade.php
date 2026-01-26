@@ -83,6 +83,7 @@
                                     <p>{{ translate_lang('session_all_count') }}: {{ $mainSections?->count() }}</p>
                                     <p>{{ translate_lang('video_all_count') }}:
                                         {{ $contents?->where('content_type', 'video')?->count() }}</p>
+                                    <p>{{ translate_lang('course_duration') }}: {{ $courseHours['formatted_duration'] }}</p>
                                 </div>
                             </div>
 

@@ -216,6 +216,7 @@ return array(
   'report_this_course' => 'report_this_course',
   'session_all_count' => 'session_all_count',
   'video_all_count' => 'video_all_count',
+  'course_duration' => 'Course Duration',
   'course_content' => 'Course Content',
   'please login first .' => 'please login first .',
   'completed' => 'completed',
