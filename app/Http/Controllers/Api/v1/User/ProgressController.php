@@ -7,6 +7,7 @@ use App\Models\ContentUserProgress;
 use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\Exam;
+use App\Repositories\CourseRepository;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -40,7 +41,19 @@ class ProgressController extends Controller
 
             $progress = $course->calculateCourseProgress($user->id);
 
-            return $this->success_response('Course progress retrieved successfully', $progress);
+            // Get course total hours and user watch time
+            $courseRepository = new CourseRepository();
+            $courseTotalHours = $courseRepository->getTotalVideoHours($courseId);
+            $userWatchTime = $courseRepository->getUserWatchTime($courseId, $user->id);
+
+            $progressData = array_merge($progress, [
+                'course_total_duration_seconds' => $courseTotalHours['total_seconds'],
+                'course_total_duration_formatted' => $courseTotalHours['formatted_duration'],
+                'user_watched_duration_seconds' => $userWatchTime['total_seconds'],
+                'user_watched_duration_formatted' => $userWatchTime['formatted_duration'],
+            ]);
+
+            return $this->success_response('Course progress retrieved successfully', $progressData);
 
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve course progress: '.$e->getMessage(), null);

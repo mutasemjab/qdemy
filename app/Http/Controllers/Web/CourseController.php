@@ -115,6 +115,9 @@ class CourseController extends Controller
         // Get total course hours
         $courseHours = CourseRepository()->getTotalVideoHours($course->id);
 
+        // Get user watch time
+        $userWatchTime = CourseRepository()->getUserWatchTime($course->id, $user?->id);
+
         // Prepare locked content information for sequential courses
         $lockedContents = [];
         if($is_enrolled && $user && $course->is_sequential) {
@@ -139,6 +142,7 @@ class CourseController extends Controller
             'is_enrolled'  => $is_enrolled,
             'lockedContents' => $lockedContents,
             'courseHours'  => $courseHours,
+            'userWatchTime' => $userWatchTime,
 
             'course_progress'     => $calculateCourseProgress['total_progress'] ?? 0,
             'completed_videos'    => $calculateCourseProgress['completed_videos'] ?? 0,

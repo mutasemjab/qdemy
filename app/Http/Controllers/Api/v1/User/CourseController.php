@@ -143,6 +143,7 @@ class CourseController extends Controller
                                         'is_main_video' => $content->is_main_video,
                                         'order' => $content->order,
                                         'video_duration' => $content->video_duration,
+                                        'video_duration_formatted' => gmdate('H:i:s', (int)$content->video_duration),
                                         'video_type' => $content->video_type,
                                         'video_url' => $content->video_url,
                                         'file_path' => $content->file_path,
@@ -201,6 +202,7 @@ class CourseController extends Controller
                                 'is_main_video' => $content->is_main_video,
                                 'order' => $content->order,
                                 'video_duration' => $content->video_duration,
+                                'video_duration_formatted' => gmdate('H:i:s', (int)$content->video_duration),
                                 'video_type' => $content->video_type,
                                 'video_url' => $content->video_url,
                                 'file_path' => $content->file_path,
@@ -244,18 +246,25 @@ class CourseController extends Controller
                 'content_type' => $freeContents->content_type,
                 'video_url' => $freeContents->video_url,
                 'file_path' => $freeContents->file_path,
-                'video_duration' => $freeContents->video_duration
+                'video_duration' => $freeContents->video_duration,
+                'video_duration_formatted' => gmdate('H:i:s', (int)$freeContents->video_duration)
             ] : null;
 
             // If user is enrolled, calculate progress
             if ($is_enrolled && $user) {
                 $calculateCourseProgress = $this->calculateCourseProgress($user->id, $course->id);
+                $userWatchTime = $this->courseRepository->getUserWatchTime($course->id, $user->id);
+                $courseTotalHours = $this->courseRepository->getTotalVideoHours($course->id);
 
                 $courseData['user_progress'] = [
                     'course_progress' => $calculateCourseProgress['course_progress'],
                     'completed_videos' => $calculateCourseProgress['completed_videos'],
                     'watching_videos' => $calculateCourseProgress['watching_videos'],
-                    'total_videos' => $calculateCourseProgress['total_videos']
+                    'total_videos' => $calculateCourseProgress['total_videos'],
+                    'course_total_duration_seconds' => $courseTotalHours['total_seconds'],
+                    'course_total_duration_formatted' => $courseTotalHours['formatted_duration'],
+                    'user_watched_duration_seconds' => $userWatchTime['total_seconds'],
+                    'user_watched_duration_formatted' => $userWatchTime['formatted_duration']
                 ];
             } else {
                 $courseData['user_progress'] = null;
@@ -264,24 +273,6 @@ class CourseController extends Controller
             return $this->success_response('Course details retrieved successfully', $courseData);
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve course details: ' . $e->getMessage(), null);
-        }
-    }
-
-    /**
-     * Get total video hours for a course
-     */
-    public function hours(Course $course)
-    {
-        try {
-            $hoursData = $this->courseRepository->getTotalVideoHours($course->id);
-
-            return $this->success_response('Course total hours retrieved successfully', [
-                'course_id' => $course->id,
-                'total_seconds' => $hoursData['total_seconds'],
-                'formatted_duration' => $hoursData['formatted_duration']
-            ]);
-        } catch (\Exception $e) {
-            return $this->error_response('Failed to retrieve course hours: ' . $e->getMessage(), null);
         }
     }
 

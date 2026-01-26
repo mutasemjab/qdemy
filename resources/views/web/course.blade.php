@@ -80,10 +80,13 @@
                                 <img data-src="{{ $course->teacher?->photo_url }}" alt="{{ $course->teacher?->name }}">
                                 <div>
                                     <h4>{{ $course->teacher?->name }}</h4>
-                                    <p>{{ translate_lang('session_all_count') }}: {{ $mainSections?->count() }}</p>
+                                    <p>{{ translate_lang('section_all_count') }}: {{ $mainSections?->count() }}</p>
                                     <p>{{ translate_lang('video_all_count') }}:
                                         {{ $contents?->where('content_type', 'video')?->count() }}</p>
                                     <p>{{ translate_lang('course_duration') }}: {{ $courseHours['formatted_duration'] }}</p>
+                                    @if ($is_enrolled && $userWatchTime)
+                                        <p>{{ translate_lang('watched') }}: {{ $userWatchTime['formatted_duration'] }}</p>
+                                    @endif
                                 </div>
                             </div>
 
@@ -172,7 +175,7 @@
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
-                <span class="crs2-resource-title">{{ $content->title }}</span>
+                <span class="crs2-resource-title">{{ $content->title }} <small style="opacity: 0.7;">({{ gmdate('H:i:s', (int)$content->video_duration) }})</small></span>
 
                 @if ($content->is_free == 1)
                     <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
@@ -352,7 +355,7 @@
                 <span class="crs2-resource-icon">
                     <i class="fa fa-play-circle"></i>
                 </span>
-                <span class="crs2-resource-title">{{ $subContent->title }}</span>
+                <span class="crs2-resource-title">{{ $subContent->title }} <small style="opacity: 0.7;">({{ gmdate('H:i:s', (int)$subContent->video_duration) }})</small></span>
 
                 @if ($subContent->is_free == 1)
                     <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
@@ -536,7 +539,7 @@
                                 <span class="crs2-resource-icon">
                                     <i class="fa fa-play-circle"></i>
                                 </span>
-                                <span class="crs2-resource-title">{{ $_content->title }}</span>
+                                <span class="crs2-resource-title">{{ $_content->title }} <small style="opacity: 0.7;">({{ gmdate('H:i:s', (int)$_content->video_duration) }})</small></span>
 
                                 <span class="crs2-free-badge">{{ translate_lang('free') }}</span>
                             </div>
@@ -575,7 +578,7 @@
                                     <span class="crs2-resource-icon">
                                         <i class="fa fa-play-circle"></i>
                                     </span>
-                                    <span class="crs2-resource-title">{{ $_content->title }}</span>
+                                    <span class="crs2-resource-title">{{ $_content->title }} <small style="opacity: 0.7;">({{ gmdate('H:i:s', (int)$_content->video_duration) }})</small></span>
                                 </div>
                                 <div class="crs2-resource-actions">
                                     <a href="javascript:void(0)" class="crs2-pill-btn crs2-pill-btn--gray">

@@ -4,6 +4,7 @@ namespace App\Repositories;
 use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\CourseUser;
+use App\Models\ContentUserProgress;
 
 class CourseRepository
 {
@@ -61,6 +62,25 @@ class CourseRepository
 
         return [
             'total_seconds' => (int)$totalSeconds,
+            'formatted_duration' => $formattedDuration
+        ];
+    }
+
+    // Get total watch time for a user (sum of completed videos' duration)
+    public function getUserWatchTime($courseId, $userId)
+    {
+        $totalWatchSeconds = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
+            ->where('content_user_progress.user_id', $userId)
+            ->where('course_contents.course_id', $courseId)
+            ->where('course_contents.content_type', 'video')
+            ->where('content_user_progress.completed', true)
+            ->sum('course_contents.video_duration');
+
+        // Convert seconds to formatted time (H:i:s)
+        $formattedDuration = gmdate('H:i:s', (int)$totalWatchSeconds);
+
+        return [
+            'total_seconds' => (int)$totalWatchSeconds,
             'formatted_duration' => $formattedDuration
         ];
     }
