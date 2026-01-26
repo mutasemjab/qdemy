@@ -128,7 +128,8 @@ class ProgressController extends Controller
             
 
             // Update video-related fields (preserve exam data if present)
-            $progress->watch_time = $request->watch_time;
+            // Keep the maximum watch time (highest position reached in the video)
+            $progress->watch_time = max($progress->watch_time, $request->watch_time);
             $progress->video_completed = $videoCompleted; // NEW: track video completion separately
             $progress->viewed_at = now();
             $progress->save();
