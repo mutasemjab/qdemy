@@ -127,11 +127,13 @@ class CourseController extends Controller
                                 foreach ($sectionContents as $content) {
                                     $locked = false;
                                     $isCompleted = false;
+                                    $userWatchTime = 0;
                                     if ($is_enrolled && $user) {
                                         $locked = $this->isContentLocked($course, $content, $user->id);
                                         // Check if content is completed
                                         $progress = $userContentProgress->get($content->id);
                                         $isCompleted = $progress ? (bool) $progress->completed : false;
+                                        $userWatchTime = $progress ? (int)$progress->watch_time : 0;
                                     }
 
                                     $childData['contents'][] = [
@@ -144,6 +146,8 @@ class CourseController extends Controller
                                         'order' => $content->order,
                                         'video_duration' => $content->video_duration,
                                         'video_duration_formatted' => gmdate('H:i:s', (int)$content->video_duration),
+                                        'user_watch_time' => $userWatchTime,
+                                        'user_watch_time_formatted' => gmdate('H:i:s', $userWatchTime),
                                         'video_type' => $content->video_type,
                                         'video_url' => $content->video_url,
                                         'file_path' => $content->file_path,
@@ -186,11 +190,13 @@ class CourseController extends Controller
                         foreach ($directContents as $content) {
                             $locked = false;
                             $isCompleted = false;
+                            $userWatchTime = 0;
                             if ($is_enrolled && $user) {
                                 $locked = $this->isContentLocked($course, $content, $user->id);
                                 // Check if content is completed
                                 $progress = $userContentProgress->get($content->id);
                                 $isCompleted = $progress ? (bool) $progress->completed : false;
+                                $userWatchTime = $progress ? (int)$progress->watch_time : 0;
                             }
 
                             $sectionData['contents'][] = [
@@ -203,6 +209,8 @@ class CourseController extends Controller
                                 'order' => $content->order,
                                 'video_duration' => $content->video_duration,
                                 'video_duration_formatted' => gmdate('H:i:s', (int)$content->video_duration),
+                                'user_watch_time' => $userWatchTime,
+                                'user_watch_time_formatted' => gmdate('H:i:s', $userWatchTime),
                                 'video_type' => $content->video_type,
                                 'video_url' => $content->video_url,
                                 'file_path' => $content->file_path,
