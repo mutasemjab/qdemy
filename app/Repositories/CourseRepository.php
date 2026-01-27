@@ -67,26 +67,20 @@ class CourseRepository
     }
 
     // Get total watch time for a user
-    // For completed videos: use full video duration
-    // For incomplete videos: use actual watch_time
+    // Always use actual watch_time - the actual time the user watched
     public function getUserWatchTime($courseId, $userId)
     {
         $allProgress = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
             ->where('content_user_progress.user_id', $userId)
             ->where('course_contents.course_id', $courseId)
             ->where('course_contents.content_type', 'video')
-            ->select('content_user_progress.watch_time', 'content_user_progress.completed', 'course_contents.video_duration')
+            ->select('content_user_progress.watch_time')
             ->get();
 
         $totalWatchSeconds = 0;
         foreach ($allProgress as $progress) {
-            if ($progress->completed) {
-                // Video is complete: count full duration
-                $totalWatchSeconds += (int)$progress->video_duration;
-            } else {
-                // Video is incomplete: count actual watch time
-                $totalWatchSeconds += (int)$progress->watch_time;
-            }
+            // Always use actual watch_time - what the user actually watched
+            $totalWatchSeconds += (int)$progress->watch_time;
         }
 
         // Convert seconds to formatted time (H:i:s)
