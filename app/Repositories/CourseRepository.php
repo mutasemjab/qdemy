@@ -66,18 +66,31 @@ class CourseRepository
         ];
     }
 
-    // Get total watch time for a user (sum of completed videos' duration)
+    // Get total watch time for a user
+    // For completed videos: use full video duration
+    // For incomplete videos: use actual watch_time
     public function getUserWatchTime($courseId, $userId)
     {
-        $totalWatchSeconds = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
+        $allProgress = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
             ->where('content_user_progress.user_id', $userId)
             ->where('course_contents.course_id', $courseId)
             ->where('course_contents.content_type', 'video')
-            ->where('content_user_progress.completed', true)
-            ->sum('course_contents.video_duration');
+            ->select('content_user_progress.watch_time', 'content_user_progress.completed', 'course_contents.video_duration')
+            ->get();
+
+        $totalWatchSeconds = 0;
+        foreach ($allProgress as $progress) {
+            if ($progress->completed) {
+                // Video is complete: count full duration
+                $totalWatchSeconds += (int)$progress->video_duration;
+            } else {
+                // Video is incomplete: count actual watch time
+                $totalWatchSeconds += (int)$progress->watch_time;
+            }
+        }
 
         // Convert seconds to formatted time (H:i:s)
-        $formattedDuration = gmdate('H:i:s', (int)$totalWatchSeconds);
+        $formattedDuration = gmdate('H:i:s', $totalWatchSeconds);
 
         return [
             'total_seconds' => (int)$totalWatchSeconds,

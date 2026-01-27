@@ -133,7 +133,8 @@ class CourseController extends Controller
                                         // Check if content is completed
                                         $progress = $userContentProgress->get($content->id);
                                         $isCompleted = $progress ? (bool) $progress->completed : false;
-                                        $userWatchTime = $progress ? (int)$progress->watch_time : 0;
+                                        // If completed: use full video duration, else use actual watch_time
+                                        $userWatchTime = $isCompleted ? (int)$content->video_duration : ($progress ? (int)$progress->watch_time : 0);
                                     }
 
                                     $childData['contents'][] = [
@@ -196,7 +197,8 @@ class CourseController extends Controller
                                 // Check if content is completed
                                 $progress = $userContentProgress->get($content->id);
                                 $isCompleted = $progress ? (bool) $progress->completed : false;
-                                $userWatchTime = $progress ? (int)$progress->watch_time : 0;
+                                // If completed: use full video duration, else use actual watch_time
+                                $userWatchTime = $isCompleted ? (int)$content->video_duration : ($progress ? (int)$progress->watch_time : 0);
                             }
 
                             $sectionData['contents'][] = [
