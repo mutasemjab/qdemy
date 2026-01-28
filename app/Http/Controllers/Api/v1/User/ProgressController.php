@@ -346,16 +346,46 @@ class ProgressController extends Controller
                 ->get();
 
             // Build video progress from all records that have course_content_id
-            $videoProgress = $allProgress->map(function ($progress) {
+            $videoProgress = $allProgress->map(function ($progress) use ($user) {
                 $content = CourseContent::find($progress->course_content_id);
                 $videoDuration = $content?->video_duration;
 
-                // Video is completed if watch_time >= 90% of video_duration
-                $isVideoCompleted = false;
+                // Content is completed based on type
+                $isContentCompleted = false;
                 if ($content?->content_type === 'video' && $videoDuration) {
-                    $isVideoCompleted = $progress->watch_time >= $videoDuration * 0.9;
+                    // For video: completed if watch_time >= 90% of video_duration
+                    $isContentCompleted = $progress->watch_time >= $videoDuration * 0.9;
                 } else {
-                    $isVideoCompleted = $progress->completed;
+                    // For non-video: use completed flag
+                    $isContentCompleted = $progress->completed;
+                }
+
+                // Check if lesson has linked exam
+                $linkedExam = $content?->exams()->where('is_active', 1)->first();
+                $hasExam = $linkedExam !== null;
+
+                // Check if exam has at least 1 completed attempt
+                $hasExamAttempt = false;
+                if ($linkedExam) {
+                    $hasExamAttempt = \App\Models\ExamAttempt::where('exam_id', $linkedExam->id)
+                        ->where('user_id', $user->id)
+                        ->where('status', 'completed')
+                        ->exists();
+                }
+
+                // Calculate lesson completion
+                $lessonCompleted = $isContentCompleted;
+                $lessonProgress = $isContentCompleted ? 100 : 0;
+
+                if ($hasExam) {
+                    $lessonCompleted = $isContentCompleted && $hasExamAttempt;
+                    $lessonProgress = 0;
+                    if ($isContentCompleted) {
+                        $lessonProgress += 50;
+                    }
+                    if ($hasExamAttempt) {
+                        $lessonProgress += 50;
+                    }
                 }
 
                 return [
@@ -363,7 +393,12 @@ class ProgressController extends Controller
                     'content_id' => $progress->course_content_id,
                     'watch_time' => $progress->watch_time,
                     'video_duration' => $videoDuration,
-                    'video_completed' => $isVideoCompleted,
+                    'content_completed' => $isContentCompleted,
+                    'has_exam' => $hasExam,
+                    'exam_id' => $linkedExam?->id,
+                    'exam_completed' => $hasExamAttempt,
+                    'lesson_completed' => $lessonCompleted,
+                    'lesson_progress' => $lessonProgress,
                     'viewed_at' => $progress->viewed_at,
                 ];
             })->values();
