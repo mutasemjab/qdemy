@@ -28,6 +28,15 @@
                 <i class="{{$subject->icon}}"></i>
             </a>
             @endforeach
+        @else
+            <div class="alert alert-info text-center" style="width: 100%; grid-column: 1 / -1;">
+                <i class="fas fa-info-circle"></i>
+                @if(app()->getLocale() === 'ar')
+                    <p>لا توجد مواد دراسية في الدورات التدريبية حالياً</p>
+                @else
+                    <p>No training courses available at the moment</p>
+                @endif
+            </div>
         @endif
     </div>
 </section>

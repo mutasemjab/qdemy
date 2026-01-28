@@ -48,6 +48,14 @@ class CategoriesSeeder extends Seeder
                 'color' => '#f39c12',
                 'sort_order' => 4,
                 'type' => 'major',
+            ],
+            [
+                'name_ar' => 'الدورات التدريبية',
+                'name_en' => 'Training Courses',
+                'icon' => 'fas fa-certificate',
+                'color' => '#27ae60',
+                'sort_order' => 5,
+                'type' => 'major',
             ]
         ];
         foreach ($programs as $program) {
