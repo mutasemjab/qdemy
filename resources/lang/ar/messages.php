@@ -1297,14 +1297,14 @@ return [
   'all_bank_questions' => 'جميع الأسئلة البنكية',
 
   'boot_camp_questions' => 'المعسكر',
-  'boot_camp_question' => 'سؤال معسكر',
-  'add_new_boot_camp_question' => 'إضافة سؤال معسكر جديد',
-  'create_first_boot_camp_question' => 'إنشاء أول سؤال معسكر',
-  'edit_boot_camp_question' => 'تعديل سؤال المعسكر',
-  'view_boot_camp_question' => 'عرض سؤال المعسكر',
-  'boot_camp_question_details' => 'تفاصيل سؤال المعسكر',
-  'delete_boot_camp_question' => 'حذف سؤال المعسكر',
-  'all_boot_camp_questions' => 'جميع أسئلة المعسكر',
+  'boot_camp_question' => 'معسكر',
+  'add_new_boot_camp_question' => 'إضافة معسكر جديد',
+  'create_first_boot_camp_question' => 'إنشاء أول معسكر',
+  'edit_boot_camp_question' => 'تعديل المعسكر',
+  'view_boot_camp_question' => 'عرض المعسكر',
+  'boot_camp_question_details' => 'تفاصيل المعسكر',
+  'delete_boot_camp_question' => 'حذف المعسكر',
+  'all_boot_camp_questions' => 'جميع المعسكر',
 
   // Categories
   'categories' => 'التصنيفات',
@@ -1347,10 +1347,10 @@ return [
   'bank_question_deleted_successfully' => 'تم حذف السؤال البنكي بنجاح',
   'no_bank_questions_found' => 'لم يتم العثور على أسئلة بنكية',
 
-  'boot_camp_question_created_successfully' => 'تم إنشاء سؤال المعسكر بنجاح',
-  'boot_camp_question_updated_successfully' => 'تم تحديث سؤال المعسكر بنجاح',
-  'boot_camp_question_deleted_successfully' => 'تم حذف سؤال المعسكر بنجاح',
-  'no_boot_camp_questions_found' => 'لم يتم العثور على أسئلة معسكر',
+  'boot_camp_question_created_successfully' => 'تم إنشاءالمعسكر بنجاح',
+  'boot_camp_question_updated_successfully' => 'تم تحديث المعسكر بنجاح',
+  'boot_camp_question_deleted_successfully' => 'تم حذف المعسكر بنجاح',
+  'no_boot_camp_questions_found' => 'لم يتم العثور على معلومات معسكر',
 
   'please_select_pdf_file' => 'يرجى اختيار ملف PDF',
   'error_loading_categories' => 'خطأ في تحميل التصنيفات',
@@ -3665,7 +3665,7 @@ return [
   'bunny_video_uploaded' => 'تم رفع الفيديو بنجاح',
 
   // Boot Camp Questions
-  'add_first_boot_camp_question' => 'أضف سؤالك الأول في معسكر التدريب',
+  'add_first_boot_camp_question' => 'أضف المعلومة الأولى في المعسكر',
   'at_least_one_correct_option' => 'مطلوب خيار صحيح واحد على الأقل',
   'course_not_found' => 'لم يتم العثور على الكورس',
   'grade_max_value' => 'يجب ألا تتجاوز الدرجة القيمة القصوى',

@@ -1273,14 +1273,14 @@ return [
   'all_bank_questions' => 'All Bank Questions',
 
   'boot_camp_questions' => 'Boot Camp',
-  'boot_camp_question' => 'Boot Camp Question',
-  'add_new_boot_camp_question' => 'Add New Boot Camp Question',
-  'create_first_boot_camp_question' => 'Create First Boot Camp Question',
-  'edit_boot_camp_question' => 'Edit Boot Camp Question',
-  'view_boot_camp_question' => 'View Boot Camp Question',
-  'boot_camp_question_details' => 'Boot Camp Question Details',
-  'delete_boot_camp_question' => 'Delete Boot Camp Question',
-  'all_boot_camp_questions' => 'All Boot Camp Questions',
+  'boot_camp_question' => 'Boot Camp',
+  'add_new_boot_camp_question' => 'Add New Boot Camp',
+  'create_first_boot_camp_question' => 'Create First Boot Camp',
+  'edit_boot_camp_question' => 'Edit Boot Camp',
+  'view_boot_camp_question' => 'View Boot Camp',
+  'boot_camp_question_details' => 'Boot Camp Details',
+  'delete_boot_camp_question' => 'Delete Boot Camp',
+  'all_boot_camp_questions' => 'All Boot Camp',
 
   // Categories
   'categories' => 'Categories',
@@ -1323,10 +1323,10 @@ return [
   'bank_question_deleted_successfully' => 'Bank question deleted successfully',
   'no_bank_questions_found' => 'No bank questions found',
 
-  'boot_camp_question_created_successfully' => 'Boot camp question created successfully',
-  'boot_camp_question_updated_successfully' => 'Boot camp question updated successfully',
-  'boot_camp_question_deleted_successfully' => 'Boot camp question deleted successfully',
-  'no_boot_camp_questions_found' => 'No boot camp questions found',
+  'boot_camp_question_created_successfully' => 'Boot camp created successfully',
+  'boot_camp_question_updated_successfully' => 'Boot camp updated successfully',
+  'boot_camp_question_deleted_successfully' => 'Boot camp deleted successfully',
+  'no_boot_camp_questions_found' => 'No boot camp found',
 
   'please_select_pdf_file' => 'Please select a PDF file',
   'error_loading_categories' => 'Error loading categories',
@@ -3704,7 +3704,7 @@ return [
   'bunny_video_uploaded' => 'Video uploaded successfully',
 
   // Boot Camp Questions
-  'add_first_boot_camp_question' => 'Add Your First Boot Camp Question',
+  'add_first_boot_camp_question' => 'Add Your First Boot Camp',
   'at_least_one_correct_option' => 'At least one correct option is required',
   'course_not_found' => 'Course not found',
   'grade_max_value' => 'Grade must not exceed the maximum value',
