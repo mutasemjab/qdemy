@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
-use App\Models\Category;
 use App\Models\CourseContent;
 use App\Models\ContentUserProgress;
+use App\Models\ExamAttempt;
 use App\Models\Subject;
 use App\Repositories\CourseRepository;
 use App\Traits\Responses;
@@ -130,9 +130,9 @@ class CourseController extends Controller
                                     $userWatchTime = 0;
                                     if ($is_enrolled && $user) {
                                         $locked = $this->isContentLocked($course, $content, $user->id);
-                                        // Check if content is completed
+                                        // Check if content is completed based on type
                                         $progress = $userContentProgress->get($content->id);
-                                        $isCompleted = $progress ? (bool) $progress->completed : false;
+                                        $isCompleted = $this->isContentCompleted($progress, $content, $user->id);
                                         // Always use actual watch_time - what user actually watched
                                         $userWatchTime = $progress ? (int)$progress->watch_time : 0;
                                     }
@@ -194,9 +194,9 @@ class CourseController extends Controller
                             $userWatchTime = 0;
                             if ($is_enrolled && $user) {
                                 $locked = $this->isContentLocked($course, $content, $user->id);
-                                // Check if content is completed
+                                // Check if content is completed based on type
                                 $progress = $userContentProgress->get($content->id);
-                                $isCompleted = $progress ? (bool) $progress->completed : false;
+                                $isCompleted = $this->isContentCompleted($progress, $content, $user->id);
                                 // Always use actual watch_time - what user actually watched
                                 $userWatchTime = $progress ? (int)$progress->watch_time : 0;
                             }
@@ -284,6 +284,42 @@ class CourseController extends Controller
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve course details: ' . $e->getMessage(), null);
         }
+    }
+
+    /**
+     * Check if content is completed for user
+     * Returns true if completed, false otherwise
+     */
+    private function isContentCompleted($progress, $content, $userId)
+    {
+        if (!$progress) {
+            return false;
+        }
+
+        // Content is completed based on type
+        $isContentCompleted = false;
+        if ($content->content_type === 'video' && $content->video_duration) {
+            // For video: completed if watch_time >= 90% of video_duration
+            $isContentCompleted = $progress->watch_time >= $content->video_duration * 0.9;
+        } else {
+            // For non-video (files, etc.): use completed flag
+            $isContentCompleted = (bool) $progress->completed;
+        }
+
+        // Check if lesson has linked exam
+        $linkedExam = $content->exams()->where('is_active', 1)->first();
+
+        // If lesson has exam, also check if exam has at least 1 completed attempt
+        if ($linkedExam && $isContentCompleted) {
+            $hasExamAttempt = ExamAttempt::where('exam_id', $linkedExam->id)
+                ->where('user_id', $userId)
+                ->where('status', 'completed')
+                ->exists();
+
+            $isContentCompleted = $hasExamAttempt;
+        }
+
+        return $isContentCompleted;
     }
 
     /**
