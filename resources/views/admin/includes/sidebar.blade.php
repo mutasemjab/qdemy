@@ -144,14 +144,18 @@
                         $user->can('ministerial-question-add') ||
                         $user->can('ministerial-question-edit') ||
                         $user->can('ministerial-question-delete') ||
+                        $user->can('boot-camp-question-table') ||
+                        $user->can('boot-camp-question-add') ||
+                        $user->can('boot-camp-question-edit') ||
+                        $user->can('boot-camp-question-delete') ||
                         $user->can('questionWebsite-table') ||
                         $user->can('questionWebsite-add') ||
                         $user->can('questionWebsite-edit') ||
                         $user->can('questionWebsite-delete'))
                     <li
-                        class="nav-item {{ request()->routeIs(['bank-questions.*', 'ministerial-questions.*', 'questionWebsites.*']) ? 'menu-open' : '' }}">
+                        class="nav-item {{ request()->routeIs(['bank-questions.*', 'ministerial-questions.*', 'boot-camp-questions.*', 'questionWebsites.*']) ? 'menu-open' : '' }}">
                         <a href="#"
-                            class="nav-link {{ request()->routeIs(['bank-questions.*', 'ministerial-questions.*', 'questionWebsites.*']) ? 'active' : '' }}">
+                            class="nav-link {{ request()->routeIs(['bank-questions.*', 'ministerial-questions.*', 'boot-camp-questions.*', 'questionWebsites.*']) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-database"></i>
                             <p>
                                 {{ __('messages.question_banks') }}
@@ -183,6 +187,20 @@
                                         class="nav-link {{ request()->routeIs('ministerial-questions.*') ? 'active' : '' }}">
                                         <i class="far fa-building nav-icon"></i>
                                         <p>{{ __('messages.ministerial_questions') }}</p>
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if (
+                                $user->can('boot-camp-question-table') ||
+                                    $user->can('boot-camp-question-add') ||
+                                    $user->can('boot-camp-question-edit') ||
+                                    $user->can('boot-camp-question-delete'))
+                                <li class="nav-item">
+                                    <a href="{{ route('admin.boot-camp-questions.index') }}"
+                                        class="nav-link {{ request()->routeIs('admin.boot-camp-questions.*') ? 'active' : '' }}">
+                                        <i class="far fa-rocket nav-icon"></i>
+                                        <p>{{ __('messages.boot_camp_questions') }}</p>
                                     </a>
                                 </li>
                             @endif

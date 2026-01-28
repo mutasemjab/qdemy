@@ -212,6 +212,8 @@
             <a href="{{ route('bankQuestions.index') }}" class="service-link light"
                 style="background-image: url('{{ asset('assets_front/images/light.png') }}');">{{ __('front.Question Bank') }}
                 <small>({{ __('front.Papers and Summaries') }})</small></a>
+            <a href="{{ route('boot-camp-questions.index') }}" class="service-link anim animate-glow"
+                style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('messages.boot_camp_questions') }}</a>
         </div>
     </section>
 

@@ -61,6 +61,12 @@
                 </li>
 
                 <li data-aos="fade">
+                    <a class="{{ request()->routeIs('boot-camp-questions.*') ? 'active' : '' }}" href="{{ route('boot-camp-questions.index') }}">
+                        {{ __('messages.boot_camp_questions') }}
+                    </a>
+                </li>
+
+                <li data-aos="fade">
                     <a class="{{ request()->routeIs('download*') ? 'active' : '' }}" href="{{ route('download') }}">
                         {{ __('front.Our Apps') }}
                     </a>

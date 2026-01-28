@@ -1272,6 +1272,16 @@ return [
   'delete_bank_question' => 'Delete Bank Question',
   'all_bank_questions' => 'All Bank Questions',
 
+  'boot_camp_questions' => 'Boot Camp',
+  'boot_camp_question' => 'Boot Camp Question',
+  'add_new_boot_camp_question' => 'Add New Boot Camp Question',
+  'create_first_boot_camp_question' => 'Create First Boot Camp Question',
+  'edit_boot_camp_question' => 'Edit Boot Camp Question',
+  'view_boot_camp_question' => 'View Boot Camp Question',
+  'boot_camp_question_details' => 'Boot Camp Question Details',
+  'delete_boot_camp_question' => 'Delete Boot Camp Question',
+  'all_boot_camp_questions' => 'All Boot Camp Questions',
+
   // Categories
   'categories' => 'Categories',
   'category' => 'Category',
@@ -1312,6 +1322,12 @@ return [
   'bank_question_updated_successfully' => 'Bank question updated successfully',
   'bank_question_deleted_successfully' => 'Bank question deleted successfully',
   'no_bank_questions_found' => 'No bank questions found',
+
+  'boot_camp_question_created_successfully' => 'Boot camp question created successfully',
+  'boot_camp_question_updated_successfully' => 'Boot camp question updated successfully',
+  'boot_camp_question_deleted_successfully' => 'Boot camp question deleted successfully',
+  'no_boot_camp_questions_found' => 'No boot camp questions found',
+
   'please_select_pdf_file' => 'Please select a PDF file',
   'error_loading_categories' => 'Error loading categories',
 
@@ -3686,4 +3702,28 @@ return [
   'Platform' => 'Platform',
   'Select Option' => 'Select Option',
   'bunny_video_uploaded' => 'Video uploaded successfully',
+
+  // Boot Camp Questions
+  'add_first_boot_camp_question' => 'Add Your First Boot Camp Question',
+  'at_least_one_correct_option' => 'At least one correct option is required',
+  'course_not_found' => 'Course not found',
+  'grade_max_value' => 'Grade must not exceed the maximum value',
+  'grade_min_value' => 'Grade must be at least the minimum value',
+  'grade_must_be_numeric' => 'Grade must be a numeric value',
+  'grade_required' => 'Grade is required',
+  'option_ar_required' => 'Arabic option is required',
+  'option_en_required' => 'English option is required',
+  'options_max_six' => 'Maximum 6 options are allowed',
+  'options_min_two' => 'Minimum 2 options are required',
+  'options_required' => 'Options are required',
+  'photo_invalid_format' => 'Photo format is invalid',
+  'photo_must_be_image' => 'Photo must be an image file',
+  'photo_too_large' => 'Photo size is too large',
+  'question_ar_required' => 'Arabic question is required',
+  'question_en_required' => 'English question is required',
+  'question_type_invalid' => 'Question type is invalid',
+  'question_type_required' => 'Question type is required',
+  'title_ar_required' => 'Arabic title is required',
+  'title_en_required' => 'English title is required',
+  'true_false_answer_required' => 'True/False answer is required',
 ];

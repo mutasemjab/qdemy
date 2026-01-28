@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CardNumberController;
 use App\Http\Controllers\Admin\OnBoardingController;
 use App\Http\Controllers\Admin\BankQuestionController;
+use App\Http\Controllers\Admin\BootCampQuestionController;
 use App\Http\Controllers\Admin\BannedWordController;
 use App\Http\Controllers\Admin\CourseSectionController;
 use App\Http\Controllers\Admin\CourseUserController;
@@ -215,6 +216,23 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
             Route::post('/{ministerialQuestion}/toggle-status', [MinisterialYearsQuestionController::class, 'toggleStatus'])->name('toggle-status');
         });
         Route::resource('ministerial-questions', MinisterialYearsQuestionController::class);
+
+        // Additional Routes for Boot Camp Questions
+        Route::prefix('boot-camp-questions')->name('admin.boot-camp-questions.')->group(function () {
+            Route::get('/{bootCampQuestion}/download-pdf', [BootCampQuestionController::class, 'downloadPdf'])->name('download-pdf');
+            Route::get('/get-children/{parentId}', [BootCampQuestionController::class, 'getChildCategories'])->name('get-children');
+            Route::get('/subjects-by-category', [BootCampQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
+            Route::post('/{bootCampQuestion}/toggle-status', [BootCampQuestionController::class, 'toggleStatus'])->name('toggle-status');
+        });
+        Route::resource('boot-camp-questions', BootCampQuestionController::class, ['names' => [
+            'index' => 'admin.boot-camp-questions.index',
+            'create' => 'admin.boot-camp-questions.create',
+            'store' => 'admin.boot-camp-questions.store',
+            'show' => 'admin.boot-camp-questions.show',
+            'edit' => 'admin.boot-camp-questions.edit',
+            'update' => 'admin.boot-camp-questions.update',
+            'destroy' => 'admin.boot-camp-questions.destroy',
+        ]]);
 
 
 

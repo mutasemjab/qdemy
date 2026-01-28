@@ -259,4 +259,9 @@ class Category extends Model
         return $this->hasMany(MinisterialYearsQuestion::class);
     }
 
+    public function bootCampQuestions()
+    {
+        return $this->hasMany(BootCampQuestion::class);
+    }
+
 }

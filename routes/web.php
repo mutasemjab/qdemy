@@ -4,6 +4,7 @@ use App\Http\Controllers\Web\BlogController;
 use App\Http\Controllers\Web\AboutController;
 use App\Http\Controllers\Web\CardController;
 use App\Http\Controllers\Web\BankQuestionController;
+use App\Http\Controllers\Web\BootCampQuestionController;
 use App\Http\Controllers\Web\CommunityController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\AuthController;
@@ -88,6 +89,12 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::get('/', [MinisterialYearsQuestionController::class, 'index'])->name('index');
         Route::get('/download/{ministerialQuestion}', [MinisterialYearsQuestionController::class, 'download'])->name('download');
         Route::get('/subjects-by-category', [MinisterialYearsQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
+    });
+
+    Route::prefix('boot-camp-questions')->name('boot-camp-questions.')->group(function () {
+        Route::get('/', [BootCampQuestionController::class, 'index'])->name('index');
+        Route::get('/download/{bootCampQuestion}', [BootCampQuestionController::class, 'download'])->name('download');
+        Route::get('/subjects-by-category', [BootCampQuestionController::class, 'getSubjectsByCategory'])->name('subjects-by-category');
     });
 
     Route::get('/grades-basic-programm', [ElementaryProgrammController::class, 'grades_basic_programm'])->name('grades_basic-programm');

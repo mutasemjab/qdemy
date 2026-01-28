@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\v1\User\SettingController;
 use App\Http\Controllers\Api\v1\User\HomeController;
 use App\Http\Controllers\Api\v1\User\PosController;
 use App\Http\Controllers\Api\v1\User\NotificationUserController;
+use App\Http\Controllers\Api\v1\User\BootCampQuestionsController;
 
 // Teacher Controllers
 use App\Http\Controllers\Api\v1\Teacher\AuthTeacherController;
@@ -139,6 +140,8 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
 
         Route::get('/ministerial-year-question', [BankQuestionsController::class, 'getMinisterialYearQuestion']);
+
+        Route::get('/boot-camp-questions', [BootCampQuestionsController::class, 'getBootCampQuestions']);
 
 
         // Cart & Payment

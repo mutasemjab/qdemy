@@ -685,4 +685,5 @@ return array (
 
     // Missing from views
     'unknown' => 'غير معروف',
+    'boot_camp_questions' => 'أسئلة معسكر التدريب',
 );

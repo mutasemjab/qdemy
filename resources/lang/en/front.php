@@ -687,4 +687,5 @@ return array(
 
     // Missing from views
     'unknown' => 'Unknown',
+    'boot_camp_questions' => 'Boot Camp Questions',
 );

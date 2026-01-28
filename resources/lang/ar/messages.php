@@ -1296,6 +1296,16 @@ return [
   'delete_bank_question' => 'حذف السؤال البنكي',
   'all_bank_questions' => 'جميع الأسئلة البنكية',
 
+  'boot_camp_questions' => 'المعسكر',
+  'boot_camp_question' => 'سؤال معسكر',
+  'add_new_boot_camp_question' => 'إضافة سؤال معسكر جديد',
+  'create_first_boot_camp_question' => 'إنشاء أول سؤال معسكر',
+  'edit_boot_camp_question' => 'تعديل سؤال المعسكر',
+  'view_boot_camp_question' => 'عرض سؤال المعسكر',
+  'boot_camp_question_details' => 'تفاصيل سؤال المعسكر',
+  'delete_boot_camp_question' => 'حذف سؤال المعسكر',
+  'all_boot_camp_questions' => 'جميع أسئلة المعسكر',
+
   // Categories
   'categories' => 'التصنيفات',
   'category' => 'تصنيف',
@@ -1336,6 +1346,12 @@ return [
   'bank_question_updated_successfully' => 'تم تحديث السؤال البنكي بنجاح',
   'bank_question_deleted_successfully' => 'تم حذف السؤال البنكي بنجاح',
   'no_bank_questions_found' => 'لم يتم العثور على أسئلة بنكية',
+
+  'boot_camp_question_created_successfully' => 'تم إنشاء سؤال المعسكر بنجاح',
+  'boot_camp_question_updated_successfully' => 'تم تحديث سؤال المعسكر بنجاح',
+  'boot_camp_question_deleted_successfully' => 'تم حذف سؤال المعسكر بنجاح',
+  'no_boot_camp_questions_found' => 'لم يتم العثور على أسئلة معسكر',
+
   'please_select_pdf_file' => 'يرجى اختيار ملف PDF',
   'error_loading_categories' => 'خطأ في تحميل التصنيفات',
 
@@ -3647,4 +3663,28 @@ return [
   'Platform' => 'المنصة',
   'Select Option' => 'اختر خيار',
   'bunny_video_uploaded' => 'تم رفع الفيديو بنجاح',
+
+  // Boot Camp Questions
+  'add_first_boot_camp_question' => 'أضف سؤالك الأول في معسكر التدريب',
+  'at_least_one_correct_option' => 'مطلوب خيار صحيح واحد على الأقل',
+  'course_not_found' => 'لم يتم العثور على الكورس',
+  'grade_max_value' => 'يجب ألا تتجاوز الدرجة القيمة القصوى',
+  'grade_min_value' => 'يجب ألا تقل الدرجة عن القيمة الدنيا',
+  'grade_must_be_numeric' => 'يجب أن تكون الدرجة رقماً',
+  'grade_required' => 'الدرجة مطلوبة',
+  'option_ar_required' => 'الخيار بالعربية مطلوب',
+  'option_en_required' => 'الخيار بالإنجليزية مطلوب',
+  'options_max_six' => 'يسمح بحد أقصى 6 خيارات',
+  'options_min_two' => 'يجب أن يكون هناك خياران على الأقل',
+  'options_required' => 'الخيارات مطلوبة',
+  'photo_invalid_format' => 'صيغة الصورة غير صالحة',
+  'photo_must_be_image' => 'يجب أن تكون الصورة ملف صورة',
+  'photo_too_large' => 'حجم الصورة كبير جداً',
+  'question_ar_required' => 'السؤال بالعربية مطلوب',
+  'question_en_required' => 'السؤال بالإنجليزية مطلوب',
+  'question_type_invalid' => 'نوع السؤال غير صالح',
+  'question_type_required' => 'نوع السؤال مطلوب',
+  'title_ar_required' => 'العنوان بالعربية مطلوب',
+  'title_en_required' => 'العنوان بالإنجليزية مطلوب',
+  'true_false_answer_required' => 'إجابة صح/خطأ مطلوبة',
 ];

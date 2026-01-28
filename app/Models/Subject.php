@@ -182,4 +182,9 @@ class Subject extends Model
     {
         return $this->hasMany(BankQuestion::class);
     }
+
+    public function bootCampQuestions()
+    {
+        return $this->hasMany(BootCampQuestion::class);
+    }
 }

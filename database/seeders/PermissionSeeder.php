@@ -140,6 +140,12 @@ class PermissionSeeder extends Seeder
                 'ministerial-question-edit' => 'Edit ministerial questions',
                 'ministerial-question-delete' => 'Delete ministerial questions'
             ],
+            'boot-camp-question' => [
+                'boot-camp-question-table' => 'View boot camp questions',
+                'boot-camp-question-add' => 'Create boot camp questions',
+                'boot-camp-question-edit' => 'Edit boot camp questions',
+                'boot-camp-question-delete' => 'Delete boot camp questions'
+            ],
             'package' => [
                 'package-table' => 'View packages',
                 'package-add' => 'Create course packages',
@@ -275,6 +281,10 @@ class PermissionSeeder extends Seeder
             'bank-question-table',
             'bank-question-add',
             'bank-question-edit',
+            // Boot camp questions
+            'boot-camp-question-table',
+            'boot-camp-question-add',
+            'boot-camp-question-edit',
             // View parents
             'parent-table',
             // Community
@@ -399,6 +409,11 @@ class PermissionSeeder extends Seeder
             'ministerial-question-add',
             'ministerial-question-edit',
             'ministerial-question-delete',
+            // Boot camp questions
+            'boot-camp-question-table',
+            'boot-camp-question-add',
+            'boot-camp-question-edit',
+            'boot-camp-question-delete',
             // Package management
             'package-table',
             'package-add',
