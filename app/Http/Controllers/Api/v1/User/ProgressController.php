@@ -240,10 +240,16 @@ class ProgressController extends Controller
 
             // Mark content as viewed
             $progress->viewed_at = now();
-            // For non-video content, set a flag to indicate it was read/viewed
-            // Using watch_time = 1 as indicator that content was consumed
-            if (! $progress->watch_time) {
-                $progress->watch_time = 1;
+
+            // If content is a video, set watch_time to full video duration for completion
+            if ($courseContent->isVideo() && $courseContent->video_duration) {
+                $progress->watch_time = $courseContent->video_duration;
+            } else {
+                // For non-video content, set a flag to indicate it was read/viewed
+                // Using watch_time = 1 as indicator that content was consumed
+                if (! $progress->watch_time) {
+                    $progress->watch_time = 1;
+                }
             }
 
             // Check if this lesson has a linked exam
