@@ -393,6 +393,7 @@ class ProgressController extends Controller
                     'content_id' => $progress->course_content_id,
                     'watch_time' => $progress->watch_time,
                     'video_duration' => $videoDuration,
+                    'completed' => $lessonCompleted,
                     'content_completed' => $isContentCompleted,
                     'has_exam' => $hasExam,
                     'exam_id' => $linkedExam?->id,
