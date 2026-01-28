@@ -75,7 +75,6 @@ class VideoProgressController extends Controller
             ],
             [
                 'watch_time' => $watchTime,
-                'video_completed' => $completed, // Track video completion separately
                 'completed' => $lessonCompleted, // Lesson completion (considers exam if linked)
                 'viewed_at' => now()
             ]
@@ -150,7 +149,6 @@ class VideoProgressController extends Controller
             ],
             [
                 'watch_time' => $content->video_duration ?: 0,
-                'video_completed' => true, // Track video completion separately
                 'completed' => $lessonCompleted, // Lesson completion (considers exam if linked)
                 'viewed_at' => now()
             ]

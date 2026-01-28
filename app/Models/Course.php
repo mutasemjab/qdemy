@@ -83,8 +83,8 @@ class Course extends Model
 
     // Get user progress for this course
     // Formula:
-    // - For each lesson with exam linked: lesson_progress = (video_completed ? 50 : 0) + (exam_completed ? 50 : 0)
-    // - For each lesson without exam: lesson_progress = (video_completed ? 100 : 0)
+    // - For each lesson with exam linked: lesson_progress = (completed ? 50 : 0) + (exam_completed ? 50 : 0)
+    // - For each lesson without exam: lesson_progress = (completed ? 100 : 0)
     // - Total course progress = average of all lessons
     public function calculateCourseProgress($userId = null)
     {
@@ -124,18 +124,11 @@ class Course extends Model
                 ->where('course_content_id', $video->id)
                 ->first();
 
-            // Video is completed if:
-            // 1. video_completed flag is true (NEW - most reliable), OR
-            // 2. watch_time reached 90% of video duration (FALLBACK - for backward compatibility)
+            // Video is completed based on the completed flag in progress record
             $isVideoCompleted = false;
             if ($contentProgress) {
-                // Primary indicator: use the dedicated video_completed flag
-                if ($contentProgress->video_completed) {
-                    $isVideoCompleted = true;
-                } elseif ($video->video_duration && $contentProgress->watch_time) {
-                    // Fallback: check if 90% watched (for Bunny videos with watch_time tracking)
-                    $isVideoCompleted = $contentProgress->watch_time >= $video->video_duration * 0.9;
-                }
+                // Use the completed flag from progress record
+                $isVideoCompleted = $contentProgress->completed;
             }
 
             if ($isVideoCompleted) {
