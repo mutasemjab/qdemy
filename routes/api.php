@@ -81,6 +81,7 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/subject/{subjectId}', [CourseController::class, 'coursesBySubject']);
         Route::get('/international-program/{program?}', [CourseController::class, 'internationalProgramCourses']);
         Route::get('/universities-program', [CourseController::class, 'universitiesProgramCourses']);
+        Route::get('/training-courses', [CourseController::class, 'trainingCourses']);
     });
 
     Route::prefix('categories')->group(function () {
@@ -91,6 +92,7 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('/tawjihi/first-grade-fields', [CategoryController::class, 'getTawjihiFirstYear']);
         Route::get('/international-program', [CategoryController::class, 'getInternationalPrograms']);
         Route::get('/universities-program', [CategoryController::class, 'getUniversitiesProgram']);
+        Route::get('/training-courses', [CategoryController::class, 'getTrainingCourses']);
     });
 
     Route::get('/pos', [PosController::class, 'index']);

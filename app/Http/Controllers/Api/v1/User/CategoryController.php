@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subject;
 use App\Traits\Responses;
 use App\Repositories\CategoryRepository;
 use App\Repositories\SubjectRepository;
@@ -217,6 +218,42 @@ class CategoryController extends Controller
                                     'icon' => $subject->icon,
                                     'color' => $subject->color,
                                     'sort_order' => $subject->sort_order
+                                ];
+                            })
+                        ]
+                    ])
+                ];
+            }
+
+            // 5. Training Courses (all active subjects)
+            $trainingSubjects = Subject::where('is_active', true)->get();
+            if ($trainingSubjects->isNotEmpty()) {
+                $allPrograms[] = [
+                    'program_key' => 'training',
+                    'program_name_ar' => 'الدورات التدريبية',
+                    'program_name_en' => 'Training Courses',
+                    'levels' => collect([
+                        [
+                            'name_ar' => 'الدورات التدريبية',
+                            'name_en' => 'Training Courses',
+                            'subjects' => $trainingSubjects->map(function ($subject) {
+                                return [
+                                    'id' => $subject->id,
+                                    'name_ar' => $subject->name_ar,
+                                    'name_en' => $subject->name_en,
+                                    'icon' => $subject->icon,
+                                    'color' => $subject->color,
+                                    'sort_order' => $subject->sort_order,
+                                    'grade' => $subject->grade ? [
+                                        'id' => $subject->grade->id,
+                                        'name_ar' => $subject->grade->name_ar,
+                                        'name_en' => $subject->grade->name_en
+                                    ] : null,
+                                    'semester' => $subject->semester ? [
+                                        'id' => $subject->semester->id,
+                                        'name_ar' => $subject->semester->name_ar,
+                                        'name_en' => $subject->semester->name_en
+                                    ] : null
                                 ];
                             })
                         ]
@@ -462,7 +499,7 @@ class CategoryController extends Controller
     {
         try {
             $program = $this->categoryRepo->getUniversitiesProgram();
-            
+
             if (!$program) {
                 return $this->error_response('Universities program not found', null);
             }
@@ -492,6 +529,46 @@ class CategoryController extends Controller
         }
     }
 
-    
+    /**
+     * Get training courses (all active subjects)
+     * GET /api/categories/training-courses
+     */
+    public function getTrainingCourses()
+    {
+        try {
+            $subjects = Subject::where('is_active', true)->get();
+
+            if ($subjects->isEmpty()) {
+                return $this->error_response('Training courses not found', null);
+            }
+
+            $data = $subjects->map(function ($subject) {
+                return [
+                    'id' => $subject->id,
+                    'name_ar' => $subject->name_ar,
+                    'name_en' => $subject->name_en,
+                    'icon' => $subject->icon,
+                    'color' => $subject->color,
+                    'sort_order' => $subject->sort_order,
+                    'grade' => $subject->grade ? [
+                        'id' => $subject->grade->id,
+                        'name_ar' => $subject->grade->name_ar,
+                        'name_en' => $subject->grade->name_en
+                    ] : null,
+                    'semester' => $subject->semester ? [
+                        'id' => $subject->semester->id,
+                        'name_ar' => $subject->semester->name_ar,
+                        'name_en' => $subject->semester->name_en
+                    ] : null
+                ];
+            });
+
+            return $this->success_response('Training courses retrieved successfully', $data);
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve training courses', $e->getMessage());
+        }
+    }
+
+
 
 }

@@ -155,6 +155,7 @@ return array (
   'elementary_grades' => 'الصفوف الأساسية',
   'universities_colleges' => 'الجامعات والكليات',
   'international_program' => 'برنامج دولي',
+  'training_courses' => 'الدورات التدريبية',
   'contact_whatsapp' => 'تواصل معنا عبر الواتساب',
   'contact' => 'تواصل',
   'cash_payment' => 'الدفع كاش',

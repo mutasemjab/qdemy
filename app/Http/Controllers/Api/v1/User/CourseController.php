@@ -728,4 +728,86 @@ class CourseController extends Controller
             return $this->error_response('Failed to retrieve courses: ' . $e->getMessage(), null);
         }
     }
+
+    /**
+     * Get training courses (all active subjects' courses)
+     * GET /api/v1/user/courses/training-courses
+     */
+    public function trainingCourses(Request $request)
+    {
+        try {
+            $perPage = $request->get('per_page', 10);
+
+            // Get all active subjects
+            $subjects = Subject::where('is_active', true)->pluck('id');
+
+            if ($subjects->isEmpty()) {
+                return $this->error_response('No training courses found', null);
+            }
+
+            // Get courses for all active subjects
+            $courses = Course::where('status', 'accepted')
+                ->whereIn('subject_id', $subjects)
+                ->with(['teacher', 'subject'])
+                ->latest()
+                ->paginate($perPage);
+
+            $coursesData = $courses->getCollection()->map(function ($course) {
+                return [
+                    'id' => $course->id,
+                    'title_en' => $course->title_en,
+                    'title_ar' => $course->title_ar,
+                    'description_en' => $course->description_en,
+                    'description_ar' => $course->description_ar,
+                    'selling_price' => $course->selling_price,
+                    'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                    'created_at' => $course->created_at,
+                    'teacher' => $course->teacher ? [
+                        'id' => $course->teacher->id,
+                        'name' => $course->teacher->name,
+                        'name_of_lesson' => $course->teacher->name_of_lesson,
+                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
+                    ] : null,
+                    'subject' => $course->subject ? [
+                        'id' => $course->subject->id,
+                        'name_ar' => $course->subject->name_ar,
+                        'name_en' => $course->subject->name_en,
+                        'color' => $course->subject->color,
+                        'icon' => $course->subject->icon,
+                        'grade' => $course->subject->grade ? [
+                            'id' => $course->subject->grade->id,
+                            'name_ar' => $course->subject->grade->name_ar,
+                            'name_en' => $course->subject->grade->name_en
+                        ] : null,
+                        'semester' => $course->subject->semester ? [
+                            'id' => $course->subject->semester->id,
+                            'name_ar' => $course->subject->semester->name_ar,
+                            'name_en' => $course->subject->semester->name_en
+                        ] : null
+                    ] : null
+                ];
+            });
+
+            $responseData = [
+                'program' => [
+                    'name_ar' => 'الدورات التدريبية',
+                    'name_en' => 'Training Courses'
+                ],
+                'courses' => $coursesData,
+                'pagination' => [
+                    'current_page' => $courses->currentPage(),
+                    'last_page' => $courses->lastPage(),
+                    'per_page' => $courses->perPage(),
+                    'total' => $courses->total(),
+                    'from' => $courses->firstItem(),
+                    'to' => $courses->lastItem(),
+                    'has_more_pages' => $courses->hasMorePages()
+                ]
+            ];
+
+            return $this->success_response('Training courses retrieved successfully', $responseData);
+        } catch (\Exception $e) {
+            return $this->error_response('Failed to retrieve training courses: ' . $e->getMessage(), null);
+        }
+    }
 }

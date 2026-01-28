@@ -155,6 +155,7 @@ return array(
   'elementary_grades' => 'Elementary Grades',
   'universities_colleges' => 'Universities and Colleges',
   'international_program' => 'International Program',
+  'training_courses' => 'Training Courses',
   'contact_whatsapp' => 'Contact us via WhatsApp',
   'contact' => 'Contact',
   'cash_payment' => 'Cash Payment',

@@ -22,6 +22,7 @@ use App\Http\Controllers\Web\PackageAndOfferController;
 use App\Http\Controllers\Web\UniversityProgramController;
 use App\Http\Controllers\Web\ElementaryProgrammController;
 use App\Http\Controllers\Web\InternationalProgramController;
+use App\Http\Controllers\Web\TrainingCoursesController;
 use App\Http\Controllers\Web\MinisterialYearsQuestionController;
 use App\Http\Controllers\Web\FaqController;
 use App\Http\Controllers\Web\ForgotPasswordController;
@@ -65,6 +66,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
     Route::get('/course/{course}/{slug?}', [CourseController::class, 'course'])->name('course');
     Route::get('/subject-courses/{subject}/{slug?}', [CourseController::class, 'subject_courses'])->name('subject');
     Route::get('/universities-programm/{programm?}/{slug?}', [UniversityProgramController::class, 'index'])->name('universities-programm');
+
+    Route::get('/training-courses', [TrainingCoursesController::class, 'index'])->name('training-courses');
 
     Route::get('/international-programms', [InternationalProgramController::class, 'index'])->name('international-programms');
     Route::get('/international-programm/{programm?}/{slug?}', [InternationalProgramController::class, 'programm'])->name('international-programm');
