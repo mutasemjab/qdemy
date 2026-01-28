@@ -370,7 +370,8 @@ class SubjectController extends Controller
         // Conditional validation for grade_id
         $program = Category::find($request->programm_id);
         $grade   = null;
-        if ($program && $program->ctg_key != 'universities-and-colleges-program') {
+        // Only require grade_id for programs that actually need it
+        if ($program && in_array($program->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program', 'international-program'])) {
             $rules['grade_id'] = 'required|exists:categories,id';
         } else {
             $rules['grade_id'] = 'nullable|exists:categories,id';
