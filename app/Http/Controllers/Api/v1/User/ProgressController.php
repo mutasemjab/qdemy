@@ -99,12 +99,12 @@ class ProgressController extends Controller
             }
 
             // Determine if video is completed
-            // Two cases:
-            // 1) Auto-completion: watch_time >= 90% of video duration
-            // 2) Manual completion: explicit 'completed' flag from request
-            $videoCompleted = $request->has('completed')
-                ? $request->completed
-                : ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9);
+            // completed=1 from mobile means normal watching (not truly completed) → treat as false
+            // completed=2 from mobile means user clicked "mark as completed" → treat as true
+            $manualComplete = $request->has('completed') && $request->completed == 2;
+
+            $videoCompleted = $manualComplete
+                || ($courseContent->video_duration && $request->watch_time >= $courseContent->video_duration * 0.9);
 
            
 
@@ -124,8 +124,13 @@ class ProgressController extends Controller
 
 
             // Update video-related fields (preserve exam data if present)
-            // Keep the maximum watch time (highest position reached in the video)
-            $progress->watch_time = max($progress->watch_time, $request->watch_time);
+            // If manual complete (completed=2), set watch_time to full video duration
+            if ($manualComplete && $courseContent->video_duration) {
+                $progress->watch_time = $courseContent->video_duration;
+            } else {
+                // Keep the maximum watch time (highest position reached in the video)
+                $progress->watch_time = max($progress->watch_time, $request->watch_time);
+            }
             $progress->viewed_at = now();
             $progress->save();
 
