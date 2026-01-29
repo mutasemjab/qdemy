@@ -1228,6 +1228,7 @@ html[dir="rtl"] .footer-contact {
     z-index: 9999;
     position: relative;
     margin-bottom: 50px;
+    padding: 0 30px;
 }
 
 .hero-card {
@@ -3027,6 +3028,7 @@ a.ud-item.nav-link:hover {
 .grades-grid-wrapper {
     background: url(../images/line.png) no-repeat center / contain;
     width: 100%;
+    padding: 0 30px;
 }
 
 .grade-card {
