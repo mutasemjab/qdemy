@@ -107,7 +107,6 @@ class ForgotPasswordController extends Controller
 
             // Find user
             $user = User::where('phone', $phone)
-                       ->where('role_name', 'student')
                        ->first();
 
             if (!$user) {
@@ -174,7 +173,6 @@ class ForgotPasswordController extends Controller
 
             // Find user by phone number and ensure they are a student
             $user = User::where('phone', $phone)
-                       ->where('role_name', 'student')
                        ->first();
 
             if (!$user) {
@@ -189,7 +187,6 @@ class ForgotPasswordController extends Controller
             // Update password
             $user->update([
                 'password' => Hash::make($request->password),
-                'ip_address' => $request->ip()
             ]);
 
             // Revoke all existing tokens for security
@@ -222,7 +219,6 @@ class ForgotPasswordController extends Controller
 
             // Check if user exists
             $user = User::where('phone', $phone)
-                       ->where('role_name', 'student')
                        ->first();
 
             if (!$user) {
