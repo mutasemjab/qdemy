@@ -204,7 +204,7 @@
 
                             <label>{{ __('panel.whatsapp') }}
                                 <input type="text" name="whatsapp"
-                                    value="{{ old('whatsapp', $user->teacher->whatsapp ?? '') }}" placeholder="+1234567890">
+                                    value="{{ old('whatsapp', $user->teacher->whataspp ?? '') }}" placeholder="+1234567890">
                             </label>
                         </div>
 
