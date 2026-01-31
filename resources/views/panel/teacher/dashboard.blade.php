@@ -169,15 +169,15 @@
                         <!-- Teacher Specific Fields -->
                         <label>{{ __('panel.lesson_name') }}
                             <input type="text" name="name_of_lesson"
-                                value="{{ old('name_of_lesson', $teacher->name_of_lesson ?? '') }}">
+                                value="{{ old('name_of_lesson', $user->teacher->name_of_lesson ?? '') }}">
                         </label>
 
                         <label>{{ __('panel.description_en') }}
-                            <textarea class="textarea-tech" name="description_en" rows="4">{{ old('description_en', $teacher->description_en ?? '') }}</textarea>
+                            <textarea class="textarea-tech" name="description_en" rows="4">{{ old('description_en', $user->teacher->description_en ?? '') }}</textarea>
                         </label>
 
                         <label>{{ __('panel.description_ar') }}
-                            <textarea class="textarea-tech" name="description_ar" rows="4">{{ old('description_ar', $teacher->description_ar ?? '') }}</textarea>
+                            <textarea class="textarea-tech" name="description_ar" rows="4">{{ old('description_ar', $user->teacher->description_ar ?? '') }}</textarea>
                         </label>
 
                         <!-- Social Media Links -->
@@ -186,25 +186,25 @@
 
                             <label>{{ __('panel.facebook') }}
                                 <input type="url" name="facebook"
-                                    value="{{ old('facebook', $teacher->facebook ?? '') }}"
+                                    value="{{ old('facebook', $user->teacher->facebook ?? '') }}"
                                     placeholder="https://facebook.com/username">
                             </label>
 
                             <label>{{ __('panel.instagram') }}
                                 <input type="url" name="instagram"
-                                    value="{{ old('instagram', $teacher->instagram ?? '') }}"
+                                    value="{{ old('instagram', $user->teacher->instagram ?? '') }}"
                                     placeholder="https://instagram.com/username">
                             </label>
 
                             <label>{{ __('panel.youtube') }}
                                 <input type="url" name="youtube"
-                                    value="{{ old('youtube', $teacher->youtube ?? '') }}"
+                                    value="{{ old('youtube', $user->teacher->youtube ?? '') }}"
                                     placeholder="https://youtube.com/channel/username">
                             </label>
 
                             <label>{{ __('panel.whatsapp') }}
                                 <input type="text" name="whatsapp"
-                                    value="{{ old('whatsapp', $teacher->whatsapp ?? '') }}" placeholder="+1234567890">
+                                    value="{{ old('whatsapp', $user->teacher->whatsapp ?? '') }}" placeholder="+1234567890">
                             </label>
                         </div>
 
