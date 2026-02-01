@@ -30,13 +30,8 @@ html {
 body {
     font-size: 25px; /* Explicit body font size */
     line-height: 1.6;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif !important;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif !important;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -67,13 +62,8 @@ h3,
 h4,
 h5,
 h6 {
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
 }
 
 @media (min-width: 1600px) {
@@ -627,12 +617,10 @@ button,
 .tawjihi-card,
 .gprogram-card,
 .examx-card {
-    transition:
-        transform var(--dur-2) var(--ease),
+    transition: transform var(--dur-2) var(--ease),
         box-shadow var(--dur-2) var(--ease),
         background-color var(--dur-1) var(--ease),
-        color var(--dur-1) var(--ease),
-        border-color var(--dur-1) var(--ease),
+        color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease),
         opacity var(--dur-1) var(--ease);
     will-change: transform, box-shadow;
 }
@@ -708,9 +696,7 @@ button,
 
 @media (hover: hover) {
     .hover-glow:hover {
-        box-shadow:
-            0 0 0 6px rgba(0, 85, 210, 0.08),
-            var(--shadow-1);
+        box-shadow: 0 0 0 6px rgba(0, 85, 210, 0.08), var(--shadow-1);
     }
 }
 
@@ -943,9 +929,7 @@ button.btn.btn-primary {
     background: var(--footer-card);
     color: var(--footer-fg);
     text-decoration: none;
-    transition:
-        transform 0.15s ease,
-        background 0.2s ease;
+    transition: transform 0.15s ease, background 0.2s ease;
 }
 
 .social-btn:hover {
@@ -980,9 +964,7 @@ button.btn.btn-primary {
     color: var(--footer-fg);
     text-decoration: none;
     border-bottom: 1px dashed transparent;
-    transition:
-        border-color 0.2s ease,
-        opacity 0.2s ease;
+    transition: border-color 0.2s ease, opacity 0.2s ease;
 }
 
 .footer-list a:hover {
@@ -1246,9 +1228,7 @@ html[dir="rtl"] .footer-contact {
     font-size: 16px;
     text-align: center;
     padding: 10px;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .hero-card:hover {
@@ -1321,9 +1301,7 @@ html[dir="rtl"] .footer-contact {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .blob-btn i {
@@ -1516,9 +1494,7 @@ a.hero-card {
     font-size: 22px;
     text-decoration: none;
     text-align: center;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     height: 188px;
 }
 
@@ -1899,9 +1875,7 @@ a.blob-btn span {
     place-items: center;
     transform: scale(0.82);
     filter: saturate(0.9) blur(0.2px);
-    transition:
-        transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1),
-        filter 0.55s;
+    transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.2, 1), filter 0.55s;
 }
 
 .x3c-fig img {
@@ -1958,9 +1932,7 @@ a.blob-btn span {
     place-items: center;
     font-size: 22px;
     cursor: pointer;
-    transition:
-        transform 0.2s,
-        background 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
 
 .x3c-arrow:hover {
@@ -2019,9 +1991,7 @@ a.blob-btn span {
     justify-content: center;
     opacity: 0.5;
     transform: scale(1);
-    transition:
-        transform 0.3s ease,
-        opacity 0.3s ease;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .carousel-slide.active {
@@ -2073,13 +2043,8 @@ a.blob-btn span {
     justify-content: center;
     gap: 30px;
     color: #fff;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
     font-size: 23px;
     font-weight: 700;
 }
@@ -2886,9 +2851,7 @@ a.ud-item.nav-link:hover {
     font-weight: bold;
     color: #fff;
     text-decoration: none;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow: hidden;
 }
 
@@ -3043,9 +3006,7 @@ a.ud-item.nav-link:hover {
     font-size: 24px;
     font-weight: bold;
     color: #fff;
-    transition:
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     padding: 19px;
 }
 
@@ -3632,13 +3593,8 @@ a.text-dark {
 
 .lesson-page {
     padding: 40px 20px;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
 }
 
 .lesson-container {
@@ -3705,9 +3661,7 @@ a.text-dark {
 .accordion-body {
     max-height: 0;
     overflow: hidden;
-    transition:
-        max-height 0.4s ease,
-        padding 0.3s ease;
+    transition: max-height 0.4s ease, padding 0.3s ease;
     padding: 0 15px;
     background: #fff;
 }
@@ -4044,13 +3998,8 @@ a.text-dark {
     max-width: 900px;
     margin: 30px auto;
     padding: 20px;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
     color: #000;
 }
 
@@ -4590,13 +4539,8 @@ a.text-dark {
 .examx-page {
     max-width: 1300px;
     margin: 40px auto 28px auto;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
 }
 
 .examx-filters {
@@ -4679,13 +4623,8 @@ a.text-dark {
 }
 
 .examx-line {
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif !important;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif !important;
     font-size: 20px;
     color: #252525;
     font-weight: 700;
@@ -4702,13 +4641,8 @@ a.text-dark {
 }
 
 .examx-meta strong {
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif !important;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif !important;
     color: #1356db;
 }
 
@@ -4804,9 +4738,7 @@ a.text-dark {
     cursor: pointer;
     font-weight: 700;
     min-width: 220px;
-    transition:
-        box-shadow 0.2s ease,
-        border-color 0.2s ease,
+    transition: box-shadow 0.2s ease, border-color 0.2s ease,
         background 0.2s ease;
 }
 
@@ -4984,9 +4916,7 @@ subject-plus-dropdown-examx {
     transform: translate(-50%, -50%);
     opacity: 0;
     pointer-events: none;
-    transition:
-        transform 520ms ease,
-        opacity 380ms ease;
+    transition: transform 520ms ease, opacity 380ms ease;
 }
 
 .fm3d-video-cover {
@@ -5111,9 +5041,7 @@ subject-plus-dropdown-examx {
     height: 8px;
     border-radius: 999px;
     background: rgb(6 6 6 / 49%);
-    transition:
-        width 220ms ease,
-        background-color 220ms ease;
+    transition: width 220ms ease, background-color 220ms ease;
 }
 
 .fm3d-dot.fm3d-dot-active {
@@ -5131,9 +5059,7 @@ subject-plus-dropdown-examx {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition:
-        opacity 250ms ease,
-        visibility 250ms ease;
+    transition: opacity 250ms ease, visibility 250ms ease;
 }
 
 .fm3d-video-modal.fm3d-modal-open {
@@ -5290,13 +5216,8 @@ subject-plus-dropdown-examx {
     max-width: 1300px;
     margin: 40px auto 28px auto;
     direction: rtl;
-    font-family:
-        "Somar",
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+    font-family: "Somar", system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
 }
 
 .cmty-feed {
@@ -5442,6 +5363,35 @@ subject-plus-dropdown-examx {
     margin: 0;
     font-size: 20px;
     color: #333;
+}
+
+/* Delete comment button */
+.cmty-delete-comment-btn {
+    background: transparent;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    padding: 4px 8px;
+    font-size: 14px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    margin-right: 8px;
+}
+
+.cmty-delete-comment-btn:hover {
+    opacity: 1;
+    color: #c82333;
+}
+
+.cmty-delete-comment-btn i {
+    font-size: 16px;
+}
+
+/* Highlight user's own comments */
+.cmty-comment.user-comment {
+    background: rgba(0, 85, 210, 0.05);
+    border-radius: 8px;
+    padding: 8px;
 }
 .like-text {
     font-size: large;
@@ -5891,9 +5841,7 @@ a.bq-btn.bq-download {
     border-radius: 16px;
     overflow: hidden;
     background: #f5f5f5;
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .co-card img {
@@ -7377,9 +7325,7 @@ a.dl-store0 img {
     border-radius: 20px;
     padding: 0 0 14px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .blog-card a {
@@ -7439,10 +7385,7 @@ a.dl-store0 img {
     cursor: pointer;
     display: grid;
     place-items: center;
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        opacity 0.2s ease;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
     opacity: 0.9;
     flex-shrink: 0;
 }
@@ -7477,9 +7420,7 @@ a.dl-store0 img {
     border: none;
     background: #cdd6ea;
     cursor: pointer;
-    transition:
-        transform 0.2s,
-        background 0.2s;
+    transition: transform 0.2s, background 0.2s;
 }
 
 .blog-slider__dots button[aria-current="true"] {
@@ -7782,9 +7723,7 @@ a.dl-store0 img {
     text-decoration: none;
     isolation: isolate;
     transform: translateZ(0);
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .tj2009__item:hover,
@@ -8273,8 +8212,7 @@ header.tj2009__head {
     transform: scale(0.95) translateY(-6px);
     opacity: 0;
     pointer-events: none;
-    transition:
-        transform 0.3s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
+    transition: transform 0.3s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1)),
         opacity 0.3s var(--ease, cubic-bezier(0.22, 0.61, 0.36, 1));
     z-index: 1001;
 }
@@ -8317,9 +8255,7 @@ header.tj2009__head {
     background: #f8fafc;
     color: #1b2130;
     font-size: 20px;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
+    transition: border-color 0.2s ease, box-shadow 0.2s ease,
         background 0.2s ease;
 }
 
@@ -8340,10 +8276,7 @@ header.tj2009__head {
     background: #0055d2;
     color: #fff;
     cursor: pointer;
-    transition:
-        transform 0.06s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
+    transition: transform 0.06s ease, background 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 6px 14px rgba(0, 85, 210, 0.18);
 }
 
@@ -8417,9 +8350,7 @@ header.tj2009__head {
     color: #1b2130;
     line-height: 1.7;
     font-size: 15px;
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
+    transition: border-color 0.2s ease, box-shadow 0.2s ease,
         background 0.2s ease;
 }
 
@@ -8451,10 +8382,7 @@ header.tj2009__head {
     background: #0055d2;
     color: #fff;
     cursor: pointer;
-    transition:
-        transform 0.06s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+    transition: transform 0.06s ease, box-shadow 0.2s ease, background 0.2s ease;
     box-shadow: 0 6px 14px rgba(0, 85, 210, 0.18);
 }
 

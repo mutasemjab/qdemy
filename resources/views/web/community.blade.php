@@ -88,7 +88,7 @@
                     <div class="cmty-comments">
                         @if ($post->approvedComments->count() > 0)
                             @foreach ($post->approvedComments->take(2) as $comment)
-                                <div class="cmty-comment">
+                                <div class="cmty-comment" data-comment-id="{{ $comment->id }}">
                                     <div>
                                         <b>{{ $comment->user->name }}</b>
                                         <p>{{ $comment->content }}</p>
@@ -96,6 +96,15 @@
                                     </div>
                                     <img src="{{ $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg') }}"
                                         alt="">
+                                    @auth
+                                        @if ($comment->canBeDeletedBy(Auth::id()))
+                                            <button class="cmty-delete-comment-btn" data-comment-id="{{ $comment->id }}"
+                                                title="{{ __('front.delete_comment') }}"
+                                                onclick="deleteComment({{ $comment->id }}, this)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        @endif
+                                    @endauth
                                 </div>
                             @endforeach
 
@@ -210,6 +219,13 @@
                                     data.comments.forEach(comment => {
                                         const commentDiv = document.createElement('div');
                                         commentDiv.className = 'cmty-comment';
+                                        commentDiv.dataset.commentId = comment.id;
+                                        let deleteBtn = '';
+                                        if (comment.can_delete) {
+                                            deleteBtn = `<button class="cmty-delete-comment-btn" data-comment-id="${comment.id}" title="{{ __('front.delete_comment') }}" onclick="deleteComment(${comment.id}, this)">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>`;
+                                        }
                                         commentDiv.innerHTML = `
                                 <img src="${comment.user_avatar}" alt="">
                                 <div>
@@ -217,6 +233,7 @@
                                     <p>${comment.content}</p>
                                     <small class="comment-time">${comment.created_at}</small>
                                 </div>
+                                ${deleteBtn}
                             `;
                                         commentsContainer.appendChild(commentDiv);
                                     });
@@ -234,6 +251,43 @@
                     });
                 });
             });
+
+            // Delete comment function
+            function deleteComment(commentId, buttonElement) {
+                if (!confirm('{{ __('front.confirm_delete_comment') }}')) {
+                    return;
+                }
+
+                const commentElement = buttonElement.closest('.cmty-comment');
+                const deleteUrl = `{{ route('community.comments.destroy', ':commentId') }}`.replace(':commentId', commentId);
+
+                fetch(deleteUrl, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Animate and remove the comment
+                            commentElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            commentElement.style.opacity = '0';
+                            commentElement.style.transform = 'translateX(20px)';
+                            setTimeout(() => {
+                                commentElement.remove();
+                            }, 300);
+                        } else {
+                            alert(data.message || '{{ __('front.error_deleting_comment') }}');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('{{ __('front.error_deleting_comment') }}');
+                    });
+            }
         </script>
     @endpush
 

@@ -95,8 +95,33 @@ class CommunityController extends Controller
                     'user_name' => $comment->user->name,
                     'user_avatar' => $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
                     'created_at' => $comment->created_at->diffForHumans(),
+                    'can_delete' => $comment->canBeDeletedBy(Auth::id()),
                 ];
             })
         ]);
+    }
+
+    public function destroyComment(Comment $comment)
+    {
+        // Check if the authenticated user is the comment owner
+        if (!$comment->canBeDeletedBy(Auth::id())) {
+            return response()->json([
+                'success' => false,
+                'message' => __('front.unauthorized_delete_comment')
+            ], 403);
+        }
+
+        try {
+            $comment->delete();
+            return response()->json([
+                'success' => true,
+                'message' => __('front.comment_deleted_successfully')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('front.error_deleting_comment')
+            ], 500);
+        }
     }
 }
