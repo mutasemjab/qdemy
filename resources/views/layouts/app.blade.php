@@ -1159,12 +1159,31 @@
             if (!baseCells.length) return;
 
             let vis = window.matchMedia('(max-width:768px)').matches ? 1 : 3;
+            let realCount = baseCells.length;
+
+            // If teachers count is less than or equal to visible count, disable carousel
+            if (realCount <= vis) {
+                // Show all teachers without cloning
+                baseCells.forEach(cell => {
+                    cell.style.minWidth = (viewport.clientWidth / realCount) + 'px';
+                    cell.classList.add('x3c-focus');
+                });
+                // Hide navigation arrows
+                if (left) left.style.display = 'none';
+                if (right) right.style.display = 'none';
+                return;
+            }
+
             let cloneCount = vis;
             let index = cloneCount;
             let itemWidth = 0;
-            let items, realCount = baseCells.length;
+            let items;
             let animating = false,
                 timer;
+
+            // Show navigation arrows (in case they were hidden before)
+            if (left) left.style.display = '';
+            if (right) right.style.display = '';
 
             function buildClones() {
                 rail.innerHTML = '';
