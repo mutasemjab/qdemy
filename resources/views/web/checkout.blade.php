@@ -706,20 +706,13 @@
                                         </p>
                                     </div>
                                 `,
-                                showCancelButton: true,
-                                confirmButtonText: translations.goToCourses,
-                                cancelButtonText: translations.goToDashboard,
-                                reverseButtons: true,
+                                showCancelButton: false,
+                                confirmButtonText: translations.goToDashboard,
                                 allowOutsideClick: false,
                                 allowEscapeKey: false
                             }).then((result) => {
-                                if (result.isConfirmed) {
-                                    // Redirect to My Courses
-                                    window.location.href = '{{ route('student.courses') }}';
-                                } else if (result.dismiss === Swal.DismissReason.cancel) {
-                                    // Redirect to Dashboard
-                                    window.location.href = '{{ route('student.dashboard') }}';
-                                }
+                                // Redirect to Dashboard (main student entry point)
+                                window.location.href = '{{ route('student.dashboard') }}';
                             });
                         } else {
                             // Show error popup
