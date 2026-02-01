@@ -1,6 +1,7 @@
 <?php
 
 return array (
+  'paid_videos_mobile_only' => 'الفيديوهات المدفوعة متاحة فقط على الجوال',
   'What Makes QDEMY Special' => 'ما يميز QDEMY',
   'QDEMY Services' => 'خدمات QDEMY',
   'qdemy' => 'QDEMY',
