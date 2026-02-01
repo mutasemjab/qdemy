@@ -461,6 +461,12 @@
             color: #0055D2 !important;
         }
 
+        /* SweetAlert2 Actions Container - Add gap between buttons */
+        .qdemy-swal-popup .swal2-actions {
+            gap: 15px !important;
+            margin-top: 25px !important;
+        }
+
         /* RTL Support for Arabic */
         [dir="rtl"] .qdemy-swal-popup {
             direction: rtl;

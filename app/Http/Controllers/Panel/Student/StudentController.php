@@ -84,9 +84,14 @@ class StudentController extends Controller
 
     public function courses()
     {
-        $user = Auth::user();
-        $courses = [];
-        return view('panel.student.courses', compact('user', 'courses'));
+        $user = auth_student();
+        $userCourses = collect();
+
+        if ($user) {
+            $userCourses = $user->courses;
+        }
+
+        return view('panel.student.courses', compact('user', 'userCourses'));
     }
 
     public function results()
