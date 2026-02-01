@@ -15,17 +15,15 @@ class TeacherController extends Controller
     {
         $query = Teacher::with('courses.subject');
 
-        // Filter by subject
-        if ($request->has('subject') && !empty($request->subject)) {
-            $query->whereHas('courses', function($q) use ($request) {
-                $q->where('subject_id', $request->subject);
-            });
+        // Search by teacher name
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where('name', 'LIKE', '%' . $searchTerm . '%');
         }
 
         $teachers = $query->get();
-        $subjects = Subject::all();
 
-        return view('web.teachers', compact('teachers', 'subjects'));
+        return view('web.teachers', compact('teachers'));
     }
 
     public function show($id)
