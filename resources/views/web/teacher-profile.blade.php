@@ -23,10 +23,11 @@
                 </div>
                 <div class="t-cta">
                     @auth
-                        <button type="button" class="btn t-btn--ghost follow-btn" data-teacher-id="{{ $teacher->id }}"
-                            data-following="{{ $isFollowing ? 'true' : 'false' }}">
-                            <i class="far {{ $isFollowing ? 'fa-heart-circle-check' : 'fa-heart' }}"></i>
-                            <span>{{ $isFollowing ? __('front.following') : __('front.follow') }}</span>
+                        <button type="button" class="btn follow-btn {{ $isFollowing ? 't-btn--following' : 't-btn--follow' }}"
+                            data-teacher-id="{{ $teacher->id }}" data-following="{{ $isFollowing ? 'true' : 'false' }}"
+                            aria-pressed="{{ $isFollowing ? 'true' : 'false' }}"
+                            aria-label="{{ $isFollowing ? __('front.unfollow_teacher') : __('front.follow_teacher') }}">
+                            {{ $isFollowing ? __('front.following') : __('front.follow') }}
                         </button>
                     @endauth
                 </div>
@@ -244,6 +245,36 @@
 
         .t-btn--ghost:hover {
             background: #f8f9fa
+        }
+
+        /* Follow/Unfollow Button Styles */
+        .t-btn--follow {
+            background: var(--brand);
+            color: #fff;
+            border: 2px solid var(--brand);
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .t-btn--follow:hover {
+            background: #004bb8;
+            border-color: #004bb8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 84, 210, 0.3);
+        }
+
+        .t-btn--following {
+            background: #fff;
+            color: var(--coal);
+            border: 2px solid var(--line);
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .t-btn--following:hover {
+            background: #fef2f2;
+            color: #dc2626;
+            border-color: #fecaca;
         }
 
         .t-socials {
@@ -573,17 +604,20 @@
                 .then(data => {
                     if (data.success) {
                         btn.dataset.following = data.is_following;
-                        const icon = btn.querySelector('i');
-                        const text = btn.querySelector('span');
+                        btn.setAttribute('aria-pressed', data.is_following);
 
                         if (data.is_following) {
-                            icon.classList.remove('fa-heart');
-                            icon.classList.add('fa-heart-circle-check');
-                            text.textContent = '{{ __('front.following') }}';
+                            // Switch to following state
+                            btn.classList.remove('t-btn--follow');
+                            btn.classList.add('t-btn--following');
+                            btn.textContent = '{{ __('front.following') }}';
+                            btn.setAttribute('aria-label', '{{ __('front.unfollow_teacher') }}');
                         } else {
-                            icon.classList.remove('fa-heart-circle-check');
-                            icon.classList.add('fa-heart');
-                            text.textContent = '{{ __('front.follow') }}';
+                            // Switch to follow state
+                            btn.classList.remove('t-btn--following');
+                            btn.classList.add('t-btn--follow');
+                            btn.textContent = '{{ __('front.follow') }}';
+                            btn.setAttribute('aria-label', '{{ __('front.follow_teacher') }}');
                         }
 
                         // Update followers count
