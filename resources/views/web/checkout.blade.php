@@ -130,6 +130,8 @@
 
 
 @push('styles')
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <style>
         .checkout-layout {
             --card-bg: #e9eaec;
@@ -393,14 +395,115 @@
             }
         }
 
-        input , button {
+        input,
+        button {
             font-size: 20px;
+        }
+
+        /* SweetAlert2 Custom Styles for Qdemy */
+        .qdemy-swal-popup {
+            border-radius: 20px !important;
+            padding: 30px !important;
+            font-family: 'Somar', system-ui, -apple-system, sans-serif !important;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .qdemy-swal-title {
+            font-family: 'Somar', system-ui, -apple-system, sans-serif !important;
+            font-weight: 800 !important;
+            font-size: 26px !important;
+            color: #333 !important;
+            margin-bottom: 15px !important;
+        }
+
+        .qdemy-swal-content {
+            font-family: 'Somar', system-ui, -apple-system, sans-serif !important;
+            font-size: 18px !important;
+            color: #666 !important;
+            line-height: 1.6 !important;
+        }
+
+        .qdemy-swal-confirm {
+            font-family: 'Somar', system-ui, -apple-system, sans-serif !important;
+            background: linear-gradient(135deg, #0055D2 0%, #0044b0 100%) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 14px 28px !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 15px rgba(0, 85, 210, 0.3) !important;
+        }
+
+        .qdemy-swal-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(0, 85, 210, 0.4) !important;
+        }
+
+        .qdemy-swal-cancel {
+            font-family: 'Somar', system-ui, -apple-system, sans-serif !important;
+            background: #f8f9fa !important;
+            color: #666 !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 12px !important;
+            padding: 14px 28px !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .qdemy-swal-cancel:hover {
+            background: #e9ecef !important;
+            border-color: #0055D2 !important;
+            color: #0055D2 !important;
+        }
+
+        /* RTL Support for Arabic */
+        [dir="rtl"] .qdemy-swal-popup {
+            direction: rtl;
+        }
+
+        /* Loading spinner animation */
+        @keyframes qdemy-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .fa-spinner {
+            animation: qdemy-spin 1s linear infinite;
+        }
+
+        /* Success animation */
+        @keyframes qdemy-success-bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .swal2-icon.swal2-success {
+            animation: qdemy-success-bounce 0.5s ease !important;
         }
     </style>
 @endpush
 
 
 @push('scripts')
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -416,7 +519,28 @@
                 packageDeletedSuccess: @json(__('front.package_deleted_success')),
                 deletePackage: @json(__('front.delete_package')),
                 paymentSubmitted: @json(__('front.payment_submitted')),
-                cashPaymentSuccess: @json(__('front.cash_payment_success'))
+                cashPaymentSuccess: @json(__('front.cash_payment_success')),
+                purchaseSuccessTitle: @json(__('front.purchase_success_title')),
+                purchaseSuccessMessage: @json(__('front.purchase_success_message')),
+                purchaseErrorTitle: @json(__('front.purchase_error_title')),
+                goToDashboard: @json(__('front.go_to_dashboard')),
+                goToCourses: @json(__('front.go_to_courses')),
+                continueShopping: @json(__('front.continue_shopping'))
+            };
+
+            // Configure SweetAlert2 defaults for Qdemy design
+            const SwalConfig = {
+                confirmButtonColor: '#0055D2',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '{{ __('messages.ok') }}',
+                customClass: {
+                    popup: 'qdemy-swal-popup',
+                    title: 'qdemy-swal-title',
+                    htmlContainer: 'qdemy-swal-content',
+                    confirmButton: 'qdemy-swal-confirm',
+                    cancelButton: 'qdemy-swal-cancel'
+                },
+                buttonsStyling: false
             };
 
             const tabs = document.querySelectorAll('.pay-tabs .tab');
@@ -521,12 +645,28 @@
                     e.preventDefault();
                     const input = document.getElementById('card-number-input');
                     const card = (input?.value || '').trim();
-                    if (!card) return alert(translations.enterCardNumber);
+
+                    if (!card) {
+                        Swal.fire({
+                            ...SwalConfig,
+                            icon: 'warning',
+                            title: translations.purchaseErrorTitle,
+                            text: translations.enterCardNumber,
+                            confirmButtonText: '{{ __('messages.ok') }}'
+                        });
+                        return;
+                    }
+
                     const type = activateBtn.getAttribute('data-payment-type');
                     const url = type === 'package' ? '{{ route('payment.package.card') }}' :
                         '{{ route('payment.card') }}';
+
+                    // Show loading state
                     activateBtn.disabled = true;
-                    activateBtn.textContent = translations.activating;
+                    const originalText = activateBtn.textContent;
+                    activateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + translations
+                        .activating;
+
                     try {
                         const res = await fetch(url, {
                             method: 'POST',
@@ -540,15 +680,66 @@
                             })
                         });
                         const data = await res.json();
+
                         if (data && data.success) {
-                            location.reload();
+                            // Show success popup
+                            Swal.fire({
+                                ...SwalConfig,
+                                icon: 'success',
+                                title: translations.purchaseSuccessTitle,
+                                html: `
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 60px; color: #28a745; margin-bottom: 15px;">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <p style="font-size: 18px; color: #333; margin-bottom: 10px;">
+                                            ${translations.purchaseSuccessMessage}
+                                        </p>
+                                        <p style="font-size: 14px; color: #666;">
+                                            ${data.message || ''}
+                                        </p>
+                                    </div>
+                                `,
+                                showCancelButton: true,
+                                confirmButtonText: translations.goToCourses,
+                                cancelButtonText: translations.goToDashboard,
+                                reverseButtons: true,
+                                allowOutsideClick: false,
+                                allowEscapeKey: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirect to My Courses
+                                    window.location.href = '{{ route('student.courses') }}';
+                                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                                    // Redirect to Dashboard
+                                    window.location.href = '{{ route('student.dashboard') }}';
+                                }
+                            });
                         } else {
+                            // Show error popup
                             activateBtn.disabled = false;
-                            activateBtn.textContent = translations.activateCard;
+                            activateBtn.textContent = originalText;
+
+                            Swal.fire({
+                                ...SwalConfig,
+                                icon: 'error',
+                                title: translations.purchaseErrorTitle,
+                                text: data?.message || translations.errorOccurred,
+                                confirmButtonText: '{{ __('messages.ok') }}'
+                            });
                         }
-                    } catch (_) {
+                    } catch (error) {
+                        // Show connection error popup
                         activateBtn.disabled = false;
-                        activateBtn.textContent = translations.activateCard;
+                        activateBtn.textContent = originalText;
+
+                        Swal.fire({
+                            ...SwalConfig,
+                            icon: 'error',
+                            title: translations.purchaseErrorTitle,
+                            text: translations.serverConnectionError,
+                            confirmButtonText: '{{ __('messages.ok') }}'
+                        });
                     }
                 });
             }
@@ -571,7 +762,7 @@
 
             async function handleCashPayment() {
                 try {
-                    const response = await fetch('{{ route("payment.cash") }}', {
+                    const response = await fetch('{{ route('payment.cash') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
