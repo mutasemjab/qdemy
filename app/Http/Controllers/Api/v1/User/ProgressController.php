@@ -7,6 +7,7 @@ use App\Models\ContentUserProgress;
 use App\Models\Course;
 use App\Models\CourseContent;
 use App\Repositories\CourseRepository;
+use App\Services\LessonCompletionService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -14,6 +15,13 @@ use Illuminate\Support\Facades\Validator;
 class ProgressController extends Controller
 {
     use Responses;
+
+    protected LessonCompletionService $completionService;
+
+    public function __construct(LessonCompletionService $completionService)
+    {
+        $this->completionService = $completionService;
+    }
 
     /**
      * Get course progress for authenticated user
@@ -114,46 +122,29 @@ class ProgressController extends Controller
                 ]
             );
 
-            // Update video-related fields (preserve exam data if present)
-            // If manual complete (completed=2), set watch_time to full video duration
+            // Update watch_time: manual complete sets full duration, otherwise keep maximum
             if ($manualComplete && $courseContent->video_duration) {
                 $progress->watch_time = $courseContent->video_duration;
             } else {
-                // Keep the maximum watch time (highest position reached in the video)
                 $progress->watch_time = max($progress->watch_time, $request->watch_time);
             }
             $progress->viewed_at = now();
+
+            // Completion is determined exclusively by the service — never set manually
+            $linkedExam = $this->completionService->getLinkedExam($courseContent);
+            $videoCompleted = $this->completionService->isVideoWatched($progress, $courseContent);
+            $lessonCompleted = $this->completionService->isLessonCompleted($progress, $courseContent, $user->id);
+
+            $progress->setCompletedFlag($lessonCompleted);
             $progress->save();
 
-            // Check if this lesson has a linked exam
-            $linkedExam = $courseContent->exams()->where('is_active', 1)->first();
+            $hasExamAttempt = $linkedExam
+                ? $this->completionService->hasExamAttempt($linkedExam, $user->id)
+                : false;
 
-            // Video is completed if watch_time >= 90% of video_duration
-            $videoCompleted = false;
-            if ($courseContent->video_duration) {
-                $videoCompleted = $progress->watch_time >= $courseContent->video_duration * 0.9;
-            }
-
-            // Check if exam has at least 1 completed attempt (regardless of pass/fail)
-            $hasExamAttempt = false;
-            if ($linkedExam) {
-                $hasExamAttempt = \App\Models\ExamAttempt::where('exam_id', $linkedExam->id)
-                    ->where('user_id', $user->id)
-                    ->where('status', 'completed')
-                    ->exists();
-            }
-
-            // Calculate lesson completion status
-            // If lesson has exam: complete only when video is done + at least 1 exam attempt
-            // If no exam: complete when video is done
-            $lessonCompleted = $videoCompleted;
+            // Calculate lesson progress
             $lessonProgress = $videoCompleted ? 100 : 0;
-
             if ($linkedExam) {
-                // Lesson is complete only if both video AND exam attempt exist
-                $lessonCompleted = $videoCompleted && $hasExamAttempt;
-
-                // Calculate lesson progress: 50% video + 50% exam
                 $lessonProgress = 0;
                 if ($videoCompleted) {
                     $lessonProgress += 50;
@@ -232,15 +223,16 @@ class ProgressController extends Controller
                 ]
             );
 
-            // Mark content as viewed
             $progress->viewed_at = now();
 
-            // If content is a video, set watch_time to full video duration for completion
             if ($courseContent->isVideo() && $courseContent->video_duration) {
+                // Video: set watch_time to full duration, let the service resolve completion
                 $progress->watch_time = $courseContent->video_duration;
+                $lessonCompleted = $this->completionService->isLessonCompleted($progress, $courseContent, $user->id);
+                $progress->setCompletedFlag($lessonCompleted);
             } else {
-                // For non-video content, mark as completed
-                $progress->completed = true;
+                // Non-video content: mark as viewed/completed directly
+                $progress->setCompletedFlag(true);
                 if (! $progress->watch_time) {
                     $progress->watch_time = 1;
                 }
@@ -248,39 +240,22 @@ class ProgressController extends Controller
 
             $progress->save();
 
-            // Check if this lesson has a linked exam
-            $linkedExam = $courseContent->exams()->where('is_active', 1)->first();
+            // Derive all completion states from the service
+            $linkedExam = $this->completionService->getLinkedExam($courseContent);
 
-            // Determine content completion based on type
-            $isContentCompleted = false;
-            if ($courseContent->isVideo() && $courseContent->video_duration) {
-                // For video: completed if watch_time >= 90% of video_duration
-                $isContentCompleted = $progress->watch_time >= $courseContent->video_duration * 0.9;
-            } else {
-                // For non-video: use completed flag
-                $isContentCompleted = $progress->completed;
-            }
+            $isContentCompleted = $courseContent->content_type === 'video'
+                ? $this->completionService->isVideoWatched($progress, $courseContent)
+                : (bool) $progress->completed;
 
-            // Check if exam has at least 1 completed attempt (regardless of pass/fail)
-            $hasExamAttempt = false;
-            if ($linkedExam) {
-                $hasExamAttempt = \App\Models\ExamAttempt::where('exam_id', $linkedExam->id)
-                    ->where('user_id', $user->id)
-                    ->where('status', 'completed')
-                    ->exists();
-            }
+            $hasExamAttempt = $linkedExam
+                ? $this->completionService->hasExamAttempt($linkedExam, $user->id)
+                : false;
 
-            // Calculate lesson completion status
-            // If lesson has exam: complete only when content is done + at least 1 exam attempt
-            // If no exam: complete when content is done
-            $lessonCompleted = $isContentCompleted;
+            $lessonCompleted = $this->completionService->isLessonCompleted($progress, $courseContent, $user->id);
+
+            // Calculate lesson progress
             $lessonProgress = $isContentCompleted ? 100 : 0;
-
             if ($linkedExam) {
-                // Lesson is complete only if both content AND exam attempt exist
-                $lessonCompleted = $isContentCompleted && $hasExamAttempt;
-
-                // Calculate lesson progress: 50% content + 50% exam
                 $lessonProgress = 0;
                 if ($isContentCompleted) {
                     $lessonProgress += 50;
@@ -348,37 +323,25 @@ class ProgressController extends Controller
             // Build video progress from all records that have course_content_id
             $videoProgress = $allProgress->map(function ($progress) use ($user) {
                 $content = CourseContent::find($progress->course_content_id);
-                $videoDuration = $content?->video_duration;
-
-                // Content is completed based on type
-                $isContentCompleted = false;
-                if ($content?->content_type === 'video' && $videoDuration) {
-                    // For video: completed if watch_time >= 90% of video_duration
-                    $isContentCompleted = $progress->watch_time >= $videoDuration * 0.9;
-                } else {
-                    // For non-video: use completed flag
-                    $isContentCompleted = $progress->completed;
+                if (! $content) {
+                    return null;
                 }
 
-                // Check if lesson has linked exam
-                $linkedExam = $content?->exams()->where('is_active', 1)->first();
+                $linkedExam = $this->completionService->getLinkedExam($content);
                 $hasExam = $linkedExam !== null;
 
-                // Check if exam has at least 1 completed attempt
-                $hasExamAttempt = false;
-                if ($linkedExam) {
-                    $hasExamAttempt = \App\Models\ExamAttempt::where('exam_id', $linkedExam->id)
-                        ->where('user_id', $user->id)
-                        ->where('status', 'completed')
-                        ->exists();
-                }
+                $isContentCompleted = $content->content_type === 'video'
+                    ? $this->completionService->isVideoWatched($progress, $content)
+                    : (bool) $progress->completed;
 
-                // Calculate lesson completion
-                $lessonCompleted = $isContentCompleted;
+                $hasExamAttempt = $linkedExam
+                    ? $this->completionService->hasExamAttempt($linkedExam, $user->id)
+                    : false;
+
+                $lessonCompleted = $this->completionService->isLessonCompleted($progress, $content, $user->id);
+
                 $lessonProgress = $isContentCompleted ? 100 : 0;
-
                 if ($hasExam) {
-                    $lessonCompleted = $isContentCompleted && $hasExamAttempt;
                     $lessonProgress = 0;
                     if ($isContentCompleted) {
                         $lessonProgress += 50;
@@ -392,7 +355,7 @@ class ProgressController extends Controller
                     'id' => $progress->id,
                     'content_id' => $progress->course_content_id,
                     'watch_time' => $progress->watch_time,
-                    'video_duration' => $videoDuration,
+                    'video_duration' => $content->video_duration,
                     'completed' => $lessonCompleted,
                     'content_completed' => $isContentCompleted,
                     'has_exam' => $hasExam,
@@ -402,7 +365,7 @@ class ProgressController extends Controller
                     'lesson_progress' => $lessonProgress,
                     'viewed_at' => $progress->viewed_at,
                 ];
-            })->values();
+            })->filter()->values();
 
             // Build exam progress from records that have exam_id
             $examProgress = $allProgress->whereNotNull('exam_id')->map(function ($progress) {

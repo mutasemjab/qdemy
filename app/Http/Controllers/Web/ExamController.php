@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\ContentUserProgress;
+use App\Models\CourseContent;
 use App\Models\Exam;
 use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\User;
+use App\Services\LessonCompletionService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +26,11 @@ class ExamController extends Controller
 
     public $apiRoutePrefix = '';
 
-    public function __construct()
+    protected LessonCompletionService $completionService;
+
+    public function __construct(LessonCompletionService $completionService)
     {
+        $this->completionService = $completionService;
         $this->middleware(function ($request, $next) {
             // 1- check if request is from mobile
             $this->checkIfApi();
@@ -455,7 +460,6 @@ class ExamController extends Controller
             ]);
 
             if ($exam->course_content_id) {
-                // Check if this is the first completed attempt for this exam by this user
                 $hasCompletedAttemptBefore = ExamAttempt::where('exam_id', $exam->id)
                     ->where('user_id', $attempt->user_id)
                     ->where('status', 'completed')
@@ -464,42 +468,44 @@ class ExamController extends Controller
 
                 // Only update progress on first completed attempt
                 if (! $hasCompletedAttemptBefore) {
-                    // Check if progress record already exists (from video watching)
+                    $courseContent = CourseContent::find($exam->course_content_id);
+
                     $existingProgress = ContentUserProgress::where('user_id', $attempt->user_id)
                         ->where('course_content_id', $exam->course_content_id)
                         ->first();
 
                     if ($existingProgress) {
-                        // Update existing record - preserve watch_time from video progress
-                        // Lesson is complete only if both video AND exam are done
-                        $lessonCompleted = $existingProgress->completed; // video completion status
+                        // Update exam fields individually — completed must not be written
+                        // through mass-assignment on a persisted record.
+                        $existingProgress->exam_id = $exam->id;
+                        $existingProgress->exam_attempt_id = $attempt->id;
+                        $existingProgress->score = $total_score;
+                        $existingProgress->percentage = round($percentage, 2);
+                        $existingProgress->is_passed = $is_passed;
+                        $existingProgress->viewed_at = now();
 
-                        $existingProgress->update([
-                            'exam_id' => $exam->id,
-                            'exam_attempt_id' => $attempt->id,
-                            'score' => $total_score,
-                            'percentage' => round($percentage, 2),
-                            'is_passed' => $is_passed,
-                            'completed' => $lessonCompleted,
-                            'viewed_at' => now(),
-                            // Don't overwrite watch_time - they contain video progress
-                        ]);
+                        // Recalculate completion through the service.  This is the point
+                        // where a lesson with a linked exam can transition to completed = true,
+                        // provided the video was already watched.
+                        $lessonCompleted = $this->completionService->isLessonCompleted(
+                            $existingProgress, $courseContent, $attempt->user_id
+                        );
+                        $existingProgress->setCompletedFlag($lessonCompleted);
+                        $existingProgress->save();
                     } else {
-                        // Create new record (student took exam without watching video first)
-                        // Lesson not complete because video wasn't watched
-                       
-
+                        // Student took exam without watching video first.
+                        // Video not watched → lesson cannot be complete.
                         ContentUserProgress::create([
                             'user_id' => $attempt->user_id,
                             'course_content_id' => $exam->course_content_id,
                             'exam_id' => $exam->id,
                             'exam_attempt_id' => $attempt->id,
-                            'completed' => false, // Lesson not complete - video not watched
+                            'completed' => false,
                             'score' => $total_score,
                             'percentage' => round($percentage, 2),
                             'is_passed' => $is_passed,
                             'viewed_at' => now(),
-                            'watch_time' => null,
+                            'watch_time' => 0,
                         ]);
                     }
                 }

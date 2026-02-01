@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseContent;
 use App\Models\ContentUserProgress;
-use App\Models\ExamAttempt;
 use App\Models\Subject;
 use App\Repositories\CourseRepository;
+use App\Services\LessonCompletionService;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 
@@ -17,10 +17,12 @@ class CourseController extends Controller
     use Responses;
 
     protected $courseRepository;
+    protected LessonCompletionService $completionService;
 
-    public function __construct(CourseRepository $courseRepository)
+    public function __construct(CourseRepository $courseRepository, LessonCompletionService $completionService)
     {
         $this->courseRepository = $courseRepository;
+        $this->completionService = $completionService;
     }
 
     /**
@@ -287,39 +289,16 @@ class CourseController extends Controller
     }
 
     /**
-     * Check if content is completed for user
-     * Returns true if completed, false otherwise
+     * Check if content is completed for user.
+     * All completion logic is delegated to LessonCompletionService.
      */
     private function isContentCompleted($progress, $content, $userId)
     {
-        if (!$progress) {
+        if (! $progress) {
             return false;
         }
 
-        // Content is completed based on type
-        $isContentCompleted = false;
-        if ($content->content_type === 'video' && $content->video_duration) {
-            // For video: completed if watch_time >= 90% of video_duration
-            $isContentCompleted = $progress->watch_time >= $content->video_duration * 0.9;
-        } else {
-            // For non-video (files, etc.): use completed flag
-            $isContentCompleted = (bool) $progress->completed;
-        }
-
-        // Check if lesson has linked exam
-        $linkedExam = $content->exams()->where('is_active', 1)->first();
-
-        // If lesson has exam, also check if exam has at least 1 completed attempt
-        if ($linkedExam && $isContentCompleted) {
-            $hasExamAttempt = ExamAttempt::where('exam_id', $linkedExam->id)
-                ->where('user_id', $userId)
-                ->where('status', 'completed')
-                ->exists();
-
-            $isContentCompleted = $hasExamAttempt;
-        }
-
-        return $isContentCompleted;
+        return $this->completionService->isLessonCompleted($progress, $content, $userId);
     }
 
     /**
@@ -365,22 +344,19 @@ class CourseController extends Controller
             return false;
         }
 
-        
         // Check if user has completed the previous content
         $previousProgress = ContentUserProgress::where('user_id', $userId)
             ->where('course_content_id', $previousContent->id)
             ->first();
 
-        
-
-        // If no progress record or not completed, content is locked
-        if (! $previousProgress || ! $previousProgress->completed) {
-
+        if (! $previousProgress) {
             return true;
         }
 
-
-        return false;
+        // Previous content completion is resolved dynamically by the service.
+        // This covers the case where an exam was completed after the last video
+        // progress save, without requiring an intermediate persist cycle.
+        return ! $this->completionService->isLessonCompleted($previousProgress, $previousContent, $userId);
     }
 
     /**
@@ -402,19 +378,20 @@ class CourseController extends Controller
             ];
         }
 
-        // Get user progress for this course
+        // Videos completed when watch_time >= 90% of video_duration (matches Course model)
         $completedVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
             ->where('content_user_progress.user_id', $userId)
             ->where('course_contents.course_id', $courseId)
             ->where('course_contents.content_type', 'video')
-            ->where('content_user_progress.completed', true)
+            ->whereRaw('content_user_progress.watch_time >= course_contents.video_duration * 0.9')
             ->count();
 
+        // Videos in progress: watch_time > 0 but below the completion threshold
         $watchingVideos = ContentUserProgress::join('course_contents', 'content_user_progress.course_content_id', '=', 'course_contents.id')
             ->where('content_user_progress.user_id', $userId)
             ->where('course_contents.course_id', $courseId)
             ->where('course_contents.content_type', 'video')
-            ->where('content_user_progress.completed', false)
+            ->whereRaw('content_user_progress.watch_time < course_contents.video_duration * 0.9')
             ->where('content_user_progress.watch_time', '>', 0)
             ->count();
 
