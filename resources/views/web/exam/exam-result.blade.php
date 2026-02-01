@@ -61,7 +61,11 @@
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">{{ __('front.attempt_date') }}</div>
-                        <div class="stat-value">@if($attempt->created_at){{ $attempt->created_at->diffForHumans() }}@else{{ __('front.unknown') }}@endif</div>
+                        <div class="stat-value">
+                            @if ($attempt->created_at)
+                                {{ $attempt->created_at->diffForHumans() }}@else{{ __('front.unknown') }}
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,7 +100,8 @@
                                     </div>
                                 </div>
                                 @if ($attemptItem->id !== $attempt->id)
-                                    <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]) }}" class="view-attempt-btn">
+                                    <a href="{{ route($apiRoutePrefix . 'exam.result', ['exam' => $exam->id, 'attempt' => $attemptItem->id]) }}"
+                                        class="view-attempt-btn">
                                         {{ __('front.view_details') }}
                                     </a>
                                 @endif
@@ -249,12 +254,12 @@
             min-height: 100vh;
         }
 
-        .result-container {
+        .exam-result-section .result-container {
             max-width: 900px;
             margin: 0 auto;
         }
 
-        .back-btn {
+        .exam-result-section .back-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -268,11 +273,11 @@
             border: 1px solid #e0e0e0;
         }
 
-        .back-btn:hover {
+        .exam-result-section .back-btn:hover {
             background: #f0f0f0;
         }
 
-        .result-summary {
+        .exam-result-section .result-summary {
             background: white;
             border-radius: 12px;
             overflow: hidden;
@@ -280,25 +285,25 @@
             border: 1px solid #e0e0e0;
         }
 
-        .result-header {
+        .exam-result-section .result-header {
             padding: 30px;
             background: #f8f9fa;
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .result-header h1 {
+        .exam-result-section .result-header h1 {
             font-size: 24px;
             margin: 0 0 8px 0;
             color: #333;
         }
 
-        .result-date {
+        .exam-result-section .result-date {
             margin: 0;
             color: #666;
             font-size: 20px;
         }
 
-        .score-card {
+        .exam-result-section .score-card {
             padding: 40px;
             display: flex;
             gap: 30px;
@@ -306,15 +311,15 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .score-card.passed {
+        .exam-result-section .score-card.passed {
             background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
         }
 
-        .score-card.failed {
+        .exam-result-section .score-card.failed {
             background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
         }
 
-        .score-icon {
+        .exam-result-section .score-icon {
             width: 100px;
             height: 100px;
             border-radius: 50%;
@@ -324,83 +329,83 @@
             font-size: 48px;
         }
 
-        .score-card.passed .score-icon {
+        .exam-result-section .score-card.passed .score-icon {
             background: rgba(40, 167, 69, 0.2);
             color: #28a745;
         }
 
-        .score-card.failed .score-icon {
+        .exam-result-section .score-card.failed .score-icon {
             background: rgba(220, 53, 69, 0.2);
             color: #dc3545;
         }
 
-        .score-content {
+        .exam-result-section .score-content {
             flex: 1;
         }
 
-        .score-title {
+        .exam-result-section .score-title {
             font-size: 28px;
             margin: 0 0 12px 0;
             font-weight: bold;
         }
 
-        .score-card.passed .score-title {
+        .exam-result-section .score-card.passed .score-title {
             color: #155724;
         }
 
-        .score-card.failed .score-title {
+        .exam-result-section .score-card.failed .score-title {
             color: #721c24;
         }
 
-        .score-display {
+        .exam-result-section .score-display {
             display: flex;
             align-items: baseline;
             gap: 4px;
             margin-bottom: 12px;
         }
 
-        .score-number {
+        .exam-result-section .score-number {
             font-size: 40px;
             font-weight: bold;
         }
 
-        .score-total {
+        .exam-result-section .score-total {
             font-size: 40px;
             font-weight: bold;
             opacity: 0.8;
         }
 
-        .score-percentage {
+        .exam-result-section .score-percentage {
             font-size: 30px;
             font-weight: bold;
             opacity: 0.9;
         }
 
-        .stats-grid {
+        .exam-result-section .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             padding: 30px;
             gap: 20px;
         }
 
-        .stat-item {
+        .exam-result-section .stat-item {
             text-align: center;
         }
 
-        .stat-label {
+        .exam-result-section .stat-label {
             font-size: 20px;
             color: #999;
             margin-bottom: 8px;
         }
 
-        .stat-value {
+        .exam-result-section .stat-value {
             font-size: 28px;
             font-weight: bold;
             color: #007bff;
         }
 
         /* Previous Attempts Section */
-        .previous-attempts-section {
+        .exam-result-section .previous-attempts-section {
             background: white;
             border-radius: 12px;
             padding: 30px;
@@ -408,19 +413,19 @@
             border: 1px solid #e0e0e0;
         }
 
-        .section-title {
+        .exam-result-section .section-title {
             font-size: 22px;
             margin: 0 0 20px 0;
             color: #333;
         }
 
-        .attempts-list {
+        .exam-result-section .attempts-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .attempt-item {
+        .exam-result-section .attempt-item {
             background: #f8f9fa;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
@@ -428,37 +433,37 @@
             transition: all 0.3s;
         }
 
-        .attempt-item.current-attempt {
+        .exam-result-section .attempt-item.current-attempt {
             border-color: #007bff;
             background: #f0f7ff;
         }
 
-        .attempt-header {
+        .exam-result-section .attempt-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
         }
 
-        .attempt-info {
+        .exam-result-section .attempt-info {
             display: flex;
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
         }
 
-        .attempt-number {
+        .exam-result-section .attempt-number {
             font-weight: bold;
             color: #333;
             font-size: 20px;
         }
 
-        .attempt-date {
+        .exam-result-section .attempt-date {
             color: #666;
             font-size: 20px;
         }
 
-        .current-badge {
+        .exam-result-section .current-badge {
             background: #007bff;
             color: white;
             padding: 4px 12px;
@@ -467,26 +472,26 @@
             font-weight: bold;
         }
 
-        .attempt-result {
+        .exam-result-section .attempt-result {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .attempt-score {
+        .exam-result-section .attempt-score {
             font-weight: bold;
             font-size: 20px;
         }
 
-        .attempt-score.passed {
+        .exam-result-section .attempt-score.passed {
             color: #28a745;
         }
 
-        .attempt-score.failed {
+        .exam-result-section .attempt-score.failed {
             color: #dc3545;
         }
 
-        .view-attempt-btn {
+        .exam-result-section .view-attempt-btn {
             display: inline-block;
             padding: 8px 16px;
             background: #007bff;
@@ -497,29 +502,29 @@
             transition: all 0.3s;
         }
 
-        .view-attempt-btn:hover {
+        .exam-result-section .view-attempt-btn:hover {
             background: #0056b3;
         }
 
-        .text-success {
+        .exam-result-section .text-success {
             color: #28a745;
         }
 
-        .text-danger {
+        .exam-result-section .text-danger {
             color: #dc3545;
         }
 
-        .questions-review {
+        .exam-result-section .questions-review {
             margin-top: 30px;
         }
 
-        .questions-review h2 {
+        .exam-result-section .questions-review h2 {
             font-size: 22px;
             margin: 0 0 20px 0;
             color: #333;
         }
 
-        .question-review {
+        .exam-result-section .question-review {
             background: white;
             border-left: 4px solid #e0e0e0;
             padding: 24px;
@@ -527,17 +532,17 @@
             border-radius: 8px;
         }
 
-        .question-review.correct {
+        .exam-result-section .question-review.correct {
             border-left-color: #28a745;
             background: #f8fff9;
         }
 
-        .question-review.incorrect {
+        .exam-result-section .question-review.incorrect {
             border-left-color: #dc3545;
             background: #fff8f8;
         }
 
-        .question-header {
+        .exam-result-section .question-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -545,7 +550,7 @@
             margin-bottom: 16px;
         }
 
-        .question-text {
+        .exam-result-section .question-text {
             font-size: 24px;
             margin: 0;
             color: #333;
@@ -553,7 +558,7 @@
             line-height: 1.5;
         }
 
-        .question-status {
+        .exam-result-section .question-status {
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -564,21 +569,21 @@
             white-space: nowrap;
         }
 
-        .question-review.correct .question-status {
+        .exam-result-section .question-review.correct .question-status {
             background: #d4edda;
             color: #155724;
         }
 
-        .question-review.incorrect .question-status {
+        .exam-result-section .question-review.incorrect .question-status {
             background: #f8d7da;
             color: #721c24;
         }
 
-        .question-options {
+        .exam-result-section .question-options {
             margin: 16px 0;
         }
 
-        .option-item {
+        .exam-result-section .option-item {
             display: flex;
             align-items: center;
             gap: 12px;
@@ -589,35 +594,35 @@
             cursor: not-allowed;
         }
 
-        .option-item.selected {
+        .exam-result-section .option-item.selected {
             border-color: #007bff;
             background: #f0f7ff;
         }
 
-        .option-item.correct-answer {
+        .exam-result-section .option-item.correct-answer {
             border-color: #28a745;
             background: #f8fff9;
         }
 
-        .option-item label {
+        .exam-result-section .option-item label {
             margin: 0;
             cursor: not-allowed;
             flex: 1;
         }
 
-        .correct-badge {
+        .exam-result-section .correct-badge {
             color: #28a745;
             font-weight: bold;
         }
 
-        .true-false-review {
+        .exam-result-section .true-false-review {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin: 16px 0;
         }
 
-        .answer-item {
+        .exam-result-section .answer-item {
             display: flex;
             align-items: center;
             gap: 8px;
@@ -627,30 +632,30 @@
             text-align: center;
         }
 
-        .essay-review {
+        .exam-result-section .essay-review {
             margin: 16px 0;
             padding: 16px;
             background: #f8f9fa;
             border-radius: 6px;
         }
 
-        .user-answer {
+        .exam-result-section .user-answer {
             margin: 0;
         }
 
-        .user-answer strong {
+        .exam-result-section .user-answer strong {
             display: block;
             margin-bottom: 8px;
             color: #333;
         }
 
-        .user-answer p {
+        .exam-result-section .user-answer p {
             margin: 0;
             color: #666;
             line-height: 1.6;
         }
 
-        .feedback {
+        .exam-result-section .feedback {
             display: flex;
             gap: 12px;
             padding: 12px;
@@ -659,37 +664,37 @@
             font-size: 22px;
         }
 
-        .feedback i {
+        .exam-result-section .feedback i {
             flex-shrink: 0;
             margin-top: 2px;
         }
 
-        .success-feedback {
+        .exam-result-section .success-feedback {
             background: #d4edda;
             color: #155724;
             border-left: 3px solid #28a745;
         }
 
-        .error-feedback {
+        .exam-result-section .error-feedback {
             background: #f8d7da;
             color: #721c24;
             border-left: 3px solid #dc3545;
         }
 
-        .pending-feedback {
+        .exam-result-section .pending-feedback {
             background: #fff3cd;
             color: #856404;
             border-left: 3px solid #ffc107;
         }
 
-        .result-actions {
+        .exam-result-section .result-actions {
             display: flex;
             gap: 12px;
             margin-top: 30px;
             justify-content: center;
         }
 
-        .btn {
+        .exam-result-section .btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -704,21 +709,21 @@
             transition: all 0.3s;
         }
 
-        .btn-primary {
+        .exam-result-section .btn-primary {
             background: #007bff;
             color: white;
         }
 
-        .btn-primary:hover {
+        .exam-result-section .btn-primary:hover {
             background: #0056b3;
         }
 
-        .btn-secondary {
+        .exam-result-section .btn-secondary {
             background: #6c757d;
             color: white;
         }
 
-        .btn-secondary:hover {
+        .exam-result-section .btn-secondary:hover {
             background: #5a6268;
         }
     </style>
