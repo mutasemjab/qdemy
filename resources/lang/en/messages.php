@@ -17,6 +17,9 @@ return [
   'Delete User' => 'Delete User',
   'All Users' => 'All Users',
   'Back to Users' => 'Back to Users',
+  'ok' => 'Ok',
+  'OK' => 'Ok',
+  'oK' => 'Ok',
 
   "dashboard" => "Dashboard",
   "academic_management" => "Academic Management",

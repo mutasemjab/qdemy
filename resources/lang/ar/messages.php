@@ -17,6 +17,9 @@ return [
   'Delete User' => 'حذف المستخدم',
   'All Users' => 'جميع المستخدمين',
   'Back to Users' => 'العودة للمستخدمين',
+  'ok' => 'حسنا',
+  'OK' => 'حسنا',
+  'oK' => 'حسنا',
 
   'dashboard' => 'لوحة التحكم',
   'academic_management' => 'الإدارة الأكاديمية',
