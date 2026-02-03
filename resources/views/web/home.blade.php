@@ -88,8 +88,8 @@
         </a>
         <a href="{{ route('training-courses') }}" class="hero-card"
             style="background-image: url('{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/card4.png')
-                : asset('assets_front/images/en/card4.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
+                ? asset('assets_front/images/card5.png')
+                : asset('assets_front/images/en/card5.png') }}'); background-size: contain; background-repeat: no-repeat; background-position: center;">
         </a>
     </div>
 
