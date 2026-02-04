@@ -20,11 +20,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Repositories\CartRepository;
-
+use App\Repositories\CourseRepository;
 
 class EnrollmentController extends Controller
 {
     use Responses;
+    protected $courseRepository;
+    public function __construct(CourseRepository $courseRepository)
+    {
+        $this->courseRepository = $courseRepository;
+    }
 
     /**
      * Get the appropriate cart repository based on request type
