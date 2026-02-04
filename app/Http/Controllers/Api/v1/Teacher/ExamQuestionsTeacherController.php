@@ -27,7 +27,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
 
             $query = $exam->questions()->with(['options']);
 
@@ -102,7 +102,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
 
             // Ensure the question belongs to this exam
             $question = $exam->questions()
@@ -165,7 +165,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
 
             // Set course_id to match exam's course if not provided
             if (!$request->filled('course_id') && $exam->course_id) {
@@ -235,7 +235,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
 
             // Ensure the question belongs to this exam and was created by this teacher
             $question = $exam->questions()
@@ -287,7 +287,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
             $question = Question::findOrFail($questionId);
 
             // Use the trait method
@@ -310,7 +310,7 @@ class ExamQuestionsTeacherController extends Controller
                 return $this->error_response('Access denied. Teachers only.', null);
             }
 
-            $exam = Exam::where('created_by', $user->id)->findOrFail($examId);
+            $exam = Exam::findOrFail($examId);
 
             // Use the trait method
             return $this->updateExamQuestions($request, $exam, false); // false = not admin
