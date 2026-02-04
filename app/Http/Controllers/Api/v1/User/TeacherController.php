@@ -5,13 +5,18 @@ namespace App\Http\Controllers\Api\v1\User;
 use App\Http\Controllers\Controller;
 use App\Models\Follow;
 use App\Models\Teacher;
+use App\Repositories\CourseRepository;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 
 class TeacherController extends Controller
 {
     use Responses;
-
+    protected $courseRepository;
+    public function __construct(CourseRepository $courseRepository)
+    {
+        $this->courseRepository = $courseRepository;
+    }
     public function index()
     {
         $data = Teacher::with('user')->get();
@@ -24,7 +29,7 @@ class TeacherController extends Controller
         try {
             // Find teacher with only accepted courses
             $teacher = Teacher::with(['user', 'courses' => function ($q) {
-                $q->where('status', 'accepted'); // <-- only accepted courses
+                $q->where('status', 'accepted');
             }])->find($teacherId);
 
             if (!$teacher) {
@@ -33,6 +38,11 @@ class TeacherController extends Controller
 
             // Get authenticated user
             $user = $request->user();
+
+            // Get user's enrolled courses
+            $user_enrollment_courses = $user
+                ? $this->courseRepository->getUserCoursesIds($user->id)
+                : [];
 
             // Check if user is following this teacher
             $isFollowing = $user
@@ -72,18 +82,21 @@ class TeacherController extends Controller
                 'updated_at' => $teacher->updated_at
             ];
 
-            // Include recent accepted courses only
+            // Include recent accepted courses with enrollment status
             $recentCourses = $teacher->courses()
-                ->where('status', 'accepted') // <-- filter accepted
+                ->where('status', 'accepted')
                 ->latest()
                 ->get()
-                ->map(function ($course) {
+                ->map(function ($course) use ($user_enrollment_courses) {
+                    $is_enrolled = in_array($course->id, $user_enrollment_courses);
+
                     return [
                         'id' => $course->id,
                         'title_ar' => $course->title_ar,
                         'title_en' => $course->title_en,
                         'selling_price' => $course->selling_price,
                         'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : asset('assets_front/images/Profile-picture.jpg'),
+                        'is_enrolled' => $is_enrolled
                     ];
                 });
 

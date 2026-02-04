@@ -7,6 +7,7 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Course;
 use App\Models\Teacher;
+use App\Repositories\CourseRepository;
 use App\Traits\Responses;
 use Illuminate\Http\Request;
 
@@ -14,12 +15,26 @@ class HomeController extends Controller
 {
     use Responses;
 
+    protected $courseRepository;
+    public function __construct(CourseRepository $courseRepository)
+    {
+        $this->courseRepository = $courseRepository;
+    }
+
     /**
      * Handle the incoming request and return home page data
      */
     public function __invoke(Request $request)
     {
         try {
+
+         // Get authenticated user
+        $user = $request->user();
+        
+        // Get user's enrolled courses
+        $user_enrollment_courses = $user 
+            ? $this->courseRepository->getUserCoursesIds($user->id) 
+            : [];
             // Get all banners
             $banners = Banner::select('id','photo_for_mobile')
                 ->orderBy('id', 'desc')
@@ -104,45 +119,46 @@ class HomeController extends Controller
             ];
 
             // Get latest courses with teacher and category info
-            $courses = Course::with(['teacher.teacherProfile', 'subject'])
-                        ->select([
-                            'id',
-                            'title_en',
-                            'title_ar',
-                            'description_en',
-                            'description_ar',
-                            'selling_price',
-                            'photo',
-                            'teacher_id',
-                            'subject_id',
-                            'created_at'
-                        ])
-                        ->orderBy('created_at', 'desc')
-                        ->limit(10)
-                        ->get()
-                        ->map(function ($course) {
-                            return [
-                                'id' => $course->id,
-                                'title_en' => $course->title_en,
-                                'title_ar' => $course->title_ar,
-                                'description_en' => $course->description_en,
-                                'description_ar' => $course->description_ar,
-                                'selling_price' => $course->selling_price,
-                                'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
-                                'created_at' => $course->created_at,
-                                'teacher' => $course->teacher ? [
-                                    'id' => $course->teacher->id,
-                                    'name' => $course->teacher->name,
-                                    'email' => $course->teacher->email,
-                                    // Teacher profile fields (from teachers table)
-                                    'name_of_lesson' => optional($course->teacher->teacherProfile)->name_of_lesson,
-                                    'photo' => $course->teacher->teacherProfile && $course->teacher->teacherProfile->photo
-                                        ? asset('assets/admin/uploads/' . $course->teacher->teacherProfile->photo)
-                                        : asset('assets_front/images/Profile-picture.jpg'),
-                                ] : null,
-                            ];
-                        });
-
+           $courses = Course::with(['teacher.teacherProfile', 'subject'])
+                    ->select([
+                        'id',
+                        'title_en',
+                        'title_ar',
+                        'description_en',
+                        'description_ar',
+                        'selling_price',
+                        'photo',
+                        'teacher_id',
+                        'subject_id',
+                        'created_at'
+                    ])
+                    ->orderBy('created_at', 'desc')
+                    ->limit(10)
+                    ->get()
+                    ->map(function ($course) use ($user_enrollment_courses) {
+                        $is_enrolled = in_array($course->id, $user_enrollment_courses);
+                        
+                        return [
+                            'id' => $course->id,
+                            'title_en' => $course->title_en,
+                            'title_ar' => $course->title_ar,
+                            'description_en' => $course->description_en,
+                            'description_ar' => $course->description_ar,
+                            'selling_price' => $course->selling_price,
+                            'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                            'created_at' => $course->created_at,
+                            'is_enrolled' => $is_enrolled,
+                            'teacher' => $course->teacher ? [
+                                'id' => $course->teacher->id,
+                                'name' => $course->teacher->name,
+                                'email' => $course->teacher->email,
+                                'name_of_lesson' => optional($course->teacher->teacherProfile)->name_of_lesson,
+                                'photo' => $course->teacher->teacherProfile && $course->teacher->teacherProfile->photo
+                                    ? asset('assets/admin/uploads/' . $course->teacher->teacherProfile->photo)
+                                    : asset('assets_front/images/Profile-picture.jpg'),
+                            ] : null,
+                        ];
+                    });
             // Get featured teachers
             $teachers = Teacher::with('user')
                 ->select([

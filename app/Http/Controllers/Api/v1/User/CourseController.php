@@ -648,74 +648,85 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         try {
-            $perPage = $request->get('per_page', 10);
-            $subjectId = $request->get('subject_id');
-            $teacherId = $request->get('teacher_id');
-            $search = $request->get('search');
-            $sortBy = $request->get('sort_by', 'latest'); // latest, price_low, price_high, name
+                $perPage = $request->get('per_page', 10);
+        $subjectId = $request->get('subject_id');
+        $teacherId = $request->get('teacher_id');
+        $search = $request->get('search');
+        $sortBy = $request->get('sort_by', 'latest');
 
-            $query = Course::where('status', 'accepted')->with(['teacher', 'subject']);
+        // Get authenticated user
+        $user = $request->user();
+        
+        // Get user's enrolled courses
+        $user_enrollment_courses = $user 
+            ? $this->courseRepository->getUserCoursesIds($user->id) 
+            : [];
 
-            // Apply filters
-            if ($subjectId) {
-                $query->where('subject_id', $subjectId);
-            }
+        $query = Course::where('status', 'accepted')->with(['teacher', 'subject']);
 
-            if ($teacherId) {
-                $query->where('teacher_id', $teacherId);
-            }
+        // Apply filters
+        if ($subjectId) {
+            $query->where('subject_id', $subjectId);
+        }
 
-            if ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('title_ar', 'like', "%{$search}%")
-                        ->orWhere('title_en', 'like', "%{$search}%")
-                        ->orWhere('description_ar', 'like', "%{$search}%")
-                        ->orWhere('description_en', 'like', "%{$search}%");
-                });
-            }
+        if ($teacherId) {
+            $query->where('teacher_id', $teacherId);
+        }
 
-            // Apply sorting
-            switch ($sortBy) {
-                case 'price_low':
-                    $query->orderBy('selling_price', 'asc');
-                    break;
-                case 'price_high':
-                    $query->orderBy('selling_price', 'desc');
-                    break;
-                case 'name':
-                    $query->orderBy('title_ar', 'asc');
-                    break;
-                default:
-                    $query->latest();
-            }
-
-            $courses = $query->paginate($perPage);
-
-            $coursesData = $courses->getCollection()->map(function ($course) {
-                return [
-                    'id' => $course->id,
-                    'title_en' => $course->title_en,
-                    'title_ar' => $course->title_ar,
-                    'description_en' => $course->description_en,
-                    'description_ar' => $course->description_ar,
-                    'selling_price' => $course->selling_price,
-                    'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
-                    'created_at' => $course->created_at,
-                    'teacher' => $course->teacher ? [
-                        'id' => $course->teacher->id,
-                        'name' => $course->teacher->name,
-                        'name_of_lesson' => $course->teacher->name_of_lesson,
-                        'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
-                    ] : null,
-                    'subject' => $course->subject ? [
-                        'id' => $course->subject->id,
-                        'name_ar' => $course->subject->name_ar,
-                        'name_en' => $course->subject->name_en,
-                        'color' => $course->subject->color,
-                        'icon' => $course->subject->icon
-                    ] : null
-                ];
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title_ar', 'like', "%{$search}%")
+                    ->orWhere('title_en', 'like', "%{$search}%")
+                    ->orWhere('description_ar', 'like', "%{$search}%")
+                    ->orWhere('description_en', 'like', "%{$search}%");
             });
+        }
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'price_low':
+                $query->orderBy('selling_price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('selling_price', 'desc');
+                break;
+            case 'name':
+                $query->orderBy('title_ar', 'asc');
+                break;
+            default:
+                $query->latest();
+        }
+
+        $courses = $query->paginate($perPage);
+
+        $coursesData = $courses->getCollection()->map(function ($course) use ($user_enrollment_courses) {
+            $is_enrolled = in_array($course->id, $user_enrollment_courses);
+            
+            return [
+                'id' => $course->id,
+                'title_en' => $course->title_en,
+                'title_ar' => $course->title_ar,
+                'description_en' => $course->description_en,
+                'description_ar' => $course->description_ar,
+                'selling_price' => $course->selling_price,
+                'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
+                'created_at' => $course->created_at,
+                'is_enrolled' => $is_enrolled,
+                'teacher' => $course->teacher ? [
+                    'id' => $course->teacher->id,
+                    'name' => $course->teacher->name,
+                    'name_of_lesson' => $course->teacher->name_of_lesson,
+                    'photo' => $course->teacher->photo ? asset('assets/admin/uploads/' . $course->teacher->photo) : asset('assets_front/images/Profile-picture.jpg')
+                ] : null,
+                'subject' => $course->subject ? [
+                    'id' => $course->subject->id,
+                    'name_ar' => $course->subject->name_ar,
+                    'name_en' => $course->subject->name_en,
+                    'color' => $course->subject->color,
+                    'icon' => $course->subject->icon
+                ] : null
+            ];
+        });
 
             $responseData = [
                 'courses' => $coursesData,
