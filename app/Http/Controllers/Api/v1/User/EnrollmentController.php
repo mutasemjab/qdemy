@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Api\v1\User;
+
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\CourseUser;
@@ -34,7 +35,7 @@ class EnrollmentController extends Controller
         if (request()->is('api/*') || auth()->guard('user-api')->check()) {
             return new \App\Repositories\MobileCartRepository();
         }
-        
+
         // Default to web cart repository
         return new \App\Repositories\CartRepository();
     }
@@ -95,7 +96,6 @@ class EnrollmentController extends Controller
             }
 
             return $this->error_response('حدث خطأ أثناء إضافة الكورس للسلة', null);
-
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
         }
@@ -103,7 +103,7 @@ class EnrollmentController extends Controller
 
     /**
      * حذف كورس من السلة
-    */
+     */
     public function removeCourseFromCart(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -140,7 +140,6 @@ class EnrollmentController extends Controller
             }
 
             return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة', null);
-
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء حذف الكورس من السلة: ' . $e->getMessage(), null);
         }
@@ -148,7 +147,7 @@ class EnrollmentController extends Controller
 
     /**
      * مسح السلة بالكامل
-    */
+     */
     public function clearCart()
     {
         $user = auth('user-api')->user();
@@ -165,13 +164,12 @@ class EnrollmentController extends Controller
                 'message' => 'تم مسح السلة بنجاح',
                 'courses_count' => 0
             ]);
-
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء مسح السلة: ' . $e->getMessage(), null);
         }
     }
 
-   
+
 
     /**
      * Get cart summary
@@ -198,7 +196,6 @@ class EnrollmentController extends Controller
             ];
 
             return $this->success_response('ملخص السلة', $summary);
-
         } catch (\Exception $e) {
             return $this->error_response('حدث خطأ أثناء جلب ملخص السلة: ' . $e->getMessage(), null);
         }
@@ -288,7 +285,6 @@ class EnrollmentController extends Controller
                 'total_amount' => $totalCost,
                 'courses_count' => $validCourses->count()
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
@@ -302,9 +298,9 @@ class EnrollmentController extends Controller
     private function validateCard($cardNumber)
     {
         $card = CardNumber::where('number', $cardNumber)
-                         ->where('activate', 1)
-                         ->where('status', 2)
-                         ->first();
+            ->where('activate', 1)
+            ->where('status', 2)
+            ->first();
 
         if (!$card) {
             return [
@@ -353,13 +349,13 @@ class EnrollmentController extends Controller
         $courseIds = $cartRepository->getCourseCart();
 
         return Course::active()
-                    ->whereIn('id', $courseIds)
-                    ->whereNotIn('id', function ($query) use ($userId) {
-                        $query->select('course_id')
-                              ->from('course_users')
-                              ->where('user_id', $userId);
-                    })
-                    ->get();
+            ->whereIn('id', $courseIds)
+            ->whereNotIn('id', function ($query) use ($userId) {
+                $query->select('course_id')
+                    ->from('course_users')
+                    ->where('user_id', $userId);
+            })
+            ->get();
     }
 
     private function getValidPackageCoursesForPurchase($userId, $packageCart)
@@ -367,13 +363,13 @@ class EnrollmentController extends Controller
         $courseIds = $packageCart['courses'] ?? [];
 
         return Course::active()
-                    ->whereIn('id', $courseIds)
-                    ->whereNotIn('id', function ($query) use ($userId) {
-                        $query->select('course_id')
-                              ->from('course_users')
-                              ->where('user_id', $userId);
-                    })
-                    ->get();
+            ->whereIn('id', $courseIds)
+            ->whereNotIn('id', function ($query) use ($userId) {
+                $query->select('course_id')
+                    ->from('course_users')
+                    ->where('user_id', $userId);
+            })
+            ->get();
     }
 
     private function enrollUserInCourse($userId, $course)
@@ -521,6 +517,9 @@ class EnrollmentController extends Controller
             $search = $request->get('search');
             $sortBy = $request->get('sort_by', 'latest');
 
+            // Get user's enrolled courses
+            $user_enrollment_courses = $this->courseRepository->getUserCoursesIds($user->id);
+
             $query = Course::whereHas('enrollments', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             })->with(['teacher', 'subject.grade', 'subject.semester', 'subject.program']);
@@ -528,9 +527,9 @@ class EnrollmentController extends Controller
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('title_ar', 'like', "%{$search}%")
-                    ->orWhere('title_en', 'like', "%{$search}%")
-                    ->orWhere('description_ar', 'like', "%{$search}%")
-                    ->orWhere('description_en', 'like', "%{$search}%");
+                        ->orWhere('title_en', 'like', "%{$search}%")
+                        ->orWhere('description_ar', 'like', "%{$search}%")
+                        ->orWhere('description_en', 'like', "%{$search}%");
                 });
             }
 
@@ -546,9 +545,10 @@ class EnrollmentController extends Controller
 
             $courses = $query->paginate($perPage);
 
-            $coursesData = $courses->getCollection()->map(function ($course) use ($user) {
+            $coursesData = $courses->getCollection()->map(function ($course) use ($user, $user_enrollment_courses) {
                 $calculateCourseProgress = $this->getCourseProgressData($user->id, $course->id);
                 $enrollment = $course->enrollments()->where('user_id', $user->id)->first();
+                $is_enrolled = in_array($course->id, $user_enrollment_courses);
 
                 return [
                     'id' => $course->id,
@@ -559,6 +559,7 @@ class EnrollmentController extends Controller
                     'selling_price' => $course->selling_price,
                     'photo' => $course->photo ? asset('assets/admin/uploads/' . $course->photo) : null,
                     'enrollment_date' => $enrollment ? $enrollment->created_at : null,
+                    'is_enrolled' => $is_enrolled,
                     'teacher' => $course->teacher ? [
                         'id' => $course->teacher->id,
                         'name' => $course->teacher->name,
@@ -621,7 +622,6 @@ class EnrollmentController extends Controller
             ];
 
             return $this->success_response('User enrolled courses retrieved successfully', $responseData);
-
         } catch (\Exception $e) {
             return $this->error_response('Failed to retrieve enrolled courses: ' . $e->getMessage(), null);
         }
@@ -662,7 +662,7 @@ class EnrollmentController extends Controller
 
         try {
             $cartRepository = $this->getCartRepository();
-            
+
             if (!$cartRepository->validCartContent($request->package_id)) {
                 $cartRepository->clearCart();
             }
@@ -674,7 +674,6 @@ class EnrollmentController extends Controller
                 'cart' => $cart,
                 'message' => 'تم تحديث السلة بنجاح'
             ]);
-
         } catch (\Exception $e) {
             return $this->error_response($e->getMessage(), null);
         }
@@ -748,7 +747,6 @@ class EnrollmentController extends Controller
                 'courses_count' => $validCourses->count(),
                 'package_id' => $packageCart['package_id']
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             return $this->error_response('حدث خطأ: ' . $e->getMessage(), null);
