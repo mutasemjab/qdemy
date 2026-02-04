@@ -77,7 +77,6 @@ Route::group(['prefix' => 'v1/user'], function () {
     Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
 
     Route::prefix('courses')->group(function () {
-        Route::get('/', [CourseController::class, 'index']);
         Route::get('/subject/{subjectId}', [CourseController::class, 'coursesBySubject']);
         Route::get('/international-program/{program?}', [CourseController::class, 'internationalProgramCourses']);
         Route::get('/universities-program', [CourseController::class, 'universitiesProgramCourses']);
@@ -96,9 +95,10 @@ Route::group(['prefix' => 'v1/user'], function () {
     });
 
     Route::get('/pos', [PosController::class, 'index']);
-    Route::get('/home', HomeController::class);
 
     Route::group(['middleware' => ['auth:user-api']], function () {
+
+
         Route::prefix('progress')->group(function () {
             // Get progress for a specific course
             Route::get('/courses/{courseId}', [ProgressController::class, 'getCourseProgress']);
@@ -113,6 +113,9 @@ Route::group(['prefix' => 'v1/user'], function () {
             Route::post('/content/complete', [ProgressController::class, 'markContentCompleted']);
         });
 
+            Route::get('/home', HomeController::class);
+
+            Route::get('/courses', [CourseController::class, 'index']);
 
         Route::prefix('notifications')->group(function () {
             // Send notification to a single user
