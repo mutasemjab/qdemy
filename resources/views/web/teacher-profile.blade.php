@@ -218,7 +218,7 @@
             flex-wrap: wrap
         }
 
-        .btn {
+        .t-show .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
