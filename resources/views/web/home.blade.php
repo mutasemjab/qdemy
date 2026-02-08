@@ -201,7 +201,7 @@
         <img src="{{ app()->getLocale() == 'ar'
             ? asset('assets_front/images/our_service.png')
             : asset('assets_front/images/en/our_service.png') }}"
-            loading="lazy" alt="Our Services">
+            loading="lazy" alt="Our Services" style="max-width: 600px;">
 
         <div class="services-grid">
             <a href="{{ route('community') }}" class="service-link anim animate-glow"
@@ -229,7 +229,7 @@
                 src="{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/teacher.png')
                     : asset('assets_front/images/en/teacher.png') }}"
-                loading="lazy" width="400px;" height="auto">
+                loading="lazy" width="600px;" height="auto">
         </h2>
         <div class="x3c-viewport">
             <button class="x3c-arrow x3c-left">&#10094;</button>
@@ -256,7 +256,7 @@
                 <img src="{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/social_media.png')
                     : asset('assets_front/images/en/social_media.png') }}"
-                    loading="lazy" width="400px;" height="auto">
+                    loading="lazy" width="600px;" height="auto">
             </h2>
             <div class="fm3d-videos-shell">
                 <button class="fm3d-nav-arrow fm3d-nav-prev" type="button">
@@ -331,7 +331,7 @@
                 src="{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/fre_question.png')
                     : asset('assets_front/images/en/fre_question.png') }}"
-                loading="lazy" width="400px;" height="auto">
+                loading="lazy" width="600px;" height="auto">
         </h2>
         <div class="faq-section-link">
             <a href="{{ route('faq.index') }}">{{ __('front.See More') }} ←</a>
@@ -356,7 +356,7 @@
                 src="{{ app()->getLocale() == 'ar'
                     ? asset('assets_front/images/student_opinion.png')
                     : asset('assets_front/images/en/student_opinion.png') }}"
-                loading="lazy" width="400px;" height="auto"></h2>
+                loading="lazy" width="600px;" height="auto"></h2>
 
         <div class="rvx-wrap">
             <!-- Blue side panel -->
@@ -394,7 +394,7 @@
             <img src="{{ app()->getLocale() == 'ar'
                 ? asset('assets_front/images/blogs.png')
                 : asset('assets_front/images/en/blogs.png') }}"
-                loading="lazy" width="400px;" height="auto">
+                loading="lazy" width="600px;" height="auto">
         </h2>
 
         <div class="blog-slider__shell">

@@ -20,6 +20,8 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::with(['user', 'comments.user'])
+            ->where('is_approved', true)
+            ->where('is_active', true)
             ->withCount(['likes', 'comments'])
             ->latest()
             ->paginate(10);
@@ -58,6 +60,8 @@ class PostController extends Controller
         $post = Post::create([
             'content' => $request->content,
             'user_id' => auth('user-api')->id(), // Use the correct guard
+            'is_approved' => true,
+            'is_active' => true,
         ]);
 
         return $this->success_response(__('Post created successfully'), $post);
