@@ -58,7 +58,7 @@ class Course extends Model
      */
     public function sections()
     {
-        return $this->hasMany(CourseSection::class);
+        return $this->hasMany(CourseSection::class)->orderBy('order');
     }
 
     public function students()
@@ -223,7 +223,7 @@ class Course extends Model
      */
     public function contents()
     {
-        return $this->hasMany(CourseContent::class);
+        return $this->hasMany(CourseContent::class)->orderBy('order');
     }
 
     public function getPhotoUrlAttribute()

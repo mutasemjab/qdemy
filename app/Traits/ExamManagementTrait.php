@@ -405,7 +405,7 @@ public function updateQuestion(Request $request, Question $question, $isAdmin = 
         'correct_feedback_ar' => 'nullable|string',
         'incorrect_feedback_en' => 'nullable|string',
         'incorrect_feedback_ar' => 'nullable|string',
-        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ];
 
     // Custom messages for better error display

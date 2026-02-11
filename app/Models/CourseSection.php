@@ -32,7 +32,7 @@ class CourseSection extends Model
      */
     public function children()
     {
-        return $this->hasMany(CourseSection::class, 'parent_id');
+        return $this->hasMany(CourseSection::class, 'parent_id')->orderBy('order');
     }
 
     /**
@@ -40,7 +40,7 @@ class CourseSection extends Model
      */
     public function contents()
     {
-        return $this->hasMany(CourseContent::class, 'section_id');
+        return $this->hasMany(CourseContent::class, 'section_id')->orderBy('order');
     }
     public function getTitleAttribute()
     {

@@ -639,7 +639,7 @@ trait CourseManagementTrait
             'commission_of_admin' => 'nullable|numeric',
             'subject_id' => 'required|exists:subjects,id',
             'is_sequential' => 'nullable|boolean',
-            'photo' => $courseId ? 'sometimes|image|mimes:jpeg,png,jpg' : 'required|image|mimes:jpeg,png,jpg'
+            'photo' => $courseId ? 'sometimes|image|mimes:jpeg,png,jpg,svg' : 'required|image|mimes:jpeg,png,jpg,svg'
         ];
 
         $data = [
