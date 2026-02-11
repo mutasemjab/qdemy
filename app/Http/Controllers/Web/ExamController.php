@@ -112,6 +112,7 @@ class ExamController extends Controller
         // Build main query
         $query = Exam::query()
             ->where('is_active', 1)
+            ->whereNull('course_id')
             ->where(function ($q) {
                 $now = now();
                 $q->where(function ($q) use ($now) {
