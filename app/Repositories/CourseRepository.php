@@ -53,8 +53,11 @@ class CourseRepository
     // Get total video duration for a course
     public function getTotalVideoHours($courseId)
     {
+        // Only sum video_duration for videos that have a duration value
         $totalSeconds = CourseContent::where('course_id', $courseId)
             ->where('content_type', 'video')
+            ->whereNotNull('video_duration')
+            ->where('video_duration', '>', 0)
             ->sum('video_duration');
 
         // Convert seconds to formatted time (H:i:s)

@@ -190,7 +190,7 @@ class TeacherController extends Controller
             'youtube' => 'nullable|url',
             'whataspp' => 'nullable|url',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            
+
             // User update fields
             'update_user_info' => 'boolean',
             'email' => 'nullable|email|unique:users,email,' . ($teacher->user_id ?? 'NULL'),
@@ -200,7 +200,7 @@ class TeacherController extends Controller
         ]);
 
         DB::beginTransaction();
-        
+
         try {
             $teacherData = $request->only([
                 'name', 'name_of_lesson', 'description_en', 'description_ar',
@@ -231,7 +231,7 @@ class TeacherController extends Controller
                 if ($request->filled('phone')) {
                     $userUpdateData['phone'] = $request->phone;
                 }
-               
+
                 if ($request->filled('activate')) {
                     $userUpdateData['activate'] = $request->activate;
                 }
@@ -240,7 +240,7 @@ class TeacherController extends Controller
                     $userUpdateData['password'] = Hash::make($request->password);
                 }
 
-              
+
 
                 // Update user photo if teacher photo was updated
                 if (isset($teacherData['photo'])) {
@@ -270,5 +270,39 @@ class TeacherController extends Controller
         }
     }
 
- 
+    /**
+     * Delete the specified resource.
+     */
+    public function destroy(Teacher $teacher)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Delete teacher photo if exists
+            if ($teacher->photo) {
+                $filePath = base_path('assets/admin/uploads/' . $teacher->photo);
+                if (file_exists($filePath)) {
+                    unlink($filePath);
+                }
+            }
+
+            // Delete associated user if exists
+            if ($teacher->user) {
+                $teacher->user->delete();
+            }
+
+            $teacher->delete();
+
+            DB::commit();
+
+            return redirect()->route('teachers.index')
+                ->with('success', __('messages.Teacher deleted successfully'));
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return back()->with('error', __('messages.An error occurred while deleting the teacher'));
+        }
+    }
+
+
 }

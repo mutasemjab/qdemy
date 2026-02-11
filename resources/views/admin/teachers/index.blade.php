@@ -136,18 +136,28 @@
                                         <td>
                                             <div class="btn-group" role="group">
                                                 @can('teacher-table')
-                                                    <a href="{{ route('teachers.show', $teacher) }}" 
+                                                    <a href="{{ route('teachers.show', $teacher) }}"
                                                        class="btn btn-sm btn-info" title="{{ __('messages.View') }}">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 @endcan
                                                 @can('teacher-edit')
-                                                    <a href="{{ route('teachers.edit', $teacher) }}" 
+                                                    <a href="{{ route('teachers.edit', $teacher) }}"
                                                        class="btn btn-sm btn-warning" title="{{ __('messages.Edit') }}">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                 @endcan
-                                                
+                                                @can('teacher-delete')
+                                                    <form action="{{ route('teachers.destroy', $teacher) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                                title="{{ __('messages.Delete') }}"
+                                                                onclick="return confirm('{{ __('messages.Are you sure you want to delete this teacher?') }}')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                @endcan
                                             </div>
                                         </td>
                                     </tr>
