@@ -60,8 +60,11 @@ class CourseRepository
             ->where('video_duration', '>', 0)
             ->sum('video_duration');
 
-        // Convert seconds to formatted time (H:i:s)
-        $formattedDuration = gmdate('H:i:s', (int)$totalSeconds);
+        // Convert seconds to formatted time (H:i:s) - handle durations over 24 hours
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
+        $formattedDuration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 
         return [
             'total_seconds' => (int)$totalSeconds,
