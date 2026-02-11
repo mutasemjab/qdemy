@@ -221,6 +221,7 @@ Route::group(['prefix' => 'v1/teacher'], function () {
             Route::get('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'show']);
             Route::put('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'update']);
             Route::delete('/{course}/sections/{section}', [CourseSectionTeacherController::class, 'destroy']);
+            Route::post('/{course}/sections/reorder', [CourseSectionTeacherController::class, 'reorderSections']);
 
             // Content Management
             Route::post('/{course}/contents', [CourseSectionTeacherController::class, 'storeContent']);

@@ -611,4 +611,8 @@ return [
     'please_wait' => 'Please wait',
     'uploading_video' => 'Uploading video',
     'video_upload_failed' => 'Video upload failed',
+
+    // Section Order
+    'section_order' => 'Section Order',
+    'section_order_help' => 'Order sections sequentially with numbers',
 ];

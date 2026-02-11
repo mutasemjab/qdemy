@@ -31,13 +31,13 @@ class CourseSectionController extends Controller
         // Load course with nested relationships
         $course->load([
             'sections' => function($query) {
-                $query->whereNull('parent_id')->orderBy('created_at');
+                $query->whereNull('parent_id')->orderBy('order');
             },
             'sections.contents' => function($query) {
                 $query->orderBy('created_at');
             },
-            
-          
+
+
         ]);
 
         $directContents = $course->contents()
@@ -78,7 +78,10 @@ class CourseSectionController extends Controller
     public function create(Course $course)
     {
         $sections = $course->sections;
-        return view('admin.courses.sections.create', compact('course', 'sections'));
+        // Calculate max order for this course to suggest next order value
+        $maxOrder = CourseSection::where('course_id', $course->id)->max('order') ?? 0;
+
+        return view('admin.courses.sections.create', compact('course', 'sections', 'maxOrder'));
     }
 
     /**

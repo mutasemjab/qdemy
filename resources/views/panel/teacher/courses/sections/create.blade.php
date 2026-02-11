@@ -60,6 +60,12 @@
             </select>
             <small class="form-text">{{ __('panel.parent_section_help') }}</small>
           </div>
+
+          <div class="form-group">
+            <label for="order">{{ __('panel.section_order') ?? 'ترتيب القسم' }} *</label>
+            <input type="number" id="order" name="order" min="0" value="{{ old('order', $maxOrder ?? 0) }}" required>
+            <small class="form-text">{{ __('panel.section_order_help') ?? 'رتب الأقسام بأرقام متسلسلة' }}</small>
+          </div>
         </div>
 
         <div class="form-actions">

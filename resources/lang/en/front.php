@@ -702,4 +702,8 @@ return array(
     // Missing from views
     'unknown' => 'Unknown',
     'boot_camp_questions' => 'Boot Camp',
+
+    // Teacher Follow/Unfollow
+    'follow_teacher' => 'Follow Teacher',
+    'unfollow_teacher' => 'Unfollow Teacher',
 );

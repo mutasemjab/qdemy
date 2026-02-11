@@ -77,6 +77,7 @@ class CoursesSeeder extends Seeder
                         'course_id' => $course->id,
                         'title_en' => $faker->sentence(3),
                         'title_ar' => $faker->sentence(3),
+                        'order' => $j,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -399,7 +400,7 @@ class CoursesSeeder extends Seeder
         ];
 
         // إدخال السكاشن والمحتوى
-        foreach ($sections as $sectionData) {
+        foreach ($sections as $sectionIndex => $sectionData) {
             if (CourseSection::where('title_en', $sectionData['title_en'])->exists()){
                 return;
             }
@@ -408,6 +409,7 @@ class CoursesSeeder extends Seeder
                 'parent_id' => null,
                 'title_en' => $sectionData['title_en'],
                 'title_ar' => $sectionData['title_ar'],
+                'order' => $sectionIndex,
             ]);
 
             foreach ($sectionData['contents'] as $contentIndex => $contentData) {

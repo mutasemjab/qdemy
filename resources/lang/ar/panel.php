@@ -609,4 +609,8 @@ return [
     'please_wait' => 'يرجى الانتظار',
     'uploading_video' => 'جاري رفع الفيديو',
     'video_upload_failed' => 'فشل رفع الفيديو',
+
+    // Section Order
+    'section_order' => 'ترتيب القسم',
+    'section_order_help' => 'رتب الأقسام بأرقام متسلسلة',
 ];

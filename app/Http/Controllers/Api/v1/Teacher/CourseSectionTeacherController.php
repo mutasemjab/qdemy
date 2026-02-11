@@ -31,7 +31,7 @@ class CourseSectionTeacherController extends Controller
             // Load course with nested relationships
             $course->load([
                 'sections' => function($query) {
-                    $query->whereNull('parent_id')->orderBy('created_at');
+                    $query->whereNull('parent_id')->orderBy('order');
                 },
                 'sections.contents' => function($query) {
                     $query->orderBy('order');

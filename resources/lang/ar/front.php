@@ -700,4 +700,8 @@ return array (
     // Missing from views
     'unknown' => 'غير معروف',
     'boot_camp_questions' => 'المعسكر',
+
+    // Teacher Follow/Unfollow
+    'follow_teacher' => 'متابعة المعلم',
+    'unfollow_teacher' => 'إلغاء متابعة المعلم',
 );

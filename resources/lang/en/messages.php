@@ -3729,4 +3729,8 @@ return [
   'title_ar_required' => 'Arabic title is required',
   'title_en_required' => 'English title is required',
   'true_false_answer_required' => 'True/False answer is required',
+
+  // Section Order
+  'section_order' => 'Section Order',
+  'enter_section_order' => 'Enter section order',
 ];

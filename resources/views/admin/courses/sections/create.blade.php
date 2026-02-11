@@ -62,8 +62,8 @@
                             <div class="col-md-12">
                                 <div class="form-group mb-3">
                                     <label for="parent_id" class="form-label">{{ __('messages.parent_section') }}</label>
-                                    <select class="form-control @error('parent_id') is-invalid @enderror" 
-                                            id="parent_id" 
+                                    <select class="form-control @error('parent_id') is-invalid @enderror"
+                                            id="parent_id"
                                             name="parent_id">
                                         <option value="">{{ __('messages.select_parent_section') }}</option>
                                         @php
@@ -71,8 +71,8 @@
                                         @endphp
                                         @foreach($parentSections as $section)
                                             @include('admin.courses.partials.section-option', [
-                                                'section' => $section, 
-                                                'allSections' => $sections, 
+                                                'section' => $section,
+                                                'allSections' => $sections,
                                                 'level' => 0,
                                                 'selectedId' => old('parent_id', request('parent_id'))
                                             ])
@@ -82,6 +82,25 @@
                                         {{ __('messages.parent_section_help') }}
                                     </small>
                                     @error('parent_id')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- Order -->
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="order" class="form-label">
+                                        {{ __('messages.section_order') ?? 'الترتيب' }} <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number"
+                                           class="form-control @error('order') is-invalid @enderror"
+                                           id="order"
+                                           name="order"
+                                           min="0"
+                                           value="{{ old('order', $maxOrder ?? 0) }}"
+                                           placeholder="{{ __('messages.enter_section_order') ?? 'أدخل ترتيب القسم' }}">
+                                    @error('order')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

@@ -280,7 +280,10 @@ class TeacherController extends Controller
         }
 
         $sections = $course->sections;
-        return view('panel.teacher.courses.sections.create', compact('course', 'sections'));
+        // Calculate max order for this course to suggest next order value
+        $maxOrder = CourseSection::where('course_id', $course->id)->max('order') ?? 0;
+
+        return view('panel.teacher.courses.sections.create', compact('course', 'sections', 'maxOrder'));
     }
 
     /**

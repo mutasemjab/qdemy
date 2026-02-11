@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 
 
@@ -393,6 +394,7 @@ trait CourseManagementTrait
                 'title_en' => $request->title_en,
                 'title_ar' => $request->title_ar,
                 'parent_id' => $request->parent_id,
+                'order' => $request->order,
             ]);
 
             DB::commit();
@@ -452,6 +454,7 @@ trait CourseManagementTrait
                 'title_en' => $request->title_en,
                 'title_ar' => $request->title_ar,
                 'parent_id' => $request->parent_id,
+                'order' => $request->order,
             ]);
 
             DB::commit();
@@ -732,9 +735,19 @@ trait CourseManagementTrait
      */
     protected function validateSectionRequest(Request $request, Course $course, $sectionId = null)
     {
+        // Build order unique rule - unique per course
+        $orderRule = Rule::unique('course_sections', 'order')
+            ->where('course_id', $course->id);
+
+        // For updates, exclude the current section
+        if ($sectionId) {
+            $orderRule->ignore($sectionId);
+        }
+
         $rules = [
             'title_en' => 'required|string|max:255',
             'title_ar' => 'required|string|max:255',
+            'order' => ['required', 'integer', 'min:0', $orderRule],
             'parent_id' => [
                 'nullable',
                 'exists:course_sections,id',

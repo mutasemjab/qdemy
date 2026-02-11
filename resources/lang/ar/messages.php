@@ -3690,4 +3690,8 @@ return [
   'title_ar_required' => 'العنوان بالعربية مطلوب',
   'title_en_required' => 'العنوان بالإنجليزية مطلوب',
   'true_false_answer_required' => 'إجابة صح/خطأ مطلوبة',
+
+  // Section Order
+  'section_order' => 'ترتيب القسم',
+  'enter_section_order' => 'أدخل ترتيب القسم',
 ];
