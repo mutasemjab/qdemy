@@ -35,7 +35,7 @@
                 <div class="card-body">
                     <!-- Course Sections with Hierarchical Structure -->
                     @php
-                        $parentSections = $course->sections()->whereNull('parent_id')->get();
+                        $parentSections = $course->sections()->whereNull('parent_id')->orderBy('order')->get();
                     @endphp
 
                     @if($parentSections->count() > 0)

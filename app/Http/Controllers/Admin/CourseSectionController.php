@@ -78,8 +78,8 @@ class CourseSectionController extends Controller
     public function create(Course $course)
     {
         $sections = $course->sections;
-        // Calculate max order for this course to suggest next order value
-        $maxOrder = CourseSection::where('course_id', $course->id)->max('order') ?? 0;
+        // Calculate next order value (max + 1)
+        $maxOrder = (CourseSection::where('course_id', $course->id)->max('order') ?? 0) + 1;
 
         return view('admin.courses.sections.create', compact('course', 'sections', 'maxOrder'));
     }

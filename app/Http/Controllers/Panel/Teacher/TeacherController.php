@@ -249,7 +249,7 @@ class TeacherController extends Controller
         // Load course with nested relationships - EXACTLY like admin
         $course->load([
             'sections' => function($query) {
-                $query->whereNull('parent_id')->orderBy('created_at');
+                $query->whereNull('parent_id')->orderBy('order');
             },
             'sections.contents' => function($query) {
                 $query->orderBy('order', 'asc')->orderBy('created_at');
@@ -280,8 +280,8 @@ class TeacherController extends Controller
         }
 
         $sections = $course->sections;
-        // Calculate max order for this course to suggest next order value
-        $maxOrder = CourseSection::where('course_id', $course->id)->max('order') ?? 0;
+        // Calculate next order value (max + 1)
+        $maxOrder = (CourseSection::where('course_id', $course->id)->max('order') ?? 0) + 1;
 
         return view('panel.teacher.courses.sections.create', compact('course', 'sections', 'maxOrder'));
     }
