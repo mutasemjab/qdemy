@@ -23,11 +23,15 @@
     <!-- Main CSS -->
     <link rel="stylesheet"
         href="{{ asset('assets_front/css/style.css') . '?v=' . filemtime(base_path('assets_front/css/style.css')) }}">
+ 
 
     @if (app()->getLocale() === 'en')
         <link rel="stylesheet"
             href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(base_path('assets_front/css/en.css')) }}">
     @endif
+    
+<link rel="stylesheet"
+        href="{{ asset('assets_front/css/community.css') . '?v=' . filemtime(base_path('assets_front/css/community.css')) }}">
 
     @stack('styles')
     @yield('styles')

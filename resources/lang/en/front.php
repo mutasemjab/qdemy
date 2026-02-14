@@ -706,4 +706,10 @@ return array(
     // Teacher Follow/Unfollow
     'follow_teacher' => 'Follow Teacher',
     'unfollow_teacher' => 'Unfollow Teacher',
+    'comment' => 'Comment',
+    'comments' => 'Comments',
+    '' => '',
+    '' => '',
+    '' => '',
+    '' => '',
 );
