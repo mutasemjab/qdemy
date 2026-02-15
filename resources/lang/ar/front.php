@@ -704,4 +704,6 @@ return array (
     // Teacher Follow/Unfollow
     'follow_teacher' => 'متابعة المعلم',
     'unfollow_teacher' => 'إلغاء متابعة المعلم',
+       'comment' => 'تعليق',
+    'comments' => 'التعليقات',
 );
