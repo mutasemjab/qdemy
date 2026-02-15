@@ -25,3 +25,4 @@ json/
 /storage/framework/sessions/*
 /storage/framework/views/*
 /storage/logs/*
+.playwright-mcp

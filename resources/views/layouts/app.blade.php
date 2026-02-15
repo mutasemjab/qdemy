@@ -29,6 +29,26 @@
             href="{{ asset('assets_front/css/en.css') . '?v=' . filemtime(base_path('assets_front/css/en.css')) }}">
     @endif
 
+    <!-- Home Page Redesign Sections -->
+    <!-- Phase 1: Hero & Services -->
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/hero.css') . '?v=' . filemtime(base_path('assets_front/css/sections/hero.css')) }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/services.css') . '?v=' . filemtime(base_path('assets_front/css/sections/services.css')) }}">
+    <!-- Phase 2: Teachers, Videos & Stats -->
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/teachers.css') . '?v=' . filemtime(base_path('assets_front/css/sections/teachers.css')) }}">
+
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/stats.css') . '?v=' . filemtime(base_path('assets_front/css/sections/stats.css')) }}">
+    <!-- Phase 3: FAQ, Reviews & Blog -->
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/faq.css') . '?v=' . filemtime(base_path('assets_front/css/sections/faq.css')) }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/reviews.css') . '?v=' . filemtime(base_path('assets_front/css/sections/reviews.css')) }}">
+    <link rel="stylesheet"
+        href="{{ asset('assets_front/css/sections/blog.css') . '?v=' . filemtime(base_path('assets_front/css/sections/blog.css')) }}">
+
     @stack('styles')
     @yield('styles')
 
