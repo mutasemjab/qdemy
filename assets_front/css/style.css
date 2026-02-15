@@ -711,7 +711,7 @@ button,
 .header {
     background: #fff;
     border-bottom: 1px solid #ddd;
-    padding: 10px 20px;
+    padding: clamp(8px, 2vw, 15px) clamp(10px, 3vw, 20px);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -731,17 +731,21 @@ button,
     margin: 0;
     padding: 0;
     align-items: center;
+    gap: clamp(4px, 1vw, 14px);
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .nav ul li {
-    margin: 0 7px;
+    margin: 0;
 }
 
 .nav ul li a {
     text-decoration: none;
     color: #000;
     font-weight: 700;
-    font-size: 25px;
+    font-size: clamp(13px, 2vw, 20px);
+    white-space: nowrap;
 }
 
 .nav ul li a.active {
@@ -757,8 +761,14 @@ button,
 .btn {
     padding: 6px 12px;
     border-radius: 5px;
-    font-size: 20px;
+    font-size: clamp(14px, 1.5vw, 20px);
     text-decoration: none;
+    white-space: nowrap;
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 button.btn.btn-primary {
@@ -768,6 +778,7 @@ button.btn.btn-primary {
 .logo img {
     height: 100px;
     width: 200px;
+    max-width: 90vw;
 }
 
 .btn-primary {
@@ -780,8 +791,17 @@ button.btn.btn-primary {
     color: var(--main-color);
 }
 
+.cart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    cursor: pointer;
+}
+
 .cart-icon i {
-    font-size: 18px;
+    font-size: clamp(16px, 2vw, 18px);
     color: #000;
 }
 
@@ -845,6 +865,17 @@ button.btn.btn-primary {
     border: none;
     font-size: 22px;
     cursor: pointer;
+}
+
+@media (max-width: 1250px) {
+    .logo img {
+        width: 160px;
+        height: 80px;
+    }
+
+    .actions {
+        gap: 6px;
+    }
 }
 
 @media (max-width: 1100px) {
