@@ -124,4 +124,9 @@ class StudentController extends Controller
     {
         return $this->handleAddComment($request);
     }
+
+    public function addReply(Request $request)
+    {
+        return $this->handleAddReply($request);
+    }
 }

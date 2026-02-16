@@ -33,7 +33,8 @@ Route::group([
         Route::post('/community/post', [App\Http\Controllers\Panel\Student\StudentController::class, 'createPost'])->name('create-post');
         Route::post('/community/like', [App\Http\Controllers\Panel\Student\StudentController::class, 'toggleLike'])->name('toggle-like');
         Route::post('/community/comment', [App\Http\Controllers\Panel\Student\StudentController::class, 'addComment'])->name('add-comment');
-    });
+        Route::post('/community/reply', [App\Http\Controllers\Panel\Student\StudentController::class, 'addReply'])->name('add-reply');
+});
     
     // Parent Panel Routes
     Route::group([
@@ -87,6 +88,7 @@ Route::group([
         Route::post('/community/post', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'createPost'])->name('create-post');
         Route::post('/community/like', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'toggleLike'])->name('toggle-like');
         Route::post('/community/comment', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'addComment'])->name('add-comment');
+        Route::post('/community/reply', [App\Http\Controllers\Panel\Teacher\TeacherController::class, 'addReply'])->name('add-reply');
     
         Route::prefix('courses')->name('courses.')->group(function () {
             Route::get('/', [TeacherController::class, 'courses'])->name('index');

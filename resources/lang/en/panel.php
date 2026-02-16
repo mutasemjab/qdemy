@@ -548,6 +548,13 @@ return [
     // Missing translations from app/
     'comment_added_successfully' => 'Comment added successfully',
     'post_created_successfully' => 'Post created successfully',
+    'reply_added_successfully' => 'Reply added successfully',
+    'cannot_reply_to_reply' => 'Cannot reply to a reply',
+    'reply' => 'Reply',
+    'replying' => 'Replying...',
+    'write_reply' => 'Write a reply...',
+    'replies' => 'replies',
+    'cancel' => 'Cancel',
 
     // Missing from views
     'add' => 'Add',

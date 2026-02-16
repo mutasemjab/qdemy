@@ -185,6 +185,8 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('/community/posts/{post}/comments', [CommunityController::class, 'storeComment'])->name('community.comments.store');
         Route::delete('/community/comments/{comment}', [CommunityController::class, 'destroyComment'])->name('community.comments.destroy');
         Route::post('/community/posts/{post}/toggle-like', [CommunityController::class, 'toggleLike'])->name('community.posts.toggle-like');
+        Route::post('/community/comments/{comment}/reply', [CommunityController::class, 'storeReply'])->name('community.comments.reply');
+        Route::get('/community/comments/{comment}/replies', [CommunityController::class, 'loadReplies'])->name('community.comments.replies');
         Route::post('/teacher/{teacher}/toggle-follow', [TeacherController::class, 'toggleFollow'])->name('teacher.toggle-follow');
 
     });

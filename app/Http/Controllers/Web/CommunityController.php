@@ -13,7 +13,7 @@ class CommunityController extends Controller
 {
     public function index()
     {
-        $posts = Post::with(['user', 'likes', 'approvedComments.user'])
+        $posts = Post::with(['user', 'likes', 'approvedComments.user', 'approvedComments.replies.user'])
             ->where('is_approved', true)
             ->where('is_active', true)
             ->orderBy('created_at', 'desc')
@@ -83,12 +83,24 @@ class CommunityController extends Controller
     public function loadMoreComments(Post $post)
     {
         $comments = $post->approvedComments()
-            ->with('user')
+            ->whereNull('parent_id')  // Only get parent comments, not replies
+            ->with('user', 'replies.user')
             ->orderBy('created_at', 'asc')
             ->get();
 
         return response()->json([
             'comments' => $comments->map(function($comment) {
+                $repliesData = $comment->replies->map(function($reply) {
+                    return [
+                        'id' => $reply->id,
+                        'content' => $reply->content,
+                        'user_name' => $reply->user->name,
+                        'user_avatar' => $reply->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
+                        'created_at' => $reply->created_at->diffForHumans(),
+                        'can_delete' => $reply->canBeDeletedBy(Auth::id()),
+                    ];
+                });
+
                 return [
                     'id' => $comment->id,
                     'content' => $comment->content,
@@ -96,6 +108,8 @@ class CommunityController extends Controller
                     'user_avatar' => $comment->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
                     'created_at' => $comment->created_at->diffForHumans(),
                     'can_delete' => $comment->canBeDeletedBy(Auth::id()),
+                    'replies' => $repliesData,
+                    'replies_count' => $comment->replies->count(),
                 ];
             })
         ]);
@@ -123,5 +137,65 @@ class CommunityController extends Controller
                 'message' => __('front.error_deleting_comment')
             ], 500);
         }
+    }
+
+    public function storeReply(Request $request, Comment $comment)
+    {
+        // Check if comment is a parent comment (not a reply)
+        if ($comment->parent_id !== null) {
+            return response()->json([
+                'success' => false,
+                'message' => __('front.cannot_reply_to_reply')
+            ], 400);
+        }
+
+        $request->validate([
+            'content' => 'required|string|max:500',
+        ]);
+
+        $reply = Comment::create([
+            'content' => $request->content,
+            'user_id' => Auth::id(),
+            'post_id' => $comment->post_id,
+            'parent_id' => $comment->id,
+            'is_approved' => true,
+            'is_active' => true,
+        ]);
+
+        $reply->load('user');
+
+        return response()->json([
+            'success' => true,
+            'message' => __('front.reply_submitted'),
+            'reply' => [
+                'id' => $reply->id,
+                'content' => $reply->content,
+                'user_name' => $reply->user->name,
+                'user_avatar' => $reply->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
+                'created_at' => $reply->created_at->diffForHumans(),
+                'can_delete' => $reply->canBeDeletedBy(Auth::id()),
+            ]
+        ]);
+    }
+
+    public function loadReplies(Comment $comment)
+    {
+        $replies = $comment->replies()
+            ->with('user')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json([
+            'replies' => $replies->map(function($reply) {
+                return [
+                    'id' => $reply->id,
+                    'content' => $reply->content,
+                    'user_name' => $reply->user->name,
+                    'user_avatar' => $reply->user->photo_url ?? asset('assets_front/images/Profile-picture.jpg'),
+                    'created_at' => $reply->created_at->diffForHumans(),
+                    'can_delete' => $reply->canBeDeletedBy(Auth::id()),
+                ];
+            })
+        ]);
     }
 }

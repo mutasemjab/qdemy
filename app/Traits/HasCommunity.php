@@ -16,7 +16,7 @@ trait HasCommunity
      */
     public function getCommunityPosts($limit = 10)
     {
-        return Post::with(['user', 'comments.user', 'likes'])
+        return Post::with(['user', 'comments.user', 'comments.replies.user', 'likes'])
             ->where('is_approved', true)
             ->where('is_active', true)
             ->where('user_id',auth()->user()->id)
@@ -156,5 +156,56 @@ trait HasCommunity
             return asset('assets/admin/uploads/' . $user->photo);
         }
         return asset('assets_front/images/Profile-picture.jpg');
+    }
+
+    /**
+     * Handle adding reply to a comment (trait method)
+     */
+    protected function handleAddReply(Request $request)
+    {
+        try {
+            $request->validate([
+                'comment_id' => 'required|exists:comments,id',
+                'content' => 'required|string|max:500',
+            ]);
+
+            // Check if comment_id is a parent comment (not a reply)
+            $parentComment = Comment::where('id', $request->comment_id)
+                ->whereNull('parent_id')
+                ->first();
+
+            if (!$parentComment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('panel.cannot_reply_to_reply')
+                ], 400);
+            }
+
+            $reply = Comment::create([
+                'content' => $request->content,
+                'user_id' => Auth::id(),
+                'post_id' => $parentComment->post_id,
+                'parent_id' => $parentComment->id,
+                'is_approved' => true,
+                'is_active' => true,
+            ]);
+
+            // Load relationships for response
+            $reply->load('user');
+
+            return response()->json([
+                'success' => true,
+                'message' => __('panel.reply_added_successfully'),
+                'reply' => $reply
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error adding reply via trait', ['error' => $e->getMessage()]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Error adding reply: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

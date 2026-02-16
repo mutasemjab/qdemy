@@ -48,8 +48,8 @@
                         <div style="padding: 15px 0; border-top: 2px solid #f0f0f0; margin-top: 15px;">
                             <!-- Comments List -->
                             <div class="ud-comments-list">
-                                @forelse($post->comments as $comment)
-                                    <div class="ud-comment-item">
+                                @forelse($post->comments->where('parent_id', null) as $comment)
+                                    <div class="ud-comment-item" data-comment-id="{{ $comment->id }}">
                                         <img data-src="{{ $comment->user->photo_url }}" alt="Comment Avatar" class="ud-comment-avatar">
                                         <div class="ud-comment-body">
                                             <div class="ud-comment-header">
@@ -57,7 +57,50 @@
                                                 <small class="ud-comment-time">{{ $comment->created_at->diffForHumans() }}</small>
                                             </div>
                                             <p class="ud-comment-text">{{ $comment->content }}</p>
+                                            <button class="ud-reply-btn" data-comment-id="{{ $comment->id }}">
+                                                <i class="fas fa-reply"></i> {{ __('panel.reply') }}
+                                            </button>
                                         </div>
+                                    </div>
+
+                                    <!-- Replies count toggle button (like Facebook) -->
+                                    @if ($comment->replies && $comment->replies->count() > 0)
+                                        <div class="ud-replies-toggle">
+                                            <button class="ud-view-replies-btn" data-comment-id="{{ $comment->id }}">
+                                                <i class="fas fa-caret-down"></i>
+                                                {{ $comment->replies->count() }} {{ __('panel.replies') ?? 'ردود' }}
+                                            </button>
+                                        </div>
+                                        <!-- Replies list (hidden by default) -->
+                                        <div class="ud-replies-list" id="replies-{{ $comment->id }}" style="display: none;">
+                                            @foreach ($comment->replies as $reply)
+                                                <div class="ud-comment-item ud-reply" data-comment-id="{{ $reply->id }}">
+                                                    <img data-src="{{ $reply->user->photo_url }}" alt="Reply Avatar" class="ud-comment-avatar ud-reply-avatar">
+                                                    <div class="ud-comment-body">
+                                                        <div class="ud-comment-header">
+                                                            <b class="ud-comment-author">{{ $reply->user->name }}</b>
+                                                            <small class="ud-comment-time">{{ $reply->created_at->diffForHumans() }}</small>
+                                                        </div>
+                                                        <p class="ud-comment-text">{{ $reply->content }}</p>
+                                                        </div>
+                                                    </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    <!-- Reply form (hidden by default) -->
+                                    <div class="ud-reply-form-wrapper" id="reply-form-{{ $comment->id }}" style="display: none;">
+                                        <form class="ud-reply-form" data-comment-id="{{ $comment->id }}">
+                                            @csrf
+                                            <img data-src="{{ auth()->user()->photo_url }}" alt="Reply Avatar" class="ud-comment-avatar ud-reply-avatar">
+                                            <div class="ud-comment-body">
+                                                <textarea name="content" placeholder="{{ __('panel.write_reply') }}" required maxlength="500" class="ud-reply-textarea"></textarea>
+                                                <div class="ud-reply-actions">
+                                                    <button type="submit" class="ud-reply-submit">{{ __('panel.reply') }}</button>
+                                                    <button type="button" class="ud-reply-cancel">{{ __('panel.cancel') }}</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 @empty
                                     <div class="ud-no-comments">
@@ -299,6 +342,129 @@
     border-color: #007bff !important;
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
+
+/* Reply Styles */
+.ud-reply-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-top: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+}
+
+.ud-reply-btn:hover {
+    color: #0056b3;
+}
+
+.ud-replies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 0;
+    padding-right: 0;
+    border-right: 2px solid #e0e0e0;
+    margin-right: 20px;
+    padding-right: 15px;
+}
+
+.ud-reply-avatar {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.ud-reply-form-wrapper {
+    margin: 10px 0 10px 52px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.ud-reply-textarea {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 18px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    margin-bottom: 8px;
+    transition: border-color 0.3s ease;
+}
+
+.ud-reply-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.ud-reply-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.ud-reply-submit {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.3s ease;
+}
+
+.ud-reply-submit:hover {
+    background: #0056b3;
+}
+
+/* Replies toggle button (Facebook style) */
+.ud-replies-toggle {
+    margin: 8px 0 8px 52px;
+}
+
+.ud-view-replies-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+}
+
+.ud-view-replies-btn:hover {
+    color: #007bff;
+}
+
+.ud-view-replies-btn i {
+    font-size: 16px;
+}
+
+.ud-reply-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background 0.3s ease;
+}
+
+.ud-reply-cancel:hover {
+    background: #5a6268;
+}
 </style>
 
 <script>
@@ -440,5 +606,195 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+    // Handle reply button clicks
+    document.querySelectorAll('.ud-reply-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const commentId = this.getAttribute('data-comment-id');
+            const replyForm = document.getElementById('reply-form-' + commentId);
+
+            // Close other reply forms
+            document.querySelectorAll('.ud-reply-form-wrapper').forEach(form => {
+                if (form.id !== 'reply-form-' + commentId) {
+                    form.style.display = 'none';
+                }
+            });
+
+            // Toggle this reply form
+            if (replyForm) {
+                replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+                if (replyForm.style.display === 'block') {
+                    const textarea = replyForm.querySelector('.ud-reply-textarea');
+                    if (textarea) textarea.focus();
+                }
+            }
+        });
+    });
+
+    // Handle reply form submissions
+    document.querySelectorAll('.ud-reply-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const commentId = this.getAttribute('data-comment-id');
+            const submitBtn = this.querySelector('.ud-reply-submit');
+            const originalText = submitBtn.textContent;
+
+            formData.append('comment_id', commentId);
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '{{ __("panel.replying") }}...';
+
+            fetch('/panel/teacher/community/reply', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.reset();
+                    // Add reply to DOM
+                    addReplyToDOM(commentId, data.reply);
+                    // Hide form
+                    document.getElementById('reply-form-' + commentId).style.display = 'none';
+                } else {
+                    alert(data.message || '{{ __("panel.error_occurred") }}');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('{{ __("panel.error_occurred") }}');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            });
+        });
+    });
+
+    // Handle reply cancel buttons
+    document.querySelectorAll('.ud-reply-cancel').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.ud-reply-form');
+            form.reset();
+            form.closest('.ud-reply-form-wrapper').style.display = 'none';
+        });
+    });
+
+    // Handle view replies toggle button (Facebook style)
+    document.querySelectorAll('.ud-view-replies-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const commentId = this.dataset.commentId;
+            const repliesList = document.getElementById(`replies-${commentId}`);
+            const icon = this.querySelector('i');
+
+            if (repliesList.style.display === 'none') {
+                repliesList.style.display = 'block';
+                icon.classList.remove('fa-caret-down');
+                icon.classList.add('fa-caret-up');
+            } else {
+                repliesList.style.display = 'none';
+                icon.classList.remove('fa-caret-up');
+                icon.classList.add('fa-caret-down');
+            }
+        });
+    });
+
+    function addReplyToDOM(commentId, reply) {
+        const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+        if (!commentItem) return;
+
+        // Find or create replies toggle button
+        let repliesToggle = commentItem.nextElementSibling;
+        if (!repliesToggle || !repliesToggle.classList.contains('ud-replies-toggle')) {
+            repliesToggle = document.createElement('div');
+            repliesToggle.className = 'ud-replies-toggle';
+
+            const toggleBtn = document.createElement('button');
+            toggleBtn.className = 'ud-view-replies-btn';
+            toggleBtn.dataset.commentId = commentId;
+            toggleBtn.innerHTML = '<i class="fas fa-caret-down"></i> 1 {{ __("panel.replies") ?? "ردود" }}';
+
+            toggleBtn.addEventListener('click', function() {
+                const repliesList = document.getElementById(`replies-${commentId}`);
+                const icon = this.querySelector('i');
+                if (repliesList.style.display === 'none') {
+                    repliesList.style.display = 'block';
+                    icon.classList.remove('fa-caret-down');
+                    icon.classList.add('fa-caret-up');
+                } else {
+                    repliesList.style.display = 'none';
+                    icon.classList.remove('fa-caret-up');
+                    icon.classList.add('fa-caret-down');
+                }
+            });
+
+            repliesToggle.appendChild(toggleBtn);
+            commentItem.after(repliesToggle);
+        }
+
+        // Update the count in toggle button
+        const toggleBtn = repliesToggle.querySelector('.ud-view-replies-btn');
+        const currentCount = parseInt(toggleBtn.textContent.match(/\d+/)[0]) || 0;
+        toggleBtn.innerHTML = `<i class="fas fa-caret-down"></i> ${currentCount + 1} {{ __("panel.replies") ?? "ردود" }}`;
+
+        // Find or create replies container
+        let repliesContainer = document.getElementById(`replies-${commentId}`);
+        if (!repliesContainer) {
+            repliesContainer = document.createElement('div');
+            repliesContainer.className = 'ud-replies-list';
+            repliesContainer.id = `replies-${commentId}`;
+            repliesContainer.style.display = 'none';
+            repliesToggle.after(repliesContainer);
+        }
+
+        const replyDiv = document.createElement('div');
+        replyDiv.className = 'ud-comment-item ud-reply';
+        replyDiv.setAttribute('data-comment-id', reply.id);
+
+        const avatar = document.createElement('img');
+        avatar.setAttribute('data-src', reply.user_avatar);
+        avatar.alt = 'Reply Avatar';
+        avatar.className = 'ud-comment-avatar ud-reply-avatar';
+
+        const bodyDiv = document.createElement('div');
+        bodyDiv.className = 'ud-comment-body';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'ud-comment-header';
+
+        const author = document.createElement('b');
+        author.className = 'ud-comment-author';
+        author.textContent = reply.user_name;
+
+        const time = document.createElement('small');
+        time.className = 'ud-comment-time';
+        time.textContent = reply.created_at;
+
+        headerDiv.appendChild(author);
+        headerDiv.appendChild(time);
+
+        const textP = document.createElement('p');
+        textP.className = 'ud-comment-text';
+        textP.textContent = reply.content;
+
+        bodyDiv.appendChild(headerDiv);
+        bodyDiv.appendChild(textP);
+
+        replyDiv.appendChild(avatar);
+        replyDiv.appendChild(bodyDiv);
+
+        repliesContainer.appendChild(replyDiv);
+
+        // Show the replies automatically when a new one is added
+        repliesContainer.style.display = 'block';
+        const icon = toggleBtn.querySelector('i');
+        icon.classList.remove('fa-caret-down');
+        icon.classList.add('fa-caret-up');
+    }
 });
 </script>

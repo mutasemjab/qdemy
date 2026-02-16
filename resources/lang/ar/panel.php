@@ -549,6 +549,13 @@ return [
     // Missing translations from app/
     'comment_added_successfully' => 'تم إضافة التعليق بنجاح',
     'post_created_successfully' => 'تم إنشاء المنشور بنجاح',
+    'reply_added_successfully' => 'تم إضافة الرد بنجاح',
+    'cannot_reply_to_reply' => 'لا يمكن الرد على رد',
+    'reply' => 'رد',
+    'replying' => 'جاري الرد...',
+    'write_reply' => 'اكتب رداً...',
+    'replies' => 'ردود',
+    'cancel' => 'إلغاء',
 
     // Missing from views
     'add' => 'إضافة',

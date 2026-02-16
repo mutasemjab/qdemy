@@ -26,6 +26,24 @@ class Comment extends Model
         return $this->belongsTo(Post::class);
     }
 
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_id')
+            ->where('is_approved', true)
+            ->where('is_active', true)
+            ->orderBy('created_at', 'asc');
+    }
+
+    public function isReply()
+    {
+        return !is_null($this->parent_id);
+    }
+
     public function canBeDeletedBy($userId)
     {
         return $this->user_id == $userId;

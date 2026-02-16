@@ -1217,4 +1217,34 @@ class TeacherController extends Controller
         ]);
     }
 
+    // === COMMUNITY METHODS ===
+
+    public function community()
+    {
+        $user = Auth::user();
+        $posts = $this->getCommunityPosts(20);
+
+        return view('panel.teacher.community', compact('user', 'posts'));
+    }
+
+    public function createPost(Request $request)
+    {
+        return $this->handleCreatePost($request);
+    }
+
+    public function toggleLike(Request $request)
+    {
+        return $this->handleToggleLike($request);
+    }
+
+    public function addComment(Request $request)
+    {
+        return $this->handleAddComment($request);
+    }
+
+    public function addReply(Request $request)
+    {
+        return $this->handleAddReply($request);
+    }
+
 }
