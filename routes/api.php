@@ -134,6 +134,12 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::get('posts/{post}/comments', [CommentController::class, 'index']);
         Route::post('posts/{post}/comments', [CommentController::class, 'store']);
         Route::delete('posts/comments/{id}', [CommentController::class, 'destroy']);
+
+        // Comment reply routes
+        Route::post('comments/{comment}/replies', [CommentController::class, 'storeReply']);
+        Route::get('comments/{comment}/replies', [CommentController::class, 'getReplies']);
+        Route::delete('comments/replies/{id}', [CommentController::class, 'destroyReply']);
+
         Route::post('posts/{post}/like', [LikeController::class, 'like']);
         Route::delete('posts/{post}/unlike', [LikeController::class, 'unlike']);
         Route::get('posts/{post}/likes', [LikeController::class, 'index']);
