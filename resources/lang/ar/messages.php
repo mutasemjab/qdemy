@@ -117,6 +117,7 @@ return [
   'User deleted successfully' => 'تم حذف المستخدم بنجاح',
   'No users found' => 'لم يتم العثور على مستخدمين',
   'Are you sure you want to delete this user?' => 'هل أنت متأكد من حذف هذا المستخدم؟',
+  'Are you sure you want to delete this teacher?' => 'هل أنت متأكد من حذف هذا المعلم؟',
 
   // Help Text
   'Leave empty to auto-generate' => 'اتركه فارغاً للإنشاء التلقائي',

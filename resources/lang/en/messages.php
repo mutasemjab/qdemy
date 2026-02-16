@@ -117,6 +117,7 @@ return [
   'User deleted successfully' => 'User deleted successfully',
   'No users found' => 'No users found',
   'Are you sure you want to delete this user?' => 'Are you sure you want to delete this user?',
+  'Are you sure you want to delete this teacher?' => 'Are you sure you want to delete this teacher?',
 
   // Help Text
   'Leave empty to auto-generate' => 'Leave empty to auto-generate',
