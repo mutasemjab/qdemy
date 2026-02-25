@@ -96,6 +96,11 @@ Route::group(['prefix' => 'v1/user'], function () {
 
     Route::get('/pos', [PosController::class, 'index']);
 
+    // Public routes with optional authentication
+    Route::get('/home', HomeController::class);
+    Route::get('/courses', [CourseController::class, 'index']);
+    Route::get('/courses/{course}/{slug?}', [CourseController::class, 'show']);
+
     Route::group(['middleware' => ['auth:user-api']], function () {
 
 
@@ -112,10 +117,6 @@ Route::group(['prefix' => 'v1/user'], function () {
             // Mark content (PDF, etc.) as completed
             Route::post('/content/complete', [ProgressController::class, 'markContentCompleted']);
         });
-
-            Route::get('/home', HomeController::class);
-
-            Route::get('/courses', [CourseController::class, 'index']);
 
         Route::prefix('notifications')->group(function () {
             // Send notification to a single user
@@ -143,10 +144,6 @@ Route::group(['prefix' => 'v1/user'], function () {
         Route::post('posts/{post}/like', [LikeController::class, 'like']);
         Route::delete('posts/{post}/unlike', [LikeController::class, 'unlike']);
         Route::get('posts/{post}/likes', [LikeController::class, 'index']);
-
-        Route::prefix('courses')->group(function () {
-            Route::get('{course}/{slug?}', [CourseController::class, 'show']);
-        });
 
         Route::get('/bank-question', [BankQuestionsController::class, 'getBankQuestion']);
 

@@ -27,11 +27,13 @@ class CourseController extends Controller
 
     /**
      * Get course details with user progress
+     * Supports optional authentication - works with or without token
      */
     public function show(Request $request, Course $course, $slug = null)
     {
         try {
-            $user = $request->user(); // authenticated user from token
+            // Get authenticated user (null if no token provided)
+            $user = auth('user-api')->user();
 
             // Get course contents and sections
             $contents = $course->contents;
@@ -644,6 +646,7 @@ class CourseController extends Controller
 
     /**
      * Get all courses with filters
+     * Supports optional authentication - works with or without token
      */
     public function index(Request $request)
     {
@@ -654,12 +657,12 @@ class CourseController extends Controller
         $search = $request->get('search');
         $sortBy = $request->get('sort_by', 'latest');
 
-        // Get authenticated user
-        $user = $request->user();
-        
-        // Get user's enrolled courses
-        $user_enrollment_courses = $user 
-            ? $this->courseRepository->getUserCoursesIds($user->id) 
+        // Get authenticated user (null if no token provided)
+        $user = auth('user-api')->user();
+
+        // Get user's enrolled courses (only if authenticated)
+        $user_enrollment_courses = $user
+            ? $this->courseRepository->getUserCoursesIds($user->id)
             : [];
 
         $query = Course::where('status', 'accepted')->with(['teacher', 'subject']);

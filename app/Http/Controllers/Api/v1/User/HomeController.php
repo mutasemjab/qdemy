@@ -23,17 +23,18 @@ class HomeController extends Controller
 
     /**
      * Handle the incoming request and return home page data
+     * Supports optional authentication - works with or without token
      */
     public function __invoke(Request $request)
     {
         try {
 
-         // Get authenticated user
-        $user = $request->user();
-        
-        // Get user's enrolled courses
-        $user_enrollment_courses = $user 
-            ? $this->courseRepository->getUserCoursesIds($user->id) 
+        // Get authenticated user (null if no token provided)
+        $user = auth('user-api')->user();
+
+        // Get user's enrolled courses (only if authenticated)
+        $user_enrollment_courses = $user
+            ? $this->courseRepository->getUserCoursesIds($user->id)
             : [];
             // Get all banners
             $banners = Banner::select('id','photo_for_mobile')
