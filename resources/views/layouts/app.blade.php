@@ -993,8 +993,8 @@
             function perView() {
                 const w = win.clientWidth;
                 if (w <= 600) return 1;
-                if (w <= 992) return 2;
-                return 2;
+                if (w <= 992) return 1;
+                return 1;
             }
 
             function setCardWidths() {

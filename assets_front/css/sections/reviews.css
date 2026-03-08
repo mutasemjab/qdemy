@@ -1,62 +1,155 @@
 /* Reviews Section - Full Width */
 .rvx {
-  background: #ffffff;
+  background-image: url('../../images/new-designs/hero-decoration-3.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
-  padding: 60px 0;
+  padding: 100px 20px 80px;
   width: 100%;
   max-width: 100vw;
 }
 
 .rvx > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-/* Review Panel */
-.rvx-panel {
-  background: linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%);
-  border-radius: 16px;
-  padding: 40px;
-  color: white;
-  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.rvx-title {
+  display: none;
 }
 
-.rvx-panel:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.3);
+/* Wrap - Layout container */
+.rvx-wrap {
+  max-width: 1200px;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
 }
 
-.rvx-panel-title {
-  font-size: 24px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  line-height: 1.4;
+.rvx-wrap .rvx-window {
+  order: -1;
 }
 
-.rvx-panel-logo {
-  width: 120px;
-  height: auto;
-  margin-bottom: 16px;
+.rvx-wrap .rvx-panel {
+  order: 1;
 }
 
-/* Review Window/Carousel */
+/* Review Window/Carousel Container */
 .rvx-window {
-  border-radius: 12px;
+  border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.rvx-track {
+  display: flex;
+  gap: 0;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* Individual Card */
+.rvx-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 380px;
+  width: 100%;
+  flex-shrink: 0;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.rvx-card:hover {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
 }
 
 .rvx-card-img {
-  width: 100%;
-  height: 100%;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
   object-fit: cover;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  margin-bottom: 24px;
+  border: 4px solid #fff;
 }
 
-.rvx-card-img:hover {
-  transform: scale(1.05);
+/* Testimonial Card Content */
+.rvx-card-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.rvx-card-title {
+  font-size: 14px;
+  color: #6B7280;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.rvx-card-stars {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  justify-content: center;
+}
+
+.rvx-card-star {
+  font-size: 20px;
+  color: #FCD34D;
+}
+
+.rvx-card-star.empty {
+  color: #E5E7EB;
+}
+
+.rvx-card-description {
+  font-size: 15px;
+  color: #4B5563;
+  line-height: 1.7;
+  text-align: center;
+  margin: 0;
+}
+
+/* Review Panel - Right side text */
+.rvx-panel {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  color: white;
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: right;
+}
+
+.rvx-panel:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.rvx-panel-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  margin-top: 0;
+}
+
+.rvx-panel-logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 0;
 }
 
 /* Controls */
@@ -65,29 +158,33 @@
   justify-content: center;
   align-items: center;
   gap: 20px;
-  margin-top: 24px;
+  margin-top: 40px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 20px;
 }
 
 .rvx-arrow {
-  background: rgba(59, 130, 246, 0.1);
-  border: 2px solid rgba(59, 130, 246, 0.3);
-  width: 40px;
-  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #3B82F6;
-  font-size: 18px;
+  color: #ffffff;
+  font-size: 20px;
 }
 
 .rvx-arrow:hover {
-  background: rgba(59, 130, 246, 0.25);
-  border-color: #3B82F6;
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.8);
   transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 /* Dots */
@@ -98,26 +195,18 @@
 }
 
 .rvx-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .rvx-dot.active {
-  background: #3B82F6;
-  width: 24px;
-  border-radius: 4px;
-}
-
-/* Wrap */
-.rvx-wrap {
-  max-width: 100%;
-  width: 100%;
-  padding: 0 20px;
-  margin: 0 auto;
+  background: #ffffff;
+  width: 28px;
+  border-radius: 5px;
 }
 
 @media (min-width: 1600px) {
@@ -125,26 +214,65 @@
     max-width: 1400px;
     padding: 0 40px;
   }
+
+  .rvx-controls {
+    padding: 0 40px;
+  }
+}
+
+@media (max-width: 992px) {
+  .rvx-panel-title {
+    font-size: 26px;
+  }
+
+  .rvx-card {
+    min-height: 340px;
+    padding: 30px 20px;
+  }
 }
 
 @media (max-width: 768px) {
   .rvx {
-    padding: 60px 15px;
+    padding: 60px 15px 60px;
   }
 
   .rvx-wrap {
     padding: 0 10px;
+    grid-template-columns: 1fr;
+    gap: 30px;
   }
 
   .rvx-panel {
-    padding: 30px 20px;
+    text-align: center;
   }
 
   .rvx-panel-title {
-    font-size: 20px;
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .rvx-panel-logo {
+    width: 120px;
+  }
+
+  .rvx-card {
+    min-height: 300px;
+    padding: 20px;
+  }
+
+  .rvx-card-img {
+    width: 90px;
+    height: 90px;
   }
 
   .rvx-controls {
     gap: 12px;
+    margin-top: 30px;
+  }
+
+  .rvx-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
   }
 }

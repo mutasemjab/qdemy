@@ -6,32 +6,45 @@
             loading="lazy" width="600px;" height="auto" style="mix-blend-mode: darken; filter: contrast(1.1) saturate(1.05);"></h2>
 
     <div class="rvx-wrap">
-        <!-- Blue side panel -->
-        <div data-aos="zoom-in" class="rvx-stage">
-            <div class="rvx-panel">
-                <h3 class="rvx-panel-title">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
-                <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}"
-                    alt="Qdemy">
-                <p class="rvx-panel-sub"></p>
-            </div>
-
-            <!-- Carousel -->
-            <div class="rvx-window">
-                <div class="rvx-track">
-                    @foreach ($opinionStudents as $index => $opinion)
+        <!-- Carousel Window -->
+        <div class="rvx-window" data-aos="zoom-in">
+            <div class="rvx-track">
+                @foreach ($opinionStudents as $index => $opinion)
+                    <div class="rvx-card">
                         <img class="rvx-card-img"
                             data-src="{{ $opinion->photo ? asset('assets/admin/uploads/' . $opinion->photo) : asset('assets_front/images/social1.jpg') }}"
-                            alt="">
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Controls -->
-            <div class="rvx-controls">
-                <button class="rvx-arrow rvx-prev" aria-label="{{ __('front.Previous') }}">&#9664;</button>
-                <div class="rvx-dots"></div>
-                <button class="rvx-arrow rvx-next" aria-label="{{ __('front.Next') }}">&#9654;</button>
+                            alt="{{ $opinion->name }}">
+                        <h3 class="rvx-card-name">{{ $opinion->name }}</h3>
+                        <p class="rvx-card-title">{{ $opinion->title }}</p>
+                        <div class="rvx-card-stars">
+                            @foreach ($opinion->getStarRatingAttribute() as $star)
+                                @if ($star === 'full')
+                                    <span class="rvx-card-star">★</span>
+                                @elseif ($star === 'half')
+                                    <span class="rvx-card-star">⭐</span>
+                                @else
+                                    <span class="rvx-card-star empty">☆</span>
+                                @endif
+                            @endforeach
+                        </div>
+                        <p class="rvx-card-description">{{ $opinion->description }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
+
+        <!-- Right side panel -->
+        <div class="rvx-panel">
+            <h3 class="rvx-panel-title">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
+            <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}"
+                alt="Qdemy">
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="rvx-controls">
+        <button class="rvx-arrow rvx-prev" aria-label="{{ __('front.Previous') }}">&#9664;</button>
+        <div class="rvx-dots"></div>
+        <button class="rvx-arrow rvx-next" aria-label="{{ __('front.Next') }}">&#9654;</button>
     </div>
 </section>
