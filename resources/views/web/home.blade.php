@@ -15,8 +15,6 @@
 
     @include('web.home.videos')
 
-    @include('web.home.stats')
-
     @include('web.home.faq')
 
     @include('web.home.reviews')
