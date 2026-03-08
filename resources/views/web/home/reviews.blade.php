@@ -43,8 +43,8 @@
 
     <!-- Controls -->
     <div class="rvx-controls">
-        <button class="rvx-arrow rvx-prev" aria-label="{{ __('front.Previous') }}">&#9664;</button>
+        <button class="rvx-arrow rvx-prev" aria-label="{{ __('front.Previous') }}">&#9654;</button>
         <div class="rvx-dots"></div>
-        <button class="rvx-arrow rvx-next" aria-label="{{ __('front.Next') }}">&#9654;</button>
+        <button class="rvx-arrow rvx-next" aria-label="{{ __('front.Next') }}">&#9664;</button>
     </div>
 </section>

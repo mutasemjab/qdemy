@@ -45,12 +45,14 @@
   border-radius: 20px;
   overflow: hidden;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  width: 100%;
 }
 
 .rvx-track {
   display: flex;
-  gap: 0;
+  gap: 28px;
   transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  direction: ltr;
 }
 
 /* Individual Card */
@@ -63,9 +65,10 @@
   align-items: center;
   justify-content: center;
   min-height: 380px;
-  width: 100%;
+  min-width: 100%;
   flex-shrink: 0;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  direction: rtl;
 }
 
 .rvx-card:hover {
