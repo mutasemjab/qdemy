@@ -1,3 +1,19 @@
+/* FAQ Title - Outside section */
+.faq-title {
+  width: 100%;
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: #fff;
+}
+
+.faq-title img {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: darken;
+  filter: contrast(1.1) saturate(1.05);
+}
+
 /* FAQ Section - Full Width */
 .faq-section {
   background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 50%, #f8fafc 100%);

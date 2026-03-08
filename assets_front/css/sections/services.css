@@ -1,4 +1,4 @@
-/* Services Section - All styles with !important to override inline */
+/* Services Section */
 
 .services-section {
     background: linear-gradient(
@@ -12,7 +12,7 @@
     text-align: center !important;
     padding: 80px 20px !important;
     display: flex !important;
-    justify-content: flex-end !important;
+    flex-direction: column !important;
     align-items: center !important;
 }
 
@@ -25,8 +25,8 @@
     right: 0 !important;
     bottom: 0 !important;
     background-image: url("../../images/new-designs/hero-decoration-4.jpeg") !important;
-    background-size: contain !important;
-    background-position: left center !important;
+    background-size: cover !important;
+    background-position: center !important;
     background-repeat: no-repeat !important;
     opacity: 0.9 !important;
     pointer-events: none !important;
@@ -60,13 +60,21 @@
     z-index: 2 !important;
 }
 
-.services-section img {
-    position: relative !important;
-    z-index: 2 !important;
-    max-width: 600px !important;
+/* Services Title - Outside section, above background */
+.services-title {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 40px 20px 20px !important;
+    background: #fff !important;
+    margin-top: 50px;
+}
+
+.services-title img {
+    max-width: 500px !important;
     width: 100% !important;
     height: auto !important;
-    margin-bottom: 32px !important;
+    mix-blend-mode: darken !important;
+    filter: contrast(1.1) saturate(1.05) !important;
 }
 
 /* Services Grid */
@@ -76,9 +84,11 @@
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px !important;
-    max-width: 500px !important;
-    margin-left: auto !important;
-    margin-right: 150px !important;
+    max-width: 600px !important;
+    width: 100% !important;
+    margin-top: 3% !important;
+    margin-left: 5% !important;
+    margin-right: auto !important;
 }
 
 /* Service Link */
@@ -94,7 +104,7 @@
     text-align: center !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     height: 80px !important;
-    width: 160px !important;
+    width: 100% !important;
     margin: 0 !important;
     background-repeat: no-repeat !important;
     background-position: center !important;
@@ -140,13 +150,27 @@
 
 /* Tablet - 992px and below */
 @media (max-width: 992px) {
+    .services-section {
+        padding: 60px 15px !important;
+    }
+
+    .services-title img {
+        max-width: 400px !important;
+    }
+
     .services-grid {
         grid-template-columns: repeat(2, 1fr) !important;
         padding: 30px 20px !important;
+        max-width: 500px !important;
     }
 
     .service-link {
-        padding: 40px 20px !important;
+        padding: 15px 10px !important;
+        font-size: 20px !important;
+        height: 70px !important;
+    }
+
+    .service-link small {
         font-size: 18px !important;
     }
 }
@@ -154,26 +178,33 @@
 /* Mobile - 576px and below */
 @media (max-width: 576px) {
     .services-section {
-        padding: 0 10px !important;
+        padding: 40px 10px !important;
+    }
+
+    .services-title {
+        margin-bottom: 25px !important;
+    }
+
+    .services-title img {
+        max-width: 280px !important;
     }
 
     .services-grid {
         grid-template-columns: 1fr !important;
         padding: 20px 10px !important;
         gap: 15px !important;
+        max-width: 320px !important;
     }
 
     .service-link {
-        padding: 30px 15px !important;
-        font-size: 24px !important;
+        padding: 20px 15px !important;
+        font-size: 22px !important;
         height: auto !important;
-        min-height: 140px !important;
-        flex-direction: column !important;
-        line-height: 1.4 !important;
+        min-height: 70px !important;
     }
 
     .service-link small {
-        font-size: 20px !important;
+        font-size: 18px !important;
         margin-top: 5px !important;
     }
 }

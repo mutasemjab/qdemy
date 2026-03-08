@@ -1,11 +1,11 @@
-<section class="blog-slider">
-    <h2 data-aos="zoom-in-up" class="blog-slider__title">
-        <img src="{{ app()->getLocale() == 'ar'
-            ? asset('assets_front/images/blogs.png')
-            : asset('assets_front/images/en/blogs.png') }}"
-            loading="lazy" width="600px;" height="auto" style="mix-blend-mode: darken; filter: contrast(1.1) saturate(1.05);">
-    </h2>
+<div class="blog-title">
+    <img src="{{ app()->getLocale() == 'ar'
+        ? asset('assets_front/images/blogs.png')
+        : asset('assets_front/images/en/blogs.png') }}"
+        loading="lazy" alt="Blogs">
+</div>
 
+<section class="blog-slider">
     <div class="blog-slider__shell">
         <button class="blog-slider__arrow blog-slider__arrow--prev" aria-label="{{ __('front.Previous') }}">
             <span>&lsaquo;</span>

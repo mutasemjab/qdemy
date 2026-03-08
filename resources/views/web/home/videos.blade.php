@@ -1,11 +1,12 @@
+<div class="videos-title">
+    <img src="{{ app()->getLocale() == 'ar'
+        ? asset('assets_front/images/social_media.png')
+        : asset('assets_front/images/en/social_media.png') }}"
+        loading="lazy" alt="Social Media">
+</div>
+
 <section data-aos="zoom-in-up" class="fm3d-videos-block">
     <div class="fm3d-videos-inner">
-        <h2 class="fm3d-videos-title" data-aos="zoom-in-up">
-            <img src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/social_media.png')
-                : asset('assets_front/images/en/social_media.png') }}"
-                loading="lazy" width="600px;" height="auto" style="mix-blend-mode: darken; filter: contrast(1.1) saturate(1.05);">
-        </h2>
         <div class="fm3d-videos-shell">
             <button class="fm3d-nav-arrow fm3d-nav-prev" type="button">
                 <span class="fm3d-nav-chevron"></span>

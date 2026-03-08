@@ -4899,9 +4899,49 @@ subject-plus-dropdown-examx {
     display: block;
 }
 
+/* Videos Title - Outside section */
+.videos-title {
+    width: 100%;
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: #fff;
+    margin-top: 50px;
+}
+
+.videos-title img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    mix-blend-mode: darken;
+    filter: contrast(1.1) saturate(1.05);
+}
+
 .fm3d-videos-block {
     direction: rtl;
     font-family: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.fm3d-videos-block::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/new-designs/hero-decoration-3.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.fm3d-videos-block > * {
+    position: relative;
+    z-index: 2;
 }
 
 .fm3d-videos-inner {
@@ -5026,7 +5066,7 @@ subject-plus-dropdown-examx {
     width: 40px;
     height: 40px;
     border-radius: 999px;
-    border: 2px solid #2980e4;
+    border: 2px solid #fff;
     background: transparent;
     display: flex;
     align-items: center;
@@ -5045,7 +5085,7 @@ subject-plus-dropdown-examx {
 .fm3d-nav-chevron {
     width: 10px;
     height: 10px;
-    border: 3px solid #2980e4;
+    border: 3px solid #fff;
     border-top: none;
     border-left: none;
 }

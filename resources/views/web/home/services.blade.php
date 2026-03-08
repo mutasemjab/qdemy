@@ -1,9 +1,11 @@
-<section class="services-section">
+<div class="services-title">
     <img src="{{ app()->getLocale() == 'ar'
         ? asset('assets_front/images/our_service.png')
         : asset('assets_front/images/en/our_service.png') }}"
-        loading="lazy" alt="Our Services" style="max-width: 600px; mix-blend-mode: darken; filter: contrast(1.1) saturate(1.05);">
+        loading="lazy" alt="Our Services">
+</div>
 
+<section class="services-section">
     <div class="services-grid">
         <a href="{{ route('community') }}" class="service-link anim animate-glow"
             style="background-image: url('{{ asset('assets_front/images/dark.png') }}');">{{ __('front.QDEMY Community') }}</a>

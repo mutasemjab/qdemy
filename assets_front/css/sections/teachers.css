@@ -1,9 +1,25 @@
+/* Teachers Title - Outside section */
+.teachers-title {
+  width: 100%;
+  text-align: center;
+  padding: 40px 20px 20px;
+  background: #fff;
+}
+
+.teachers-title img {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: darken;
+  filter: contrast(1.1) saturate(1.05);
+}
+
 /* Teachers Section */
 .x3c-instructors {
   background: linear-gradient(135deg, rgba(249, 250, 251, 1) 0%, rgba(219, 234, 254, 0.2) 50%, rgba(243, 244, 246, 0.8) 100%);
   position: relative;
   overflow: hidden;
-  padding: 60px 20px;
+  padding: 80px 20px 120px;
 }
 
 /* Visible geometric pattern with new designs */
@@ -14,7 +30,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../../images/new-designs/decoration-icons.jpeg');
+  background-image: url('../../images/new-designs/hero-decoration-2.webp');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

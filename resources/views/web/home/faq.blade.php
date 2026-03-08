@@ -1,10 +1,11 @@
+<div class="faq-title">
+    <img src="{{ app()->getLocale() == 'ar'
+        ? asset('assets_front/images/fre_question.png')
+        : asset('assets_front/images/en/fre_question.png') }}"
+        loading="lazy" alt="FAQ">
+</div>
+
 <section class="faq-section">
-    <h2 data-aos="zoom-in-up"> <img
-            src="{{ app()->getLocale() == 'ar'
-                ? asset('assets_front/images/fre_question.png')
-                : asset('assets_front/images/en/fre_question.png') }}"
-            loading="lazy" width="600px;" height="auto" style="mix-blend-mode: darken; filter: contrast(1.1) saturate(1.05);">
-    </h2>
     <div data-aos="zoom-in" class="faq-container">
         @foreach ($faqs as $index => $faq)
             <div class="faq-item {{ $index == 0 ? 'active' : '' }}">
