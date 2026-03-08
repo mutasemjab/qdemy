@@ -1,4 +1,4 @@
-<section class="hero">
+<section class="hero" style="background: linear-gradient(to bottom, #f5f5f5 0%, #fafafa 100%);">
 
     <div class="hero-container">
 

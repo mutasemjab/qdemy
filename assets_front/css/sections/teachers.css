@@ -6,8 +6,25 @@
   padding: 60px 20px;
 }
 
-/* Visible geometric pattern */
+/* Visible geometric pattern with new designs */
 .x3c-instructors::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../../images/new-designs/decoration-icons.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Additional pattern overlay */
+.x3c-instructors::after {
   content: '';
   position: absolute;
   top: 0;
@@ -23,7 +40,7 @@
 
 .x3c-instructors > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* Teacher Cards */
