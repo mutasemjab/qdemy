@@ -77,9 +77,6 @@
   padding: 12px;
 }
 
-.x3c-cell:hover .x3c-fig {
-  transform: translateY(-4px);
-}
 
 /* Navigation Arrows */
 .x3c-arrow {
