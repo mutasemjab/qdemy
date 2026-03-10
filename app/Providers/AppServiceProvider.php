@@ -54,8 +54,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-         // Set the default pagination view to Bootstrap 4
-        \Illuminate\Pagination\Paginator::useBootstrapFour();
+        \Illuminate\Pagination\Paginator::defaultView('pagination::custom-bootstrap-5');
+        \Illuminate\Pagination\Paginator::defaultSimpleView('pagination::simple-bootstrap-5');
 
          Course::observe(CourseObserver::class);
          Exam::observe(ExamObserver::class);
