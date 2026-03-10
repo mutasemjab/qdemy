@@ -183,8 +183,9 @@
         .tch-img {
             width: 100%;
             aspect-ratio: 1;
-            object-fit: cover;
+            object-fit: contain;
             display: block;
+            background: #f5f5f5;
         }
 
         .tch-name {
