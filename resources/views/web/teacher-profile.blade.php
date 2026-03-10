@@ -82,8 +82,8 @@
                                         <img src="{{ asset('assets/admin/uploads/' . $course->photo) }}"
                                             alt="{{ $course->title }}">
                                     </div>
-                                    @if($course->price)
-                                        <span class="t-price">{{ $course->price }} {{ __('front.currency') }}</span>
+                                    @if($course->selling_price)
+                                        <span class="t-price">{{ number_format((float) $course->selling_price, 0) }} {{ CURRENCY }}</span>
                                     @else
                                         <span class="t-price">{{ __('front.free') }}</span>
                                     @endif
