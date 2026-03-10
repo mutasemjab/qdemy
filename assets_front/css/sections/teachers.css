@@ -59,23 +59,7 @@
   z-index: 2;
 }
 
-/* Teacher Cards */
-.x3c-fig {
-  transition: all 0.3s ease;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #fff;
-}
-
-.x3c-fig img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.x3c-cell {
-  padding: 12px;
-}
+/* Teacher Cards - styling handled by style.css */
 
 
 /* Navigation Arrows */
