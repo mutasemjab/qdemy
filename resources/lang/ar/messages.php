@@ -3695,4 +3695,13 @@ return [
   // Section Order
   'section_order' => 'ترتيب القسم',
   'enter_section_order' => 'أدخل ترتيب القسم',
+
+  // WhatsApp Numbers
+  'whatsapp_numbers' => 'أرقام واتس آب',
+  'no_whatsapp_numbers' => 'لا توجد أرقام واتس آب متاحة',
+  'phone_number' => 'رقم الهاتف',
+  'add_new_number' => 'إضافة رقم جديد',
+  'action' => 'إجراء',
+  'label' => 'تسمية',
+  'example' => 'مثال',
 ];

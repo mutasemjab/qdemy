@@ -3734,4 +3734,13 @@ return [
   // Section Order
   'section_order' => 'Section Order',
   'enter_section_order' => 'Enter section order',
+
+  // WhatsApp Numbers
+  'whatsapp_numbers' => 'WhatsApp Numbers',
+  'no_whatsapp_numbers' => 'No WhatsApp numbers available',
+  'phone_number' => 'Phone Number',
+  'add_new_number' => 'Add New Number',
+  'action' => 'Action',
+  'label' => 'Label',
+  'example' => 'Example',
 ];
