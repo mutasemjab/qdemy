@@ -135,7 +135,7 @@ return array (
   'write_post' => 'ما الذي تفكر به؟',
   'submit_post' => 'مشاركة المنشور',
   'add_comment' => 'أضف تعليق',
-  'login_to_comment' => 'سجل دخولك للتعليق',
+  'login_to_comment' => 'سجّل دخولك للتفاعل مع هذا المنشور',
   'like' => 'أعجبني',
   'liked' => 'أعجبني',
   'view_all_comments' => 'شاهد جميع التعليقات',

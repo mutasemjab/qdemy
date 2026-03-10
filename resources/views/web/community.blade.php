@@ -106,14 +106,9 @@
                                 </div>
                             </form>
                         @else
-                            <div class="fb-comment-form">
-                                <img class="fb-comment-avatar" 
-                                     src="{{ asset('assets_front/images/Profile-picture.jpg') }}"
-                                     alt="">
-                                <input class="fb-comment-input fb-comment-disabled" 
-                                       type="text" 
-                                       placeholder="{{ __('front.login_to_comment') }}" 
-                                       disabled>
+                            <div class="fb-login-warning">
+                                <i class="fas fa-triangle-exclamation"></i>
+                                {{ __('front.login_to_comment') }}
                             </div>
                         @endauth
 
@@ -131,6 +126,14 @@
                                             </div>
                                             <div class="fb-comment-meta">
                                                 <small class="fb-comment-time">{{ $comment->created_at->diffForHumans() }}</small>
+                                                @if(!Auth::check() || $comment->user_id !== Auth::id())
+                                                    <button class="fb-comment-like-btn {{ Auth::check() && $comment->isLikedBy(Auth::id()) ? 'fb-comment-liked' : '' }}"
+                                                            data-comment-id="{{ $comment->id }}"
+                                                            {{ !Auth::check() ? 'disabled' : '' }}>
+                                                        <i class="fas fa-thumbs-up"></i>
+                                                        <span class="comment-like-count">{{ $comment->likes()->count() }}</span>
+                                                    </button>
+                                                @endif
                                                 @auth
                                                     <button class="fb-reply-btn" data-comment-id="{{ $comment->id }}">
                                                         <i class="fas fa-reply"></i> {{ __('front.reply') }}
@@ -251,6 +254,51 @@
     </section>
 
     <style>
+    .fb-login-warning {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fefce8;
+        border: 1px solid #fde047;
+        color: #854d0e;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+    .fb-login-warning i {
+        color: #ca8a04;
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .fb-comment-like-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: #8d949e;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: color 0.2s, background 0.2s;
+    }
+    .fb-comment-like-btn:hover:not(:disabled) {
+        background: #f0f2f5;
+        color: #1877f2;
+    }
+    .fb-comment-like-btn.fb-comment-liked {
+        color: #1877f2;
+    }
+    .fb-comment-like-btn:disabled {
+        cursor: default;
+        opacity: 0.6;
+    }
+
     /* Improved Community Reply Styles */
     .fb-comment {
         display: flex;
@@ -603,6 +651,35 @@
                                     }
                                 })
                                 .catch(error => console.error('Error:', error));
+                        });
+                    }
+                });
+
+                // Handle comment like button clicks
+                document.querySelectorAll('.fb-comment-like-btn').forEach(button => {
+                    if (!button.disabled) {
+                        button.addEventListener('click', function() {
+                            const commentId = this.dataset.commentId;
+                            const countSpan = this.querySelector('.comment-like-count');
+
+                            fetch(`{{ route('community.comments.toggle-like', ':id') }}`.replace(':id', commentId), {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Content-Type': 'application/json',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.liked) {
+                                    this.classList.add('fb-comment-liked');
+                                } else {
+                                    this.classList.remove('fb-comment-liked');
+                                }
+                                countSpan.textContent = data.likes_count;
+                            })
+                            .catch(error => console.error('Error:', error));
                         });
                     }
                 });

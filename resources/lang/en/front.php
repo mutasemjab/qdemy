@@ -135,7 +135,7 @@ return array(
   'write_post' => 'What\'s on your mind?',
   'submit_post' => 'Share Post',
   'add_comment' => 'Add a comment',
-  'login_to_comment' => 'Login to comment',
+  'login_to_comment' => 'Login to interact with this post',
   'like' => 'Like',
   'liked' => 'Liked',
   'view_all_comments' => 'View all comments',

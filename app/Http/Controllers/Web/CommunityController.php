@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\PostLike;
+use App\Models\CommentLike;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -77,6 +78,35 @@ class CommunityController extends Controller
         return response()->json([
             'liked' => $liked,
             'likes_count' => $post->likes()->count(),
+        ]);
+    }
+
+    public function toggleCommentLike(Comment $comment)
+    {
+        $userId = Auth::id();
+
+        if (!$userId || $comment->user_id === $userId) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        $existingLike = CommentLike::where('user_id', $userId)
+            ->where('comment_id', $comment->id)
+            ->first();
+
+        if ($existingLike) {
+            $existingLike->delete();
+            $liked = false;
+        } else {
+            CommentLike::create([
+                'user_id' => $userId,
+                'comment_id' => $comment->id,
+            ]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'liked' => $liked,
+            'likes_count' => $comment->likes()->count(),
         ]);
     }
 

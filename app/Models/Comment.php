@@ -44,6 +44,16 @@ class Comment extends Model
         return !is_null($this->parent_id);
     }
 
+    public function likes()
+    {
+        return $this->hasMany(CommentLike::class);
+    }
+
+    public function isLikedBy($userId)
+    {
+        return $this->likes()->where('user_id', $userId)->exists();
+    }
+
     public function canBeDeletedBy($userId)
     {
         return $this->user_id == $userId;
