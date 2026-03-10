@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\BankQuestion;
 use App\Models\Category;
 use App\Models\Subject;
+use App\Repositories\CategoryRepository;
 
 class BankQuestionController extends Controller
 {
@@ -49,21 +50,16 @@ class BankQuestionController extends Controller
         // Paginate results
         $bankQuestions = $query->paginate(12);
 
-        // Get categories for filter dropdown (only those with bank questions)
-        $categories = Category::whereHas('bankQuestions')
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+        // Get all major programs for filter dropdown
+        $categories = (new CategoryRepository())->getMajors();
 
-        // Get subjects for filter dropdown
+        // Get subjects for filter dropdown based on selected program
         $subjects = collect();
         if ($categoryId) {
-            $subjects = Subject::whereHas('bankQuestions', function($query) use ($categoryId) {
-                $query->where('category_id', $categoryId);
-            })
-            ->where('is_active', true)
-            ->orderBy('sort_order')
-            ->get();
+            $subjects = Subject::where('programm_id', $categoryId)
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->get();
         }
 
         return view('web.bank-questions', compact('bankQuestions', 'categories', 'subjects', 'categoryId', 'subjectId', 'search'));
@@ -119,9 +115,7 @@ class BankQuestionController extends Controller
             return response()->json([]);
         }
 
-        $subjects = Subject::whereHas('bankQuestions', function($query) use ($categoryId) {
-            $query->where('category_id', $categoryId);
-        })
+        $subjects = Subject::where('programm_id', $categoryId)
         ->where('is_active', true)
         ->orderBy('sort_order')
         ->get()

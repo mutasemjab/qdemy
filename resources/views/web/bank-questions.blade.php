@@ -14,53 +14,35 @@
     <!-- Filters Section -->
     <div class="examx-filters">
         <form method="GET" action="{{ route('bankQuestions.index') }}" id="filter-form">
-            <div class="examx-row-2">
-                <!-- Category/Program Dropdown -->
+            <div class="examx-row">
                 <div class="examx-dropdown">
-                    <button type="button" class="examx-pill" id="category-dropdown">
-                        <i class="fas fa-caret-down"></i>
-                        <span>{{ __('front.choose_program') }}</span>
-                    </button>
-                    <ul class="examx-menu" id="category-menu">
-                        <li data-value="">{{ __('front.all_programs') }}</li>
+                    <select class="examx-pill" name="category_id" id="category_id">
+                        <option value="">{{ __('front.all_programs') }}</option>
                         @foreach($categories as $category)
-                            <li data-value="{{ $category->id }}" 
-                                {{ $categoryId == $category->id ? 'class=selected' : '' }}>
+                            <option value="{{ $category->id }}" {{ $categoryId == $category->id ? 'selected' : '' }}>
                                 {{ app()->getLocale() === 'ar' ? $category->name_ar : ($category->name_en ?? $category->name_ar) }}
-                            </li>
+                            </option>
                         @endforeach
-                    </ul>
-                    <input type="hidden" name="category_id" value="{{ $categoryId }}" id="category-input">
+                    </select>
                 </div>
 
-                <!-- Subject Dropdown -->
+                @if($categoryId && $subjects->count())
                 <div class="examx-dropdown">
-                    <button type="button" class="examx-pill" id="subject-dropdown">
-                        <i class="fas fa-caret-down"></i>
-                        <span>{{ __('front.choose_subject') }}</span>
-                    </button>
-                    <ul class="examx-menu" id="subject-menu">
-                        @if(!$categoryId)
-                            <li class="disabled">{{ __('front.select_program_first') }}</li>
-                        @else
-                            <li data-value="">{{ __('front.all_subjects') }}</li>
-                            @foreach($subjects as $subject)
-                                <li data-value="{{ $subject->id }}" 
-                                    {{ $subjectId == $subject->id ? 'class=selected' : '' }}>
-                                    {{ app()->getLocale() === 'ar' ? $subject->name_ar : ($subject->name_en ?? $subject->name_ar) }}
-                                </li>
-                            @endforeach
-                        @endif
-                    </ul>
-                    <input type="hidden" name="subject_id" value="{{ $subjectId }}" id="subject-input">
+                    <select class="examx-pill" name="subject_id" id="subject_id">
+                        <option value="">{{ __('front.all_subjects') }}</option>
+                        @foreach($subjects as $subject)
+                            <option value="{{ $subject->id }}" {{ $subjectId == $subject->id ? 'selected' : '' }}>
+                                {{ app()->getLocale() === 'ar' ? $subject->name_ar : ($subject->name_en ?? $subject->name_ar) }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
+                @endif
             </div>
 
-            <!-- Search Input -->
             <div class="examx-search">
-                <input type="text" name="search" value="{{ $search }}" 
+                <input type="text" name="search" value="{{ $search }}"
                        placeholder="{{ __('front.search_placeholder') }}">
-                <i class="fas fa-magnifying-glass"></i>
             </div>
         </form>
     </div>
@@ -132,113 +114,31 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Handle dropdown functionality
-    function initDropdown(buttonId, menuId, inputId) {
-        const button = document.getElementById(buttonId);
-        const menu = document.getElementById(menuId);
-        const input = document.getElementById(inputId);
-        
-        button.addEventListener('click', function() {
-            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-        });
-        
-        menu.addEventListener('click', function(e) {
-            if (e.target.tagName === 'LI' && !e.target.classList.contains('disabled')) {
-                const value = e.target.getAttribute('data-value');
-                const text = e.target.textContent;
-                
-                // Update button text
-                button.querySelector('span').textContent = text;
-                
-                // Update hidden input
-                input.value = value;
-                
-                // Remove previous selection
-                menu.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
-                
-                // Add selection to clicked item
-                e.target.classList.add('selected');
-                
-                // Hide menu
-                menu.style.display = 'none';
-                
-                // Submit form for filtering
-                if (buttonId === 'category-dropdown') {
-                    // If category changed, reset subject
-                    document.getElementById('subject-input').value = '';
-                    loadSubjects(value);
-                }
-                
-                document.getElementById('filter-form').submit();
-            }
-        });
-    }
-    
-    // Initialize dropdowns
-    initDropdown('category-dropdown', 'category-menu', 'category-input');
-    initDropdown('subject-dropdown', 'subject-menu', 'subject-input');
-    
-    // Load subjects when category changes
-    function loadSubjects(categoryId) {
-        const subjectMenu = document.getElementById('subject-menu');
-        const subjectButton = document.getElementById('subject-dropdown').querySelector('span');
-        
-        if (!categoryId) {
-            subjectMenu.innerHTML = '<li class="disabled">{{ __("front.select_program_first") }}</li>';
-            subjectButton.textContent = '{{ __("front.choose_subject") }}';
-            return;
-        }
-        
-        // Show loading
-        subjectMenu.innerHTML = '<li class="disabled">{{ __("front.loading") }}</li>';
-        
-        // Fetch subjects via AJAX
-          fetch(`{{ route('bankQuestions.subjects-by-category') }}?category_id=${categoryId}`)
-            .then(response => response.json())
-            .then(subjects => {
-                let html = '<li data-value="">{{ __("front.all_subjects") }}</li>';
-                subjects.forEach(subject => {
-                    html += `<li data-value="${subject.id}">${subject.name}</li>`;
-                });
-                subjectMenu.innerHTML = html;
-                subjectButton.textContent = '{{ __("front.choose_subject") }}';
-            })
-            .catch(error => {
-                console.error('Error loading subjects:', error);
-                subjectMenu.innerHTML = '<li class="disabled">Error loading subjects</li>';
-            });
-    }
-    
-    // Handle search input
+    const form = document.getElementById('filter-form');
+    const categorySelect = document.getElementById('category_id');
+    const subjectSelect = document.getElementById('subject_id');
+
+    categorySelect?.addEventListener('change', function() {
+        if (subjectSelect) subjectSelect.value = '';
+        form.submit();
+    });
+
+    subjectSelect?.addEventListener('change', function() {
+        form.submit();
+    });
+
     const searchInput = document.querySelector('input[name="search"]');
     let searchTimeout;
-    
-    searchInput.addEventListener('input', function() {
+    searchInput?.addEventListener('input', function() {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            document.getElementById('filter-form').submit();
-        }, 500);
-    });
-    
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!e.target.closest('.examx-dropdown')) {
-            document.querySelectorAll('.examx-menu').forEach(menu => {
-                menu.style.display = 'none';
-            });
-        }
+        searchTimeout = setTimeout(() => form.submit(), 500);
     });
 });
 
-// Share functionality
 function shareFile(fileUrl, fileName) {
     if (navigator.share) {
-        navigator.share({
-            title: fileName,
-            url: fileUrl
-        });
+        navigator.share({ title: fileName, url: fileUrl });
     } else {
-        // Fallback: copy to clipboard
         navigator.clipboard.writeText(fileUrl).then(function() {
             alert('{{ __("Link copied to clipboard") }}');
         });
