@@ -77,10 +77,16 @@
                     <div class="t-list">
                         @foreach ($teacher->courses->where('status', 'accepted') as $course)
                             <article class="t-course">
-                                <div class="t-course__media">
-                                    <img src="{{ asset('assets/admin/uploads/' . $course->photo) }}"
-                                        alt="{{ $course->title }}">
-                                    <span class="t-price">{{ $course->price }} {{ __('front.currency') }}</span>
+                                <div class="t-course__media-wrapper">
+                                    <div class="t-course__media">
+                                        <img src="{{ asset('assets/admin/uploads/' . $course->photo) }}"
+                                            alt="{{ $course->title }}">
+                                    </div>
+                                    @if($course->price)
+                                        <span class="t-price">{{ $course->price }} {{ __('front.currency') }}</span>
+                                    @else
+                                        <span class="t-price">{{ __('front.free') }}</span>
+                                    @endif
                                 </div>
                                 <div class="t-course__body">
                                     <a href="{{ route('course', $course->id) }}" class="t-course__title">
@@ -429,6 +435,11 @@
             flex-direction: column
         }
 
+        .t-course__media-wrapper {
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
         .t-course__media {
             position: relative;
             aspect-ratio: 16/9;
@@ -444,13 +455,16 @@
 
         .t-price {
             position: absolute;
-            bottom: 10px;
-            inset-inline-end: 10px;
+            bottom: 12px;
+            inset-inline-end: 12px;
             background: var(--brand);
             color: #fff;
-            border-radius: 10px;
-            padding: 6px 10px;
-            font-weight: 900
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 900;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(0, 84, 210, 0.3);
+            z-index: 10;
         }
 
         .t-course__body {
