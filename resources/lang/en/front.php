@@ -1,6 +1,7 @@
 <?php
 
 return array(
+  'gpa_calculator' => 'GPA Calculator',
   'paid_videos_mobile_only' => 'Paid videos are available only in mobile',
   'What Makes QDEMY Special' => 'What Makes QDEMY Special',
   'qdemy' => 'QDEMY',

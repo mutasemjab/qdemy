@@ -196,6 +196,19 @@
                                         @enderror
                                     </div>
                                 </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="gpa_calculator_link">{{ __('messages.GPA Calculator Link') }}</label>
+                                        <input type="url"
+                                            class="form-control @error('gpa_calculator_link') is-invalid @enderror"
+                                            id="gpa_calculator_link" name="gpa_calculator_link"
+                                            value="{{ old('gpa_calculator_link', $setting->gpa_calculator_link) }}">
+                                        @error('gpa_calculator_link')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <hr>

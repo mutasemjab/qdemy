@@ -170,6 +170,7 @@ return [
   'Google Play Link' => 'Google Play Link',
   'App Store Link' => 'App Store Link',
   'Huawei AppGallery Link' => 'Huawei AppGallery Link',
+  'GPA Calculator Link' => 'GPA Calculator Link',
   'Huawei AppGallery' => 'Huawei AppGallery',
   'Open Link' => 'Open Link',
   'Min Version' => 'Min Version',

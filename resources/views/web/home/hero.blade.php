@@ -53,6 +53,10 @@
                     : asset('assets_front/images/en/person.png') }}"
                     alt="Person" class="person-img" data-aos="fade-up">
             </div>
+
+            <a href="{{ $settings->gpa_calculator_link ?? '#' }}" class="blob-gpa blob-3d" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="500">
+                <span>{{ __('front.gpa_calculator') }}</span>
+            </a>
         </div>
     </div>
 

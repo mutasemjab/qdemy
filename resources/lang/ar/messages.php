@@ -171,6 +171,7 @@ return [
   'Google Play Link' => 'رابط جوجل بلاي',
   'App Store Link' => 'رابط آب ستور',
   'Huawei AppGallery Link' => 'رابط متجر هواوي',
+  'GPA Calculator Link' => 'رابط حساب المعدل',
   'Huawei AppGallery' => 'متجر هواوي',
   'Open Link' => 'فتح الرابط',
   'Min Version' => 'أقل إصدار',
