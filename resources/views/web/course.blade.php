@@ -182,7 +182,11 @@
                                                         </div>
                                                         <div class="crs2-resource-actions">
                                                             <a href="javascript:void(0)"
-                                                                class="crs2-pill-btn crs2-pill-btn--gray">
+                                                                class="crs2-pill-btn crs2-pill-btn--gray lesson-video"
+                                                                data-video="{{ $videoSource }}"
+                                                                data-content-id="{{ $content->id }}"
+                                                                data-duration="{{ $content->video_duration }}"
+                                                                data-is-bunny="{{ $content->video_type === 'bunny' ? 1 : 0 }}">
                                                                 {{ translate_lang('watch') }}
                                                             </a>
                                                         </div>
@@ -352,7 +356,11 @@
                                                                         </div>
                                                                         <div class="crs2-resource-actions">
                                                                             <a href="javascript:void(0)"
-                                                                                class="crs2-pill-btn crs2-pill-btn--gray">
+                                                                                class="crs2-pill-btn crs2-pill-btn--gray lesson-video"
+                                                                                data-video="{{ $subVideoSource }}"
+                                                                                data-content-id="{{ $subContent->id }}"
+                                                                                data-duration="{{ $subContent->video_duration }}"
+                                                                                data-is-bunny="{{ $subContent->video_type === 'bunny' ? 1 : 0 }}">
                                                                                 {{ translate_lang('watch') }}
                                                                             </a>
                                                                         </div>
@@ -530,7 +538,11 @@
                                                     </div>
                                                     <div class="crs2-resource-actions">
                                                         <a href="javascript:void(0)"
-                                                            class="crs2-pill-btn crs2-pill-btn--gray">
+                                                            class="crs2-pill-btn crs2-pill-btn--gray lesson-video"
+                                                            data-video="{{ $unVideoSource }}"
+                                                            data-content-id="{{ $_content->id }}"
+                                                            data-duration="{{ $_content->video_duration }}"
+                                                            data-is-bunny="{{ $_content->video_type === 'bunny' ? 1 : 0 }}">
                                                             {{ translate_lang('watch') }}
                                                         </a>
                                                     </div>
@@ -1232,27 +1244,34 @@
                         display: flex;
                         align-items: center;
                         justify-content: space-between;
-                        margin-bottom: 14px
+                        margin-bottom: 20px;
+                        background: linear-gradient(135deg, rgba(0, 85, 210, 0.08) 0%, rgba(0, 85, 210, 0.04) 100%);
+                        padding: 18px;
+                        border-radius: 14px;
+                        border: 2px solid rgba(0, 85, 210, 0.15);
                     }
 
                     .crs2-side-price-chip {
                         background: #ffd54a;
                         border-radius: 999px;
-                        padding: 4px 12px;
-                        font-size: 18px;
-                        color: #5b3b00
+                        padding: 10px 16px;
+                        font-size: 22px;
+                        font-weight: 700;
+                        color: #5b3b00;
+                        box-shadow: 0 4px 12px rgba(255, 213, 74, 0.3);
                     }
 
                     .crs2-side-price-value {
                         display: flex;
                         align-items: center;
-                        gap: 6px
+                        gap: 10px;
                     }
 
                     .crs2-side-price-number {
-                        font-size: 25px;
-                        font-weight: 800;
-                        color: #0055d2
+                        font-size: 48px;
+                        font-weight: 900;
+                        color: #0055d2;
+                        line-height: 1;
                     }
 
                     .crs2-side-btn-primary {
@@ -1540,7 +1559,6 @@
                     .crs2-pill-btn--gray {
                         background: #e5e7eb;
                         color: #111827;
-                        pointer-events: none;
                     }
 
                     .crs2-pill-btn--red {
