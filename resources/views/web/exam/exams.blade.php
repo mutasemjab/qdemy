@@ -2,19 +2,71 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="exams-section">
-        @if (isset($backRoute) && $backRoute == 'home')
-            <a href="{{ route('home') }}" class="back-btn">
-                <i class="fas fa-arrow-right"></i>
-                {{ __('front.back') }}
-            </a>
-        @endif
+    <section class="universities-page">
 
-        <div class="section-header">
-            <h1 class="section-title">{{ __('front.exams') }}</h1>
-            @if (isset($categoryTitle))
-                <p class="section-subtitle">{{ $categoryTitle }}</p>
-            @endif
+        <div data-aos="flip-up" data-aos-duration="1000" class="anim animate-glow courses-header-wrapper">
+            <div class="courses-header-1">
+                <img src="{{ app()->getLocale() == 'ar'
+                    ? asset('assets_front/images/courses-header-line-new.png')
+                    : asset('assets_front/images/en/courses-header-line-new.png') }}"
+                    alt="" class="courses-header-img" loading="lazy">
+                <span class="grade-number">{{ mb_substr(__('front.exams'), 0, 1) }}</span>
+            </div>
+        </div>
+
+        <div data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200" class="examx-filters">
+            @include('web.alert-message')
+            <form action='{{ route('exams') }}' method='get' id="filterForm">
+                <div class="examx-row">
+                    <div class="examx-dropdown">
+                        <select class="examx-pill" name="programm_id" id="programm_id">
+                            <option value="">{{ translate_lang('select_program') }}</option>
+                            @foreach ($programms as $programm)
+                                <option value="{{ $programm->id }}" data-ctg-key="{{ $programm->ctg_key }}"
+                                    {{ request('programm_id') == $programm->id ? 'selected' : '' }}>
+                                    {{ $programm->localized_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="examx-dropdown" id="gradeSection" style="">
+                        <select class="examx-pill" name="grade_id" id="grade_id">
+                            <option value="">{{ translate_lang('select_grade') }}</option>
+                            @foreach ($grades as $grade)
+                                <option value="{{ $grade->id }}"
+                                    {{ request('grade_id') == $grade->id ? 'selected' : '' }}>
+                                    {{ $grade->localized_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="examx-dropdown" id="subjectSection" style="">
+                        <select class="examx-pill" name="subject_id" id="subject_id">
+                            <option value="">{{ translate_lang('select_subject') }}</option>
+                            @foreach ($subjects as $subject)
+                                <option value="{{ $subject->id }}"
+                                    {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                    {{ $subject->localized_name }}
+                                    @if ($subject->semester)
+                                        - {{ $subject->semester->localized_name }}
+                                    @endif
+                                    @if ($subject->grade && $subject->grade->level == 'international-program-child')
+                                        - {{ $subject->grade->localized_name }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="examx-search">
+                    <input type="text" placeholder="{{ translate_lang('search') }}" name='search'
+                        value="{{ request('search') }}">
+                </div>
+            </form>
         </div>
 
         @if (session('error'))
@@ -107,7 +159,8 @@
                 <p>{{ __('front.no_exams_description') }}</p>
             </div>
         @endif
-    </div>
+
+    </section>
 
     <style>
         .exams-section {
@@ -347,4 +400,77 @@
             margin: 0;
         }
     </style>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const programmSelect = document.getElementById('programm_id');
+                const gradeSection = document.getElementById('gradeSection');
+                const gradeSelect = document.getElementById('grade_id');
+                const subjectSection = document.getElementById('subjectSection');
+                const subjectSelect = document.getElementById('subject_id');
+                const form = document.getElementById('filterForm');
+
+                // Auto submit form on filter change
+                [programmSelect, gradeSelect, subjectSelect].forEach(element => {
+                    if (element) {
+                        element.addEventListener('change', function() {
+                            // Clear dependent filters
+                            if (element === programmSelect) {
+                                gradeSelect.value = '';
+                                subjectSelect.value = '';
+                            } else if (element === gradeSelect) {
+                                subjectSelect.value = '';
+                            }
+                            form.submit();
+                        });
+                    }
+                });
+
+                // Handle program change for dynamic grade loading
+                programmSelect.addEventListener('change', async function() {
+                    const programId = this.value;
+                    const selectedOption = this.selectedOptions[0];
+
+                    if (!programId) {
+                        gradeSection.style.display = 'none';
+                        subjectSection.style.display = 'none';
+                        return;
+                    }
+
+                    const ctgKey = selectedOption.dataset.ctgKey;
+
+                    // Check if program needs grades
+                    if (['tawjihi-and-secondary-program', 'elementary-grades-program'].includes(ctgKey)) {
+                        gradeSection.style.display = 'block';
+                    } else {
+                        gradeSection.style.display = 'none';
+                        while (gradeSelect.options.length > 1) {
+                            gradeSelect.remove(1);
+                        }
+                    }
+                });
+
+                // Show/hide sections based on initial state
+                if (programmSelect.value) {
+                    const selectedOption = programmSelect.selectedOptions[0];
+                    const ctgKey = selectedOption.dataset.ctgKey;
+
+                    if (!['tawjihi-and-secondary-program', 'elementary-grades-program'].includes(ctgKey)) {
+                        if (document.querySelectorAll('#subject_id option').length > 1) {
+                            subjectSection.style.display = 'block';
+                        }
+                    }
+                }
+
+                if (gradeSelect.value || document.querySelectorAll('#grade_id option').length > 1) {
+                    gradeSection.style.display = 'block';
+                }
+
+                if (document.querySelectorAll('#subject_id option').length > 1) {
+                    subjectSection.style.display = 'block';
+                }
+            });
+        </script>
+    @endpush
 @endsection
