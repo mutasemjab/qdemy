@@ -169,6 +169,10 @@
             margin: 0 auto;
         }
 
+        .examx-filters {
+            margin-bottom: 50px;
+        }
+
         .section-header {
             text-align: center;
             margin-bottom: 40px;
