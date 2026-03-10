@@ -244,6 +244,16 @@ class Category extends Model
         return $this->hasMany(Doseyat::class, 'category_id');
     }
 
+    public function whatsappContacts()
+    {
+        return $this->hasMany(CategoryWhatsappContact::class)->where('is_active', true);
+    }
+
+    public function getPrimaryWhatsappPhoneAttribute()
+    {
+        return $this->whatsappContacts()->first()?->phone_number;
+    }
+
     public function cards()
     {
         return $this->hasMany(Card::class, 'category_id');

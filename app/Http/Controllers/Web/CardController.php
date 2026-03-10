@@ -13,23 +13,66 @@ class CardController  extends Controller
 
     public function cards_order(Request $request)
     {
-        // Load cards with category and doseyats relationships
-        $cards = Card::with(['category', 'doseyats'])->get();
-        
-        // Get active categories that have cards
+        // Get filter data
+        $programms = CategoryRepository()->getMajors();
+        $grades = collect();
+
+        // Build main query
+        $query = Card::query()->with(['category', 'doseyats']);
+
+        // Program filter
+        if ($request->filled('programm_id')) {
+            $selectedProgram = Category::find($request->programm_id);
+            if ($selectedProgram) {
+                // Check if program needs grades
+                if (in_array($selectedProgram->ctg_key, ['tawjihi-and-secondary-program', 'elementary-grades-program'])) {
+                    // Load grades for this program
+                    if ($selectedProgram->ctg_key == 'elementary-grades-program') {
+                        $grades = CategoryRepository()->getElementryProgramGrades();
+                    } else {
+                        $grades = CategoryRepository()->getTawjihiProgrammGrades();
+                    }
+
+                    // Filter cards by program
+                    $query->whereHas('category', function($q) use ($request) {
+                        $q->where('parent_id', $request->programm_id);
+                    });
+                }
+            }
+        }
+
+        // Grade filter
+        if ($request->filled('grade_id')) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('id', $request->grade_id);
+            });
+        }
+
+        $cards = $query->get();
+
+        // Get active categories that have cards with their WhatsApp contacts
         $categories = Category::where('parent_id', null)
             ->whereHas('cards')
+            ->with('whatsappContacts')
             ->get();
-        
+
+        // Build WhatsApp numbers map: category_id => phone_number
+        $whatsappNumbers = [];
+        foreach ($categories as $category) {
+            if ($category->primary_whatsapp_phone) {
+                $whatsappNumbers[$category->id] = $category->primary_whatsapp_phone;
+            }
+        }
+
         // Check if request from mobile
         $isApi = $request->is('api/*');
-        
+
         // Auto-login for mobile
         if($isApi && $request->has('UserId')){
             auth()->loginUsingId($request->input('UserId'));
         }
-        
-        return view('web.cards-order', compact('cards', 'categories', 'isApi'));
+
+        return view('web.cards-order', compact('cards', 'categories', 'isApi', 'whatsappNumbers', 'programms', 'grades'));
     }
 
     

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Category;
+use App\Models\CategoryWhatsappContact;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -71,6 +72,7 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
+        $category->load('whatsappContacts');
         return view('admin.categories.edit', compact('category'));
     }
     /**
@@ -238,5 +240,70 @@ class CategoryController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * Save WhatsApp contact for category
+     */
+    public function saveWhatsappContact(Request $request, Category $category)
+    {
+        $request->validate([
+            'phone_number' => 'required|string|min:7|max:20',
+            'label' => 'nullable|string|max:255',
+            'contact_id' => 'nullable|integer|exists:category_whatsapp_contacts,id',
+        ]);
+
+        try {
+            if ($request->contact_id) {
+                // Update existing contact
+                $contact = CategoryWhatsappContact::findOrFail($request->contact_id);
+                $contact->update([
+                    'phone_number' => $request->phone_number,
+                    'label' => $request->label,
+                ]);
+                $message = __('messages.updated_successfully');
+            } else {
+                // Create new contact
+                CategoryWhatsappContact::create([
+                    'category_id' => $category->id,
+                    'phone_number' => $request->phone_number,
+                    'label' => $request->label,
+                    'is_active' => true,
+                ]);
+                $message = __('messages.created_successfully');
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'contact' => $contact ?? CategoryWhatsappContact::where('category_id', $category->id)
+                    ->where('phone_number', $request->phone_number)
+                    ->first(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Delete WhatsApp contact
+     */
+    public function deleteWhatsappContact(CategoryWhatsappContact $contact)
+    {
+        try {
+            $contact->delete();
+            return response()->json([
+                'success' => true,
+                'message' => __('messages.deleted_successfully'),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
     }
 }

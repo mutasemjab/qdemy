@@ -188,6 +188,12 @@ Route::group(['prefix' => LaravelLocalization::setLocale(), 'middleware' => ['lo
         Route::post('categories/bulk-action', [CategoryController::class, 'bulkAction'])
             ->name('categories.bulk-action');
 
+        // WhatsApp contacts routes
+        Route::post('categories/{category}/whatsapp-contacts', [CategoryController::class, 'saveWhatsappContact'])
+            ->name('categories.whatsapp-contacts.save');
+        Route::delete('whatsapp-contacts/{contact}', [CategoryController::class, 'deleteWhatsappContact'])
+            ->name('whatsapp-contacts.delete');
+
         Route::resource('subjects', SubjectController::class);
         Route::post('subjects/getGrades', [SubjectController::class, 'getGrades'])->name('admin.subjects.getGrades');
         Route::post('subjects/getSemesters', [SubjectController::class, 'getSemesters'])->name('admin.subjects.getSemesters');
