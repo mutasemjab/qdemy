@@ -84,3 +84,10 @@
   transform: scale(1.1);
   box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);
 }
+
+/* Desktop - 1600px and above */
+@media (min-width: 1600px) {
+  .teachers-title img {
+    max-width: 1000px;
+  }
+}

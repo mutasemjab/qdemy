@@ -148,8 +148,8 @@
     margin-top: 4px !important;
 }
 
-/* Desktop - 1200px and above */
-@media (min-width: 1200px) {
+/* Desktop - 1600px and above */
+@media (min-width: 1600px) {
     .service-link {
         font-size: 40px !important;
         height: 140px !important;
@@ -218,5 +218,12 @@
     .service-link small {
         font-size: 18px !important;
         margin-top: 5px !important;
+    }
+}
+
+/* Desktop - 1600px and above */
+@media (min-width: 1600px) {
+    .services-title img {
+        max-width: 1000px !important;
     }
 }

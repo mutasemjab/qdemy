@@ -188,3 +188,10 @@
     font-size: 15px;
   }
 }
+
+/* Desktop - 1600px and above */
+@media (min-width: 1600px) {
+  .faq-title img {
+    max-width: 1000px;
+  }
+}

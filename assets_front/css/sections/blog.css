@@ -243,3 +243,10 @@
     display: none;
   }
 }
+
+/* Desktop - 1600px and above */
+@media (min-width: 1600px) {
+  .blog-title img {
+    max-width: 1000px;
+  }
+}

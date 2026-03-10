@@ -79,6 +79,10 @@ h6 {
     li {
         font-size: 25px;
     }
+
+    .videos-title img {
+        max-width: 1000px !important;
+    }
 }
 
 .anim {
@@ -4924,13 +4928,13 @@ subject-plus-dropdown-examx {
 }
 
 .fm3d-videos-block::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('../images/new-designs/hero-decoration-3.webp');
+    background-image: url("../images/new-designs/hero-decoration-3.webp");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
