@@ -87,7 +87,6 @@
 
 /* Testimonial Card Content */
 .rvx-card-name {
-    font-size: 22px;
     font-weight: 700;
     color: #1f2937;
     margin-bottom: 8px;
@@ -95,7 +94,6 @@
 }
 
 .rvx-card-title {
-    font-size: 14px;
     color: #6b7280;
     margin-bottom: 16px;
     text-align: center;
@@ -118,7 +116,6 @@
 }
 
 .rvx-card-description {
-    font-size: 15px;
     color: #4b5563;
     line-height: 1.7;
     text-align: center;
@@ -142,7 +139,6 @@
 }
 
 .rvx-panel-title {
-    font-size: 50px;
     font-weight: 700;
     line-height: 1.3;
     margin-top: 0;

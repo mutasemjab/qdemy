@@ -14,8 +14,8 @@
                         <img class="rvx-card-img"
                             data-src="{{ $opinion->photo ? asset('assets/admin/uploads/' . $opinion->photo) : asset('assets_front/images/social1.jpg') }}"
                             alt="{{ $opinion->name }}">
-                        <h3 class="rvx-card-name">{{ $opinion->name }}</h3>
-                        <p class="rvx-card-title">{{ $opinion->title }}</p>
+                        <h3 class="rvx-card-name" style="font-size: clamp(18px, 6vw, 32px);">{{ $opinion->name }}</h3>
+                        <p class="rvx-card-title" style="font-size: clamp(16px, 5vw, 30px);">{{ $opinion->title }}</p>
                         <div class="rvx-card-stars">
                             @foreach ($opinion->getStarRatingAttribute() as $star)
                                 @if ($star === 'full')
@@ -27,7 +27,7 @@
                                 @endif
                             @endforeach
                         </div>
-                        <p class="rvx-card-description">{{ $opinion->description }}</p>
+                        <p class="rvx-card-description" style="font-size: clamp(16px, 5vw, 30px);">{{ $opinion->description }}</p>
                     </div>
                 @endforeach
             </div>
@@ -35,7 +35,7 @@
 
         <!-- Right side panel -->
         <div class="rvx-panel">
-            <h3 class="rvx-panel-title">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
+            <h3 class="rvx-panel-title" style="font-size: clamp(36px, 10vw, 72px);">{{ __('front.Our Students Reviews on Their Platform') }}</h3>
             <img class="rvx-panel-logo" data-src="{{ asset('assets_front/images/logo-white.png') }}"
                 alt="Qdemy">
         </div>

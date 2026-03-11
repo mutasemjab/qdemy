@@ -21,10 +21,10 @@
                                     alt="{{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}"
                                     loading="lazy">
                             </div>
-                            <h3 class="blog-card__title">
+                            <h3 class="blog-card__title" style="font-size: clamp(20px, 6vw, 40px);">
                                 {{ app()->getLocale() == 'ar' ? $blog->title_ar : $blog->title_en }}
                             </h3>
-                            <p class="blog-card__excerpt">
+                            <p class="blog-card__excerpt" style="font-size: clamp(16px, 5vw, 32px);">
                                 {!! app()->getLocale() == 'ar' ? Str::limit($blog->description_ar, 100) : Str::limit($blog->description_en, 100) !!}
                             </p>
                         </a>

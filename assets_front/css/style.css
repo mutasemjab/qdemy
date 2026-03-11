@@ -7423,7 +7423,7 @@ a.dl-store0 img {
 }
 
 .blog-card__title {
-    font-size: 25px;
+    font-size: clamp(18px, 5vw, 32px) !important;
     line-height: 1.5;
     margin: 14px 8px 6px;
     color: #0e1b3d;
@@ -7431,7 +7431,7 @@ a.dl-store0 img {
 }
 
 .blog-card__excerpt {
-    font-size: 20px;
+    font-size: clamp(14px, 4vw, 26px) !important;
     line-height: 1.6;
     margin: 0 8px 6px;
     color: #4b5162;
@@ -7660,13 +7660,13 @@ a.dl-store0 img {
 }
 
 .rvx-card-title {
-    font-size: 20px;
+    font-size: clamp(14px, 4vw, 26px) !important;
     margin: 0 0 12px;
     font-weight: 900;
 }
 
 .rvx-card-text {
-    font-size: 20px;
+    font-size: clamp(14px, 4vw, 26px) !important;
     line-height: 1.7;
     margin: 0 0 14px;
 }
@@ -7679,6 +7679,7 @@ a.dl-store0 img {
 }
 
 .rvx-card-name {
+    font-size: clamp(16px, 5vw, 28px)  !important;
     font-weight: 700;
 }
 
