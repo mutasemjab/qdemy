@@ -201,87 +201,40 @@
                                 </div>
                             @endif
 
-                            <!-- WhatsApp Contacts Section (Only for Subcategories) -->
+                            <!-- WhatsApp Contact (Only for Subcategories) -->
                             @if($category->parent_id)
-                            <div class="col-12 mt-4">
-                                <hr>
-                                <h5 class="mb-3">{{ __('messages.whatsapp_numbers') ?? 'WhatsApp Numbers' }}</h5>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="whatsapp_phone" class="form-label">
+                                        {{ __('messages.whatsapp_numbers') ?? 'WhatsApp Number' }} ({{ __('messages.optional') }})
+                                    </label>
+                                    <input type="text"
+                                           class="form-control @error('whatsapp_phone') is-invalid @enderror"
+                                           id="whatsapp_phone"
+                                           name="whatsapp_phone"
+                                           value="{{ old('whatsapp_phone', $category->whatsappContacts->first()?->phone_number) }}"
+                                           placeholder="+962775743580">
+                                    <small class="text-muted">{{ __('messages.example') }}: +962775743580</small>
+                                    @error('whatsapp_phone')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
-                                <!-- Existing Contacts -->
-                                @if($category->whatsappContacts && $category->whatsappContacts->count() > 0)
-                                    <div class="table-responsive mb-3">
-                                        <table class="table table-sm table-hover">
-                                            <thead class="table-light">
-                                                <tr>
-                                                    <th>{{ __('messages.phone_number') ?? 'Phone Number' }}</th>
-                                                    <th>{{ __('messages.label') ?? 'Label' }}</th>
-                                                    <th>{{ __('messages.status') }}</th>
-                                                    <th style="width: 100px;">{{ __('messages.action') }}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="whatsapp-contacts-list">
-                                                @foreach($category->whatsappContacts as $contact)
-                                                    <tr class="contact-row" data-contact-id="{{ $contact->id }}">
-                                                        <td>{{ $contact->phone_number }}</td>
-                                                        <td>{{ $contact->label ?? '-' }}</td>
-                                                        <td>
-                                                            <span class="badge bg-success">{{ __('messages.active') }}</span>
-                                                        </td>
-                                                        <td>
-                                                            <button type="button" class="btn btn-sm btn-danger btn-delete-contact" data-contact-id="{{ $contact->id }}">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @else
-                                    <p class="text-muted">{{ __('messages.no_whatsapp_numbers') ?? 'No WhatsApp numbers saved for this category' }}</p>
-                                @endif
-
-                                <!-- Add New Contact Form -->
-                                <div class="card card-outline card-primary mt-3">
-                                    <div class="card-header">
-                                        <h3 class="card-title">{{ __('messages.add_new_number') ?? 'Add New Number' }}</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <form id="add-whatsapp-form" method="POST">
-                                            @csrf
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="phone_number" class="form-label">
-                                                            {{ __('messages.phone_number') }} <span class="text-danger">*</span>
-                                                        </label>
-                                                        <input type="text"
-                                                               class="form-control"
-                                                               id="phone_number"
-                                                               name="phone_number"
-                                                               placeholder="+962775743580"
-                                                               required>
-                                                        <small class="text-muted">{{ __('messages.example') }}: +962775743580</small>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-2">
-                                                        <label for="label" class="form-label">
-                                                            {{ __('messages.label') }} ({{ __('messages.optional') }})
-                                                        </label>
-                                                        <input type="text"
-                                                               class="form-control"
-                                                               id="label"
-                                                               name="label"
-                                                               placeholder="{{ __('messages.example') }}: Primary, Sales, Support">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-plus"></i> {{ __('messages.add') }}
-                                            </button>
-                                        </form>
-                                    </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="whatsapp_label" class="form-label">
+                                        {{ __('messages.label') }} ({{ __('messages.optional') }})
+                                    </label>
+                                    <input type="text"
+                                           class="form-control @error('whatsapp_label') is-invalid @enderror"
+                                           id="whatsapp_label"
+                                           name="whatsapp_label"
+                                           value="{{ old('whatsapp_label', $category->whatsappContacts->first()?->label) }}"
+                                           placeholder="{{ __('messages.example') }}: Support">
+                                    @error('whatsapp_label')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             @endif
@@ -310,72 +263,6 @@
     document.getElementById('icon').addEventListener('input', function() {
         const iconPreview = document.getElementById('icon-preview');
         iconPreview.className = this.value || 'fas fa-folder';
-    });
-
-    // WhatsApp contact form submission
-    const form = document.getElementById('add-whatsapp-form');
-    const categoryId = {{ $category->id }};
-
-    if (form) {
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            const phoneNumber = document.getElementById('phone_number').value;
-            const label = document.getElementById('label').value;
-
-            try {
-                const response = await fetch(`/admin/categories/${categoryId}/whatsapp-contacts`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        phone_number: phoneNumber,
-                        label: label
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('{{ __('messages.error_occurred') }}: ' + data.message);
-                }
-            } catch (error) {
-                alert('{{ __('messages.error_occurred') }}: ' + error.message);
-            }
-        });
-    }
-
-    // Delete contact
-    document.querySelectorAll('.btn-delete-contact').forEach(btn => {
-        btn.addEventListener('click', async function(e) {
-            e.preventDefault();
-            const contactId = this.dataset.contactId;
-
-            if (!confirm('{{ __('messages.confirm_delete') }}')) return;
-
-            try {
-                const response = await fetch(`/admin/whatsapp-contacts/${contactId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}'
-                    }
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert('{{ __('messages.error_occurred') }}: ' + data.message);
-                }
-            } catch (error) {
-                alert('{{ __('messages.error_occurred') }}: ' + error.message);
-            }
-        });
     });
 </script>
 @endpush

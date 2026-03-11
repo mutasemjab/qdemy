@@ -83,6 +83,11 @@ class CategoryController extends Controller
         // Get validated data
         $validated = $request->validated();
 
+        // Separate WhatsApp data from category data
+        $whatsappPhone = $validated['whatsapp_phone'] ?? null;
+        $whatsappLabel = $validated['whatsapp_label'] ?? null;
+        unset($validated['whatsapp_phone'], $validated['whatsapp_label']);
+
         DB::beginTransaction();
         try {
             // Check if is_active status changed
@@ -90,6 +95,24 @@ class CategoryController extends Controller
 
             // Update category
             $category->update($validated);
+
+            // Handle WhatsApp contact update
+            if ($category->parent_id) {
+                if ($whatsappPhone) {
+                    // Update or create WhatsApp contact
+                    $category->whatsappContacts()->updateOrCreate(
+                        ['category_id' => $category->id],
+                        [
+                            'phone_number' => $whatsappPhone,
+                            'label' => $whatsappLabel,
+                            'is_active' => true,
+                        ]
+                    );
+                } else {
+                    // Delete WhatsApp contact if phone is empty
+                    $category->whatsappContacts()->delete();
+                }
+            }
 
             // If status changed, update all children
             if ($statusChanged) {

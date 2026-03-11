@@ -29,6 +29,8 @@ class UpdateCategoryRequest extends FormRequest
             'icon' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:7|regex:/^#[0-9A-Fa-f]{6}$/',
             'is_active' => 'required|boolean',
+            'whatsapp_phone' => 'nullable|string|min:7|max:20',
+            'whatsapp_label' => 'nullable|string|max:255',
         ];
     }
 
