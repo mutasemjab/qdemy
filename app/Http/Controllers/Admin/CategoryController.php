@@ -45,11 +45,10 @@ class CategoryController extends Controller
         }
 
         // Get root categories with their children for tree display
-        $rootCategories = Category::whereNull('parent_id')
+      $rootCategories = Category::whereNull('parent_id')
             ->with(['children' => function($query) {
-                $query->where('is_active', true)->orderBy('sort_order')->orderBy('name_ar');
+                $query->orderBy('sort_order')->orderBy('name_ar'); // removed is_active filter
             }])
-            // ->where('is_active', true)
             ->orderBy('sort_order')
             ->orderBy('name_ar')
             ->get();

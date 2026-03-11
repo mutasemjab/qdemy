@@ -117,9 +117,9 @@ class CategoryRepository
             ->orWhere('ctg_key', 'universities-and-colleges-program')->first();
     }
 
-    public function getDirectChilds($category)
+   public function getDirectChilds($category)
     {
-        return $category->children;
+        return $category->children()->where('is_active', true)->get();
     }
 
     // احصل علي كل ابناء category معين شجريا

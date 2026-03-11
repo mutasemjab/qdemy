@@ -3,7 +3,7 @@
          style="padding-left: {{ ($level * 20) + 15 }}px !important;">
 
         <!-- Toggle Button -->
-        @if($category->children()->where('is_active', true)->count() > 0)
+        @if($category->children()->count() > 0)
             <button type="button" class="btn btn-sm btn-link p-0 mr-2 toggle-btn"
                     data-toggle="collapse"
                     data-target="#children-{{ $category->id }}"
@@ -99,9 +99,9 @@
     </div>
 
     <!-- Children -->
-    @if($category->children()->where('is_active', true)->count() > 0)
+    @if($category->children()->count() > 0)
         <div class="collapse" id="children-{{ $category->id }}">
-            @foreach($category->children()->where('is_active', true)->orderBy('sort_order')->orderBy('name_ar')->get() as $child)
+            @foreach($category->children()->orderBy('sort_order')->orderBy('name_ar')->get() as $child)
                 @include('admin.categories.partials.tree-item', ['category' => $child, 'level' => $level + 1])
             @endforeach
         </div>
